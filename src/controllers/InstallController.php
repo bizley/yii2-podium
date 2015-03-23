@@ -14,7 +14,7 @@ class InstallController extends Controller
     protected function _passCheck()
     {
         if ($this->module->getParam('mode') !== 'INSTALL') {
-            return $this->redirect('prereq');
+            return $this->redirect(['prereq']);
         }
     }
     

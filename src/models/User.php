@@ -31,14 +31,9 @@ class User extends ActiveRecord implements IdentityInterface
 {
 
     const STATUS_REGISTERED = 1;
-    const STATUS_LOCKED     = 9;
+    const STATUS_BANNED     = 9;
     const STATUS_ACTIVE     = 10;
 
-    public static $statuses = [
-        self::STATUS_ACTIVE,
-        self::STATUS_LOCKED,
-        self::STATUS_REGISTERED,
-    ];
     public $password;
     public $password_repeat;
     public $tos;
@@ -66,7 +61,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'installation'   => [],
             'token'          => [],
-            'passwordChange' => ['password', 'password_repeat']
+            'passwordChange' => ['password', 'password_repeat'],
         ];
     }
 
@@ -96,6 +91,15 @@ class User extends ActiveRecord implements IdentityInterface
                 mb_strlen($this->password, 'UTF-8') > 100) {
             $this->addError('password', Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
+    }
+
+    public static function getStatuses()
+    {
+        return [
+            self::STATUS_ACTIVE     => Yii::t('podium/view', 'Active'),
+            self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
+            self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
+        ];
     }
 
     /**
@@ -142,7 +146,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $keyfield
      * @return static|null
      */
-    public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
+    public static function findByKeyfield($keyfield,
+                                          $status = self::STATUS_ACTIVE)
     {
         if ($status === null) {
             return static::find()->where(['or', 'email=:key', 'username=:key'])->params([':key' => $keyfield])->one();
@@ -158,7 +163,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string|null $status user status or null
      * @return static|null
      */
-    public static function findByPasswordResetToken($token, $status = self::STATUS_ACTIVE)
+    public static function findByPasswordResetToken($token,
+                                                    $status = self::STATUS_ACTIVE)
     {
         if (!static::isPasswordResetTokenValid($token)) {
             return null;
@@ -334,5 +340,4 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $this->save();
     }
-    
 }
