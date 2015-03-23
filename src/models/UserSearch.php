@@ -14,6 +14,7 @@ class UserSearch extends User
             [['id'], 'integer'],
             [['username', 'email'], 'safe'],
             [['status'], 'in', 'range' => array_keys(User::getStatuses())],
+            [['role'], 'in', 'range' => array_keys(User::getRoles())],
         ];
     }
 
@@ -33,26 +34,19 @@ class UserSearch extends User
             ],
         ]);
 
-        $query->join('LEFT JOIN', '{{%podium_auth_assignment}}', 'user_id=id');
-
-//        $dataProvider->sort->attributes['author.name'] = [
-//            'asc'  => ['author.name' => SORT_ASC],
-//            'desc' => ['author.name' => SORT_DESC],
-//        ];
-
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['id' => $this->id]);
-        $query->andFilterWhere(['status' => $this->status]);
-        $query->andFilterWhere(['like', 'email', $this->email])
+        $query->andFilterWhere(['id' => $this->id])
+                ->andFilterWhere(['status' => $this->status])
+                ->andFilterWhere(['role' => $this->role])
+                ->andFilterWhere(['like', 'email', $this->email])
                 ->andFilterWhere(['like', 'username', $this->username]);
 
         return $dataProvider;
     }
 
 }
-        

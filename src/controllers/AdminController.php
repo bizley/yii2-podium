@@ -6,6 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 
 class AdminController extends Controller
@@ -64,5 +65,20 @@ class AdminController extends Controller
         return $this->render('settings');
     }
 
+    public function actionView($id)
+    {
+        $model = User::findOne((int)$id);
+        
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+            return $this->redirect(['members']);
+        }
+        
+        
+        
+        return $this->render('view', [
+            'model' => $model
+        ]);
+    }
 }
         

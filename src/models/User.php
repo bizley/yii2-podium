@@ -33,6 +33,9 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_REGISTERED = 1;
     const STATUS_BANNED     = 9;
     const STATUS_ACTIVE     = 10;
+    const ROLE_MEMBER       = 1;
+    const ROLE_MODERATOR    = 9;
+    const ROLE_ADMIN        = 10;
 
     public $password;
     public $password_repeat;
@@ -78,6 +81,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['password', 'passwordRequirements'],
             ['password', 'compare'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
+            ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
         ];
     }
@@ -99,6 +103,15 @@ class User extends ActiveRecord implements IdentityInterface
             self::STATUS_ACTIVE     => Yii::t('podium/view', 'Active'),
             self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
             self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
+        ];
+    }
+
+    public static function getRoles()
+    {
+        return [
+            self::ROLE_MEMBER    => Yii::t('podium/view', 'Member'),
+            self::ROLE_MODERATOR => Yii::t('podium/view', 'Moderator'),
+            self::ROLE_ADMIN     => Yii::t('podium/view', 'Admin'),
         ];
     }
 
@@ -146,8 +159,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $keyfield
      * @return static|null
      */
-    public static function findByKeyfield($keyfield,
-                                          $status = self::STATUS_ACTIVE)
+    public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
     {
         if ($status === null) {
             return static::find()->where(['or', 'email=:key', 'username=:key'])->params([':key' => $keyfield])->one();
@@ -163,8 +175,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string|null $status user status or null
      * @return static|null
      */
-    public static function findByPasswordResetToken($token,
-                                                    $status = self::STATUS_ACTIVE)
+    public static function findByPasswordResetToken($token, $status = self::STATUS_ACTIVE)
     {
         if (!static::isPasswordResetTokenValid($token)) {
             return null;
@@ -339,5 +350,10 @@ class User extends ActiveRecord implements IdentityInterface
         $this->removePasswordResetToken();
 
         return $this->save();
+    }
+
+    public function getPodiumName()
+    {
+        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
     }
 }

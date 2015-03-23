@@ -128,7 +128,8 @@ class Installation extends Component
                     'password_reset_token' => Schema::TYPE_STRING,
                     'activation_token'     => Schema::TYPE_STRING,
                     'email'                => Schema::TYPE_STRING . ' NOT NULL',
-                    'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 10',
+                    'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
         ]);
@@ -221,6 +222,7 @@ class Installation extends Component
             $admin->username = 'admin';
             $admin->email    = 'podium_admin@podium.net';
             $admin->status   = User::STATUS_ACTIVE;
+            $admin->role     = User::ROLE_ADMIN;
             $admin->generateAuthKey();
             $admin->setPassword('admin');
             if ($admin->save()) {

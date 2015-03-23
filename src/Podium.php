@@ -30,6 +30,10 @@ class Podium extends Module implements BootstrapInterface
                     'reset'                    => 'account/reset',
                     'activate/<token:[\w\-]+>' => 'account/activate',
                     'password/<token:[\w\-]+>' => 'account/password',
+                    'admin/view/<id:\d+>'      => 'admin/view',
+                    'admin/update/<id:\d+>'    => 'admin/update',
+                    'admin/delete/<id:\d+>'    => 'admin/delete',
+                    'admin/ban/<id:\d+>'       => 'admin/ban',
                     'admin'                    => 'admin/index',
                 ],
                     ])
