@@ -42,4 +42,23 @@ class Helper
         
         return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
     }
+    
+    public static function statusLabel($status = null)
+    {
+        switch ($status) {
+            case User::STATUS_ACTIVE:
+                $label = 'info';
+                $name = ArrayHelper::getValue(User::getStatuses(), $status);
+                break;
+            case User::STATUS_BANNED:
+                $label = 'warning';
+                $name = ArrayHelper::getValue(User::getStatuses(), $status);
+                break;
+            default:
+                $label = 'default';
+                $name = ArrayHelper::getValue(User::getStatuses(), User::STATUS_REGISTERED);
+        }
+        
+        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
+    }
 }

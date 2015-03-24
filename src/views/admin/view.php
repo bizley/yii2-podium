@@ -46,6 +46,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                     <small>
                         <?= Html::encode($model->email) ?> 
                         <?= Helper::roleLabel($model->role) ?>
+                        <?= Helper::statusLabel($model->status) ?>
                     </small>
                 </h2>
                 <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>

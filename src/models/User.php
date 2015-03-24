@@ -20,10 +20,12 @@ use bizley\podium\Podium;
  * @property string $password_reset_token
  * @property string $activation_token
  * @property string $email
+ * @property string $new_email
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property string $current_password write-only password
  * @property string $password write-only password
  * @property string $password_repeat write-only password repeated
  */
@@ -39,6 +41,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public $password;
     public $password_repeat;
+    public $current_password;
     public $tos;
 
     /**
@@ -65,6 +68,7 @@ class User extends ActiveRecord implements IdentityInterface
             'installation'   => [],
             'token'          => [],
             'passwordChange' => ['password', 'password_repeat'],
+            'account'        => ['username', 'new_email', 'password', 'password_repeat', 'current_password'],
         ];
     }
 
@@ -74,12 +78,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['email', 'password', 'password_repeat', 'tos'], 'required'],
-            ['email', 'email'],
-            ['email', 'string', 'max' => 255],
+            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
+            ['current_password', 'required'],
+            ['current_password', 'validateCurrentPassword'],
+            [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
+            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
             ['email', 'unique'],
+            ['new_email', 'unique', 'targetAttribute' => 'email'],
             ['password', 'passwordRequirements'],
             ['password', 'compare'],
+            ['username', 'match', 'pattern' => '/^[a-z]\w{2,}$/i', 'message' => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.')],
+            ['username', 'unique'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
@@ -94,6 +103,15 @@ class User extends ActiveRecord implements IdentityInterface
                 mb_strlen($this->password, 'UTF-8') < 6 ||
                 mb_strlen($this->password, 'UTF-8') > 100) {
             $this->addError('password', Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
+        }
+    }
+    
+    public function validateCurrentPassword($attribute)
+    {
+        if (!$this->hasErrors()) {
+            if (!$this->validatePassword($this->current_password)) {
+                $this->addError($attribute, 'Incorrect current password.');
+            }
         }
     }
 
@@ -202,6 +220,15 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne(['activation_token' => $token, 'status' => self::STATUS_REGISTERED]);
     }
 
+    public static function findByEmailToken($token)
+    {
+        if (!static::isEmailTokenValid($token)) {
+            return null;
+        }
+
+        return static::findOne(['email_token' => $token, 'status' => self::STATUS_ACTIVE]);
+    }
+    
     /**
      * Finds out if password reset token is valid
      *
@@ -210,13 +237,12 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function isPasswordResetTokenValid($token)
     {
-        if (empty($token)) {
-            return false;
-        }
-        $expire    = Podium::getInstance()->getParam('passwordResetTokenExpire', 24 * 60 * 60);
-        $parts     = explode('_', $token);
-        $timestamp = (int) end($parts);
-        return $timestamp + $expire >= time();
+        return self::isTokenValid($token, Podium::getInstance()->getParam('passwordResetTokenExpire', 24 * 60 * 60));
+    }
+    
+    public static function isEmailTokenValid($token)
+    {
+        return self::isTokenValid($token, Podium::getInstance()->getParam('emailTokenExpire', 24 * 60 * 60));
     }
 
     /**
@@ -227,10 +253,14 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function isActivationTokenValid($token)
     {
+        return self::isTokenValid($token, Podium::getInstance()->getParam('activationTokenExpire', 3 * 24 * 60 * 60));
+    }
+    
+    public static function isTokenValid($token, $expire)
+    {
         if (empty($token)) {
             return false;
         }
-        $expire    = Podium::getInstance()->getParam('activationTokenExpire', 3 * 24 * 60 * 60);
         $parts     = explode('_', $token);
         $timestamp = (int) end($parts);
         return $timestamp + $expire >= time();
@@ -296,6 +326,14 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
+    
+    /**
+     * Generates new email token
+     */
+    public function generateEmailToken()
+    {
+        $this->email_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
 
     /**
      * Removes password reset token
@@ -303,6 +341,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+    
+    /**
+     * Removes email token
+     */
+    public function removeEmailToken()
+    {
+        $this->email_token = null;
     }
 
     /**
@@ -351,7 +397,28 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $this->save();
     }
+    
+    public function changeEmail()
+    {
+        $this->email = $this->new_email;
+        $this->new_email = null;
+        $this->removeEmailToken();
 
+        return $this->save();
+    }
+
+    public function saveChanges()
+    {
+        if ($this->password) {
+            $this->setPassword($this->password);
+        }
+        if ($this->new_email) {
+            $this->generateEmailToken();
+        }
+        
+        return $this->save();
+    }
+    
     public function getPodiumName()
     {
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);

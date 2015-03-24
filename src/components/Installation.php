@@ -67,6 +67,11 @@ class Installation extends Component
             'percent' => 88
         ],
         8 => [
+            'table'   => 'user_meta',
+            'call'    => 'createUserMeta',
+            'percent' => 90
+        ],
+        9 => [
             'table'   => 'user',
             'call'    => 'addAdmin',
             'percent' => 100
@@ -76,12 +81,12 @@ class Installation extends Component
     public function init()
     {
         parent::init();
-        
+
         $this->db = Instance::ensure($this->db, Connection::className());
         if ($this->db->driverName === 'mysql') {
             $this->_tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
-        
+
         $this->authManager = Instance::ensure($this->authManager, DbManager::className());
     }
 
@@ -90,8 +95,7 @@ class Installation extends Component
         try {
             (new User())->getTableSchema();
             return true;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
         }
 
@@ -127,10 +131,24 @@ class Installation extends Component
                     'password_hash'        => Schema::TYPE_STRING . ' NOT NULL',
                     'password_reset_token' => Schema::TYPE_STRING,
                     'activation_token'     => Schema::TYPE_STRING,
+                    'email_token'          => Schema::TYPE_STRING,
                     'email'                => Schema::TYPE_STRING . ' NOT NULL',
+                    'new_email'            => Schema::TYPE_STRING,
                     'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+        ]);
+    }
+
+    protected function _createUserMeta($name)
+    {
+        return $this->_createTable($name, [
+                    'id'                   => Schema::TYPE_PK,
+                    'user_id'              => Schema::TYPE_STRING . ' NOT NULL',
+                    'location'             => Schema::TYPE_STRING . '(32) NOT NULL',
+                    'signature'            => Schema::TYPE_STRING . ' NOT NULL',
+                    'gravatar'             => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
         ]);
     }
@@ -193,8 +211,7 @@ class Installation extends Component
         try {
             $this->db->createCommand()->createTable($name, $columns, $this->_tableOptions)->execute();
             return $this->_outputSuccess(Yii::t('podium/flash', 'Table has been created'));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -206,8 +223,7 @@ class Installation extends Component
         try {
             $this->db->createCommand()->createIndex($index, $name, $columns)->execute();
             return $this->_outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -226,9 +242,9 @@ class Installation extends Component
             $admin->generateAuthKey();
             $admin->setPassword('admin');
             if ($admin->save()) {
-                
+
                 $this->authManager->assign($this->authManager->getRole('admin'), $admin->getId());
-        
+
                 return $this->_outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
                                 ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
                                 ' ' . Html::tag('kbd', 'admin') .
@@ -240,8 +256,7 @@ class Installation extends Component
                 return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                                 Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -261,61 +276,61 @@ class Installation extends Component
     protected function _addRules()
     {
         try {
-            $viewThread = $this->authManager->createPermission('viewThread');
+            $viewThread              = $this->authManager->createPermission('viewThread');
             $viewThread->description = 'View thread';
             $this->authManager->add($viewThread);
-            
-            $viewForum = $this->authManager->createPermission('viewForum');
+
+            $viewForum              = $this->authManager->createPermission('viewForum');
             $viewForum->description = 'View forum';
             $this->authManager->add($viewForum);
-            
-            $createThread = $this->authManager->createPermission('createThread');
+
+            $createThread              = $this->authManager->createPermission('createThread');
             $createThread->description = 'Create thread';
             $this->authManager->add($createThread);
-            
-            $createPost = $this->authManager->createPermission('createPost');
+
+            $createPost              = $this->authManager->createPermission('createPost');
             $createPost->description = 'Create post';
             $this->authManager->add($createPost);
-            
+
             $moderatorRule = new ModeratorRule;
             $this->authManager->add($moderatorRule);
-            
-            $updatePost = $this->authManager->createPermission('updatePost');
+
+            $updatePost              = $this->authManager->createPermission('updatePost');
             $updatePost->description = 'Update post';
-            $updatePost->ruleName = $moderatorRule->name;
+            $updatePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($updatePost);
-            
-            $updateThread = $this->authManager->createPermission('updateThread');
+
+            $updateThread              = $this->authManager->createPermission('updateThread');
             $updateThread->description = 'Update thread';
-            $updateThread->ruleName = $moderatorRule->name;
+            $updateThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($updateThread);
-            
+
             $authorRule = new AuthorRule;
             $this->authManager->add($authorRule);
-            
-            $updateOwnThread = $this->authManager->createPermission('updateOwnThread');
+
+            $updateOwnThread              = $this->authManager->createPermission('updateOwnThread');
             $updateOwnThread->description = 'Update own thread';
-            $updateOwnThread->ruleName = $authorRule->name;
+            $updateOwnThread->ruleName    = $authorRule->name;
             $this->authManager->add($updateOwnThread);
             $this->authManager->addChild($updateOwnThread, $updateThread);
-            
-            $updateOwnPost = $this->authManager->createPermission('updateOwnPost');
+
+            $updateOwnPost              = $this->authManager->createPermission('updateOwnPost');
             $updateOwnPost->description = 'Update own post';
-            $updateOwnPost->ruleName = $authorRule->name;
+            $updateOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($updateOwnPost);
             $this->authManager->addChild($updateOwnPost, $updatePost);
-            
-            $deletePost = $this->authManager->createPermission('deletePost');
+
+            $deletePost              = $this->authManager->createPermission('deletePost');
             $deletePost->description = 'Delete post';
-            $deletePost->ruleName = $moderatorRule->name;
+            $deletePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($deletePost);
-            
-            $deleteOwnPost = $this->authManager->createPermission('deleteOwnPost');
+
+            $deleteOwnPost              = $this->authManager->createPermission('deleteOwnPost');
             $deleteOwnPost->description = 'Delete own post';
-            $deleteOwnPost->ruleName = $authorRule->name;
+            $deleteOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($deleteOwnPost);
             $this->authManager->addChild($deleteOwnPost, $deletePost);
-            
+
             $user = $this->authManager->createRole('user');
             $this->authManager->add($user);
             $this->authManager->addChild($user, $viewThread);
@@ -324,26 +339,26 @@ class Installation extends Component
             $this->authManager->addChild($user, $createPost);
             $this->authManager->addChild($user, $updateOwnPost);
             $this->authManager->addChild($user, $deleteOwnPost);
-            
-            $pinThread = $this->authManager->createPermission('pinThread');
+
+            $pinThread              = $this->authManager->createPermission('pinThread');
             $pinThread->description = 'Pin thread';
-            $pinThread->ruleName = $moderatorRule->name;
+            $pinThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($pinThread);
-            
-            $moveThread = $this->authManager->createPermission('moveThread');
+
+            $moveThread              = $this->authManager->createPermission('moveThread');
             $moveThread->description = 'Move thread';
-            $moveThread->ruleName = $moderatorRule->name;
+            $moveThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($moveThread);
-            
-            $movePost = $this->authManager->createPermission('movePost');
+
+            $movePost              = $this->authManager->createPermission('movePost');
             $movePost->description = 'Move post';
-            $movePost->ruleName = $moderatorRule->name;
+            $movePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($movePost);
-            
-            $banUser = $this->authManager->createPermission('banUser');
+
+            $banUser              = $this->authManager->createPermission('banUser');
             $banUser->description = 'Ban user';
             $this->authManager->add($banUser);
-            
+
             $moderator = $this->authManager->createRole('moderator');
             $this->authManager->add($moderator);
             $this->authManager->addChild($moderator, $updatePost);
@@ -354,23 +369,23 @@ class Installation extends Component
             $this->authManager->addChild($moderator, $movePost);
             $this->authManager->addChild($moderator, $banUser);
             $this->authManager->addChild($moderator, $user);
-            
-            $createForum = $this->authManager->createPermission('createForum');
+
+            $createForum              = $this->authManager->createPermission('createForum');
             $createForum->description = 'Create forum';
             $this->authManager->add($createForum);
-            
-            $updateForum = $this->authManager->createPermission('updateForum');
+
+            $updateForum              = $this->authManager->createPermission('updateForum');
             $updateForum->description = 'Update forum';
             $this->authManager->add($updateForum);
-            
-            $deleteForum = $this->authManager->createPermission('deleteForum');
+
+            $deleteForum              = $this->authManager->createPermission('deleteForum');
             $deleteForum->description = 'Delete forum';
             $this->authManager->add($deleteForum);
-            
-            $settings = $this->authManager->createPermission('settings');
+
+            $settings              = $this->authManager->createPermission('settings');
             $settings->description = 'Settings';
             $this->authManager->add($settings);
-            
+
             $admin = $this->authManager->createRole('admin');
             $this->authManager->add($admin);
             $this->authManager->addChild($admin, $createForum);
@@ -378,13 +393,13 @@ class Installation extends Component
             $this->authManager->addChild($admin, $deleteForum);
             $this->authManager->addChild($admin, $settings);
             $this->authManager->addChild($admin, $moderator);
-            
+
             return $this->_outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
+
 }

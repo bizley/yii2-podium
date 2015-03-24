@@ -20,15 +20,22 @@ class AccountController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                'denyCallback' => function () {
+                    return $this->goHome();
+                },
                 'rules' => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function ($rule, $action) {
+                        'matchCallback' => function () {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function ($rule, $action) {
+                        'denyCallback' => function () {
                             return $this->redirect(['install/run']);
                         }
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['new-email']
                     ],
                     [
                         'allow' => true,
@@ -52,13 +59,6 @@ class AccountController extends Controller
                         'model' => $model,
             ]);
         }
-    }
-
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
     }
 
     public function actionRegister()
@@ -218,4 +218,25 @@ class AccountController extends Controller
             return $this->goHome();
         }
     }
+    
+    public function actionNewEmail($token)
+    {
+        $model = User::findByEmailToken($token);
+
+        if ($model) {
+            $model->setScenario('token');
+            if ($model->changeEmail()) {
+                $this->success('Your new e-mail address has been activated.');
+            }
+            else {
+                $this->error('Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.');
+            }
+            return $this->goHome();
+        }
+        else {
+            $this->error('The provided activation token is invalid or expired.');
+            return $this->goHome();
+        }
+    }
+    
 }
