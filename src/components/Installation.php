@@ -26,52 +26,57 @@ class Installation extends Component
     protected $_prefix       = 'podium_';
     protected $_tableOptions = null;
     protected $_tables       = [
-        0 => [
+        [
+            'table'   => 'config',
+            'call'    => 'createConfig',
+            'percent' => 11
+        ],
+        [
             'table'   => 'post',
             'call'    => 'createPost',
             'percent' => 11
         ],
-        1 => [
+        [
             'table'   => 'auth_rule',
             'call'    => 'createAuthRule',
             'percent' => 22
         ],
-        2 => [
+        [
             'table'   => 'auth_item',
             'call'    => 'createAuthItem',
             'percent' => 33
         ],
-        3 => [
+        [
             'table'   => 'auth_item',
             'call'    => 'createAuthItemIndex',
             'percent' => 44
         ],
-        4 => [
+        [
             'table'   => 'auth_item_child',
             'call'    => 'createAuthItemChild',
             'percent' => 55
         ],
-        5 => [
+        [
             'table'   => 'auth_assignment',
             'call'    => 'createAuthAssignment',
             'percent' => 66
         ],
-        6 => [
+        [
             'table'   => 'auth_rule',
             'call'    => 'addRules',
             'percent' => 77
         ],
-        7 => [
+        [
             'table'   => 'user',
             'call'    => 'createUser',
             'percent' => 88
         ],
-        8 => [
+        [
             'table'   => 'user_meta',
             'call'    => 'createUserMeta',
             'percent' => 90
         ],
-        9 => [
+        [
             'table'   => 'user',
             'call'    => 'addAdmin',
             'percent' => 100
@@ -145,11 +150,13 @@ class Installation extends Component
     {
         return $this->_createTable($name, [
                     'id'                   => Schema::TYPE_PK,
-                    'user_id'              => Schema::TYPE_STRING . ' NOT NULL',
+                    'user_id'              => Schema::TYPE_INTEGER . ' NOT NULL',
                     'location'             => Schema::TYPE_STRING . '(32) NOT NULL',
                     'signature'            => Schema::TYPE_STRING . ' NOT NULL',
                     'gravatar'             => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'avatar'               => Schema::TYPE_STRING . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
 
@@ -192,6 +199,15 @@ class Installation extends Component
                     'PRIMARY KEY (parent, child)',
                     'FOREIGN KEY (parent) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
                     'FOREIGN KEY (child) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+    
+    protected function _createConfig($name)
+    {
+        return $this->_createTable($name, [
+                    'name' => Schema::TYPE_STRING . ' NOT NULL',
+                    'value'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'PRIMARY KEY (name)',
         ]);
     }
 

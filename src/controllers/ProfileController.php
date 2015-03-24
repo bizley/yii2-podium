@@ -5,11 +5,9 @@ namespace bizley\podium\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\helpers\Html;
 use yii\helpers\Url;
 use bizley\podium\models\User;
-use bizley\podium\models\LoginForm;
-use bizley\podium\models\ReForm;
+use bizley\podium\models\UserMeta;
 use bizley\podium\behaviors\FlashBehavior;
 
 class ProfileController extends Controller
@@ -55,7 +53,7 @@ class ProfileController extends Controller
         $model = User::findOne(Yii::$app->user->id);
 
         if (empty($model)) {
-            return $this->redirect(['login']);
+            return $this->redirect(['account/login']);
         }
 
         return $this->render('profile', [
@@ -68,7 +66,7 @@ class ProfileController extends Controller
         $model = User::findOne(Yii::$app->user->id);
 
         if (empty($model)) {
-            return $this->redirect(['login']);
+            return $this->redirect(['account/login']);
         }
 
         $model->setScenario('account');
@@ -118,10 +116,10 @@ class ProfileController extends Controller
 
     public function actionForum()
     {
-        $model = User::findOne(Yii::$app->user->id);
+        $model = UserMeta::findOne(Yii::$app->user->id);
 
         if (empty($model)) {
-            return $this->redirect(['login']);
+            return $this->redirect(['account/login']);
         }
 
         return $this->render('forum', [

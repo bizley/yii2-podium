@@ -11,6 +11,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\web\IdentityInterface;
 use bizley\podium\Podium;
+use bizley\podium\models\UserMeta;
 
 /**
  * User model

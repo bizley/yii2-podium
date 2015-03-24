@@ -2,7 +2,5 @@ body {
   padding-top: 20px;
   padding-bottom: 20px;
 }
-
-.navbar {
-  margin-bottom: 20px;
-}
+.navbar { margin-bottom: 20px }
+.note-editor .note-dialog .form-group.row-fluid.note-group-select-from-files { display:none }

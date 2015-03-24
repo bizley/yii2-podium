@@ -16,7 +16,7 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
     </div>
     <div class="col-sm-6">
         <div class="panel panel-default">
-<?php $form = ActiveForm::begin(['id' => 'account-form']); ?>
+<?php $form = ActiveForm::begin(['id' => 'details-form']); ?>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
@@ -37,7 +37,8 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
                             'data-toggle' => 'popover',
                             'data-placement' => 'right',
                             'data-content' => Yii::t('podium/view', 'New e-mail has to be activated first. Activation link will be sent to the new address.'),
-                            'data-trigger' => 'focus'
+                            'data-trigger' => 'focus',
+                            'autocomplete' => 'off'
                         ])->label(Yii::t('podium/view', 'New e-mail')) ?>
                     </div>
                 </div>
@@ -49,7 +50,8 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
                             'data-toggle' => 'popover',
                             'data-placement' => 'right',
                             'data-content' => Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'),
-                            'data-trigger' => 'focus'
+                            'data-trigger' => 'focus',
+                            'autocomplete' => 'off'
                         ])->label(Yii::t('podium/view', 'New password')) ?>
                     </div>
                 </div>
@@ -62,7 +64,7 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
             <div class="panel-footer">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model, 'current_password')->passwordInput()->label(Yii::t('podium/view', 'Current password')) ?>
+                        <?= $form->field($model, 'current_password')->passwordInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Current password')) ?>
                     </div>
                 </div>
                 <div class="row">
