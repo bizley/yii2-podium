@@ -7,7 +7,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\helpers\Url;
 use bizley\podium\models\User;
-use bizley\podium\models\UserMeta;
+use bizley\podium\models\Meta;
 use bizley\podium\behaviors\FlashBehavior;
 
 class ProfileController extends Controller
@@ -116,10 +116,21 @@ class ProfileController extends Controller
 
     public function actionForum()
     {
-        $model = UserMeta::findOne(Yii::$app->user->id);
-
+        $model = Meta::findOne(['user_id' => Yii::$app->user->id]);
+        
         if (empty($model)) {
-            return $this->redirect(['account/login']);
+            $model = new Meta();
+        }
+        
+        if ($model->load(Yii::$app->request->post())) {
+            $model->user_id = Yii::$app->user->id;
+            if ($model->save()) {
+                $this->success('Your profile details have been updated.');
+                return $this->refresh();
+            }
+            else {
+                $model->current_password = null;
+            }
         }
 
         return $this->render('forum', [

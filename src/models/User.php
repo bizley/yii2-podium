@@ -95,6 +95,11 @@ class User extends ActiveRecord implements IdentityInterface
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
         ];
     }
+    
+    public function getMeta()
+    {
+        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
+    }
 
     public function passwordRequirements()
     {
@@ -111,7 +116,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (!$this->hasErrors()) {
             if (!$this->validatePassword($this->current_password)) {
-                $this->addError($attribute, 'Incorrect current password.');
+                $this->addError($attribute, Yii::t('podium/view', 'Current password is incorrect.'));
             }
         }
     }

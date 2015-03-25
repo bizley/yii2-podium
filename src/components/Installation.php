@@ -154,7 +154,8 @@ class Installation extends Component
                     'location'             => Schema::TYPE_STRING . '(32) NOT NULL',
                     'signature'            => Schema::TYPE_STRING . ' NOT NULL',
                     'gravatar'             => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'avatar'               => Schema::TYPE_STRING . ' NOT NULL',
+                    'avatar'               => Schema::TYPE_STRING,
+                    'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);

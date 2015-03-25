@@ -30,14 +30,22 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
                     <div class="col-sm-12">
                         <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Summernote::className(), [
                             'clientOptions' => [
-                                'lang' => Yii::$app->language,
+                                'height' => '100',
+                                'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
+                                'codemirror' => null,
                                 'toolbar' => [
                                     ['style', ['bold', 'italic', 'underline']],
                                     ['para', ['ul', 'ol']],
                                     ['insert', ['link', 'picture']],
-                                ]
-                            ]
+                                ],
+                            ],
                         ]) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="http://gravatar.com" target="_blank" class="pull-right"><?= Yii::t('podium/view', 'What is Gravatar?') ?></a>
+                        <?= $form->field($model, 'gravatar')->checkbox()->label(Yii::t('podium/view', 'Use Gravatar image as avatar')) ?>
                     </div>
                 </div>
                 
