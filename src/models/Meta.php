@@ -6,6 +6,7 @@
 namespace bizley\podium\models;
 
 use Yii;
+use yii\helpers\HtmlPurifier;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use bizley\podium\models\User;
@@ -25,6 +26,7 @@ class Meta extends ActiveRecord
 {
 
     public $current_password;
+    public $image;
 
     /**
      * @inheritdoc
@@ -55,7 +57,10 @@ class Meta extends ActiveRecord
             ['location', 'trim'],        
             ['location', 'validateLocation'],            
             ['gravatar', 'boolean'],
-            ['signature', 'validateSignature'],
+            ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => 500, 'maxHeight' => 500, 'maxSize' => 500 * 1024],
+            ['signature', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process($value, ['HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li', 'Attr.AllowedFrameTargets' => ['_blank']]);
+            }],
         ];
     }
 
@@ -70,14 +75,6 @@ class Meta extends ActiveRecord
             if (!preg_match('/^[\w\s\p{L}]*$/u', $this->location)) {
                 $this->addError($attribute, Yii::t('podium/view', 'Location must contain only letters, digits, underscores and spaces.'));
             }
-        }
-    }
-    
-    public function validateSignature($attribute)
-    {
-        $purified = Yii::$app->formatter->asHtml($this->signature);
-        if ($purified !== $this->signature) {
-            $this->addError($attribute, Yii::t('podium/view', 'Please use only allowed options.'));
         }
     }
     

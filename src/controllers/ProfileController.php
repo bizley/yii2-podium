@@ -6,6 +6,8 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\helpers\Url;
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 use bizley\podium\models\User;
 use bizley\podium\models\Meta;
 use bizley\podium\behaviors\FlashBehavior;
@@ -124,7 +126,34 @@ class ProfileController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = Yii::$app->user->id;
+            $uploadAvatar = false;
+            $path = Yii::getAlias('@webroot/avatars');
+            $avatar = UploadedFile::getInstance($model, 'image');
+            if ($avatar) {
+                $folderExists = true;
+                if (!file_exists($path)) {
+                    if (!FileHelper::createDirectory($path)) {
+                        $folderExists = false;
+                        $this->error('Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.');
+                    }
+                }
+                if ($folderExists) {
+                    if (!empty($model->avatar)) {
+                        if (!unlink($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                            // TODO: log error
+                        }
+                    }
+                    $model->avatar = Yii::$app->security->generateRandomString() . '.' . $avatar->getExtension();
+                    $uploadAvatar = true;
+                }
+            }
+            
             if ($model->save()) {
+                if ($uploadAvatar) {
+                    if (!$avatar->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                        $this->error('Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.');
+                    }
+                }
                 $this->success('Your profile details have been updated.');
                 return $this->refresh();
             }
@@ -134,7 +163,8 @@ class ProfileController extends Controller
         }
 
         return $this->render('forum', [
-                    'model' => $model
+                'model' => $model,
+                'user' => User::findOne(Yii::$app->user->id)
         ]);
     }
 }
