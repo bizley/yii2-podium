@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\web\View;
+use cebe\gravatar\Gravatar;
 use yii\bootstrap\ActiveForm;
 
 $this->title                   = Yii::t('podium/view', 'Account Details');
@@ -75,5 +76,21 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
             </div>
 <?php ActiveForm::end(); ?>
         </div>
+    </div>
+    <div class="col-sm-3">
+<?php if (!empty($model->meta->gravatar)): ?>
+        <?= Gravatar::widget([
+            'email' => $model->email,
+            'defaultImage' => 'identicon',
+            'rating' => 'r',
+            'options' => [
+                'alt' => Yii::t('podium/view', 'Your Gravatar image'),
+                'class' => 'img-circle img-responsive',
+            ]]); ?>
+<?php elseif (!empty($model->avatar)): ?>
+        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
+<?php else: ?>
+        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
+<?php endif; ?>
     </div>
 </div><br>

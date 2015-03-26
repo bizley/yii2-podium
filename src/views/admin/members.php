@@ -8,9 +8,8 @@ use yii\helpers\ArrayHelper;
 use bizley\podium\models\User;
 use bizley\podium\components\Helper;
 
-$this->title                   = Yii::t('podium/view', 'Forum Members');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'),
-    'url'   => ['index']];
+$this->title = Yii::t('podium/view', 'Forum Members');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
@@ -20,8 +19,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 
 <br>
 
-<?=
-GridView::widget([
+<?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
     'tableOptions' => ['class' => 'table table-striped table-hover'],

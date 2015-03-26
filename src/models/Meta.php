@@ -10,6 +10,7 @@ use yii\helpers\HtmlPurifier;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use bizley\podium\models\User;
+use bizley\podium\components\Helper;
 
 /**
  * Meta model
@@ -59,7 +60,7 @@ class Meta extends ActiveRecord
             ['gravatar', 'boolean'],
             ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => 500, 'maxHeight' => 500, 'maxSize' => 500 * 1024],
             ['signature', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, ['HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li', 'Attr.AllowedFrameTargets' => ['_blank']]);
+                return HtmlPurifier::process($value, Helper::podiumPurifier());
             }],
         ];
     }

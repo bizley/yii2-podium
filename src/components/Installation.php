@@ -29,52 +29,62 @@ class Installation extends Component
         [
             'table'   => 'config',
             'call'    => 'createConfig',
-            'percent' => 11
+            'percent' => 5
         ],
         [
-            'table'   => 'post',
-            'call'    => 'createPost',
-            'percent' => 11
+            'table'   => 'message',
+            'call'    => 'createMessage',
+            'percent' => 10
+        ],
+        [
+            'table'   => 'message',
+            'call'    => 'createMessageSenderIndex',
+            'percent' => 15
+        ],
+        [
+            'table'   => 'message',
+            'call'    => 'createMessageReceiverIndex',
+            'percent' => 20
         ],
         [
             'table'   => 'auth_rule',
             'call'    => 'createAuthRule',
-            'percent' => 22
+            'percent' => 25
         ],
         [
             'table'   => 'auth_item',
             'call'    => 'createAuthItem',
-            'percent' => 33
+            'percent' => 30
         ],
         [
             'table'   => 'auth_item',
             'call'    => 'createAuthItemIndex',
-            'percent' => 44
+            'percent' => 35
         ],
         [
             'table'   => 'auth_item_child',
             'call'    => 'createAuthItemChild',
-            'percent' => 55
+            'percent' => 40
         ],
         [
             'table'   => 'auth_assignment',
             'call'    => 'createAuthAssignment',
-            'percent' => 66
+            'percent' => 45
         ],
         [
             'table'   => 'auth_rule',
             'call'    => 'addRules',
-            'percent' => 77
+            'percent' => 50
         ],
         [
             'table'   => 'user',
             'call'    => 'createUser',
-            'percent' => 88
+            'percent' => 55
         ],
         [
             'table'   => 'user_meta',
             'call'    => 'createUserMeta',
-            'percent' => 90
+            'percent' => 60
         ],
         [
             'table'   => 'user',
@@ -119,12 +129,29 @@ class Installation extends Component
         ];
     }
 
-    protected function _createPost($name)
+    protected function _createMessage($name)
     {
         return $this->_createTable($name, [
-                    'id'       => Schema::TYPE_PK,
-                    'username' => Schema::TYPE_STRING . ' NOT NULL',
+                    'id'              => Schema::TYPE_PK,
+                    'sender'          => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'receiver'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'topic'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'content'         => Schema::TYPE_TEXT . ' NOT NULL',
+                    'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'receiver_status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
         ]);
+    }
+    
+    protected function _createMessageSenderIndex($name)
+    {
+        return $this->_createIndex('idx-message-sender', $name, 'sender');
+    }
+    
+    protected function _createMessageReceiverIndex($name)
+    {
+        return $this->_createIndex('idx-message-receiver', $name, 'receiver');
     }
 
     protected function _createUser($name)
@@ -149,14 +176,14 @@ class Installation extends Component
     protected function _createUserMeta($name)
     {
         return $this->_createTable($name, [
-                    'id'                   => Schema::TYPE_PK,
-                    'user_id'              => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'location'             => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'signature'            => Schema::TYPE_STRING . ' NOT NULL',
-                    'gravatar'             => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'avatar'               => Schema::TYPE_STRING,
-                    'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
+                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'avatar'     => Schema::TYPE_STRING,
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
@@ -202,12 +229,12 @@ class Installation extends Component
                     'FOREIGN KEY (child) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
-    
+
     protected function _createConfig($name)
     {
         return $this->_createTable($name, [
-                    'name' => Schema::TYPE_STRING . ' NOT NULL',
-                    'value'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'value' => Schema::TYPE_STRING . ' NOT NULL',
                     'PRIMARY KEY (name)',
         ]);
     }

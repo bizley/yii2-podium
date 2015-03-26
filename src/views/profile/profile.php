@@ -1,15 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Url;
-//use yii\web\View;
-use yii\bootstrap\ActiveForm;
 use bizley\podium\components\Helper;
+use cebe\gravatar\Gravatar;
 
 $this->title                   = Yii::t('podium/view', 'My Profile');
 $this->params['breadcrumbs'][] = $this->title;
 
-//$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
 ?>
 <div class="row">
     <div class="col-sm-3">
@@ -18,6 +15,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-9">
         <div class="panel panel-default">
             <div class="panel-body">
+<?php if (!empty($model->meta->gravatar)): ?>
+                <?= Gravatar::widget([
+                    'email' => $model->email,
+                    'defaultImage' => 'identicon',
+                    'rating' => 'r',
+                    'options' => [
+                        'alt' => Html::encode($model->getPodiumName()),
+                        'class' => 'podium-avatar img-circle img-responsive pull-right',
+                ]]); ?>
+<?php elseif (!empty($model->meta->avatar)): ?>
+                <img class="podium-avatar img-circle img-responsive pull-right" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Html::encode($model->getPodiumName()) ?>">
+<?php else: ?>
+                <img class="podium-avatar img-circle img-responsive pull-right" src="<?= Helper::defaultAvatar() ?>" alt="<?= Html::encode($model->getPodiumName()) ?>">
+<?php endif; ?>
                 <h2>
                     <?= Html::encode($model->getPodiumName()) ?> 
                     <small>
