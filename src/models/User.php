@@ -5,13 +5,13 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Helper;
+use bizley\podium\Podium;
 use Yii;
-use yii\db\ActiveRecord;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use bizley\podium\Podium;
-use bizley\podium\models\UserMeta;
 
 /**
  * User model
@@ -428,5 +428,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function getPodiumName()
     {
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
+    }
+    
+    public function getPodiumTag()
+    {
+        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id);
     }
 }

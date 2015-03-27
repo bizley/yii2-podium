@@ -133,8 +133,8 @@ class Installation extends Component
     {
         return $this->_createTable($name, [
                     'id'              => Schema::TYPE_PK,
-                    'sender'          => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'receiver'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'receiver_id'     => Schema::TYPE_INTEGER . ' NOT NULL',
                     'topic'           => Schema::TYPE_STRING . ' NOT NULL',
                     'content'         => Schema::TYPE_TEXT . ' NOT NULL',
                     'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
@@ -146,12 +146,12 @@ class Installation extends Component
     
     protected function _createMessageSenderIndex($name)
     {
-        return $this->_createIndex('idx-message-sender', $name, 'sender');
+        return $this->_createIndex('idx-message-sender_id', $name, 'sender_id');
     }
     
     protected function _createMessageReceiverIndex($name)
     {
-        return $this->_createIndex('idx-message-receiver', $name, 'receiver');
+        return $this->_createIndex('idx-message-receiver_id', $name, 'receiver_id');
     }
 
     protected function _createUser($name)

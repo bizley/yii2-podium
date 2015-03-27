@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\web\View;
 use cebe\gravatar\Gravatar;
 use yii\bootstrap\ActiveForm;
+use bizley\podium\components\Helper;
 
 $this->title                   = Yii::t('podium/view', 'Account Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];

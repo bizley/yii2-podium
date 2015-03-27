@@ -2,11 +2,11 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\MessageSearch;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use bizley\podium\models\Message;
-use bizley\podium\behaviors\FlashBehavior;
 
 class MessagesController extends Controller
 {
@@ -41,10 +41,32 @@ class MessagesController extends Controller
 
     public function actionInbox()
     {
-        $searchModel  = new Message();
-        $dataProvider = $searchModel->search(['receiver' => Yii::$app->user->id], Yii::$app->request->get());
+        $searchModel  = new MessageSearch();
+        $dataProvider = $searchModel->searchInbox(Yii::$app->request->get());
         
         return $this->render('inbox', [
+                'dataProvider' => $dataProvider,
+                'searchModel'  => $searchModel
+        ]);
+    }
+    
+    public function actionSent()
+    {
+        $searchModel  = new MessageSearch();
+        $dataProvider = $searchModel->searchSent(Yii::$app->request->get());
+        
+        return $this->render('sent', [
+                'dataProvider' => $dataProvider,
+                'searchModel'  => $searchModel
+        ]);
+    }
+    
+    public function actionDeleted()
+    {
+        $searchModel  = new MessageSearch();
+        $dataProvider = $searchModel->searchDeleted(Yii::$app->request->get());
+        
+        return $this->render('deleted', [
                 'dataProvider' => $dataProvider,
                 'searchModel'  => $searchModel
         ]);

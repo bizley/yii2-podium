@@ -2,11 +2,11 @@
 
 namespace bizley\podium;
 
-use Yii;
-use yii\base\Module;
-use yii\base\BootstrapInterface;
-use yii\web\GroupUrlRule;
 use bizley\podium\components\Installation;
+use Yii;
+use yii\base\BootstrapInterface;
+use yii\base\Module;
+use yii\web\GroupUrlRule;
 
 class Podium extends Module implements BootstrapInterface
 {
@@ -37,6 +37,10 @@ class Podium extends Module implements BootstrapInterface
                     'admin/ban/<id:\d+>'        => 'admin/ban',
                     'admin'                     => 'admin/index',
                     'profile'                   => 'profile/index',
+                    'messages/view/<id:\d+>'    => 'messages/view',
+                    'messages/reply/<id:\d+>'   => 'messages/reply',
+                    'messages/delete/<id:\d+>'  => 'messages/delete',
+                    'users/view/<id:\d+>'       => 'users/view',
                 ],
                     ])
                 ], false);

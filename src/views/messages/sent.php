@@ -7,7 +7,7 @@ use bizley\podium\models\Message;
 use yii\web\View;
 use yii\grid\ActionColumn;
 
-$this->title                   = Yii::t('podium/view', 'Messages Inbox');
+$this->title                   = Yii::t('podium/view', 'Sent Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -20,7 +20,7 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
     </div>
     <div class="col-sm-9">
         
-        <?= $this->render('/elements/messages/_navbar', ['active' => 'inbox']) ?>
+        <?= $this->render('/elements/messages/_navbar', ['active' => 'sent']) ?>
         
         <br>
         
@@ -28,17 +28,14 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
     'tableOptions' => ['class' => 'table table-striped table-hover'],
-    'rowOptions'   => function($model) {
-        return $model->receiver_status == Message::STATUS_NEW ? ['class' => 'warning'] : null;
-    },
     'columns'      => [
         [
-            'attribute'          => 'senderName',
-            'label'              => Yii::t('podium/view', 'From') . Helper::sortOrder('senderName'),
+            'attribute'          => 'receiverName',
+            'label'              => Yii::t('podium/view', 'To') . Helper::sortOrder('receiverName'),
             'encodeLabel'        => false,
             'format'             => 'raw',
             'value'              => function($model) {
-                return $model->getSenderName();
+                return $model->getReceiverName();
             }
         ],
         [

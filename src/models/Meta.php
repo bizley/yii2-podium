@@ -60,7 +60,7 @@ class Meta extends ActiveRecord
             ['gravatar', 'boolean'],
             ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => 500, 'maxHeight' => 500, 'maxSize' => 500 * 1024],
             ['signature', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifier());
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
             }],
         ];
     }
