@@ -113,4 +113,8 @@ class Podium extends Module implements BootstrapInterface
         return $params[$name];
     }
 
+    public function goPodium()
+    {
+        return Yii::$app->getResponse()->redirect(['podium/default/index']);
+    }
 }
