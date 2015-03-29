@@ -38,7 +38,10 @@ class Forum extends ActiveRecord
     {
         return [
             TimestampBehavior::className(),
-            SluggableBehavior::className(),
+            [
+                'class' => SluggableBehavior::className(),
+                'attribute' => 'name'
+            ]
         ];
     }
 

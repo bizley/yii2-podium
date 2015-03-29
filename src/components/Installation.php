@@ -482,7 +482,7 @@ class Installation extends Component
      */
     protected function _createMessageReceiverIndex($name)
     {
-        return $this->_createIndex('idx-podium_message-receiver', $name, 'receiver');
+        return $this->_createIndex('idx-podium_message-receiver_id', $name, 'receiver_id');
     }
 
     /**
@@ -492,7 +492,7 @@ class Installation extends Component
      */
     protected function _createMessageSenderIndex($name)
     {
-        return $this->_createIndex('idx-podium_message-sender', $name, 'sender');
+        return $this->_createIndex('idx-podium_message-sender_id', $name, 'sender_id');
     }
 
     /**

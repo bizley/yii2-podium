@@ -8,7 +8,6 @@ namespace bizley\podium\models;
 use bizley\podium\components\Helper;
 use Exception;
 use Yii;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -46,7 +45,6 @@ class Post extends ActiveRecord
     {
         return [
             TimestampBehavior::className(),
-            SluggableBehavior::className(),
         ];
     }
 

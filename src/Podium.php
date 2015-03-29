@@ -7,12 +7,14 @@ use yii\base\Module;
 use yii\base\BootstrapInterface;
 use yii\web\GroupUrlRule;
 use bizley\podium\components\Installation;
+use bizley\podium\components\Config;
 
 class Podium extends Module implements BootstrapInterface
 {
 
     public $params;
     public $controllerNamespace = 'bizley\podium\controllers';
+    protected $_config;
     protected $_installed       = false;
 
     public function bootstrap($app)
@@ -116,5 +118,14 @@ class Podium extends Module implements BootstrapInterface
     public function goPodium()
     {
         return Yii::$app->getResponse()->redirect(['podium/default/index']);
+    }
+    
+    public function getConfig()
+    {
+        if (!$this->_config) {
+            $this->_config = Config::getInstance();
+        }
+        
+        return $this->_config;
     }
 }

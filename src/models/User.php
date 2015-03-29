@@ -63,7 +63,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            SluggableBehavior::className(),
+            [
+                'class' => SluggableBehavior::className(),
+                'attribute' => 'username'
+            ]
         ];
     }
 
