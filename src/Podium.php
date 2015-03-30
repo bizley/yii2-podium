@@ -2,13 +2,12 @@
 
 namespace bizley\podium;
 
+use bizley\podium\components\Config;
 use bizley\podium\components\Installation;
 use Yii;
 use yii\base\BootstrapInterface;
 use yii\base\Module;
 use yii\web\GroupUrlRule;
-use bizley\podium\components\Installation;
-use bizley\podium\components\Config;
 
 class Podium extends Module implements BootstrapInterface
 {

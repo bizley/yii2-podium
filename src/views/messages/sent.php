@@ -1,11 +1,10 @@
 <?php
 
-use yii\helpers\Html;
-use yii\grid\GridView;
 use bizley\podium\components\Helper;
-use bizley\podium\models\Message;
-use yii\web\View;
 use yii\grid\ActionColumn;
+use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\web\View;
 
 $this->title                   = Yii::t('podium/view', 'Sent Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];

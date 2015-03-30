@@ -1,12 +1,12 @@
 <?php
 
+use bizley\podium\components\Helper;
+use cebe\gravatar\Gravatar;
+use kartik\file\FileInput;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
-use yii\bootstrap\ActiveForm;
-use kartik\file\FileInput;
-use cebe\gravatar\Gravatar;
 use Zelenin\yii\widgets\Summernote\Summernote;
-use bizley\podium\components\Helper;
 
 $this->title                   = Yii::t('podium/view', 'Forum Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];

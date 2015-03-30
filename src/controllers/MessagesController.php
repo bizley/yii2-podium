@@ -3,6 +3,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
 use Yii;
 use yii\filters\AccessControl;
@@ -69,6 +70,15 @@ class MessagesController extends Controller
         return $this->render('deleted', [
                 'dataProvider' => $dataProvider,
                 'searchModel'  => $searchModel
+        ]);
+    }
+    
+    public function actionNew()
+    {
+        $model = new Message();
+        
+        return $this->render('new', [
+                'model' => $model
         ]);
     }
 }

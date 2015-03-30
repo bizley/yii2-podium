@@ -14,7 +14,7 @@ $js = "var nextStep = function(step){
         jQuery('#installationError').removeClass('hide');
     }).done(function(data){
         jQuery('#progressBar .progress-bar').css('width', data.percent+'%').attr('aria-valuenow', data.percent).html(data.percent+'%');
-        jQuery('#installationProgress .list-group').append('<li class=\"list-group-item\"><strong>'+data.table+'</strong> '+data.result+'</li>');
+        jQuery('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>'+data.table+'</strong> '+data.result+'</li>');
         if (data.percent < 100) nextStep(++step);
         else {
             jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
