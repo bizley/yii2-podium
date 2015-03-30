@@ -206,6 +206,7 @@ class AccountController extends Controller
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
+                Yii::$app->cache->delete('podium.members.fieldlist');
                 $this->success('Your account has been activated.');
             }
             else {

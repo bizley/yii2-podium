@@ -17,7 +17,7 @@ else {
     }
     $items[] = [
         'label' => Yii::t('podium/layout', 'Profile'), 
-        'url' => ['account/profile'],
+        'url' => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
             ['label' => Yii::t('podium/view', 'Account Details'), 'url' => ['profile/details']],

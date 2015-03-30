@@ -1,7 +1,9 @@
 <?php
 
+use bizley\ajaxdropdown\AjaxDropdown;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
@@ -26,7 +28,21 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
             <div class="row">
                 <div class="col-sm-3 text-right"><?= Yii::t('podium/view', 'Send to') ?></div>
                 <div class="col-sm-8">
-                    <?= $form->field($model, 'receiver_id')->textInput(['placeholder' => Yii::t('podium/view', 'User Name or E-mail')])->label(false) ?>
+                    <?= $form->field($model, 'receiver_id')->widget(AjaxDropdown::classname(), [
+                        'source' => Url::to(['members/fieldlist']),
+                        ])->label(false); ?>
+                    <?php /*= $form->field($model, 'receiver_id')->widget(Typeahead::classname(), [
+                        'options' => ['placeholder' => Yii::t('podium/view', 'Filter as you type...')],
+                        'scrollable' => true,
+                        'pluginOptions' => ['highlight' => true],
+                        'dataset' => [
+                            [
+                                'displayKey' => 'id',
+                                'remote' => Url::to(['members/fieldlist']) . '?q=%QUERY',
+                                'limit' => 10,
+                            ]
+                        ]
+                    ])->label(false);*/ ?>
                 </div>
             </div>
             <div class="row">

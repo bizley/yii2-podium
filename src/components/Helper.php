@@ -77,7 +77,7 @@ class Helper
         return self::podiumUserTag('', 0);
     }
     
-    public static function podiumUserTag($name, $role, $id = null)
+    public static function podiumUserTag($name, $role, $id = null, $simple = false)
     {
         $icon = Html::tag('span', '', ['class' => $id ? 'glyphicon glyphicon-user' : 'glyphicon glyphicon-ban-circle']);
         $url = $id ? ['users/view', 'id' => $id] : '#';
@@ -96,6 +96,10 @@ class Helper
                 $colourClass = 'text-success';
         }
         $encodedName = Html::tag('span', $icon . ' ' . ($id ? Html::encode($name) : Yii::t('podium/view', 'user deleted')), ['class' => $colourClass]);
+        
+        if ($simple) {
+            return $encodedName;
+        }
         
         return Html::a($encodedName, $url, ['class' => 'btn btn-xs btn-default']);
     }

@@ -452,8 +452,8 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
     }
     
-    public function getPodiumTag()
+    public function getPodiumTag($simple = false)
     {
-        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id);
+        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $simple);
     }
 }
