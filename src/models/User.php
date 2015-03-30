@@ -9,6 +9,7 @@ use bizley\podium\components\Helper;
 use bizley\podium\Podium;
 use Yii;
 use yii\base\NotSupportedException;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
@@ -17,6 +18,8 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
+ * @property string $username
+ * @property string $slug
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $activation_token
@@ -29,6 +32,7 @@ use yii\web\IdentityInterface;
  * @property string $current_password write-only password
  * @property string $password write-only password
  * @property string $password_repeat write-only password repeated
+ * @property integer $tos write-only terms of service agreement
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -60,6 +64,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => SluggableBehavior::className(),
+                'attribute' => 'username'
+            ]
         ];
     }
 
@@ -88,12 +96,26 @@ class User extends ActiveRecord implements IdentityInterface
             ['new_email', 'unique', 'targetAttribute' => 'email'],
             ['password', 'passwordRequirements'],
             ['password', 'compare'],
-            ['username', 'match', 'pattern' => '/^[a-z]\w{2,}$/i', 'message' => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.')],
             ['username', 'unique'],
+            ['username', 'validateUsername'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
         ];
+    }
+    
+    /**
+     * Validates username
+     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
+     * @param string $attribute
+     */
+    public function validateUsername($attribute)
+    {
+        if (!$this->hasErrors()) {
+            if (!preg_match('/^[\p{L}][\w\p{L}]{2,254}$/u', $this->username)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'));
+            }
+        }
     }
     
     public function getMeta()

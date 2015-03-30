@@ -47,7 +47,7 @@ class ProfileController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->module->goPodium();
     }
 
     public function actionIndex()

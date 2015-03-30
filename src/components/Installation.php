@@ -2,39 +2,99 @@
 
 namespace bizley\podium\components;
 
-use Yii;
-use yii\base\Component;
-use yii\di\Instance;
-use yii\db\Schema;
-use yii\db\Connection;
-use yii\helpers\VarDumper;
-use yii\helpers\Html;
-use yii\rbac\DbManager;
+/**
+ * Podium Installation class
+ * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
+ * @version 1.0
+ */
 use bizley\podium\models\User;
 use bizley\podium\rbac\AuthorRule;
 use bizley\podium\rbac\ModeratorRule;
+use Exception;
+use Yii;
+use yii\base\Component;
+use yii\db\Connection;
+use yii\db\Schema;
+use yii\di\Instance;
+use yii\helpers\Html;
+use yii\helpers\VarDumper;
+use yii\rbac\DbManager;
 
 /**
+ * @property DbManager $authManager Authorization Manager
  * @property Connection $db Database connection
  */
 class Installation extends Component
 {
 
-    public $db               = 'db';
-    public $authManager      = 'authManager';
-    protected $_errors       = false;
-    protected $_prefix       = 'podium_';
+    /**
+     * @var Connection Database connection.
+     */
+    public $db = 'db';
+
+    /**
+     * @var DbManager Authorization Manager.
+     */
+    public $authManager = 'authManager';
+
+    /**
+     * @var boolean Errors flag.
+     */
+    protected $_errors = false;
+
+    /**
+     * @var string Podium database prefix.
+     */
+    protected $_prefix = 'podium_';
+
+    /**
+     * @var string Additional SQL fragment that will be appended to the generated SQL.
+     */
     protected $_tableOptions = null;
-    protected $_tables       = [
+
+    /**
+     * @var array Installation steps.
+     */
+    protected $_steps = [
         [
             'table'   => 'config',
             'call'    => 'createConfig',
             'percent' => 5
         ],
         [
+            'table'   => 'forum',
+            'call'    => 'createForum',
+            'percent' => 6
+        ],
+        [
+            'table'   => 'thread',
+            'call'    => 'createThread',
+            'percent' => 7
+        ],
+        [
+            'table'   => 'post',
+            'call'    => 'createPost',
+            'percent' => 8
+        ],
+        [
+            'table'   => 'vocabulary',
+            'call'    => 'createVocabulary',
+            'percent' => 9
+        ],
+        [
+            'table'   => 'vocabulary',
+            'call'    => 'createVocabularyIndex',
+            'percent' => 10
+        ],
+        [
+            'table'   => 'vocabulary_junction',
+            'call'    => 'createVocabularyJunction',
+            'percent' => 11
+        ],
+        [
             'table'   => 'message',
             'call'    => 'createMessage',
-            'percent' => 10
+            'percent' => 12
         ],
         [
             'table'   => 'message',
@@ -93,187 +153,10 @@ class Installation extends Component
         ],
     ];
 
-    public function init()
-    {
-        parent::init();
-
-        $this->db = Instance::ensure($this->db, Connection::className());
-        if ($this->db->driverName === 'mysql') {
-            $this->_tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        }
-
-        $this->authManager = Instance::ensure($this->authManager, DbManager::className());
-    }
-
-    public static function check()
-    {
-        try {
-            (new User())->getTableSchema();
-            return true;
-        } catch (\Exception $e) {
-            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-        }
-
-        return false;
-    }
-
-    public function step($step)
-    {
-        $proceed = $this->{'_' . $this->_tables[$step]['call']}('{{%' . $this->_prefix . $this->_tables[$step]['table'] . '}}');
-
-        return [
-            'table'   => $this->_prefix . $this->_tables[$step]['table'],
-            'percent' => $this->_tables[$step]['percent'],
-            'result'  => $proceed,
-            'error'   => $this->_errors
-        ];
-    }
-
-    protected function _createMessage($name)
-    {
-        return $this->_createTable($name, [
-                    'id'              => Schema::TYPE_PK,
-                    'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'receiver_id'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'topic'           => Schema::TYPE_STRING . ' NOT NULL',
-                    'content'         => Schema::TYPE_TEXT . ' NOT NULL',
-                    'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'receiver_status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
-        ]);
-    }
-    
-    protected function _createMessageSenderIndex($name)
-    {
-        return $this->_createIndex('idx-message-sender_id', $name, 'sender_id');
-    }
-    
-    protected function _createMessageReceiverIndex($name)
-    {
-        return $this->_createIndex('idx-message-receiver_id', $name, 'receiver_id');
-    }
-
-    protected function _createUser($name)
-    {
-        return $this->_createTable($name, [
-                    'id'                   => Schema::TYPE_PK,
-                    'username'             => Schema::TYPE_STRING . ' NOT NULL',
-                    'auth_key'             => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'password_hash'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'password_reset_token' => Schema::TYPE_STRING,
-                    'activation_token'     => Schema::TYPE_STRING,
-                    'email_token'          => Schema::TYPE_STRING,
-                    'email'                => Schema::TYPE_STRING . ' NOT NULL',
-                    'new_email'            => Schema::TYPE_STRING,
-                    'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
-        ]);
-    }
-
-    protected function _createUserMeta($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
-                    'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'avatar'     => Schema::TYPE_STRING,
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    protected function _createAuthRule($name)
-    {
-        return $this->_createTable($name, [
-                    'name'       => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'data'       => Schema::TYPE_TEXT,
-                    'created_at' => Schema::TYPE_INTEGER,
-                    'updated_at' => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (name)',
-        ]);
-    }
-
-    protected function _createAuthItem($name)
-    {
-        return $this->_createTable($name, [
-                    'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'description' => Schema::TYPE_TEXT,
-                    'rule_name'   => Schema::TYPE_STRING . '(64)',
-                    'data'        => Schema::TYPE_TEXT,
-                    'created_at'  => Schema::TYPE_INTEGER,
-                    'updated_at'  => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (name)',
-                    'FOREIGN KEY (rule_name) REFERENCES {{%podium_auth_rule}} (name) ON DELETE SET NULL ON UPDATE CASCADE',
-        ]);
-    }
-
-    protected function _createAuthItemIndex($name)
-    {
-        return $this->_createIndex('idx-auth_item-type', $name, 'type');
-    }
-
-    protected function _createAuthItemChild($name)
-    {
-        return $this->_createTable($name, [
-                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'PRIMARY KEY (parent, child)',
-                    'FOREIGN KEY (parent) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (child) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    protected function _createConfig($name)
-    {
-        return $this->_createTable($name, [
-                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
-                    'value' => Schema::TYPE_STRING . ' NOT NULL',
-                    'PRIMARY KEY (name)',
-        ]);
-    }
-
-    protected function _createAuthAssignment($name)
-    {
-        return $this->_createTable($name, [
-                    'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'created_at' => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (item_name, user_id)',
-                    'FOREIGN KEY (item_name) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    protected function _createTable($name, $columns)
-    {
-        try {
-            $this->db->createCommand()->createTable($name, $columns, $this->_tableOptions)->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Table has been created'));
-        } catch (\Exception $e) {
-            $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
-        }
-    }
-
-    protected function _createIndex($index, $name, $columns)
-    {
-        try {
-            $this->db->createCommand()->createIndex($index, $name, $columns)->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
-        } catch (\Exception $e) {
-            $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
-        }
-    }
-
+    /**
+     * Adds Administrator account.
+     * @return string Result message.
+     */
     protected function _addAdmin()
     {
         try {
@@ -300,23 +183,18 @@ class Installation extends Component
                 return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                                 Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
-        } catch (\Exception $e) {
+        }
+        catch (Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
-    protected function _outputSuccess($content)
-    {
-        return Html::tag('span', $content, ['class' => 'text-success']);
-    }
-
-    protected function _outputDanger($content)
-    {
-        return Html::tag('span', $content, ['class' => 'text-danger']);
-    }
-
+    /**
+     * Adds permission rules.
+     * @return string Result message.
+     */
     protected function _addRules()
     {
         try {
@@ -439,11 +317,396 @@ class Installation extends Component
             $this->authManager->addChild($admin, $moderator);
 
             return $this->_outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
-        } catch (\Exception $e) {
+        }
+        catch (Exception $e) {
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
+    }
+
+    /**
+     * Creates Authorization Assignment database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createAuthAssignment($name)
+    {
+        return $this->_createTable($name, [
+                    'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'created_at' => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (item_name, user_id)',
+                    'FOREIGN KEY (item_name) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates Authorization Item database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createAuthItem($name)
+    {
+        return $this->_createTable($name, [
+                    'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'description' => Schema::TYPE_TEXT,
+                    'rule_name'   => Schema::TYPE_STRING . '(64)',
+                    'data'        => Schema::TYPE_TEXT,
+                    'created_at'  => Schema::TYPE_INTEGER,
+                    'updated_at'  => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (name)',
+                    'FOREIGN KEY (rule_name) REFERENCES {{%podium_auth_rule}} (name) ON DELETE SET NULL ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates Authorization Item Child database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createAuthItemChild($name)
+    {
+        return $this->_createTable($name, [
+                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'PRIMARY KEY (parent, child)',
+                    'FOREIGN KEY (parent) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (child) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates Authorization Item database table index.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createAuthItemIndex($name)
+    {
+        return $this->_createIndex('idx-podium_auth_item-type', $name, 'type');
+    }
+
+    /**
+     * Creates Authorization Rule database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createAuthRule($name)
+    {
+        return $this->_createTable($name, [
+                    'name'       => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'data'       => Schema::TYPE_TEXT,
+                    'created_at' => Schema::TYPE_INTEGER,
+                    'updated_at' => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (name)',
+        ]);
+    }
+
+    /**
+     * Creates Config database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createConfig($name)
+    {
+        return $this->_createTable($name, [
+                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'value' => Schema::TYPE_STRING . ' NOT NULL',
+                    'PRIMARY KEY (name)',
+        ]);
+    }
+
+    /**
+     * Creates Forum database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createForum($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+        ]);
+    }
+
+    /**
+     * Creates database table index.
+     * @param string $index Index name.
+     * @param string $name Table name.
+     * @param string|array Table columns.
+     * @return string Result message.
+     */
+    protected function _createIndex($index, $name, $columns)
+    {
+        try {
+            $this->db->createCommand()->createIndex($index, $name, $columns)->execute();
+            return $this->_outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
+        }
+        catch (Exception $e) {
+            $this->_errors = true;
+            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
+                            Html::tag('pre', $e->getMessage()));
+        }
+    }
+
+    /**
+     * Creates Message database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createMessage($name)
+    {
+        return $this->_createTable($name, [
+                    'id'              => Schema::TYPE_PK,
+                    'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'receiver_id'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'topic'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'content'         => Schema::TYPE_TEXT . ' NOT NULL',
+                    'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'receiver_status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'replyto'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
+        ]);
+    }
+
+    /**
+     * Creates Message database table index.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createMessageReceiverIndex($name)
+    {
+        return $this->_createIndex('idx-podium_message-receiver_id', $name, 'receiver_id');
+    }
+
+    /**
+     * Creates Message database table index.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createMessageSenderIndex($name)
+    {
+        return $this->_createIndex('idx-podium_message-sender_id', $name, 'sender_id');
+    }
+
+    /**
+     * Creates Post database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createPost($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                    'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (thread_id) REFERENCES {{%podium_thread}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates database table.
+     * @param string $name Table name.
+     * @param array $columns Table columns.
+     * @return string Result message.
+     */
+    protected function _createTable($name, $columns)
+    {
+        try {
+            $this->db->createCommand()->createTable($name, $columns, $this->_tableOptions)->execute();
+            return $this->_outputSuccess(Yii::t('podium/flash', 'Table has been created'));
+        }
+        catch (Exception $e) {
+            $this->_errors = true;
+            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
+                            Html::tag('pre', $e->getMessage()));
+        }
+    }
+
+    /**
+     * Creates Thread database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createThread($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'pinned'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates User database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUser($name)
+    {
+        return $this->_createTable($name, [
+                    'id'                   => Schema::TYPE_PK,
+                    'username'             => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'                 => Schema::TYPE_STRING . ' NOT NULL',
+                    'auth_key'             => Schema::TYPE_STRING . '(32) NOT NULL',
+                    'password_hash'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'password_reset_token' => Schema::TYPE_STRING,
+                    'activation_token'     => Schema::TYPE_STRING,
+                    'email_token'          => Schema::TYPE_STRING,
+                    'email'                => Schema::TYPE_STRING . ' NOT NULL',
+                    'new_email'            => Schema::TYPE_STRING,
+                    'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
+        ]);
+    }
+
+    /**
+     * Creates User Meta database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUserMeta($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
+                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'avatar'     => Schema::TYPE_STRING,
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates Vocabulary database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createVocabulary($name)
+    {
+        return $this->_createTable($name, [
+                    'id'   => Schema::TYPE_PK,
+                    'word' => Schema::TYPE_STRING . ' NOT NULL',
+        ]);
+    }
+    
+    /**
+     * Creates Vocabulary database table index.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createVocabularyIndex($name)
+    {
+        return $this->_createIndex('idx-podium_vocabulary-word', $name, 'word');
+    }
+
+    /**
+     * Creates Vocabulary Junction database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createVocabularyJunction($name)
+    {
+        return $this->_createTable($name, [
+                    'id'      => Schema::TYPE_PK,
+                    'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (word_id) REFERENCES {{%podium_vocabulary}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (post_id) REFERENCES {{%podium_post}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Prepares error message.
+     * @param string $content Message content.
+     * @return string Prepared message.
+     */
+    protected function _outputDanger($content)
+    {
+        return Html::tag('span', $content, ['class' => 'text-danger']);
+    }
+
+    /**
+     * Prepares success message.
+     * @param string $content Message content.
+     * @return string Prepared message.
+     */
+    protected function _outputSuccess($content)
+    {
+        return Html::tag('span', $content, ['class' => 'text-success']);
+    }
+
+    /**
+     * Checks if User database table exists.
+     * @return boolean Wheter User database exists.
+     */
+    public static function check()
+    {
+        try {
+            (new User())->getTableSchema();
+            return true;
+        }
+        catch (Exception $e) {
+            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+        }
+
+        return false;
+    }
+
+    /**
+     * Initialise component.
+     */
+    public function init()
+    {
+        parent::init();
+
+        $this->db = Instance::ensure($this->db, Connection::className());
+        if ($this->db->driverName === 'mysql') {
+            $this->_tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+        }
+
+        $this->authManager = Instance::ensure($this->authManager, DbManager::className());
+    }
+
+    /**
+     * Starts next step of installation.
+     * @param integer $step Step number.
+     * @return array Step data.   
+     */
+    public function step($step)
+    {
+        $proceed = $this->{'_' . $this->_steps[$step]['call']}('{{%' . $this->_prefix . $this->_steps[$step]['table'] . '}}');
+
+        return [
+            'table'   => $this->_prefix . $this->_steps[$step]['table'],
+            'percent' => $this->_steps[$step]['percent'],
+            'result'  => $proceed,
+            'error'   => $this->_errors
+        ];
     }
 
 }

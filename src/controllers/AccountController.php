@@ -21,7 +21,7 @@ class AccountController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'denyCallback' => function () {
-                    return $this->goHome();
+                    return $this->module->goPodium();
                 },
                 'rules' => [
                     [
@@ -52,7 +52,7 @@ class AccountController extends Controller
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->module->goPodium();
         }
         else {
             return $this->render('login', [
@@ -85,7 +85,7 @@ class AccountController extends Controller
                     ]);
                 }
 
-                return $this->goBack();
+                return $this->module->goPodium();
             }
             catch (\Exception $e) {
                 $this->warning('Your account has been created but it is not active yet. '
@@ -124,7 +124,7 @@ class AccountController extends Controller
                         $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
                     }
 
-                    return $this->goBack();
+                    return $this->module->goPodium();
                 }
                 catch (\Exception $e) {
                     $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
@@ -161,7 +161,7 @@ class AccountController extends Controller
                         $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
                     }
 
-                    return $this->goBack();
+                    return $this->module->goPodium();
                 }
                 catch (\Exception $e) {
                     $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
@@ -185,7 +185,7 @@ class AccountController extends Controller
             $model->setScenario('passwordChange');
             if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
                 $this->success('Your account password has been changed.');
-                return $this->goHome();
+                return $this->module->goPodium();
             }
             else {
                 return $this->render('password', [
@@ -195,7 +195,7 @@ class AccountController extends Controller
         }
         else {
             $this->error('The provided password reset token is invalid or expired.');
-            return $this->goHome();
+            return $this->module->goPodium();
         }
     }
 
@@ -211,11 +211,11 @@ class AccountController extends Controller
             else {
                 $this->error('Sorry! There was some error while activating your account. Contact administrator about this problem.');
             }
-            return $this->goHome();
+            return $this->module->goPodium();
         }
         else {
             $this->error('The provided activation token is invalid or expired.');
-            return $this->goHome();
+            return $this->module->goPodium();
         }
     }
     
@@ -231,11 +231,11 @@ class AccountController extends Controller
             else {
                 $this->error('Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.');
             }
-            return $this->goHome();
+            return $this->module->goPodium();
         }
         else {
             $this->error('The provided activation token is invalid or expired.');
-            return $this->goHome();
+            return $this->module->goPodium();
         }
     }
     

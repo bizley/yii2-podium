@@ -73,8 +73,8 @@ class Meta extends ActiveRecord
     public function validateLocation($attribute)
     {
         if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\s\p{L}]*$/u', $this->location)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Location must contain only letters, digits, underscores and spaces.'));
+            if (!preg_match('/^[\w\s\p{L}]{0,32}$/u', $this->location)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Location must contain only letters, digits, underscores and spaces (32 characters max).'));
             }
         }
     }
