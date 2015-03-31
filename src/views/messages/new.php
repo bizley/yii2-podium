@@ -26,33 +26,23 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
         
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
-                <div class="col-sm-3 text-right"><?= Yii::t('podium/view', 'Send to') ?></div>
+                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
                 <div class="col-sm-8">
                     <?= $form->field($model, 'receiver_id')->widget(AjaxDropdown::classname(), [
                         'source' => Url::to(['members/fieldlist']),
+                        'singleMode' => true,
+                        'inputOptions' => ['placeholder' => Yii::t('podium/view', 'Select a member...')]
                         ])->label(false); ?>
-                    <?php /*= $form->field($model, 'receiver_id')->widget(Typeahead::classname(), [
-                        'options' => ['placeholder' => Yii::t('podium/view', 'Filter as you type...')],
-                        'scrollable' => true,
-                        'pluginOptions' => ['highlight' => true],
-                        'dataset' => [
-                            [
-                                'displayKey' => 'id',
-                                'remote' => Url::to(['members/fieldlist']) . '?q=%QUERY',
-                                'limit' => 10,
-                            ]
-                        ]
-                    ])->label(false);*/ ?>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 text-right"><?= Yii::t('podium/view', 'Message Topic') ?></div>
+                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
                 <div class="col-sm-8">
                     <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Message Topic')])->label(false) ?>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 text-right"><?= Yii::t('podium/view', 'Message Content') ?></div>
+                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-sm-8">
                     <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
                             'clientOptions' => [

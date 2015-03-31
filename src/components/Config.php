@@ -4,22 +4,18 @@ namespace bizley\podium\components;
 
 use Exception;
 use Yii;
-use yii\base\Component;
-use yii\caching\Cache;
 use yii\db\Query;
 use yii\db\QueryBuilder;
-use yii\di\Instance;
 
-class Config extends Component
+
+class Config
 {
-    
-    public $cache = 'cache';
-    protected $_cacheKey = 'podium.config';
+    public $cache;
     protected static $_instance = false;
     
-    protected function __construct($config = [])
+    protected function __construct()
     {
-        parent::__construct($config);
+        $this->cache = Cache::getInstance();
     }
     
     public static function getInstance()
@@ -30,24 +26,14 @@ class Config extends Component
         return self::$_instance;
     }
 
-    /**
-     * Initialise component.
-     */
-    public function init()
-    {
-        parent::init();
-
-        $this->cache = Instance::ensure($this->cache, Cache::className());
-    }
-    
     public function fromCache()
     {
         try {
-            $cache = $this->cache->get($this->_cacheKey);
+            $cache = $this->cache->get('config');
 
             if ($cache === false) {
                 $cache = $this->getFromDb();
-                $this->cache->set($this->_cacheKey, $cache);
+                $this->cache->set('config', $cache);
             }
 
             return $cache;
@@ -87,7 +73,7 @@ class Config extends Component
                     Yii::$app->db->createCommand($queryBuilder->insert('{{%podium_config}}', ['name' => $name, 'value' => $value]))->execute();
                 }
                 
-                $this->cache->set($this->_cacheKey, $this->getFromDb());
+                $this->cache->set('config', $this->getFromDb());
                 
                 return true;
             }      

@@ -1,17 +1,23 @@
 <?php
 
-use yii\helpers\Html;
-use yii\grid\GridView;
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
-use yii\web\View;
+use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
+use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\web\View;
 
 $this->title                   = Yii::t('podium/view', 'Messages Inbox');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('$(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
+    var button = $(e.relatedTarget);
+    var url = button.data(\'url\');
+    $(\'#deleteUrl\').attr(\'href\', url);
+});', View::POS_READY, 'bootstrap-modal-delete');
 
 ?>
 <div class="row">
@@ -24,9 +30,11 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
         
         <br>
         
+<?= PageSizer::widget() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
+    'filterSelector' => 'select#per-page',
     'tableOptions' => ['class' => 'table table-striped table-hover'],
     'rowOptions'   => function($model) {
         return $model->receiver_status == Message::STATUS_NEW ? ['class' => 'warning'] : null;
@@ -73,7 +81,7 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
                     return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Reply to Message')]);
                 },
                 'delete' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Message')]);
+                    return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Message')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModal', 'data-url' => $url]);
                 },
             ],
         ]
@@ -81,3 +89,21 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
 ]); ?>
     </div>
 </div><br>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModal" aria-hidden="true" id="podiumModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete message') ?></h4>
+            </div>
+            <div class="modal-body">
+                <?= Yii::t('podium/view', 'Are you sure you want to move this message to Deleted Messages?') ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
+                <a href="#" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete message') ?></a>
+            </div>
+        </div>
+    </div>
+</div>

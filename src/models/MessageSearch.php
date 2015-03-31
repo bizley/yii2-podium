@@ -41,9 +41,6 @@ class MessageSearch extends Message
                     ]
                 ],
             ],
-            'pagination' => [
-                'pageSize' => 10,
-            ],
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];

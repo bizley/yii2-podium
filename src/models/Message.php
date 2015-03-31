@@ -5,20 +5,24 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\helpers\HtmlPurifier;
 
 /**
  * Message model
  *
  * @property integer $id
- * @property integer $sender
- * @property integer $receiver
+ * @property integer $sender_id
+ * @property integer $receiver_id
  * @property string $topic
  * @property string $content
+ * @property integer $replyto
  * @property integer $sender_status
  * @property integer $receiver_status
  * @property integer $updated_at
@@ -81,10 +85,26 @@ class Message extends ActiveRecord
     {
         return [
             [['receiver_id', 'topic', 'content'], 'required'],
+            ['receiver_id', 'number', 'min' => 1],
+            ['topic', 'validateTopic'],
             ['content', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
             }],
         ];
+    }
+    
+    /**
+     * Validates topic
+     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
+     * @param string $attribute
+     */
+    public function validateTopic($attribute)
+    {
+        if (!$this->hasErrors()) {
+            if (!preg_match('/^[\w\p{L}]{1,255}$/u', $this->topic)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Topic must contain only letters, digits and underscores.'));
+            }
+        }
     }
     
     public function getSenderUser()
@@ -105,5 +125,60 @@ class Message extends ActiveRecord
     public function getReceiverName()
     {
         return !empty($this->receiverUser) ? $this->receiverUser->getPodiumTag() : Helper::deletedUserTag();
+    }
+    
+    public function send()
+    {
+        $query = new Query;
+        if (!$query->select('id')->from('{{%podium_user}}')->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
+            return false;
+        }
+        
+        $this->sender_id = Yii::$app->user->id;
+        $this->sender_status = self::STATUS_READ;
+        $this->receiver_status = self::STATUS_NEW;
+        $this->replyto = 0;
+        
+        if ($this->save()) {
+            
+            Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public function remove($perm = 0)
+    {
+        $clearCache = false;
+        if ($this->receiver_status == self::STATUS_NEW) {
+            $clearCache = true;
+        }
+        if ($this->receiver_id == Yii::$app->user->id) {
+            $this->receiver_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
+        }
+        if ($this->sender_id == Yii::$app->user->id) {
+            $this->sender_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
+        }
+        if ($this->receiver_status == self::STATUS_REMOVED && $this->sender_status == self::STATUS_REMOVED) {
+            if ($this->delete()) {
+                if ($clearCache) {
+                    Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        if ($this->save()) {
+            if ($clearCache) {
+                Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

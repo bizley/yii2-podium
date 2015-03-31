@@ -5,13 +5,15 @@ use yii\helpers\Html;
 
 $items = [
     ['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']],
-//    ['label' => Yii::t('podium/layout', 'Contact'), 'url' => ['/podium/contact']],
 ];
 if (Yii::$app->user->isGuest) {
     $items[] = ['label' => Yii::t('podium/layout', 'Login'), 'url' => ['account/login']];
     $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => ['account/register']];
 }
 else {
+    
+    $messageCount = Yii::$app->user->getIdentity()->getNewMessagesCount();
+    
     if (Yii::$app->user->can('settings')) {
         $items[] = ['label' => Yii::t('podium/layout', 'Administration'), 'url' => ['admin/index']];
     }
@@ -26,7 +28,7 @@ else {
         ]
     ];
     $items[] = [
-        'label' => Yii::t('podium/layout', 'Messages') . ' ' . Html::tag('span', '0', ['class' => 'badge']), 
+        'label' => Yii::t('podium/layout', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
         'url' => ['messages/inbox'],
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],

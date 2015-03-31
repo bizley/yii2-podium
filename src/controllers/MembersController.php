@@ -3,6 +3,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Cache;
 use bizley\podium\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -55,7 +56,7 @@ class MembersController extends Controller
 
         $query = preg_replace('/[^\p{L}\w]/', '', $query);
         
-        $cache = Yii::$app->cache->get('podium.members.fieldlist');
+        $cache = Cache::getInstance()->get('members.fieldlist');
         if ($cache === false || empty($cache[$query . '-' . $currentPage])) {
             if ($cache === false) {
                 $cache = [];
@@ -88,7 +89,7 @@ class MembersController extends Controller
             $results['total'] = $provider->getPagination()->getPageCount();
 
             $cache[$query . '-' . $currentPage] = Json::encode($results);
-            Yii::$app->cache->set('podium.members.fieldlist', $cache);
+            Cache::getInstance()->set('members.fieldlist', $cache);
         }
         
         return $cache[$query . '-' . $currentPage];

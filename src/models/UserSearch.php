@@ -28,10 +28,7 @@ class UserSearch extends User
         $query = User::find();
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
-            'pagination' => [
-                'pageSize' => 20,
-            ],
+            'query' => $query,
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];

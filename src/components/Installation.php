@@ -147,6 +147,11 @@ class Installation extends Component
             'percent' => 60
         ],
         [
+            'table'   => 'user_ignore',
+            'call'    => 'createUserIgnore',
+            'percent' => 61
+        ],
+        [
             'table'   => 'user',
             'call'    => 'addAdmin',
             'percent' => 100
@@ -582,6 +587,22 @@ class Installation extends Component
     }
 
     /**
+     * Creates User Ignore database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUserIgnore($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'ignored_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (ignored_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
      * Creates User Meta database table.
      * @param string $name Table name.
      * @return string Result message.
@@ -613,7 +634,7 @@ class Installation extends Component
                     'word' => Schema::TYPE_STRING . ' NOT NULL',
         ]);
     }
-    
+
     /**
      * Creates Vocabulary database table index.
      * @param string $name Table name.

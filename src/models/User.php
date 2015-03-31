@@ -5,6 +5,7 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\Podium;
 use Yii;
@@ -12,6 +13,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 
 /**
@@ -455,5 +457,25 @@ class User extends ActiveRecord implements IdentityInterface
     public function getPodiumTag($simple = false)
     {
         return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $simple);
+    }
+    
+    public function isIgnoredBy($user_id)
+    {
+        $query = new Query;
+        if ($query->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id, 'ignored_id' => $this->id])->exists()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public function getNewMessagesCount()
+    {
+        $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
+        if ($cache === false) {
+            $cache = (new Query)->from('{{%podium_message}}')->where(['receiver_id' => $this->id, 'receiver_status' => Message::STATUS_NEW])->count();
+            Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
+        }
+        
+        return $cache;
     }
 }

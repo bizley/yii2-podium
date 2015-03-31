@@ -80,7 +80,7 @@ class Helper
     public static function podiumUserTag($name, $role, $id = null, $simple = false)
     {
         $icon = Html::tag('span', '', ['class' => $id ? 'glyphicon glyphicon-user' : 'glyphicon glyphicon-ban-circle']);
-        $url = $id ? ['users/view', 'id' => $id] : '#';
+        $url = $id ? ['members/view', 'id' => $id] : '#';
         switch ($role) {
             case 0:
                 $colourClass = 'text-muted';

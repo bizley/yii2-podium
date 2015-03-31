@@ -8,3 +8,13 @@ body {
     max-width:128px;
     max-height:128px;
 }
+.popover.podium {
+    display:block !important;
+    width:auto !important;
+    max-width:none !important;
+    position:relative !important;
+    z-index:1 !important;
+}
+.popover.right.podium > .arrow {
+    top:55px !important;
+}

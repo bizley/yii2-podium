@@ -2,15 +2,17 @@
 
 namespace bizley\podium\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use bizley\podium\models\User;
+use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Cache;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
-use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\User;
+use Exception;
+use Yii;
+use yii\filters\AccessControl;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\Controller;
 
 class AccountController extends Controller
 {
@@ -87,7 +89,7 @@ class AccountController extends Controller
 
                 return $this->module->goPodium();
             }
-            catch (\Exception $e) {
+            catch (Exception $e) {
                 $this->warning('Your account has been created but it is not active yet. '
                         . 'Unfortunately there was some error while sending you the activation link. '
                         . 'Contact administrator about this or try to {LINK}resend the link{CLOSELINK}.', [
@@ -126,7 +128,7 @@ class AccountController extends Controller
 
                     return $this->module->goPodium();
                 }
-                catch (\Exception $e) {
+                catch (Exception $e) {
                     $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
                 }
             }
@@ -163,7 +165,7 @@ class AccountController extends Controller
 
                     return $this->module->goPodium();
                 }
-                catch (\Exception $e) {
+                catch (Exception $e) {
                     $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
                 }
             }
@@ -206,7 +208,7 @@ class AccountController extends Controller
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
-                Yii::$app->cache->delete('podium.members.fieldlist');
+                Cache::getInstance()->delete('members.fieldlist');
                 $this->success('Your account has been activated.');
             }
             else {
