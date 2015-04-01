@@ -72,9 +72,9 @@ class Helper
         return ['HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li', 'Attr.AllowedFrameTargets' => ['_blank']];
     }
     
-    public static function deletedUserTag()
+    public static function deletedUserTag($simple = false)
     {
-        return self::podiumUserTag('', 0);
+        return self::podiumUserTag('', 0, null, $simple);
     }
     
     public static function podiumUserTag($name, $role, $id = null, $simple = false)

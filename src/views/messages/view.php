@@ -1,11 +1,8 @@
 <?php
 
-use bizley\ajaxdropdown\AjaxDropdown;
-use yii\bootstrap\ActiveForm;
+use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title                   = Yii::t('podium/view', 'View Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
@@ -24,8 +21,8 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
         
         <br>
         
-        <div class="col-sm-3">
-            autor
+        <div class="col-sm-3 text-center">
+            <?= Avatar::widget(['author' => $model->senderUser]) ?>
         </div>
         <div class="col-sm-9">
             <div class="popover right podium">

@@ -18,3 +18,6 @@ body {
 .popover.right.podium > .arrow {
     top:55px !important;
 }
+.avatar-name {
+    padding:10px;
+}
