@@ -36,9 +36,16 @@ class Message extends ActiveRecord
     const STATUS_DELETED = 20;
     const STATUS_REMOVED = 99;
     
+    const RE = 'Re:';
+    
     public $senderName;
     public $receiverName;
     
+    public static function re()
+    {
+        return Yii::t('podium/view', self::RE);
+    }
+
     public static function getInboxStatuses()
     {
         return [
@@ -125,6 +132,11 @@ class Message extends ActiveRecord
     public function getReceiverName()
     {
         return !empty($this->receiverUser) ? $this->receiverUser->getPodiumTag() : Helper::deletedUserTag();
+    }
+    
+    public function getReply()
+    {
+        return $this->hasOne(self::className(), ['id' => 'replyto']);
     }
     
     public function send()

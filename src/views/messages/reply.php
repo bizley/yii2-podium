@@ -1,13 +1,14 @@
 <?php
 
-use bizley\ajaxdropdown\AjaxDropdown;
+use bizley\podium\components\Cache;
+use bizley\podium\models\Message;
+use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
-$this->title                   = Yii::t('podium/view', 'New Message');
+$this->title                   = Yii::t('podium/view', 'Reply to Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -27,13 +28,8 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
-                <div class="col-sm-8">
-                    <?= $form->field($model, 'receiver_id')->widget(AjaxDropdown::classname(), [
-                        'source' => Url::to(['members/fieldlist']),
-                        'singleMode' => true,
-                        'inputOptions' => ['placeholder' => Yii::t('podium/view', 'Select a member...')],
-                        'data' => $data
-                        ])->label(false); ?>
+                <div class="col-sm-8"><p class="form-control-static"><?= $reply->senderUser->getPodiumTag(true) ?></p>
+                    <?= $form->field($model, 'receiver_id')->hiddenInput()->label(false) ?>
                 </div>
             </div>
             <div class="row">
@@ -66,5 +62,47 @@ $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, '
                 </div>
             </div>
         <?php ActiveForm::end(); ?>
+        <br>
+        <div class="row">
+            <div class="col-sm-2 text-center">
+                <?= Avatar::widget(['author' => $reply->senderUser]) ?>
+            </div>
+            <div class="col-sm-10">
+                <div class="popover right podium">
+                    <div class="arrow"></div>
+                    <div class="popover-title">
+                        <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->created_at, 'long')]); ?></small>
+                        <?= Html::encode($reply->topic) ?>
+                    </div>
+                    <div class="popover-content">
+                        <?= $reply->content ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <?php $stack = 0; while ($reply->reply && $stack < 4): ?>
+        <?php if (($reply->reply->receiver_id == Yii::$app->user->id && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+               ($reply->reply->sender_id == Yii::$app->user->id && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
+        <?php $reply = $reply->reply; else: ?>
+        <div class="row">
+            <div class="col-sm-2 text-center">
+                <?= Avatar::widget(['author' => $reply->reply->senderUser]) ?>
+            </div>
+            <div class="col-sm-10">
+                <div class="popover right podium">
+                    <div class="arrow"></div>
+                    <div class="popover-title">
+                        <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long')]); ?></small>
+                        <?= Html::encode($reply->reply->topic) ?>
+                    </div>
+                    <div class="popover-content">
+                        <?= $reply->reply->content ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php $reply = $reply->reply; $stack++; endif; endwhile; ?>
+
     </div>
 </div><br>

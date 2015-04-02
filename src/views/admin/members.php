@@ -74,7 +74,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {
-                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', $url, ['class' => 'btn btn-xs disabled text-muted']);
+                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                     }
                 },
                 'ban'            => function($url, $model) {

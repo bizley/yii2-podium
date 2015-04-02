@@ -77,22 +77,39 @@ class MessagesController extends Controller
     public function actionNew()
     {
         $model = new Message();
+        $data = [];
         
         if ($model->load(Yii::$app->request->post())) {
             
-            if (!Yii::$app->user->getIdentity()->isIgnoredBy($model->receiver_id)) {
-                if ($model->send()) {
-                    $this->success('Message has been sent.');
-                    return $this->redirect(['inbox']);
+            if ($model->validate()) {
+                if (!Yii::$app->user->getIdentity()->isIgnoredBy($model->receiver_id)) {
+
+                    if ($model->send()) {
+                        $this->success('Message has been sent.');
+                        return $this->redirect(['inbox']);
+                    }
+                }
+                else {
+                    $this->error('Sorry! You can not send message to this member because he ignores you.');
                 }
             }
             else {
-                $this->error('Sorry! You can not send message to this member because he ignores you.');
+                if ($model->receiver_id) {
+                    $receiver = User::findOne(['id' => $model->receiver_id]);
+                    if ($receiver) {
+                        $data[] = [
+                            'id' => $receiver->id,
+                            'mark' => 0,
+                            'value' => $receiver->getPodiumTag(true),
+                        ];
+                    }
+                }
             }
         }
 
         return $this->render('new', [
-                'model' => $model
+                'model' => $model,
+                'data' => $data
         ]);
     }
     
@@ -146,5 +163,47 @@ class MessagesController extends Controller
             return $this->redirect(['inbox']);
         }
     }
+    
+    public function actionReply($id = null)
+    {
+        $model = new Message();
+        
+        $reply = Message::findOne(['id' => $id, 'receiver_id' => Yii::$app->user->id]);
+        
+        if ($reply) {
+            
+            $model->topic = Message::re() . ' ' . $reply->topic;
+            
+            if ($model->load(Yii::$app->request->post())) {
+            
+                if ($model->validate()) {
+                    if (!Yii::$app->user->getIdentity()->isIgnoredBy($model->receiver_id)) {
+
+                        $model->replyto = $reply->id;
+
+                        if ($model->send()) {
+                            $this->success('Message has been sent.');
+                            return $this->redirect(['inbox']);
+                        }
+                    }
+                    else {
+                        $this->error('Sorry! You can not send message to this member because he ignores you.');
+                    }
+                }
+            }
+            
+            $model->receiver_id = $reply->sender_id;
+            
+            return $this->render('reply', [
+                    'model' => $model,
+                    'reply' => $reply
+            ]);
+        }
+        else {
+            $this->error('Sorry! We can not find the message with the given ID.');
+            return $this->redirect(['inbox']);
+        }
+    }
+    
 }
                 

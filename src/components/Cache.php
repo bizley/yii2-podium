@@ -6,6 +6,7 @@ use Exception;
 use yii\caching\Cache as DefaultCache;
 use yii\caching\DummyCache;
 use yii\di\Instance;
+use yii\widgets\FragmentCache;
 
 /**
  * Cache helper
@@ -84,5 +85,24 @@ class Cache
             return $this->set($key, $cache);
         }
         return true;
+    }
+    
+    public function beginCache($key, $view)
+    {
+        $properties['id'] = $this->_cachePrefix . $key;
+        $properties['view'] = $view;
+
+        $cache = FragmentCache::begin($properties);
+        if ($cache->getCachedContent() !== false) {
+            $this->endCache();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function endCache()
+    {
+        FragmentCache::end();
     }
 }
