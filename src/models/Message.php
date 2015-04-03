@@ -93,25 +93,14 @@ class Message extends ActiveRecord
         return [
             [['receiver_id', 'topic', 'content'], 'required'],
             ['receiver_id', 'number', 'min' => 1],
-            ['topic', 'validateTopic'],
+            ['topic', 'string', 'max' => 255],
+            ['topic', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process($value);
+            }],
             ['content', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
             }],
         ];
-    }
-    
-    /**
-     * Validates topic
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
-     */
-    public function validateTopic($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\p{L}]{1,255}$/u', $this->topic)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Topic must contain only letters, digits and underscores.'));
-            }
-        }
     }
     
     public function getSenderUser()
@@ -149,7 +138,6 @@ class Message extends ActiveRecord
         $this->sender_id = Yii::$app->user->id;
         $this->sender_status = self::STATUS_READ;
         $this->receiver_status = self::STATUS_NEW;
-        $this->replyto = 0;
         
         if ($this->save()) {
             

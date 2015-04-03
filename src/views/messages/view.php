@@ -1,5 +1,6 @@
 <?php
 
+use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
@@ -28,33 +29,56 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
         <?= $this->render('/elements/messages/_navbar', ['active' => 'view']) ?>
         
         <br>
-        
-        <div class="row">
-            <div class="col-sm-3 text-center">
-                <?= Avatar::widget(['author' => $model->senderUser]) ?>
-            </div>
-            <div class="col-sm-9">
-                <div class="popover right podium">
-                    <div class="arrow"></div>
-                    <div class="popover-title">
-                        <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?></small>
-                        <?= Html::encode($model->topic) ?>
-                    </div>
-                    <div class="popover-content">
-                        <?= $model->content ?>
-                        <div class="text-right">
+        <div <?= Helper::replyBgd() ?>>
+            <div class="row">
+                <div class="col-sm-3 text-center">
+                    <?= Avatar::widget(['author' => $model->senderUser]) ?>
+                </div>
+                <div class="col-sm-9">
+                    <div class="popover right podium">
+                        <div class="arrow"></div>
+                        <div class="popover-title">
+                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?></small>
+                            <?= Html::encode($model->topic) ?>
+                        </div>
+                        <div class="popover-content">
+                            <?= $model->content ?>
+                            <div class="text-right">
 <?php if ($model->sender_id != Yii::$app->user->id && $model->senderUser !== null): ?>
-                            <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', ['reply', 'id' => $model->id], ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Reply to Message')]) ?>
+                                <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', ['reply', 'id' => $model->id], ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Reply to Message')]) ?>
 <?php else: ?>
-                            <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']); ?>
+                                <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']); ?>
 <?php endif; ?>
-                            <?= Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Delete Message')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModal']) ?>
+                                <?= Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Delete Message')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModal']) ?>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         
+<?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): ?>
+<?php if (($reply->reply->receiver_id == Yii::$app->user->id && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+        ($reply->reply->sender_id == Yii::$app->user->id && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
+<?php $reply = $reply->reply; else: ?>
+            <div class="row">
+                <div class="col-sm-2 text-center">
+                    <?= Avatar::widget(['author' => $reply->reply->senderUser]) ?>
+                </div>
+                <div class="col-sm-10">
+                    <div class="popover right podium">
+                        <div class="arrow"></div>
+                        <div class="popover-title">
+                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long')]); ?></small>
+                            <?= Html::encode($reply->reply->topic) ?>
+                        </div>
+                        <div class="popover-content">
+                            <?= $reply->reply->content ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<?php $reply = $reply->reply; $stack++; endif; endwhile; ?>
+        </div>
     </div>
 </div><br>
 
