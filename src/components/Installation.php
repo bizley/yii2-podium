@@ -581,6 +581,7 @@ class Installation extends Component
                     'new_email'            => Schema::TYPE_STRING,
                     'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'timezone'             => Schema::TYPE_STRING . '(45)',
                     'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
         ]);

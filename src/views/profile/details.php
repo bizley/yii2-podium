@@ -33,6 +33,18 @@ $this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, '
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model, 'timezone')->dropDownList(Helper::timeZones(), [
+                            'placeholder' => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
+                            'data-container' => 'body',
+                            'data-toggle' => 'popover',
+                            'data-placement' => 'right',
+                            'data-content' => Yii::t('podium/view', 'Select your time zone for proper dates display.'),
+                            'data-trigger' => 'focus',
+                        ])->label(Yii::t('podium/view', 'Time Zone')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model, 'new_email')->textInput([
                             'placeholder' => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
                             'data-container' => 'body',

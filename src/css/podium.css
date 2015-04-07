@@ -4,10 +4,6 @@ body {
 }
 .navbar { margin-bottom:20px }
 .note-editor .note-dialog .form-group.row-fluid.note-group-select-from-files { display:none }
-.podium-avatar {
-    max-width:128px;
-    max-height:128px;
-}
 .popover.podium {
     display:block !important;
     width:auto !important;
@@ -20,4 +16,9 @@ body {
 }
 .avatar-name {
     padding:10px;
+}
+@media (max-width: 767px) {
+    .podium-avatar {
+        display:none !important;
+    }
 }

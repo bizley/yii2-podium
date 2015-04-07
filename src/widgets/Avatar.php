@@ -18,7 +18,7 @@ class Avatar extends Widget
     {
         if ($this->author instanceof User) {
             
-            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
+            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
             $meta = $this->author->meta;
             if ($meta) {
                 if (!empty($meta->gravatar)) {
@@ -28,12 +28,12 @@ class Avatar extends Widget
                         'rating' => 'r',
                         'options' => [
                             'alt' => Html::encode($this->author->getPodiumName()),
-                            'class' => 'img-circle img-responsive center-block',
+                            'class' => 'podium-avatar img-circle img-responsive center-block',
                         ]
                     ]);
                 }
                 elseif (!empty($meta->avatar)) {
-                    $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
+                    $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
                 }
             }
             $name = $this->author->getPodiumTag();
@@ -41,7 +41,7 @@ class Avatar extends Widget
         }
         else {
             
-            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);
+            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);
             $name = Helper::deletedUserTag(true);
         }
         

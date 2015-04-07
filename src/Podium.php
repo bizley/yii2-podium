@@ -57,6 +57,7 @@ class Podium extends Module implements BootstrapInterface
         $this->registerIdentity();
         $this->registerAuthorization();
         $this->registerTranslations();
+        $this->registerFormatter();
 
         $this->layout     = 'main';
         $this->_installed = Installation::check();
@@ -104,6 +105,18 @@ class Podium extends Module implements BootstrapInterface
         ];
     }
 
+    public function registerFormatter()
+    {
+        if (!Yii::$app->user->isGuest) {
+            Yii::$app->setComponents([
+                'formatter' => [
+                    'class'    => 'yii\i18n\Formatter',
+                    'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
+                ],
+            ]);
+        }
+    }
+
     public function getInstalled()
     {
         return $this->_installed;
@@ -123,13 +136,14 @@ class Podium extends Module implements BootstrapInterface
     {
         return Yii::$app->getResponse()->redirect(['podium/default/index']);
     }
-    
+
     public function getConfig()
     {
         if (!$this->_config) {
             $this->_config = Config::getInstance();
         }
-        
+
         return $this->_config;
     }
+
 }

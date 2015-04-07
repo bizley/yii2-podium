@@ -35,6 +35,7 @@ use yii\web\IdentityInterface;
  * @property string $password write-only password
  * @property string $password_repeat write-only password repeated
  * @property integer $tos write-only terms of service agreement
+ * @property string $timezone
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -79,7 +80,7 @@ class User extends ActiveRecord implements IdentityInterface
             'installation'   => [],
             'token'          => [],
             'passwordChange' => ['password', 'password_repeat'],
-            'account'        => ['username', 'new_email', 'password', 'password_repeat', 'current_password'],
+            'account'        => ['username', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
         ];
     }
 
@@ -100,6 +101,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['password', 'compare'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
+            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
@@ -477,5 +479,10 @@ class User extends ActiveRecord implements IdentityInterface
         }
         
         return $cache;
+    }
+    
+    public function getTimeZone()
+    {
+        return !empty($this->timezone) ? $this->timezone : 'UTC';
     }
 }
