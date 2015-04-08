@@ -74,10 +74,77 @@ class AdminController extends Controller
             return $this->redirect(['members']);
         }
         
-        
-        
         return $this->render('view', [
             'model' => $model
+        ]);
+    }
+    
+    public function actionDelete($id)
+    {
+        $model = User::findOne((int)$id);
+        
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+        }
+        elseif ($model->id == Yii::$app->user->id) {
+            $this->error('Sorry! You can not delete your own account.');
+        }
+        else {
+            if ($model->delete()) {
+                $this->success('User has been deleted.');
+            }
+            else {
+                $this->error('Sorry! There was some error while deleting the user.');
+            }
+        }
+        
+        return $this->redirect(['members']);
+    }
+    
+    public function actionBan($id)
+    {
+        $model = User::findOne((int)$id);
+        
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+        }
+        elseif ($model->id == Yii::$app->user->id) {
+            $this->error('Sorry! You can not ban or unban your own account.');
+        }
+        else {
+            $model->setScenario('ban');
+            
+            if ($model->status == User::STATUS_ACTIVE) {
+                if ($model->ban()) {
+                    $this->success('User has been banned.');
+                }
+                else {
+                    $this->error('Sorry! There was some error while banning the user.');
+                }
+            }
+            elseif ($model->status == User::STATUS_BANNED) {
+                if ($model->unban()) {
+                    $this->success('User has been unbanned.');
+                }
+                else {
+                    $this->error('Sorry! There was some error while unbanning the user.');
+                }
+            }
+            else {
+                $this->error('Sorry! User has got the wrong status.');
+            }
+        }
+        
+        return $this->redirect(['members']);
+    }
+    
+    public function actionForums()
+    {
+        
+
+        return $this->render('forums', [
+                    //'dataProvider' => $dataProvider,
+                    //'searchModel'  => $searchModel
         ]);
     }
 }

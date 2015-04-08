@@ -95,12 +95,12 @@ $this->registerJs('$(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
     </div>
 </div><br>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModal" aria-hidden="true" id="podiumModal">
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete message') ?></h4>
+                <h4 class="modal-title" id="podiumModalDeleteLabel"><?= Yii::t('podium/view', 'Delete message') ?></h4>
             </div>
             <div class="modal-body">
                 <?= Yii::t('podium/view', 'Are you sure you want to move this message to Deleted Messages?') ?>

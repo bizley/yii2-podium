@@ -6,6 +6,7 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
+use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -74,10 +75,19 @@ class MessagesController extends Controller
         ]);
     }
     
-    public function actionNew()
+    public function actionNew($user = null)
     {
         $model = new Message();
         $data = [];
+        
+        if (!empty($user) && (int)$user > 0 && (int)$user != Yii::$app->user->id) {
+            $model->receiver_id = (int)$user;
+            $data[] = [
+                'id' => (int)$user,
+                'mark' => 0,
+                'value' => User::findOne((int)$user)->getPodiumTag(true),
+            ];
+        }
         
         if ($model->load(Yii::$app->request->post())) {
             
@@ -106,7 +116,7 @@ class MessagesController extends Controller
                 }
             }
         }
-
+        
         return $this->render('new', [
                 'model' => $model,
                 'data' => $data
@@ -196,7 +206,7 @@ class MessagesController extends Controller
             
             return $this->render('reply', [
                     'model' => $model,
-                    'reply' => $reply
+                    'reply' => $reply,
             ]);
         }
         else {

@@ -79,6 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'installation'   => [],
             'token'          => [],
+            'ban'            => [],
             'passwordChange' => ['password', 'password_repeat'],
             'account'        => ['username', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
         ];
@@ -484,5 +485,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function getTimeZone()
     {
         return !empty($this->timezone) ? $this->timezone : 'UTC';
+    }
+    
+    public function ban()
+    {
+        $this->status = self::STATUS_BANNED;
+        return $this->save();
+    }
+    
+    public function unban()
+    {
+        $this->status = self::STATUS_ACTIVE;
+        return $this->save();
     }
 }

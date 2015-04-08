@@ -13,6 +13,18 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administrati
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('$(\'#podiumModalDelete\').on(\'show.bs.modal\', function(e) {
+    var button = $(e.relatedTarget);
+    $(\'#deleteUrl\').attr(\'href\', button.data(\'url\'));
+});', View::POS_READY, 'bootstrap-modal-delete');
+$this->registerJs('$(\'#podiumModalBan\').on(\'show.bs.modal\', function(e) {
+    var button = $(e.relatedTarget);
+    $(\'#banUrl\').attr(\'href\', button.data(\'url\'));
+});', View::POS_READY, 'bootstrap-modal-ban');
+$this->registerJs('$(\'#podiumModalUnBan\').on(\'show.bs.modal\', function(e) {
+    var button = $(e.relatedTarget);
+    $(\'#unbanUrl\').attr(\'href\', button.data(\'url\'));
+});', View::POS_READY, 'bootstrap-modal-unban');
 
 echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 ?>
@@ -40,6 +52,10 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
             'attribute'          => 'email',
             'label'              => Yii::t('podium/view', 'E-mail') . Helper::sortOrder('email'),
             'encodeLabel'        => false,
+            'format'             => 'raw',
+            'value'              => function ($model) {
+                return Html::mailto($model->email);
+            },
         ],
         [
             'attribute'          => 'role',
@@ -71,7 +87,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                 },
                 'pm' => function($url, $model) {
                     if ($model->id !== Yii::$app->user->id) {
-                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
+                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
@@ -80,17 +96,17 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                 'ban'            => function($url, $model) {
                     if ($model->id !== Yii::$app->user->id) {
                         if ($model->status !== User::STATUS_BANNED) {
-                            return Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', $url, ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ban Member')]);
+                            return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ban Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalBan', 'data-url' => $url]);
                         }
                         else {
-                            return Html::a('<span class="glyphicon glyphicon-ok-circle"></span>', '#', ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Unban Member')]);
+                            return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ok-circle"></span>', ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Unban Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalUnBan', 'data-url' => $url]);
                         }
                     }
                     return Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                 },
                 'delete' => function($url, $model) {
                     if ($model->id !== Yii::$app->user->id) {
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Member')]);
+                        return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                     }
                     else {
                         return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
@@ -100,3 +116,62 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
         ]
     ],
 ]);
+
+?>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModalDelete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="podiumModalDeleteLabel"><?= Yii::t('podium/view', 'Delete user') ?></h4>
+            </div>
+            <div class="modal-body">
+                <p><?= Yii::t('podium/view', 'Are you sure you want to delete this user?') ?></p>
+                <p><?= Yii::t('podium/view', 'The user can register again using the same name but all previously created posts will not be linked back to him.') ?></p>
+                <p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
+                <a href="#" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete user') ?></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalBanLabel" aria-hidden="true" id="podiumModalBan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="podiumModalBanLabel"><?= Yii::t('podium/view', 'Ban user') ?></h4>
+            </div>
+            <div class="modal-body">
+                <p><?= Yii::t('podium/view', 'Are you sure you want to ban this user?') ?></p>
+                <p><?= Yii::t('podium/view', 'The user will not be deleted but will not be able to sign in again.') ?></p>
+                <p><strong><?= Yii::t('podium/view', 'You can always unban the user if you change your mind later on.') ?></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
+                <a href="#" id="banUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Ban user') ?></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalUnBanLabel" aria-hidden="true" id="podiumModalUnBan">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="podiumModalUnBanLabel"><?= Yii::t('podium/view', 'Unban user') ?></h4>
+            </div>
+            <div class="modal-body">
+                <p><?= Yii::t('podium/view', 'Are you sure you want to unban this user?') ?></p>
+                <p><?= Yii::t('podium/view', 'The user will be able to sign in again.') ?></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
+                <a href="#" id="unbanUrl" class="btn btn-success"><?= Yii::t('podium/view', 'Unban user') ?></a>
+            </div>
+        </div>
+    </div>
+</div>
