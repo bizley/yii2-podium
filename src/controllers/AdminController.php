@@ -2,12 +2,13 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\Forum;
+use bizley\podium\models\User;
+use bizley\podium\models\UserSearch;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use bizley\podium\behaviors\FlashBehavior;
-use bizley\podium\models\User;
-use bizley\podium\models\UserSearch;
 
 class AdminController extends Controller
 {
@@ -140,11 +141,10 @@ class AdminController extends Controller
     
     public function actionForums()
     {
-        
+        $dataProvider = (new Forum())->search(Yii::$app->request->get());
 
         return $this->render('forums', [
-                    //'dataProvider' => $dataProvider,
-                    //'searchModel'  => $searchModel
+                    'dataProvider' => $dataProvider,
         ]);
     }
 }

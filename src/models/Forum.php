@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 /**
@@ -71,4 +72,16 @@ class Forum extends ActiveRecord
         }
     }
     
+    public function search($params)
+    {
+        $query = self::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+
+        return $dataProvider->getModels();
+    }
 }

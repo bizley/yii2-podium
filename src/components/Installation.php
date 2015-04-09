@@ -432,6 +432,7 @@ class Installation extends Component
         return $this->_createTable($name, [
                     'id'         => Schema::TYPE_PK,
                     'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'sub'        => Schema::TYPE_STRING,
                     'slug'       => Schema::TYPE_STRING . ' NOT NULL',
                     'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
