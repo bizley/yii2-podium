@@ -21,10 +21,10 @@ class AdminController extends Controller
                 'rules' => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function ($rule, $action) {
+                        'matchCallback' => function () {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function ($rule, $action) {
+                        'denyCallback' => function () {
                             return $this->redirect(['install/run']);
                         }
                     ],
@@ -146,6 +146,23 @@ class AdminController extends Controller
         return $this->render('forums', [
                     'dataProvider' => $dataProvider,
         ]);
+    }
+    
+    public function actionNewForum()
+    {
+        $model = new Forum();
+        $model->visible = 1;
+        $model->sort = 0;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $this->success('New forum has been created.');
+            return $this->redirect(['forums']);
+        }
+        else {
+            return $this->render('new-forum', [
+                        'model' => $model,
+            ]);
+        }
     }
 }
         

@@ -435,6 +435,7 @@ class Installation extends Component
                     'sub'        => Schema::TYPE_STRING,
                     'slug'       => Schema::TYPE_STRING . ' NOT NULL',
                     'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
         ]);
