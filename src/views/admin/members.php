@@ -12,18 +12,18 @@ $this->title = Yii::t('podium/view', 'Forum Members');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('$(\'#podiumModalDelete\').on(\'show.bs.modal\', function(e) {
-    var button = $(e.relatedTarget);
-    $(\'#deleteUrl\').attr(\'href\', button.data(\'url\'));
+$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'#podiumModalDelete\').on(\'show.bs.modal\', function(e) {
+    var button = jQuery(e.relatedTarget);
+    jQuery(\'#deleteUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-delete');
-$this->registerJs('$(\'#podiumModalBan\').on(\'show.bs.modal\', function(e) {
-    var button = $(e.relatedTarget);
-    $(\'#banUrl\').attr(\'href\', button.data(\'url\'));
+$this->registerJs('jQuery(\'#podiumModalBan\').on(\'show.bs.modal\', function(e) {
+    var button = jQuery(e.relatedTarget);
+    jQuery(\'#banUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-ban');
-$this->registerJs('$(\'#podiumModalUnBan\').on(\'show.bs.modal\', function(e) {
-    var button = $(e.relatedTarget);
-    $(\'#unbanUrl\').attr(\'href\', button.data(\'url\'));
+$this->registerJs('jQuery(\'#podiumModalUnBan\').on(\'show.bs.modal\', function(e) {
+    var button = jQuery(e.relatedTarget);
+    jQuery(\'#unbanUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-unban');
 
 echo $this->render('/elements/admin/_navbar', ['active' => 'members']);

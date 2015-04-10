@@ -12,7 +12,7 @@ $this->title                   = Yii::t('podium/view', 'Forum Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="popover"]\').popover()', View::POS_READY, 'bootstrap-popover');
+$this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_READY, 'bootstrap-popover');
 ?>
 <div class="row">
     <div class="col-sm-3">

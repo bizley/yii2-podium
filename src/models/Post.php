@@ -11,7 +11,6 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
-use yii\db\QueryBuilder;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -85,8 +84,6 @@ class Post extends ActiveRecord
                 }
             }
 
-            $queryBuilder = new QueryBuilder(Yii::$app->db);
-            
             $query = new Query();
             $query->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $word) {
@@ -95,15 +92,15 @@ class Post extends ActiveRecord
                     unset($words[$key]);
                 }
             }
-            Yii::$app->db->createCommand($queryBuilder->batchInsert('{{%podium_vocabulary}}', ['word'], $words))->execute();
+            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $words)->execute();
 
             $query = new Query();
             $query->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $word) {
                 $vocabulary[] = [$word->id, $this->id];
             }
-            Yii::$app->db->createCommand($queryBuilder->batchInsert('{{%podium_vocabulary_junction}}', ['word_id',
-                'post_id'], $vocabulary))->execute();
+            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id',
+                'post_id'], $vocabulary)->execute();
         }
         catch (Exception $e) {
             Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
@@ -122,8 +119,6 @@ class Post extends ActiveRecord
                 }
             }
 
-            $queryBuilder = new QueryBuilder(Yii::$app->db);
-            
             $query = new Query();
             $query->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $word) {
@@ -132,21 +127,21 @@ class Post extends ActiveRecord
                     unset($words[$key]);
                 }
             }
-            Yii::$app->db->createCommand($queryBuilder->batchInsert('{{%podium_vocabulary}}', ['word'], $words))->execute();
+            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $words)->execute();
 
             $query = new Query();
             $query->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $word) {
                 $vocabulary[$word->id] = [$word->id, $this->id];
             }
-            Yii::$app->db->createCommand($queryBuilder->batchInsert('{{%podium_vocabulary_junction}}', ['word_id',
-                'post_id'], array_values($vocabulary)))->execute();
+            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id',
+                'post_id'], array_values($vocabulary))->execute();
             
             $query = new Query();
             $query->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
             foreach ($query->each() as $junk) {
                 if (!array_key_exists($junk->word_id, $vocabulary)) {
-                    Yii::$app->db->createCommand($queryBuilder->delete('{{%podium_vocabulary_junction}}', ['id' => $junk->id]))->execute();
+                    Yii::$app->db->createCommand()->delete('{{%podium_vocabulary_junction}}', ['id' => $junk->id])->execute();
                 }
             }
         }

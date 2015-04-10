@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administrati
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Forum Members'), 'url' => ['members']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
 
 echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 ?>

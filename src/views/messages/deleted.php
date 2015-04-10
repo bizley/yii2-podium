@@ -11,13 +11,13 @@ $this->title                   = Yii::t('podium/view', 'Deleted Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('$(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
-    var button = $(e.relatedTarget);
+$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
+    var button = jQuery(e.relatedTarget);
     var url = button.data(\'url\');
     if (url.indexOf(\'?\') === -1) url += \'?perm=1\';
     else url += \'&perm=1\';
-    $(\'#deleteUrl\').attr(\'href\', url);
+    jQuery(\'#deleteUrl\').attr(\'href\', url);
 });', View::POS_READY, 'bootstrap-modal-delete-perm');
 
 ?>

@@ -6,8 +6,11 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\models\Forum;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
+use Exception;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
+use yii\helpers\Html;
 use yii\web\Controller;
 
 class AdminController extends Controller
@@ -66,7 +69,7 @@ class AdminController extends Controller
         return $this->render('settings');
     }
 
-    public function actionView($id)
+    public function actionView($id = null)
     {
         $model = User::findOne((int)$id);
         
@@ -80,7 +83,7 @@ class AdminController extends Controller
         ]);
     }
     
-    public function actionDelete($id)
+    public function actionDelete($id = null)
     {
         $model = User::findOne((int)$id);
         
@@ -102,7 +105,7 @@ class AdminController extends Controller
         return $this->redirect(['members']);
     }
     
-    public function actionBan($id)
+    public function actionBan($id = null)
     {
         $model = User::findOne((int)$id);
         
@@ -159,9 +162,100 @@ class AdminController extends Controller
             return $this->redirect(['forums']);
         }
         else {
-            return $this->render('new-forum', [
+            return $this->render('forum', [
                         'model' => $model,
+                        'forums' => Forum::find()->all()
             ]);
+        }
+    }
+    
+    public function actionEditForum($id = null)
+    {
+        $model = Forum::findOne((int)$id);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Forum with this ID.');
+            return $this->redirect(['forums']);
+        }
+        else {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $this->success('Forum has been updated.');
+                return $this->redirect(['forums']);
+            }
+            else {
+                return $this->render('forum', [
+                            'model' => $model,
+                            'forums' => Forum::find()->all()
+                ]);
+            }
+        }
+    }
+    
+    public function actionDeleteForum($id = null)
+    {
+        $model = Forum::findOne((int)$id);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Forum with this ID.');
+        }
+        else {
+            if ($model->delete()) {
+                $this->success('Forum has been deleted.');
+            }
+            else {
+                $this->error('Sorry! There was some error while deleting the forum.');
+            }            
+        }
+        
+        return $this->redirect(['forums']);
+    }
+    
+    public function actionSort()
+    {
+        if (Yii::$app->request->isAjax) {
+            $modelId = Yii::$app->request->post('id');
+            $new     = Yii::$app->request->post('new');
+
+            if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
+                $moved = Forum::findOne((int)$modelId);
+                if ($moved) {
+                    $query = (new Query())->from('{{%podium_forum}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+                    $next = 0;
+                    $newSort = -1;
+                    try {
+                        foreach ($query->each() as $id => $forum) {
+                            if ($next == (int)$new) {
+                                $newSort = $next;
+                                $next++;
+                            }
+                            Yii::$app->db->createCommand()->update('{{%podium_forum}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                            $next++;
+                        }
+                        if ($newSort == -1) {
+                            $newSort = $next;
+                        }
+                        $moved->sort = $newSort;
+                        if (!$moved->save()) {
+                            return Html::tag('span', Yii::t('podium/view', 'Sorry! We can not save new forum\'s order.'), ['class' => 'text-danger']);
+                        }
+                        else {
+                            return Html::tag('span', Yii::t('podium/view', 'New forum\'s order has been saved.'), ['class' => 'text-success']);
+                        }
+                    }
+                    catch (Exception $e) {
+                        return Html::tag('span', Yii::t('podium/view', 'Sorry! We can not save new forum\'s order.'), ['class' => 'text-danger']);
+                    }
+                }
+                else {
+                    return Html::tag('span', Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), ['class' => 'text-danger']);
+                }
+            }
+            else {
+                return Html::tag('span', Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
+            }
+        }
+        else {
+            return $this->redirect(['forums']);
         }
     }
 }

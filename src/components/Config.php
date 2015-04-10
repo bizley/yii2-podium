@@ -5,7 +5,6 @@ namespace bizley\podium\components;
 use Exception;
 use Yii;
 use yii\db\Query;
-use yii\db\QueryBuilder;
 
 
 class Config
@@ -64,13 +63,11 @@ class Config
         try {
             if (is_string($name) && is_string($value)) {
 
-                $queryBuilder = new QueryBuilder(Yii::$app->db);
-
                 if ((new Query)->from('{{%podium_config}}')->where(['name' => $name])->exists()) {
-                    Yii::$app->db->createCommand($queryBuilder->update('{{%podium_config}}', ['value' => $value], ['name' => $name]))->execute();
+                    Yii::$app->db->createCommand()->update('{{%podium_config}}', ['value' => $value], 'name = :name', [':name' => $name])->execute();
                 }
                 else {
-                    Yii::$app->db->createCommand($queryBuilder->insert('{{%podium_config}}', ['name' => $name, 'value' => $value]))->execute();
+                    Yii::$app->db->createCommand()->insert('{{%podium_config}}', ['name' => $name, 'value' => $value])->execute();
                 }
                 
                 $this->cache->set('config', $this->getFromDb());

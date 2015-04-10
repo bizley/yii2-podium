@@ -8,7 +8,7 @@ use yii\web\View;
 $this->title                   = Yii::t('podium/view', 'Login');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
 ?>
 <div class="row">
     <div class="col-sm-4 col-sm-offset-4">

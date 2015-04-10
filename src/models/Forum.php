@@ -19,6 +19,7 @@ use yii\db\ActiveRecord;
  * @property string $sub
  * @property string $slug
  * @property integer $visible
+ * @property integer $sort
  * @property integer $updated_at
  * @property integer $created_at
  */
@@ -81,7 +82,7 @@ class Forum extends ActiveRecord
             'query' => $query,
         ]);
 
-        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider->getModels();
     }

@@ -11,7 +11,7 @@ $this->title                   = Yii::t('podium/view', 'View Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('$(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
 
 $perm = false;
 if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_DELETED) || 
