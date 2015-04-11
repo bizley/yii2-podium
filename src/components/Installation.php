@@ -62,6 +62,11 @@ class Installation extends Component
             'percent' => 5
         ],
         [
+            'table'   => 'config',
+            'call'    => 'addConfig',
+            'percent' => 5
+        ],
+        [
             'table'   => 'forum',
             'call'    => 'createForum',
             'percent' => 6
@@ -193,6 +198,22 @@ class Installation extends Component
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
+        }
+    }
+    
+    /**
+     * Adds Config settings.
+     * @return string Result message.
+     */
+    protected function _addConfig()
+    {
+        try {
+            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name', 'value'], [['name', 'Podium'], ['version', '1.0']])->execute();
+            return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));            
+        }
+        catch (Exception $e) {
+            $this->_errors = true;
+            return $this->_outputDanger(Yii::t('podium/flash', 'Error during settings adding'));
         }
     }
 

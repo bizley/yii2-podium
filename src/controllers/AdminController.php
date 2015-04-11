@@ -3,6 +3,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
@@ -60,13 +61,6 @@ class AdminController extends Controller
                     'dataProvider' => $dataProvider,
                     'searchModel'  => $searchModel
         ]);
-    }
-
-    public function actionSettings()
-    {
-
-
-        return $this->render('settings');
     }
 
     public function actionView($id = null)
@@ -257,6 +251,25 @@ class AdminController extends Controller
         else {
             return $this->redirect(['forums']);
         }
+    }
+    
+    public function actionSettings()
+    {
+        $model = new ConfigForm();
+        
+        if ($data = Yii::$app->request->post('ConfigForm')) {
+            if ($model->update($data)) {
+                $this->success('Settings have been updated.');
+                return $this->refresh();
+            }
+            else {
+                $this->error('One of the setting\'s value is too long.');
+            }
+        }
+        
+        return $this->render('settings', [
+                    'model' => $model,
+        ]);
     }
 }
         

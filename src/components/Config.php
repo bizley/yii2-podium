@@ -6,11 +6,14 @@ use Exception;
 use Yii;
 use yii\db\Query;
 
-
 class Config
 {
     public $cache;
     protected static $_instance = false;
+    protected $_defaults = [
+        'name'    => 'Podium',
+        'version' => '1.0'
+    ];
     
     protected function __construct()
     {
@@ -31,7 +34,7 @@ class Config
             $cache = $this->cache->get('config');
 
             if ($cache === false) {
-                $cache = $this->getFromDb();
+                $cache = array_merge($this->_defaults, $this->getFromDb());
                 $this->cache->set('config', $cache);
             }
 
@@ -49,7 +52,18 @@ class Config
     
     public function getFromDb()
     {
-        return (new Query)->from('{{%podium_config}}')->all();
+        $config = [];
+        try {
+            $query = (new Query)->from('{{%podium_config}}')->all();
+            foreach ($query as $setting) {
+                $config[$setting['name']] = $setting['value'];
+            }
+        }
+        catch (Exception $e) {
+            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+        }
+        
+        return $config;
     }
     
     public function get($name)
@@ -62,7 +76,13 @@ class Config
     {
         try {
             if (is_string($name) && is_string($value)) {
-
+                
+                if ($value == '') {
+                    if (array_key_exists($name, $this->_defaults)) {
+                        $value = $this->_defaults[$name];
+                    }
+                }
+                
                 if ((new Query)->from('{{%podium_config}}')->where(['name' => $name])->exists()) {
                     Yii::$app->db->createCommand()->update('{{%podium_config}}', ['value' => $value], 'name = :name', [':name' => $name])->execute();
                 }
@@ -70,7 +90,7 @@ class Config
                     Yii::$app->db->createCommand()->insert('{{%podium_config}}', ['name' => $name, 'value' => $value])->execute();
                 }
                 
-                $this->cache->set('config', $this->getFromDb());
+                $this->cache->set('config', array_merge($this->_defaults, $this->getFromDb()));
                 
                 return true;
             }      

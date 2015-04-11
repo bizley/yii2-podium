@@ -13,6 +13,7 @@ class Podium extends Module implements BootstrapInterface
 {
 
     public $params;
+    public $version = '1.0';
     public $controllerNamespace = 'bizley\podium\controllers';
     protected $_config;
     protected $_installed       = false;
