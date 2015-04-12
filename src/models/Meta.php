@@ -21,6 +21,7 @@ use bizley\podium\components\Helper;
  * @property string $signature
  * @property integer $gravatar
  * @property string $avatar
+ * @property integer $created_at
  * @property integer $updated_at
  */
 class Meta extends ActiveRecord

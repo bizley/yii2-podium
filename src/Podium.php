@@ -4,6 +4,7 @@ namespace bizley\podium;
 
 use bizley\podium\components\Config;
 use bizley\podium\components\Installation;
+use bizley\podium\models\Activity;
 use Yii;
 use yii\base\BootstrapInterface;
 use yii\base\Module;
@@ -13,7 +14,7 @@ class Podium extends Module implements BootstrapInterface
 {
 
     public $params;
-    public $version = '1.0';
+    public $version             = '1.0';
     public $controllerNamespace = 'bizley\podium\controllers';
     protected $_config;
     protected $_installed       = false;
@@ -24,29 +25,35 @@ class Podium extends Module implements BootstrapInterface
             new GroupUrlRule([
                 'prefix' => 'podium',
                 'rules'  => [
-                    'home'                        => 'default/index',
-                    'install'                     => 'install/run',
-                    'login'                       => 'account/login',
-                    'logout'                      => 'profile/logout',
-                    'register'                    => 'account/register',
-                    'reactivate'                  => 'account/reactivate',
-                    'reset'                       => 'account/reset',
-                    'activate/<token:[\w\-]+>'    => 'account/activate',
-                    'password/<token:[\w\-]+>'    => 'account/password',
-                    'new-email/<token:[\w\-]+>'   => 'account/new-email',
-                    'admin/view/<id:\d+>'         => 'admin/view',
-                    'admin/pm/<id:\d+>'           => 'admin/pm',
-                    'admin/update/<id:\d+>'       => 'admin/update',
-                    'admin/delete/<id:\d+>'       => 'admin/delete',
-                    'admin/ban/<id:\d+>'          => 'admin/ban',
-                    'admin/edit-forum/<id:\d+>'   => 'admin/edit-forum',
-                    'admin/delete-forum/<id:\d+>' => 'admin/delete-forum',
-                    'admin'                       => 'admin/index',
-                    'profile'                     => 'profile/index',
-                    'messages/view/<id:\d+>'      => 'messages/view',
-                    'messages/reply/<id:\d+>'     => 'messages/reply',
-                    'messages/delete/<id:\d+>'    => 'messages/delete',
-                    'users/view/<id:\d+>'         => 'users/view',
+                    'home'                                    => 'default/index',
+                    'category/<id:\d+>/<slug:[\w\-]+>'        => 'default/category',
+                    'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/forum',
+                    'install'                                 => 'install/run',
+                    'login'                                   => 'account/login',
+                    'logout'                                  => 'profile/logout',
+                    'register'                                => 'account/register',
+                    'reactivate'                              => 'account/reactivate',
+                    'reset'                                   => 'account/reset',
+                    'activate/<token:[\w\-]+>'                => 'account/activate',
+                    'password/<token:[\w\-]+>'                => 'account/password',
+                    'new-email/<token:[\w\-]+>'               => 'account/new-email',
+                    'admin/view/<id:\d+>'                     => 'admin/view',
+                    'admin/pm/<id:\d+>'                       => 'admin/pm',
+                    'admin/update/<id:\d+>'                   => 'admin/update',
+                    'admin/delete/<id:\d+>'                   => 'admin/delete',
+                    'admin/ban/<id:\d+>'                      => 'admin/ban',
+                    'admin/forums/<cid:\d+>'                  => 'admin/forums',
+                    'admin/edit-forum/<cid:\d+>/<id:\d+>'     => 'admin/edit-forum',
+                    'admin/new-forum/<cid:\d+>'               => 'admin/new-forum',
+                    'admin/edit-category/<id:\d+>'            => 'admin/edit-category',
+                    'admin/delete-forum/<cid:\d+>/<id:\d+>'   => 'admin/delete-forum',
+                    'admin/delete-category/<id:\d+>'          => 'admin/delete-category',
+                    'admin'                                   => 'admin/index',
+                    'profile'                                 => 'profile/index',
+                    'messages/view/<id:\d+>'                  => 'messages/view',
+                    'messages/reply/<id:\d+>'                 => 'messages/reply',
+                    'messages/delete/<id:\d+>'                => 'messages/delete',
+                    'members/view/<id:\d+>'                   => 'members/view',
                 ],
                     ])
                 ], false);
@@ -150,4 +157,10 @@ class Podium extends Module implements BootstrapInterface
         return $this->_config;
     }
 
+    public function afterAction($action, $result)
+    {
+        $result = parent::afterAction($action, $result);
+        Activity::add();
+        return $result;
+    }
 }

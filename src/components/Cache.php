@@ -10,6 +10,15 @@ use yii\widgets\FragmentCache;
 
 /**
  * Cache helper
+ * 
+ * List of keys:
+ * config => Podium configuration
+ * members.fieldlist => list of active users w/pages
+ * user.newmessages => list of users' new messages count
+ * forum.lastactive => number of last active users
+ * forum.memberscount => number of activated and banned users
+ * forum.threadscount => number of forum threads
+ * forum.postscount => number of forum posts
  */
 class Cache
 {
@@ -48,9 +57,9 @@ class Cache
         return $this->cache->get($this->_cachePrefix . $key);
     }
     
-    public function set($key, $value)
+    public function set($key, $value, $duration = 0)
     {
-        return $this->cache->set($this->_cachePrefix . $key, $value);
+        return $this->cache->set($this->_cachePrefix . $key, $value, $duration);
     }
     
     public function delete($key)
@@ -67,14 +76,14 @@ class Cache
         return false;
     }
     
-    public function setElement($key, $element, $value)
+    public function setElement($key, $element, $value, $duration = 0)
     {
         $cache = $this->get($key);
         if ($cache === false) {
             $cache = [];
         }
         $cache[$element] = $value;
-        return $this->set($key, $cache);
+        return $this->set($key, $cache, $duration);
     }
     
     public function deleteElement($key, $element)
@@ -87,10 +96,11 @@ class Cache
         return true;
     }
     
-    public function beginCache($key, $view)
+    public function beginCache($key, $view, $duration = 60)
     {
         $properties['id'] = $this->_cachePrefix . $key;
         $properties['view'] = $view;
+        $properties['duration'] = $duration;
 
         $cache = FragmentCache::begin($properties);
         if ($cache->getCachedContent() !== false) {

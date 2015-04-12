@@ -1,6 +1,14 @@
-<tr>
-    <td><a href="" class="center-block">Nazwa forum</a><small>forum subtitle</small></td>
-    <td class="text-right">65</td>
-    <td class="text-right">1245</td>
-    <td><a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small></td>
-</tr>
+<?php
+
+use yii\helpers\Html;
+use yii\helpers\Url;
+
+?><td>
+    <a href="<?= Url::to(['forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block"><?= Html::encode($model->name) ?></a>
+<?php if (!empty($model->sub)): ?>
+    <small><?= Html::encode($model->sub) ?></small>
+<?php endif; ?>
+</td>
+<td class="text-right"><?= $model->getThreadsCount() ?></td>
+<td class="text-right"><?= $model->getPostsCount() ?></td>
+<td><?= $model->getLatestPost() ?></td>

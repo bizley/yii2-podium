@@ -38,7 +38,9 @@ class ConfigForm extends Model
                         return false;
                     }                            
                 }
-                else return false;
+                else {
+                    return false;
+                }
             }
         }
         

@@ -59,102 +59,117 @@ class Installation extends Component
         [
             'table'   => 'config',
             'call'    => 'createConfig',
-            'percent' => 5
+            'percent' => 1
         ],
         [
             'table'   => 'config',
             'call'    => 'addConfig',
-            'percent' => 5
+            'percent' => 4
+        ],
+        [
+            'table'   => 'category',
+            'call'    => 'createCategory',
+            'percent' => 7
         ],
         [
             'table'   => 'forum',
             'call'    => 'createForum',
-            'percent' => 6
+            'percent' => 10
         ],
         [
             'table'   => 'thread',
             'call'    => 'createThread',
-            'percent' => 7
+            'percent' => 13
         ],
         [
             'table'   => 'post',
             'call'    => 'createPost',
-            'percent' => 8
+            'percent' => 16
         ],
         [
             'table'   => 'vocabulary',
             'call'    => 'createVocabulary',
-            'percent' => 9
+            'percent' => 19
         ],
         [
             'table'   => 'vocabulary',
             'call'    => 'createVocabularyIndex',
-            'percent' => 10
+            'percent' => 21
         ],
         [
             'table'   => 'vocabulary_junction',
             'call'    => 'createVocabularyJunction',
-            'percent' => 11
+            'percent' => 24
         ],
         [
             'table'   => 'message',
             'call'    => 'createMessage',
-            'percent' => 12
+            'percent' => 27
         ],
         [
             'table'   => 'message',
             'call'    => 'createMessageSenderIndex',
-            'percent' => 15
+            'percent' => 30
         ],
         [
             'table'   => 'message',
             'call'    => 'createMessageReceiverIndex',
-            'percent' => 20
+            'percent' => 33
         ],
         [
             'table'   => 'auth_rule',
             'call'    => 'createAuthRule',
-            'percent' => 25
+            'percent' => 36
         ],
         [
             'table'   => 'auth_item',
             'call'    => 'createAuthItem',
-            'percent' => 30
+            'percent' => 39
         ],
         [
             'table'   => 'auth_item',
             'call'    => 'createAuthItemIndex',
-            'percent' => 35
+            'percent' => 42
         ],
         [
             'table'   => 'auth_item_child',
             'call'    => 'createAuthItemChild',
-            'percent' => 40
+            'percent' => 45
         ],
         [
             'table'   => 'auth_assignment',
             'call'    => 'createAuthAssignment',
-            'percent' => 45
+            'percent' => 48
         ],
         [
             'table'   => 'auth_rule',
             'call'    => 'addRules',
-            'percent' => 50
+            'percent' => 51
         ],
         [
             'table'   => 'user',
             'call'    => 'createUser',
-            'percent' => 55
+            'percent' => 54
         ],
         [
             'table'   => 'user_meta',
             'call'    => 'createUserMeta',
-            'percent' => 60
+            'percent' => 57
         ],
         [
             'table'   => 'user_ignore',
             'call'    => 'createUserIgnore',
-            'percent' => 61
+            'percent' => 60
+        ],
+        [
+            'table'   => 'user_activity',
+            'call'    => 'createUserActivity',
+            'percent' => 63
+        ],
+        [
+            'table'   => 'user_activity',
+            'call'    => 'createUserActivityIndex',
+            'percent' => 66
         ],
         [
             'table'   => 'user',
@@ -200,7 +215,7 @@ class Installation extends Component
                             Html::tag('pre', $e->getMessage()));
         }
     }
-    
+
     /**
      * Adds Config settings.
      * @return string Result message.
@@ -208,8 +223,9 @@ class Installation extends Component
     protected function _addConfig()
     {
         try {
-            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name', 'value'], [['name', 'Podium'], ['version', '1.0']])->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));            
+            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name',
+                'value'], [['name', 'Podium'], ['version', '1.0']])->execute();
+            return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
         }
         catch (Exception $e) {
             $this->_errors = true;
@@ -444,6 +460,24 @@ class Installation extends Component
     }
 
     /**
+     * Creates Category database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createCategory($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+        ]);
+    }
+
+    /**
      * Creates Forum database table.
      * @param string $name Table name.
      * @return string Result message.
@@ -451,14 +485,16 @@ class Installation extends Component
     protected function _createForum($name)
     {
         return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'sub'        => Schema::TYPE_STRING,
-                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'id'          => Schema::TYPE_PK,
+                    'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'name'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'sub'         => Schema::TYPE_STRING,
+                    'slug'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
 
@@ -602,6 +638,7 @@ class Installation extends Component
                     'email_token'          => Schema::TYPE_STRING,
                     'email'                => Schema::TYPE_STRING . ' NOT NULL',
                     'new_email'            => Schema::TYPE_STRING,
+                    'anonymous'            => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'role'                 => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'timezone'             => Schema::TYPE_STRING . '(45)',
@@ -610,6 +647,37 @@ class Installation extends Component
         ]);
     }
 
+    /**
+     * Creates User Activity database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUserActivity($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER,
+                    'username'   => Schema::TYPE_STRING,
+                    'user_role'  => Schema::TYPE_INTEGER,
+                    'url'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'ip'         => Schema::TYPE_STRING . '(15)',
+                    'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates User Activity database table index.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUserActivityIndex($name)
+    {
+        return $this->_createIndex('idx-podium_user_activity-ip', $name, 'ip');
+    }
+    
     /**
      * Creates User Ignore database table.
      * @param string $name Table name.

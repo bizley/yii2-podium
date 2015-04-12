@@ -1,4 +1,6 @@
 <?php
+
+use bizley\podium\components\Config;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
@@ -37,11 +39,11 @@ else {
             ['label' => Yii::t('podium/view', 'New Message'), 'url' => ['messages/new']],
         ]
     ];
-    $items[] = ['label' => Yii::t('podium/layout', 'Logout ({USER})', ['USER' => Yii::$app->user->identity->username]), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
+    $items[] = ['label' => Yii::t('podium/layout', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
 }
 
 NavBar::begin([
-    'brandLabel'            => 'Podium',
+    'brandLabel'            => Config::getInstance()->get('name'),
     'brandUrl'              => ['default/index'],
     'options'               => ['class' => 'navbar-inverse navbar-default',],
     'innerContainerOptions' => ['class' => 'container-fluid',]

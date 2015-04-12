@@ -12,19 +12,17 @@ use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 /**
- * Forum model
+ * Category model
  *
  * @property integer $id
- * @property integer $category_id
  * @property string $name
- * @property string $sub
  * @property string $slug
  * @property integer $visible
  * @property integer $sort
  * @property integer $updated_at
  * @property integer $created_at
  */
-class Forum extends ActiveRecord
+class Category extends ActiveRecord
 {
 
     /**
@@ -32,7 +30,7 @@ class Forum extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%podium_forum}}';
+        return '{{%podium_category}}';
     }
 
     /**
@@ -57,7 +55,7 @@ class Forum extends ActiveRecord
         return [
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
-            [['name', 'sub'], 'validateName'],
+            ['name', 'validateName'],
         ];
     }
     
@@ -75,27 +73,24 @@ class Forum extends ActiveRecord
         }
     }
     
-    public function getThreadsCount()
-    {
-        return 0;
-    }
-    
-    public function getPostsCount()
-    {
-        return 0;
-    }
-    
-    public function getLatestPost()
-    {
-        //<a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
-        return '';
-    }
-    
-    public function search($category_id = null)
+    public function show()
     {
         $query = self::find();
-        if ($category_id) {
-            $query->where(['category_id' => $category_id]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
+
+        return $dataProvider->getModels();
+    }
+    
+    public function search()
+    {
+        $query = self::find();
+        if (Yii::$app->user->isGuest) {
+            $query->where(['visible' => 1]);
         }
 
         $dataProvider = new ActiveDataProvider([

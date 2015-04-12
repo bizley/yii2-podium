@@ -1,9 +1,10 @@
 <?php
 
+use bizley\podium\components\Helper;
+use bizley\podium\models\User;
+use cebe\gravatar\Gravatar;
 use yii\helpers\Html;
 use yii\web\View;
-use bizley\podium\models\User;
-use bizley\podium\components\Helper;
 
 $this->title                   = Yii::t('podium/view', 'Member View');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
@@ -17,7 +18,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 
 <br>
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-9">
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="pull-right">
@@ -49,10 +50,12 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                         <?= Helper::statusLabel($model->status) ?>
                     </small>
                 </h2>
+                
                 <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
 <?php if ($model->status == User::STATUS_REGISTERED): ?>
                 <p><em><?= Yii::t('podium/view', 'The account is awaiting activation.') ?></em></p>
 <?php else: ?>
+                <p><?= Yii::t('podium/view', 'Last action') ?>: <code><?= Html::encode($model->activity->url) ?></code> <small><?= Yii::t('podium/view', 'IP') ?>: <code><?= Html::encode($model->activity->ip) ?></code> <?= Yii::t('podium/view', 'Date') ?>: <?= Yii::$app->formatter->asDatetime($model->updated_at) ?> (<?= Yii::$app->formatter->asRelativeTime($model->activity->updated_at) ?>)</small></p>
                 <p>
                     <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {NAME}', ['NAME' => Html::encode($model->getPodiumName())]) ?></a> 
                     <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {NAME}', ['NAME' => Html::encode($model->getPodiumName())]) ?></a>
@@ -66,5 +69,21 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                 </ul>
             </div>
         </div>
+    </div>
+    <div class="col-sm-3">
+<?php if (!empty($model->meta->gravatar)): ?>
+        <?= Gravatar::widget([
+            'email' => $model->email,
+            'defaultImage' => 'identicon',
+            'rating' => 'r',
+            'options' => [
+                'alt' => Yii::t('podium/view', 'Your Gravatar image'),
+                'class' => 'img-circle img-responsive',
+            ]]); ?>
+<?php elseif (!empty($model->avatar)): ?>
+        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
+<?php else: ?>
+        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
+<?php endif; ?>
     </div>
 </div>

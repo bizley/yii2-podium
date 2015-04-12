@@ -209,6 +209,7 @@ class AccountController extends Controller
             $model->setScenario('token');
             if ($model->activate()) {
                 Cache::getInstance()->delete('members.fieldlist');
+                Cache::getInstance()->delete('forum.memberscount');
                 $this->success('Your account has been activated.');
             }
             else {

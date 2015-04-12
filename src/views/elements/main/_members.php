@@ -1,14 +1,31 @@
-<div class="panel panel-default">
+<?php
+
+use bizley\podium\components\Helper;
+use bizley\podium\models\Activity;
+
+$lastActive = Activity::lastActive();
+
+?><div class="panel panel-default">
     <div class="panel-body small">
-        306 active users (in the past 15 minutes)<br>
-        18 members, 287 guests, 1 anonymous users
+        <p>
+            <?= Yii::t('podium/view', '{n, plural, =1{# active user} other{# active users}} (in the past 15 minutes)', ['n' => !empty($lastActive['count']) ? $lastActive['count'] : 0]) ?><br>
+            <?= Yii::t('podium/view', '{n, plural, =1{# member} other{# members}}', ['n' => !empty($lastActive['members']) ? $lastActive['members'] : 0]) ?>, 
+            <?= Yii::t('podium/view', '{n, plural, =1{# guest} other{# guests}}', ['n' => !empty($lastActive['guests']) ? $lastActive['guests'] : 0]) ?>, 
+            <?= Yii::t('podium/view', '{n, plural, =1{# anonymous user} other{# anonymous users}}', ['n' => !empty($lastActive['anonymous']) ? $lastActive['anonymous'] : 0]) ?>
+        </p>
+<?php if (!empty($lastActive['names'])): ?>
+        <p>
+<?php foreach ($lastActive['names'] as $id => $name): ?>
+            <?= Helper::podiumUserTag($name['name'], $name['role'], $id) ?>
+<?php endforeach; ?>
+        </p>
+<?php endif; ?>
     </div>
     <div class="panel-footer small">
         <ul class="list-inline">
-            <li>Members <span class="badge">4</span></li>
-            <li>Threads <span class="badge">4</span></li>
-            <li>Posts <span class="badge">4</span></li>
-            <li>Views <span class="badge">4</span></li>
+            <li><?= Yii::t('podium/view', 'Members') ?> <span class="badge"><?= Activity::totalMembers() ?></span></li>
+            <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= Activity::totalThreads() ?></span></li>
+            <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge"><?= Activity::totalPosts() ?></span></li>
         </ul>                
     </div>
 </div>

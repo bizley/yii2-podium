@@ -29,6 +29,8 @@ use yii\web\IdentityInterface;
  * @property string $new_email
  * @property string $auth_key
  * @property integer $status
+ * @property integer $role
+ * @property integer $anonymous
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $current_password write-only password
@@ -68,7 +70,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class'     => SluggableBehavior::className(),
                 'attribute' => 'username'
             ]
         ];
@@ -81,7 +83,8 @@ class User extends ActiveRecord implements IdentityInterface
             'token'          => [],
             'ban'            => [],
             'passwordChange' => ['password', 'password_repeat'],
-            'account'        => ['username', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
+            'account'        => ['username', 'anonymous', 'new_email', 'password',
+                'password_repeat', 'timezone', 'current_password'],
         ];
     }
 
@@ -102,13 +105,14 @@ class User extends ActiveRecord implements IdentityInterface
             ['password', 'compare'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
+            ['anonymous', 'boolean'],
             ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
         ];
     }
-    
+
     /**
      * Validates username
      * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
@@ -122,10 +126,15 @@ class User extends ActiveRecord implements IdentityInterface
             }
         }
     }
-    
+
     public function getMeta()
     {
         return $this->hasOne(Meta::className(), ['user_id' => 'id']);
+    }
+
+    public function getActivity()
+    {
+        return $this->hasOne(Activity::className(), ['user_id' => 'id']);
     }
 
     public function passwordRequirements()
@@ -138,7 +147,7 @@ class User extends ActiveRecord implements IdentityInterface
             $this->addError('password', Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
     }
-    
+
     public function validateCurrentPassword($attribute)
     {
         if (!$this->hasErrors()) {
@@ -261,7 +270,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne(['email_token' => $token, 'status' => self::STATUS_ACTIVE]);
     }
-    
+
     /**
      * Finds out if password reset token is valid
      *
@@ -272,7 +281,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return self::isTokenValid($token, Podium::getInstance()->getParam('passwordResetTokenExpire', 24 * 60 * 60));
     }
-    
+
     public static function isEmailTokenValid($token)
     {
         return self::isTokenValid($token, Podium::getInstance()->getParam('emailTokenExpire', 24 * 60 * 60));
@@ -288,7 +297,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return self::isTokenValid($token, Podium::getInstance()->getParam('activationTokenExpire', 3 * 24 * 60 * 60));
     }
-    
+
     public static function isTokenValid($token, $expire)
     {
         if (empty($token)) {
@@ -359,7 +368,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
-    
+
     /**
      * Generates new email token
      */
@@ -375,7 +384,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
-    
+
     /**
      * Removes email token
      */
@@ -430,10 +439,10 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $this->save();
     }
-    
+
     public function changeEmail()
     {
-        $this->email = $this->new_email;
+        $this->email     = $this->new_email;
         $this->new_email = null;
         $this->removeEmailToken();
 
@@ -448,54 +457,57 @@ class User extends ActiveRecord implements IdentityInterface
         if ($this->new_email) {
             $this->generateEmailToken();
         }
-        
+
         return $this->save();
     }
-    
+
     public function getPodiumName()
     {
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
     }
-    
+
     public function getPodiumTag($simple = false)
     {
         return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $simple);
     }
-    
+
     public function isIgnoredBy($user_id)
     {
         $query = new Query;
-        if ($query->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id, 'ignored_id' => $this->id])->exists()) {
+        if ($query->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id,
+                    'ignored_id' => $this->id])->exists()) {
             return true;
         }
         return false;
     }
-    
+
     public function getNewMessagesCount()
     {
         $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from('{{%podium_message}}')->where(['receiver_id' => $this->id, 'receiver_status' => Message::STATUS_NEW])->count();
+            $cache = (new Query)->from('{{%podium_message}}')->where(['receiver_id' => $this->id,
+                        'receiver_status' => Message::STATUS_NEW])->count();
             Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
         }
-        
+
         return $cache;
     }
-    
+
     public function getTimeZone()
     {
         return !empty($this->timezone) ? $this->timezone : 'UTC';
     }
-    
+
     public function ban()
     {
         $this->status = self::STATUS_BANNED;
         return $this->save();
     }
-    
+
     public function unban()
     {
         $this->status = self::STATUS_ACTIVE;
         return $this->save();
     }
+
 }

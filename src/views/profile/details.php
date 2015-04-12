@@ -45,6 +45,11 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model, 'anonymous')->checkbox(['uncheck' => 0])->label(Yii::t('podium/view', 'Hide username while forum viewing')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model, 'new_email')->textInput([
                             'placeholder' => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
                             'data-container' => 'body',
