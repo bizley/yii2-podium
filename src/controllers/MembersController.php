@@ -5,8 +5,10 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\models\User;
+use bizley\podium\models\UserSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;
@@ -95,4 +97,74 @@ class MembersController extends Controller
         return $cache[$query . '-' . $currentPage];
     }
 
+    public function actionIndex()
+    {
+        $searchModel  = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get(), true);
+
+        return $this->render('index', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel
+        ]);
+    }
+    
+    public function actionView($id = null)
+    {
+        $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
+        
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+            return $this->redirect(['index']);
+        }
+        
+        return $this->render('view', [
+            'model' => $model
+        ]);
+    }
+    
+    public function actionIgnore($id = null)
+    {
+        try {
+            $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
+
+            if (empty($model)) {
+                $this->error('Sorry! We can not find Member with this ID.');
+            }
+            elseif ($model->id == Yii::$app->user->id) {
+                $this->error('Sorry! You can not ignore your own account.');
+            }
+            elseif ($model->id == User::ROLE_ADMIN) {
+                $this->error('Sorry! You can not ignore Administrator.');
+            }
+            else {
+
+                if ($model->isIgnoredBy(Yii::$app->user->id)) {
+
+                    Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => Yii::$app->user->id, ':iid' => $model->id])->execute();
+                    $this->success('User has been unignored.');                    
+                }
+                else {
+                    Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => Yii::$app->user->id, 'ignored_id' => $model->id])->execute();
+                    $this->success('User has been ignored.');
+                }
+            }
+        }
+        catch (Exception $e) {
+            $this->error('Sorry! There was some error while performing this action.');
+            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+        }
+        
+        return $this->redirect(['index']);
+    }
+    
+    public function actionMods()
+    {
+        $searchModel  = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get(), true, true);
+
+        return $this->render('mods', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel
+        ]);
+    }
 }                

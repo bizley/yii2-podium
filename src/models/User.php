@@ -473,8 +473,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function isIgnoredBy($user_id)
     {
-        $query = new Query;
-        if ($query->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id,
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id,
                     'ignored_id' => $this->id])->exists()) {
             return true;
         }

@@ -1,12 +1,13 @@
 <?php
 
-use yii\grid\GridView;
+use bizley\podium\components\Helper;
+use bizley\podium\models\User;
+use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
+use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
-use yii\helpers\ArrayHelper;
-use bizley\podium\models\User;
-use bizley\podium\components\Helper;
 
 $this->title = Yii::t('podium/view', 'Forum Members');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
@@ -31,6 +32,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 
 <br>
 
+<?= PageSizer::widget() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,

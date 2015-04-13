@@ -19,6 +19,7 @@ else {
     if (Yii::$app->user->can('settings')) {
         $items[] = ['label' => Yii::t('podium/layout', 'Administration'), 'url' => ['admin/index']];
     }
+    $items[] = ['label' => Yii::t('podium/layout', 'Members'), 'url' => ['members/index']];
     $items[] = [
         'label' => Yii::t('podium/layout', 'Profile'), 
         'url' => ['profile/index'],
