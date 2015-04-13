@@ -608,14 +608,16 @@ class Installation extends Component
     protected function _createThread($name)
     {
         return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'pinned'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'id'          => Schema::TYPE_PK,
+                    'name'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'pinned'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
                     'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
@@ -677,7 +679,7 @@ class Installation extends Component
     {
         return $this->_createIndex('idx-podium_user_activity-ip', $name, 'ip');
     }
-    
+
     /**
      * Creates User Ignore database table.
      * @param string $name Table name.

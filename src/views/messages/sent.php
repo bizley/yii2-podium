@@ -33,6 +33,7 @@ $this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
+    'filterSelector' => 'select#per-page',
     'tableOptions' => ['class' => 'table table-striped table-hover'],
     'columns'      => [
         [

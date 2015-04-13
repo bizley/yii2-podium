@@ -90,7 +90,7 @@ class Category extends ActiveRecord
     {
         $query = self::find();
         if (Yii::$app->user->isGuest) {
-            $query->where(['visible' => 1]);
+            $query->andWhere(['visible' => 1]);
         }
 
         $dataProvider = new ActiveDataProvider([

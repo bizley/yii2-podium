@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 /**
@@ -73,4 +74,35 @@ class Thread extends ActiveRecord
         }
     }
     
+    public function getRepliesCount()
+    {
+        return 0;
+    }
+    
+    public function getViewsCount()
+    {
+        return 0;
+    }
+    
+    public function getLatestPost()
+    {
+        //<a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
+        return '';
+    }
+    
+    public function search($forum_id = null)
+    {
+        $query = self::find();
+        if ($forum_id) {
+            $query->where(['forum_id' => (int)$forum_id]);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+
+        return $dataProvider;
+    }
 }

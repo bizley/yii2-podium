@@ -36,6 +36,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
+    'filterSelector' => 'select#per-page',
     'tableOptions' => ['class' => 'table table-striped table-hover'],
     'columns'      => [
         [

@@ -25,6 +25,7 @@ echo Html::endTag('ul'); ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel'  => $searchModel,
+    'filterSelector' => 'select#per-page',
     'tableOptions' => ['class' => 'table table-striped table-hover'],
     'columns'      => [
         [
