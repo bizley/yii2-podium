@@ -9,6 +9,6 @@ use yii\helpers\Url;
     <small class="text-muted"><?= Html::encode($model->sub) ?></small>
 <?php endif; ?>
 </td>
-<td class="text-right"><?= $model->getThreadsCount() ?></td>
-<td class="text-right"><?= $model->getPostsCount() ?></td>
+<td class="text-right"><?= $model->threads ?></td>
+<td class="text-right"><?= $model->posts ?></td>
 <td><?= $model->getLatestPost() ?></td>

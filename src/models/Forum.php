@@ -75,16 +75,6 @@ class Forum extends ActiveRecord
         }
     }
     
-    public function getThreadsCount()
-    {
-        return 0;
-    }
-    
-    public function getPostsCount()
-    {
-        return 0;
-    }
-    
     public function getLatestPost()
     {
         //<a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>

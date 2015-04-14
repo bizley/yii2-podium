@@ -2,10 +2,10 @@
 
 namespace bizley\podium\controllers;
 
-use Yii;
-use yii\web\Controller;
-use yii\helpers\Json;
 use bizley\podium\components\Installation;
+use Yii;
+use yii\helpers\Json;
+use yii\web\Controller;
 
 class InstallController extends Controller
 {

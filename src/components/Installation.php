@@ -492,6 +492,8 @@ class Installation extends Component
                     'slug'        => Schema::TYPE_STRING . ' NOT NULL',
                     'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
                     'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                     'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',

@@ -5,7 +5,7 @@ use yii\helpers\Url;
 
 ?><td>
     <a href="<?= Url::to(['thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block">
-        <span class="glyphicon glyphicon-comment"></span>
+        <span class="glyphicon glyphicon-comment" style="padding-right:10px"></span>
         <?= Html::encode($model->name) ?>
     </a>
 </td>

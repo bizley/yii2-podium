@@ -3,6 +3,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Cache;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
@@ -139,6 +140,9 @@ class DefaultController extends Controller
                             $transaction = Thread::getDb()->beginTransaction();
                             try {
                                 if ($model->save()) {
+                                    
+                                    $forum->updateCounters(['threads' => 1]);
+                                    
                                     $post = new Post;
                                     $post->content   = $model->post;
                                     $post->thread_id = $model->id;
@@ -147,11 +151,17 @@ class DefaultController extends Controller
                                     $post->likes     = 0;
                                     $post->dislikes  = 0;
                                     $post->save();
+                                    
+                                    $forum->updateCounters(['posts' => 1]);
                                 }
     
                                 $transaction->commit();
+                                
+                                Cache::getInstance()->delete('forum.threadscount');
+                                Cache::getInstance()->delete('forum.postscount');
                                 $this->success('New thread has been created.');
-                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $model->id]);
+                                
+                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $model->id, 'slug' => $model->slug]);
                             }
                             catch (Exception $e) {
                                 $transaction->rollBack();
@@ -169,5 +179,48 @@ class DefaultController extends Controller
                 'forum' => $forum,
             ]);
         }
+    }
+    
+    public function actionThread($cid = null, $fid = null, $id = null, $slug = null)
+    {
+        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+        
+        $conditions = ['id' => (int)$cid];
+        if (Yii::$app->user->isGuest) {
+            $conditions['visible'] = 1;
+        }
+        $category = Category::findOne($conditions);
+        
+        if (!$category) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+        else {
+            $conditions = ['id' => (int)$fid, 'category_id' => $category->id];
+            if (Yii::$app->user->isGuest) {
+                $conditions['visible'] = 1;
+            }
+            $forum = Forum::findOne($conditions);
+            if (!$forum) {
+                $this->error('Sorry! We can not find the thread you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $model = Thread::findOne(['id' => (int)$id, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+                if (!$model) {
+                    $this->error('Sorry! We can not find the thread you are looking for.');
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+        
+        return $this->render('thread', [
+            'model' => $model,
+            'category' => $category,
+            'forum' => $forum,
+        ]);
     }
 }
