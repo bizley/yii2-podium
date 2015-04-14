@@ -55,7 +55,7 @@ class Post extends ActiveRecord
         return [
             ['content', 'required'],
             ['content', 'filter', 'filter' => function($value) {
-                    return HtmlPurifier::process($value, Helper::podiumPurifier());
+                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
                 }],
         ];
     }

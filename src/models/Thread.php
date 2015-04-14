@@ -5,11 +5,13 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Helper;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\helpers\HtmlPurifier;
 
 /**
  * Thread model
@@ -17,6 +19,7 @@ use yii\db\ActiveRecord;
  * @property integer $id
  * @property string $name
  * @property string $slug
+ * @property integer $category_id
  * @property integer $forum_id
  * @property integer $author_id
  * @property integer $pinned
@@ -26,6 +29,8 @@ use yii\db\ActiveRecord;
 class Thread extends ActiveRecord
 {
 
+    public $post;
+    
     /**
      * @inheritdoc
      */
@@ -54,7 +59,11 @@ class Thread extends ActiveRecord
     public function rules()
     {
         return [
-            ['name', 'required'],
+            ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
+            ['post', 'required', 'on' => ['new']],
+            ['post', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+            }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['name', 'validateName'],
         ];

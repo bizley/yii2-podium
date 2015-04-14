@@ -8,8 +8,17 @@ use yii\helpers\Url;
         <h4 class="panel-title">
             <a href="<?= Url::to(['forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
         </h4>
+<?php if (!empty($model->sub)): ?>
+        <small class="text-muted"><?= Html::encode($model->sub) ?></small>
+<?php endif; ?>
     </div>
-    <div id="threads<?= $model->id ?>" role="tabpanel" aria-labelledby="forum<?= $model->id ?>">
+    <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="forum<?= $model->id ?>">
         <?= $this->render('/elements/forum/_threads', ['forum' => $model->id]) ?>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body small text-right">
+        <a href="">RSS</a>
     </div>
 </div>

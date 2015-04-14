@@ -2,8 +2,12 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
+use bizley\podium\models\Post;
+use bizley\podium\models\Thread;
+use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -18,10 +22,10 @@ class DefaultController extends Controller
                 'rules' => [
                     [
                         'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
+                        'matchCallback' => function () {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function ($rule, $action) {
+                        'denyCallback' => function () {
                             return $this->redirect(['install/run']);
                         }
                     ],
@@ -30,6 +34,7 @@ class DefaultController extends Controller
                     ],
                 ],
             ],
+            'flash' => FlashBehavior::className(),
         ];
     }
     
@@ -94,5 +99,75 @@ class DefaultController extends Controller
             'model' => $model,
             'category' => $category,
         ]);
+    }
+    
+    public function actionNewThread($cid = null, $fid = null)
+    {
+        if (!Yii::$app->user->can('createThread')) {
+            $this->error('Sorry! You do not have the required permission to perform this action.');
+        }
+        else {
+            if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1) {
+                $this->error('Sorry! We can not find the forum you are looking for.');
+                return $this->redirect(['index']);
+            }
+
+            $category = Category::findOne((int)$cid);
+
+            if (!$category) {
+                $this->error('Sorry! We can not find the forum you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $forum = Forum::findOne(['id' => (int)$fid, 'category_id' => $category->id]);
+                if (!$forum) {
+                    $this->error('Sorry! We can not find the forum you are looking for.');
+                    return $this->redirect(['index']);
+                }
+                else {
+                    $model = new Thread;
+                    $model->setScenario('new');
+                    
+                    if ($model->load(Yii::$app->request->post())) {
+                        
+                        $model->category_id = $category->id;
+                        $model->forum_id = $forum->id;
+                        $model->author_id = Yii::$app->user->id;
+                        
+                        if ($model->validate()) {
+                        
+                            $transaction = Thread::getDb()->beginTransaction();
+                            try {
+                                if ($model->save()) {
+                                    $post = new Post;
+                                    $post->content   = $model->post;
+                                    $post->thread_id = $model->id;
+                                    $post->forum_id  = $model->forum_id;
+                                    $post->author_id = Yii::$app->user->id;
+                                    $post->likes     = 0;
+                                    $post->dislikes  = 0;
+                                    $post->save();
+                                }
+    
+                                $transaction->commit();
+                                $this->success('New thread has been created.');
+                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $model->id]);
+                            }
+                            catch (Exception $e) {
+                                $transaction->rollBack();
+                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $this->render('new-thread', [
+                'model' => $model,
+                'category' => $category,
+                'forum' => $forum,
+            ]);
+        }
     }
 }

@@ -229,7 +229,7 @@ class Installation extends Component
         }
         catch (Exception $e) {
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during settings adding'));
+            return $this->_outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
         }
     }
 

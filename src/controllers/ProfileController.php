@@ -2,15 +2,16 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\models\Meta;
+use bizley\podium\models\User;
+use Exception;
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\helpers\Url;
 use yii\helpers\FileHelper;
+use yii\helpers\Url;
+use yii\web\Controller;
 use yii\web\UploadedFile;
-use bizley\podium\models\User;
-use bizley\podium\models\Meta;
-use bizley\podium\behaviors\FlashBehavior;
 
 class ProfileController extends Controller
 {
@@ -93,7 +94,7 @@ class ProfileController extends Controller
                                         . 'Unfortunately there was some error while sending you the activation link. '
                                         . 'Contact administrator about this problem.');
                             }
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             $this->warning('Your account has been updated but your new e-mail address is not active yet. '
                                     . 'Unfortunately there was some error while sending you the activation link. '
                                     . 'Contact administrator about this problem.');
