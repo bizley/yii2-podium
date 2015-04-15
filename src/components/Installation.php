@@ -617,6 +617,8 @@ class Installation extends Component
                     'forum_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
                     'author_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
                     'pinned'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'views'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                     'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',

@@ -15,6 +15,7 @@ use yii\web\Controller;
 
 class DefaultController extends Controller
 {
+
     public function behaviors()
     {
         return [
@@ -22,7 +23,7 @@ class DefaultController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'allow' => false,
+                        'allow'         => false,
                         'matchCallback' => function () {
                             return !$this->module->getInstalled();
                         },
@@ -38,70 +39,70 @@ class DefaultController extends Controller
             'flash' => FlashBehavior::className(),
         ];
     }
-    
+
     public function actionIndex()
     {
         $dataProvider = (new Category())->search();
-        
+
         return $this->render('index', [
-            'dataProvider' => $dataProvider
+                    'dataProvider' => $dataProvider
         ]);
     }
-    
+
     public function actionCategory($id = null, $slug = null)
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the category you are looking for.');
             return $this->redirect(['index']);
         }
-        
-        $conditions = ['id' => (int)$id, 'slug' => $slug];
+
+        $conditions = ['id' => (int) $id, 'slug' => $slug];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
         $model = Category::findOne($conditions);
-        
+
         if (!$model) {
             $this->error('Sorry! We can not find the category you are looking for.');
             return $this->redirect(['index']);
         }
-        
+
         return $this->render('category', [
-            'model' => $model
+                    'model' => $model
         ]);
     }
-    
+
     public function actionForum($cid = null, $id = null, $slug = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the forum you are looking for.');
             return $this->redirect(['index']);
         }
-        
-        $conditions = ['id' => (int)$cid];
+
+        $conditions = ['id' => (int) $cid];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
         $category = Category::findOne($conditions);
-        
+
         if (!$category) {
             $this->error('Sorry! We can not find the forum you are looking for.');
             return $this->redirect(['index']);
         }
         else {
-            $conditions = ['id' => (int)$id];
+            $conditions = ['id' => (int) $id];
             if (Yii::$app->user->isGuest) {
                 $conditions['visible'] = 1;
             }
             $model = Forum::findOne($conditions);
         }
-        
+
         return $this->render('forum', [
-            'model' => $model,
-            'category' => $category,
+                    'model'    => $model,
+                    'category' => $category,
         ]);
     }
-    
+
     public function actionNewThread($cid = null, $fid = null)
     {
         if (!Yii::$app->user->can('createThread')) {
@@ -113,14 +114,14 @@ class DefaultController extends Controller
                 return $this->redirect(['index']);
             }
 
-            $category = Category::findOne((int)$cid);
+            $category = Category::findOne((int) $cid);
 
             if (!$category) {
                 $this->error('Sorry! We can not find the forum you are looking for.');
                 return $this->redirect(['index']);
             }
             else {
-                $forum = Forum::findOne(['id' => (int)$fid, 'category_id' => $category->id]);
+                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
                 if (!$forum) {
                     $this->error('Sorry! We can not find the forum you are looking for.');
                     return $this->redirect(['index']);
@@ -128,22 +129,22 @@ class DefaultController extends Controller
                 else {
                     $model = new Thread;
                     $model->setScenario('new');
-                    
+
                     if ($model->load(Yii::$app->request->post())) {
-                        
+
                         $model->category_id = $category->id;
-                        $model->forum_id = $forum->id;
-                        $model->author_id = Yii::$app->user->id;
-                        
+                        $model->forum_id    = $forum->id;
+                        $model->author_id   = Yii::$app->user->id;
+
                         if ($model->validate()) {
-                        
+
                             $transaction = Thread::getDb()->beginTransaction();
                             try {
                                 if ($model->save()) {
-                                    
+
                                     $forum->updateCounters(['threads' => 1]);
-                                    
-                                    $post = new Post;
+
+                                    $post            = new Post;
                                     $post->content   = $model->post;
                                     $post->thread_id = $model->id;
                                     $post->forum_id  = $model->forum_id;
@@ -151,17 +152,19 @@ class DefaultController extends Controller
                                     $post->likes     = 0;
                                     $post->dislikes  = 0;
                                     $post->save();
-                                    
+
                                     $forum->updateCounters(['posts' => 1]);
                                 }
-    
+
                                 $transaction->commit();
-                                
+
                                 Cache::getInstance()->delete('forum.threadscount');
                                 Cache::getInstance()->delete('forum.postscount');
                                 $this->success('New thread has been created.');
-                                
-                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $model->id, 'slug' => $model->slug]);
+
+                                return $this->redirect(['thread', 'cid' => $category->id,
+                                            'fid' => $forum->id, 'id' => $model->id,
+                                            'slug' => $model->slug]);
                             }
                             catch (Exception $e) {
                                 $transaction->rollBack();
@@ -174,32 +177,32 @@ class DefaultController extends Controller
             }
 
             return $this->render('new-thread', [
-                'model' => $model,
-                'category' => $category,
-                'forum' => $forum,
+                        'model'    => $model,
+                        'category' => $category,
+                        'forum'    => $forum,
             ]);
         }
     }
-    
+
     public function actionThread($cid = null, $fid = null, $id = null, $slug = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the thread you are looking for.');
             return $this->redirect(['index']);
         }
-        
-        $conditions = ['id' => (int)$cid];
+
+        $conditions = ['id' => (int) $cid];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
         $category = Category::findOne($conditions);
-        
+
         if (!$category) {
             $this->error('Sorry! We can not find the thread you are looking for.');
             return $this->redirect(['index']);
         }
         else {
-            $conditions = ['id' => (int)$fid, 'category_id' => $category->id];
+            $conditions = ['id' => (int) $fid, 'category_id' => $category->id];
             if (Yii::$app->user->isGuest) {
                 $conditions['visible'] = 1;
             }
@@ -209,18 +212,24 @@ class DefaultController extends Controller
                 return $this->redirect(['index']);
             }
             else {
-                $model = Thread::findOne(['id' => (int)$id, 'category_id' => $category->id, 'forum_id' => $forum->id]);
-                if (!$model) {
+                $thread = Thread::findOne(['id' => (int) $id, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+                if (!$thread) {
                     $this->error('Sorry! We can not find the thread you are looking for.');
                     return $this->redirect(['index']);
                 }
+                else {
+                    $dataProvider = (new Post)->search($forum->id, $thread->id);
+
+                    return $this->render('thread', [
+                                'dataProvider' => $dataProvider,
+                                'category'     => $category,
+                                'forum'        => $forum,
+                                'thread'       => $thread,
+                    ]);
+                }
             }
         }
-        
-        return $this->render('thread', [
-            'model' => $model,
-            'category' => $category,
-            'forum' => $forum,
-        ]);
     }
+
 }
+        

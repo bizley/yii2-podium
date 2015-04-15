@@ -9,6 +9,7 @@ use bizley\podium\components\Helper;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\HtmlPurifier;
@@ -60,6 +61,11 @@ class Post extends ActiveRecord
         ];
     }
 
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'author_id']);
+    }
+    
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
@@ -73,7 +79,6 @@ class Post extends ActiveRecord
             }
         }
         catch (Exception $e) {
-            \yii\helpers\VarDumper::dump($e);die();
             throw $e;
         }
     }
@@ -154,5 +159,18 @@ class Post extends ActiveRecord
         catch (Exception $e) {
             throw $e;
         }
+    }
+    
+    public function search($forum_id, $thread_id)
+    {
+        $query = self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+
+        return $dataProvider;
     }
 }

@@ -274,6 +274,8 @@ class AdminController extends Controller
         $model = Forum::findOne(['id' => (int)$id, 'category_id' => $category->id]);
 
         if (empty($model)) {
+            Cache::getInstance()->delete('forum.threadscount');
+            Cache::getInstance()->delete('forum.postscount');
             $this->error('Sorry! We can not find Forum with this ID.');
         }
         else {
@@ -297,6 +299,8 @@ class AdminController extends Controller
         }
         else {
             if ($model->delete()) {
+                Cache::getInstance()->delete('forum.threadscount');
+                Cache::getInstance()->delete('forum.postscount');
                 $this->success('Category has been deleted.');
             }
             else {

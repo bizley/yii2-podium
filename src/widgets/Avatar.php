@@ -13,6 +13,7 @@ class Avatar extends Widget
 {
 
     public $author;
+    public $showName = true;
 
     public function run()
     {
@@ -36,16 +37,16 @@ class Avatar extends Widget
                     $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
                 }
             }
-            $name = $this->author->getPodiumTag();
+            $name = $this->showName ? $this->author->getPodiumTag() : '';
             
         }
         else {
             
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);
-            $name = Helper::deletedUserTag(true);
+            $name = $this->showName ? Helper::deletedUserTag(true) : '';
         }
         
-        $name = Html::tag('p', $name, ['class' => 'avatar-name']);
+        $name = $this->showName ? Html::tag('p', $name, ['class' => 'avatar-name']) : '';
         
         return $avatar . $name;
     }
