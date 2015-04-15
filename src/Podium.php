@@ -53,6 +53,7 @@ class Podium extends Module implements BootstrapInterface
                     'messages/view/<id:\d+>'                             => 'messages/view',
                     'new-email/<token:[\w\-]+>'                          => 'account/new-email',
                     'new-thread/<cid:\d+>/<fid:\d+>'                     => 'default/new-thread',
+                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                 => 'default/post',
                     'profile'                                            => 'profile/index',
                     'reactivate'                                         => 'account/reactivate',
                     'register'                                           => 'account/register',

@@ -151,9 +151,11 @@ class DefaultController extends Controller
                                     $post->author_id = Yii::$app->user->id;
                                     $post->likes     = 0;
                                     $post->dislikes  = 0;
-                                    $post->save();
+                                    if ($post->save()) {
 
-                                    $forum->updateCounters(['posts' => 1]);
+                                        $forum->updateCounters(['posts' => 1]);
+                                        $thread->updateCounters(['posts' => 1]);
+                                    }
                                 }
 
                                 $transaction->commit();
@@ -162,8 +164,8 @@ class DefaultController extends Controller
                                 Cache::getInstance()->delete('forum.postscount');
                                 $this->success('New thread has been created.');
 
-                                return $this->redirect(['thread', 'cid' => $category->id,
-                                            'fid' => $forum->id, 'id' => $model->id,
+                                return $this->redirect(['thread', 'cid'  => $category->id,
+                                            'fid'  => $forum->id, 'id'   => $model->id,
                                             'slug' => $model->slug]);
                             }
                             catch (Exception $e) {
@@ -212,7 +214,8 @@ class DefaultController extends Controller
                 return $this->redirect(['index']);
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $id, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+                $thread = Thread::findOne(['id' => (int) $id, 'category_id' => $category->id,
+                            'forum_id' => $forum->id]);
                 if (!$thread) {
                     $this->error('Sorry! We can not find the thread you are looking for.');
                     return $this->redirect(['index']);
@@ -231,5 +234,80 @@ class DefaultController extends Controller
         }
     }
 
-}
-        
+    public function actionPost($cid = null, $fid = null, $tid = null)
+    {
+        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        $category = Category::findOne(['id' => (int) $cid]);
+
+        if (!$category) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+        else {
+            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+
+            if (!$forum) {
+                $this->error('Sorry! We can not find the thread you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
+                            'forum_id' => $forum->id]);
+
+                if (!$thread) {
+                    $this->error('Sorry! We can not find the thread you are looking for.');
+                    return $this->redirect(['index']);
+                }
+                else {
+                    $model = new Post;
+                    
+                    if ($model->load(Yii::$app->request->post())) {
+
+                        $model->thread_id = $thread->id;
+                        $model->forum_id  = $forum->id;
+                        $model->author_id = Yii::$app->user->id;
+
+                        if ($model->validate()) {
+
+                            $transaction = Post::getDb()->beginTransaction();
+                            try {
+                                if ($model->save()) {
+
+                                    $forum->updateCounters(['posts' => 1]);
+                                    $thread->updateCounters(['posts' => 1]);
+                                }
+
+                                $transaction->commit();
+
+                                Cache::getInstance()->delete('forum.postscount');
+                                $this->success('New reply has been added.');
+
+                                return $this->redirect(['thread', 'cid'  => $category->id,
+                                            'fid'  => $forum->id, 'id'   => $thread->id,
+                                            'slug' => $thread->slug]);
+                            }
+                            catch (Exception $e) {
+                                $transaction->rollBack();
+                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                            }
+                        }
+                    }
+
+                    return $this->render('post', [
+                                'model'    => $model,
+                                'category' => $category,
+                                'forum'    => $forum,
+                                'thread'   => $thread,
+                                'previous' => Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one(),
+                    ]);
+                }
+            }
+        }
+    }
+
+}        

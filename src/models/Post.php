@@ -56,7 +56,7 @@ class Post extends ActiveRecord
         return [
             ['content', 'required'],
             ['content', 'filter', 'filter' => function($value) {
-                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
                 }],
         ];
     }
@@ -86,11 +86,11 @@ class Post extends ActiveRecord
     protected function _insertWords()
     {
         try {
-            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags($this->content))));
+            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(str_replace(["\n", '<br>', '<br />'], ' ', $this->content)))));
             $words    = [];
             $vocabulary = [];
             foreach ($wordsRaw as $word) {
-                if (mb_strlen($word, 'UTF-8') > 2) {
+                if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
                     $words[] = $word;
                 }
             }
@@ -121,11 +121,11 @@ class Post extends ActiveRecord
     protected function _updateWords()
     {
         try {
-            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags($this->content))));
+            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(str_replace(["\n", '<br>', '<br />'], ' ', $this->content)))));
             $words    = [];
             $vocabulary = [];
             foreach ($wordsRaw as $word) {
-                if (mb_strlen($word, 'UTF-8') > 2) {
+                if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
                     $words[] = $word;
                 }
             }
@@ -167,6 +167,9 @@ class Post extends ActiveRecord
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];

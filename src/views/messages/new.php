@@ -50,12 +50,9 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                                 'height' => '100',
                                 'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                 'codemirror' => null,
-                                'toolbar' => [
-                                    ['style', ['bold', 'italic', 'underline']],
-                                    ['para', ['ul', 'ol']],
-                                    ['insert', ['link', 'picture']],
-                                ],
+                                'toolbar' => Helper::summerNoteToolbars('full'),
                             ],
+                            'plugins' => ['fontstyle']
                         ]) ?>
         
                 </div>

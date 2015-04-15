@@ -11,14 +11,9 @@ body {
     position:relative !important;
     z-index:1 !important;
 }
-.popover.right.podium > .arrow {
-    top:55px !important;
-}
-.avatar-name {
-    padding:10px;
-}
+.popover.right.podium > .arrow { top:55px !important }
+.avatar-name { padding:10px }
+.podium-content { min-height:100px }
 @media (max-width: 767px) {
-    .podium-avatar {
-        display:none !important;
-    }
+    .podium-avatar { display:none !important }
 }

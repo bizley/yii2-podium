@@ -9,6 +9,6 @@ use yii\helpers\Url;
         <?= Html::encode($model->name) ?>
     </a>
 </td>
-<td class="text-right"><?= $model->getRepliesCount() ?></td>
-<td class="text-right"><?= $model->getViewsCount() ?></td>
+<td class="text-right"><?= $model->posts - 1 ?></td>
+<td class="text-right"><?= $model->views ?></td>
 <td><?= $model->getLatestPost() ?></td>

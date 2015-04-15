@@ -1,7 +1,8 @@
 <?php
 
-use bizley\podium\models\Thread;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\View;
 use yii\widgets\ListView;
 
 $this->title                   = Html::encode($thread->name);
@@ -16,4 +17,13 @@ echo ListView::widget([
     'summary' => '',
     'emptyText' => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
-]);
+    'pager' => ['options' => ['class' => 'pagination pull-right']]
+]); ?>
+
+<br>
+<div class="row">
+    <div class="col-sm-12 text-right">
+        <a href="<?= Url::to(['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
+    </div>
+</div>
+<br>

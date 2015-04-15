@@ -62,7 +62,7 @@ class Thread extends ActiveRecord
             ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
             ['post', 'required', 'on' => ['new']],
             ['post', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
             }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['name', 'validateName'],
@@ -81,16 +81,6 @@ class Thread extends ActiveRecord
                 $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
             }
         }
-    }
-    
-    public function getRepliesCount()
-    {
-        return 0;
-    }
-    
-    public function getViewsCount()
-    {
-        return 0;
     }
     
     public function getLatestPost()

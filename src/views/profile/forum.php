@@ -34,11 +34,7 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                                 'height' => '100',
                                 'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                 'codemirror' => null,
-                                'toolbar' => [
-                                    ['style', ['bold', 'italic', 'underline']],
-                                    ['para', ['ul', 'ol']],
-                                    ['insert', ['link', 'picture']],
-                                ],
+                                'toolbar' => Helper::summerNoteToolbars(),
                             ],
                         ]) ?>
                     </div>
