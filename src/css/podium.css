@@ -13,7 +13,17 @@ body {
 }
 .popover.right.podium > .arrow { top:55px !important }
 .avatar-name { padding:10px }
-.podium-content { min-height:100px }
+.podium-content { 
+    min-height:125px;
+    padding-bottom:30px;
+}
+.podium-action-bar {
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    display:none;
+}
+.podium-content:hover .podium-action-bar { display:block }
 @media (max-width: 767px) {
     .podium-avatar { display:none !important }
 }

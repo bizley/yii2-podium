@@ -222,8 +222,10 @@ class DefaultController extends Controller
                 }
                 else {
                     $dataProvider = (new Post)->search($forum->id, $thread->id);
+                    $model = new Post;
 
                     return $this->render('thread', [
+                                'model'        => $model,
                                 'dataProvider' => $dataProvider,
                                 'category'     => $category,
                                 'forum'        => $forum,
@@ -265,7 +267,10 @@ class DefaultController extends Controller
                 else {
                     $model = new Post;
                     
-                    if ($model->load(Yii::$app->request->post())) {
+                    $postData = Yii::$app->request->post();
+                    $preview = '';
+                    
+                    if ($model->load($postData)) {
 
                         $model->thread_id = $thread->id;
                         $model->forum_id  = $forum->id;
@@ -273,32 +278,39 @@ class DefaultController extends Controller
 
                         if ($model->validate()) {
 
-                            $transaction = Post::getDb()->beginTransaction();
-                            try {
-                                if ($model->save()) {
-
-                                    $forum->updateCounters(['posts' => 1]);
-                                    $thread->updateCounters(['posts' => 1]);
-                                }
-
-                                $transaction->commit();
-
-                                Cache::getInstance()->delete('forum.postscount');
-                                $this->success('New reply has been added.');
-
-                                return $this->redirect(['thread', 'cid'  => $category->id,
-                                            'fid'  => $forum->id, 'id'   => $thread->id,
-                                            'slug' => $thread->slug]);
+                            if (isset($postData['preview-button'])) {
+                                $preview = $model->content;
                             }
-                            catch (Exception $e) {
-                                $transaction->rollBack();
-                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                                $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                            else {
+                            
+                                $transaction = Post::getDb()->beginTransaction();
+                                try {
+                                    if ($model->save()) {
+
+                                        $forum->updateCounters(['posts' => 1]);
+                                        $thread->updateCounters(['posts' => 1]);
+                                    }
+
+                                    $transaction->commit();
+
+                                    Cache::getInstance()->delete('forum.postscount');
+                                    $this->success('New reply has been added.');
+
+                                    return $this->redirect(['thread', 'cid'  => $category->id,
+                                                'fid'  => $forum->id, 'id'   => $thread->id,
+                                                'slug' => $thread->slug]);
+                                }
+                                catch (Exception $e) {
+                                    $transaction->rollBack();
+                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                    $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                }
                             }
                         }
                     }
 
                     return $this->render('post', [
+                                'preview'  => $preview,
                                 'model'    => $model,
                                 'category' => $category,
                                 'forum'    => $forum,
