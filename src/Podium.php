@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 forum module
+ * 
+ * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
+ * @version 1.0
+ * 
+ * @see https://github.com/bizley-code/Yii2-Podium
+ * Please report all issues at GitHub
+ * @see https://github.com/bizley-code/Yii2-Podium/issues
+ * 
+ * Podium requires Yii 2
+ * @see http://www.yiiframework.com
+ * @see https://github.com/yiisoft/yii2
+ */
+
 namespace bizley\podium;
 
 use bizley\podium\components\Config;
@@ -10,15 +26,60 @@ use yii\base\BootstrapInterface;
 use yii\base\Module;
 use yii\web\GroupUrlRule;
 
+/**
+ * Podium Module
+ */
 class Podium extends Module implements BootstrapInterface
 {
 
-    public $params;
-    public $version             = '1.0';
+    /**
+     * @var string Controller namespace
+     */
     public $controllerNamespace = 'bizley\podium\controllers';
+    
+    /**
+     * @var array Module parameters
+     */
+    public $params;
+    
+    /**
+     * @var string Module version
+     */
+    public $version = '1.0';
+    
+    /**
+     * @var Config Module configuration instance
+     */
     protected $_config;
-    protected $_installed       = false;
+    
+    /**
+     * @var boolean Installation flag
+     */
+    protected $_installed = false;
 
+    /**
+     * Registers user activity after every action.
+     * @see \bizley\podium\models\Activity
+     * 
+     * @param \yii\base\Action $action the action just executed.
+     * @param mixed $result the action return result.
+     * @return mixed the processed action result.
+     */
+    public function afterAction($action, $result)
+    {
+        $result = parent::afterAction($action, $result);
+        
+        Activity::add();
+        
+        return $result;
+    }
+    
+    /**
+     * Bootstrap method to be called during application bootstrap stage.
+     * Adding routing rules.
+     * 
+     * @param \yii\base\Application $app the application currently running
+     */
     public function bootstrap($app)
     {
         $app->getUrlManager()->addRules([
@@ -53,6 +114,7 @@ class Podium extends Module implements BootstrapInterface
                     'messages/view/<id:\d+>'                             => 'messages/view',
                     'new-email/<token:[\w\-]+>'                          => 'account/new-email',
                     'new-thread/<cid:\d+>/<fid:\d+>'                     => 'default/new-thread',
+                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'       => 'default/post',
                     'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                 => 'default/post',
                     'profile'                                            => 'profile/index',
                     'reactivate'                                         => 'account/reactivate',
@@ -62,7 +124,65 @@ class Podium extends Module implements BootstrapInterface
                 ],
                     ])], false);
     }
+    
+    /**
+     * Gets Podium configuration instance.
+     * 
+     * @return Config configuration instance
+     */
+    public function getConfig()
+    {
+        if (!$this->_config) {
+            $this->_config = Config::getInstance();
+        }
 
+        return $this->_config;
+    }
+    
+    /**
+     * Checks wheter Podium has been already installed.
+     * 
+     * @return boolean
+     */
+    public function getInstalled()
+    {
+        return $this->_installed;
+    }
+    
+    /**
+     * Gets parameter by its name.
+     * If not set returns $default.
+     *
+     * @param string $name Parameter name
+     * @param mixed $default Default value if parameter not found
+     * @return mixed Parameter value or $default
+     */
+    public function getParam($name, $default = null)
+    {
+        $params = $this->params;
+        if (!isset($params[$name])) {
+            return $default;
+        }
+
+        return $params[$name];
+    }
+    
+    /**
+     * Redirects to Podium main controller's action.
+     * 
+     * @return \yii\web\Response
+     */
+    public function goPodium()
+    {
+        return Yii::$app->getResponse()->redirect(['podium/default/index']);
+    }
+
+    /**
+     * Initializes the module.
+     * Sets Podium alias and layout.
+     * Registers user identity, authorization, translations and formatter.
+     * Verifies the installation.
+     */
     public function init()
     {
         parent::init();
@@ -77,7 +197,43 @@ class Podium extends Module implements BootstrapInterface
         $this->layout     = 'main';
         $this->_installed = Installation::check();
     }
+    
+    /**
+     * Registers user authorization.
+     * @see \bizley\podium\components\Installation
+     */
+    public function registerAuthorization()
+    {
+        Yii::$app->setComponents([
+            'authManager' => [
+                'class'           => 'yii\rbac\DbManager',
+                'itemTable'       => '{{%podium_auth_item}}',
+                'itemChildTable'  => '{{%podium_auth_item_child}}',
+                'assignmentTable' => '{{%podium_auth_assignment}}',
+                'ruleTable'       => '{{%podium_auth_rule}}',
+            ],
+        ]);
+    }
 
+    /**
+     * Registers formatter for registered users with chosen timezone.
+     */
+    public function registerFormatter()
+    {
+        if (!Yii::$app->user->isGuest) {
+            Yii::$app->setComponents([
+                'formatter' => [
+                    'class'    => 'yii\i18n\Formatter',
+                    'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
+                ],
+            ]);
+        }
+    }
+    
+    /**
+     * Registers user identity.
+     * @see \bizley\podium\models\User
+     */
     public function registerIdentity()
     {
         Yii::$app->setComponents([
@@ -92,19 +248,9 @@ class Podium extends Module implements BootstrapInterface
         ]);
     }
 
-    public function registerAuthorization()
-    {
-        Yii::$app->setComponents([
-            'authManager' => [
-                'class'           => 'yii\rbac\DbManager',
-                'itemTable'       => '{{%podium_auth_item}}',
-                'itemChildTable'  => '{{%podium_auth_item_child}}',
-                'assignmentTable' => '{{%podium_auth_assignment}}',
-                'ruleTable'       => '{{%podium_auth_rule}}',
-            ],
-        ]);
-    }
-
+    /**
+     * Registers translations.
+     */
     public function registerTranslations()
     {
         Yii::$app->i18n->translations['podium/*'] = [
@@ -119,53 +265,4 @@ class Podium extends Module implements BootstrapInterface
             ],
         ];
     }
-
-    public function registerFormatter()
-    {
-        if (!Yii::$app->user->isGuest) {
-            Yii::$app->setComponents([
-                'formatter' => [
-                    'class'    => 'yii\i18n\Formatter',
-                    'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
-                ],
-            ]);
-        }
-    }
-
-    public function getInstalled()
-    {
-        return $this->_installed;
-    }
-
-    public function getParam($name, $default = null)
-    {
-        $params = $this->params;
-        if (!isset($params[$name])) {
-            return $default;
-        }
-
-        return $params[$name];
-    }
-
-    public function goPodium()
-    {
-        return Yii::$app->getResponse()->redirect(['podium/default/index']);
-    }
-
-    public function getConfig()
-    {
-        if (!$this->_config) {
-            $this->_config = Config::getInstance();
-        }
-
-        return $this->_config;
-    }
-
-    public function afterAction($action, $result)
-    {
-        $result = parent::afterAction($action, $result);
-        Activity::add();
-        return $result;
-    }
-
 }

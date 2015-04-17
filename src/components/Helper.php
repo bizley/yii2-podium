@@ -1,99 +1,53 @@
 <?php
 
+/**
+ * Podium Helper
+ * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
+ * @version 1.0
+ */
+
 namespace bizley\podium\components;
 
-use Yii;
-use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
 use bizley\podium\models\User;
+use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
+/**
+ * Podium Helper
+ * Static methods for html output and other little things.
+ */
 class Helper
 {
     
-    public static function summerNoteToolbars($type = 'minimal')
-    {
-        $toolbars = [];
-        
-        switch ($type) {
-            case 'full':
-                $toolbars = [
-                    ['css', ['style']],
-                    ['clear', ['clear']],
-                    ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'hr', 'table']],
-                    ['misc', ['codeview']],
-                ];
-                break;
-            default:
-                $toolbars = [
-                    ['style', ['bold', 'italic', 'underline']],
-                    ['para', ['ul', 'ol']],
-                    ['insert', ['link', 'picture']],
-                ];
-        }
-        
-        return $toolbars;
-    }
-
-    public static function sortOrder($attribute = null)
-    {
-        if (!empty($attribute)) {
-            $sort = Yii::$app->request->get('sort');
-            if ($sort == $attribute) {
-                return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet']);
-            }
-            elseif ($sort == '-' . $attribute) {
-                return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet-alt']);
-            }
-        }
-        
-        return null;
-    }
-    
-    public static function roleLabel($role = null)
-    {
-        switch ($role) {
-            case User::ROLE_ADMIN:
-                $label = 'danger';
-                $name = ArrayHelper::getValue(User::getRoles(), $role);
-                break;
-            case User::ROLE_MODERATOR:
-                $label = 'primary';
-                $name = ArrayHelper::getValue(User::getRoles(), $role);
-                break;
-            default:
-                $label = 'success';
-                $name = ArrayHelper::getValue(User::getRoles(), User::ROLE_MEMBER);
-        }
-        
-        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
-    }
-    
-    public static function statusLabel($status = null)
-    {
-        switch ($status) {
-            case User::STATUS_ACTIVE:
-                $label = 'info';
-                $name = ArrayHelper::getValue(User::getStatuses(), $status);
-                break;
-            case User::STATUS_BANNED:
-                $label = 'warning';
-                $name = ArrayHelper::getValue(User::getStatuses(), $status);
-                break;
-            default:
-                $label = 'default';
-                $name = ArrayHelper::getValue(User::getStatuses(), User::STATUS_REGISTERED);
-        }
-        
-        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
-    }
-    
+    /**
+     * Gets image source for default avatar image in base64.
+     * 
+     * @return string Image source
+     */
     public static function defaultAvatar()
     {
         return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAMAAAC/MqoPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjRGNTcxMDVGRTQ3MDExRTQ4MUUyREZENUQ4MzQwNURGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjRGNTcxMDYwRTQ3MDExRTQ4MUUyREZENUQ4MzQwNURGIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NEY1NzEwNURFNDcwMTFFNDgxRTJERkQ1RDgzNDA1REYiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NEY1NzEwNUVFNDcwMTFFNDgxRTJERkQ1RDgzNDA1REYiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5Mv8iSAAAAJ1BMVEXz8/P////9/f309PT5+fn29vb7+/v19fX4+Pj39/f8/Pz6+vr+/v5CXjXPAAAEKUlEQVR42uydaa6bIQxFY+Zp/+vt8KNVpSf1JQFzneuzgyOM7Y+A83g4juM4juM4juM4juM4juM4juM4juM4juM4juM4juM4juM4z1NzS2WEtURkrTBKarl+vHXMrQT5ilBajp/r3efX2n/0Z4+M3p9qX9uQ7zLaB238moI8Q0iVU/xj5GN7Xvy3fLO+53uRVynd9JKnJa+zkt2Fz0Xeo2Sj5i/u8n93vM1glx0YDPo6ZQ/TWpmrRXZRbLnnIfsYmdXclHvda/7TvfLtc2P7PU7ZzzRR45KcIFno4eQM+H1dDofUA3qaj0VOUSLjRrew3fs6qL46Z7ijh3yTs+Bm+RoOq4fKmOOwM93xRcdd9vOLjrrsCouOuuxNNEBM8nGoqA/A2t5FB8CWbiqpT7x4D0rqIbLGO2DETzX1yRrveBGfRQ+wk6qmqA7W1RRF9YKlHhTVA9ani2hSWbMcWJ5rqupQeS6pqifWBA+W4oeq+mCtbWDVbamqL1eHQHRxdVf3ve7qXte9m/Me3r/c/HvdT2n8bM5PZP0c3n998d/cvgPxL63Ev68z36ogvktDfIOK+d4c8W1J4juyzDejie/DM7+CIH77wvziifidG/PrRuI3rcwvmZnfrxNPLWCeVcE8oYR5Lg3xNCLmGVTMk8eY580xTxlkni3JPFH0QTxH9sE8PZh5ZvTjrUnhw/Sk8F9z8V9ed9vj8XN6K9OFlPlW/O92ryZT3JbzmmAv17VtXfywVdvz1k92Q+V9U6wbjPp84EDaxsK3I8fRBrr5euwmFfrXaz94mQi7s21Hf2EHDvp4/FoFaqavChcmMTd8VnkJgVjlstILR7yj6a72FiB0VnM09676lBnJXdccyV3bHMc9q5uj3KzJQy6AUOPqFXOE6waxyCWu36Obco3Lb5+SXOTqhbK2bqqvxlXWMEpcLXKZa/dsplznUqprAkBj3Oj3tnssAsGFziYJCOrVvS8Ude3XQCjhfiHkkwChGvJ5IakvzSxfBIpC1sxcaWxuHcwAHNkkgSMx5jjVTDcFEJVPuC6QdL7CpljgmoByvMDFgap+fEQT7KIfX3bcRT++7MCLfnrZB7L6IKzpGrW9YKsfrO1ZwDnXyU909WOdfF3o6uvUd3sSeA59t8eAr35owG4XA3TGynawvuVlQf3ISVUSEyS29v1oI9/FCJ2vkzvW0Vko6odKu5l43x/x0476ZI337RFvKN53R/y0pL434oMl9a1//ZXFFJmvfz/Rxxdb6hu/XOuypb7xiK6LMTpnadtb3oY19W0f7VXMUVm3+r7NPu2pT9atvm2zx2VPfUXGBn5nG98sqjfWLLcrzw2L6oM1y23Kcyaz3J4812yqN9YstyfPFZvqO05qgk31DceyUYwSWRP8jhTfraq//8merKon1tr2/+r2Q4ABAIdWbQqxqb1TAAAAAElFTkSuQmCC';
     }
     
+    /**
+     * Gets user tag for deleted user.
+     * 
+     * @param boolean $simple Wheter to return simple tag instead of full
+     * @return string Tag
+     */
+    public static function deletedUserTag($simple = false)
+    {
+        return self::podiumUserTag('', 0, null, $simple);
+    }
+    
+    /**
+     * Gets HTMLPurifier configuration set.
+     * 
+     * @param string $type Set name
+     * @return array Configuration
+     */
     public static function podiumPurifierConfig($type = '')
     {
         $config = [];
@@ -101,7 +55,7 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li,blockquote,pre,sup,sub,h1,h2,h3,h4,h5,h6,table[class],tbody,tr,td[style]',
+                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style|class],hr,ul,ol,li,blockquote,pre,sup,sub,h1,h2,h3,h4,h5,h6,table[class],tbody,tr,td[style],small',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
                 break;
@@ -116,11 +70,15 @@ class Helper
         return $config;
     }
     
-    public static function deletedUserTag($simple = false)
-    {
-        return self::podiumUserTag('', 0, null, $simple);
-    }
-    
+    /**
+     * Gets user tag.
+     * 
+     * @param string $name User name
+     * @param integer $role User role
+     * @param integer|null $id User ID
+     * @param boolean $simple Wheter to return simple tag instead of full
+     * @return string Tag
+     */
     public static function podiumUserTag($name, $role, $id = null, $simple = false)
     {
         $icon = Html::tag('span', '', ['class' => $id ? 'glyphicon glyphicon-user' : 'glyphicon glyphicon-ban-circle']);
@@ -148,11 +106,137 @@ class Helper
         return Html::a($encodedName, $url, ['class' => 'btn btn-xs btn-default']);
     }
     
+    /**
+     * Gets quote html.
+     * 
+     * @param \bizley\podium\models\Post $post Post model to be quoted
+     * @param string $quote Partial text to be quoted
+     * @return string Quote html
+     */
+    public static function prepareQuote($post, $quote = '')
+    {
+        $content = !empty($quote) ? nl2br(HtmlPurifier::process($quote)) : $post->content;
+        
+        return Html::tag('blockquote', Html::tag('small', $post->user->getPodiumTag() . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at)) . $content) . '<br>';
+    }
+    
+    /**
+     * Gets background image style base64 encoded.
+     */
     public static function replyBgd()
     {
         return 'style="background-repeat:repeat-y;background-position:top right;background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAUCAYAAAB7wJiVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkI2NTVERkRDREEyRTExRTRCRkI5OEQyMTc5QURDMkNDIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkI2NTVERkREREEyRTExRTRCRkI5OEQyMTc5QURDMkNDIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QjY1NURGREFEQTJFMTFFNEJGQjk4RDIxNzlBREMyQ0MiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QjY1NURGREJEQTJFMTFFNEJGQjk4RDIxNzlBREMyQ0MiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6k5fCuAAAAyklEQVR42uyXsQ2DMBBFIcooLnCVBajcpaXOJqnZhDojULEDltxkE3KWLpKVAtxwSvGe9EXBr/4TSNemlBqllwySIPGSVTJLXpIlF5xzDZzLVZ8PyVPSFe9umrtklEzMdT4X/TJ+ZZR0+r5nLhshw46MUsrAXDZCQmU3MJeNEF/Z9cxlI2St7K7MZSNkruzOzGUjJN8Z8aAXtQcGQha9M+KOjPF7HILNYZiPvvfRpQ7n027bxgp/9ssChABCEAIIQQggBCFgyUeAAQBSzyA8dwka9AAAAABJRU5ErkJggg==\');"';
     }
     
+    /**
+     * Gets role label html.
+     * 
+     * @param integer|null $role Role ID
+     * @return string Label html
+     */
+    public static function roleLabel($role = null)
+    {
+        switch ($role) {
+            case User::ROLE_ADMIN:
+                $label = 'danger';
+                $name = ArrayHelper::getValue(User::getRoles(), $role);
+                break;
+            case User::ROLE_MODERATOR:
+                $label = 'primary';
+                $name = ArrayHelper::getValue(User::getRoles(), $role);
+                break;
+            default:
+                $label = 'success';
+                $name = ArrayHelper::getValue(User::getRoles(), User::ROLE_MEMBER);
+        }
+        
+        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
+    }
+    
+    /**
+     * Gets sorting icon.
+     * 
+     * @param string|null $attribute Sorting attribute name
+     * @return string|null Icon html or null if empty attribute
+     */
+    public static function sortOrder($attribute = null)
+    {
+        if (!empty($attribute)) {
+            $sort = Yii::$app->request->get('sort');
+            if ($sort == $attribute) {
+                return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet']);
+            }
+            elseif ($sort == '-' . $attribute) {
+                return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet-alt']);
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Gets User status label.
+     * 
+     * @param integer|null $status Status ID
+     * @return string Label html
+     */
+    public static function statusLabel($status = null)
+    {
+        switch ($status) {
+            case User::STATUS_ACTIVE:
+                $label = 'info';
+                $name = ArrayHelper::getValue(User::getStatuses(), $status);
+                break;
+            case User::STATUS_BANNED:
+                $label = 'warning';
+                $name = ArrayHelper::getValue(User::getStatuses(), $status);
+                break;
+            default:
+                $label = 'default';
+                $name = ArrayHelper::getValue(User::getStatuses(), User::STATUS_REGISTERED);
+        }
+        
+        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
+    }
+    
+    /**
+     * Gets SummerNote toolbars.
+     * 
+     * @param string $type Name of the set
+     * @return array toolbars configuration
+     */
+    public static function summerNoteToolbars($type = 'minimal')
+    {
+        $toolbars = [];
+        
+        switch ($type) {
+            case 'full':
+                $toolbars = [
+                    ['css', ['style']],
+                    ['clear', ['clear']],
+                    ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'hr', 'table']],
+                    ['misc', ['codeview']],
+                ];
+                break;
+            default:
+                $toolbars = [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['para', ['ul', 'ol']],
+                    ['insert', ['link', 'picture']],
+                ];
+        }
+        
+        return $toolbars;
+    }
+
+    /**
+     * Gets timezones array.
+     * @see http://php.net/manual/en/timezones.php
+     * 
+     * @return array Timezones
+     */
     public static function timeZones()
     {
         return [
@@ -648,5 +732,5 @@ class Helper
                 'Pacific/Yap' => 'Pacific/Yap',
             ]
         ];
-    }
+    }    
 }

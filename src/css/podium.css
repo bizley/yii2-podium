@@ -2,6 +2,12 @@ body {
   padding-top:20px;
   padding-bottom:20px;
 }
+blockquote { 
+    font-size:inherit !important;
+    border-left:5px solid #337ab7;
+    background-color:#eee;
+}
+blockquote footer::before, blockquote small::before, blockquote .small::before { content:none !important }
 .navbar { margin-bottom:20px }
 .note-editor .note-dialog .form-group.row-fluid.note-group-select-from-files { display:none }
 .popover.podium {

@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Yii::$app->user->getIdentity()->getPodiumTag() ?>
             </div>
             <div class="popover-content podium-content">
-<?php $form = ActiveForm::begin(['id' => 'new-post-form']); ?>
+<?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
@@ -63,5 +63,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <br>
-<?= $this->render('/elements/forum/_post', ['model' => $previous]) ?>
+<?= $this->render('/elements/forum/_post', ['model' => $previous, 'category' => $category->id, 'slug' => $thread->slug]) ?>
 <br>

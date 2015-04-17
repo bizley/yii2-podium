@@ -1,12 +1,13 @@
 <?php
 
-namespace bizley\podium\components;
-
 /**
- * Podium Installation class
+ * Podium Installation
  * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
  * @version 1.0
  */
+
+namespace bizley\podium\components;
+
 use bizley\podium\models\User;
 use bizley\podium\rbac\AuthorRule;
 use bizley\podium\rbac\ModeratorRule;
@@ -21,8 +22,10 @@ use yii\helpers\VarDumper;
 use yii\rbac\DbManager;
 
 /**
- * @property DbManager $authManager Authorization Manager
- * @property Connection $db Database connection
+ * Podium Installation
+ * 
+ * @property \yii\rbac\DbManager $authManager Authorization Manager
+ * @property \yii\db\Connection $db Database connection
  */
 class Installation extends Component
 {

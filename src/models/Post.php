@@ -105,13 +105,17 @@ class Post extends ActiveRecord
             foreach ($words as $word) {
                 $formatWords[] = [$word];
             }
-            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
+            if (!empty($formatWords)) {
+                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
+            }
 
             $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
             }
-            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], $vocabulary)->execute();
+            if (!empty($vocabulary)) {
+                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], $vocabulary)->execute();
+            }
         }
         catch (Exception $e) {
             throw $e;
@@ -141,13 +145,17 @@ class Post extends ActiveRecord
             foreach ($words as $word) {
                 $formatWords[] = [$word];
             }
-            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
+            if (!empty($formatWords)) {
+                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
+            }
 
             $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
             }
-            Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], array_values($vocabulary))->execute();
+            if (!empty($vocabulary)) {
+                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], array_values($vocabulary))->execute();
+            }
             
             $query = (new Query)->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
             foreach ($query->each() as $junk) {

@@ -6,6 +6,15 @@ use yii\helpers\Url;
 use yii\web\View;
 
 $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'.podium-quote\').click(function(e){
+    e.preventDefault();
+    var selection = \'\';
+    if (window.getSelection) selection = window.getSelection().toString();
+    else if (document.selection && document.selection.type != \'Control\') selection = document.selection.createRange().text;
+    jQuery(this).parent().find(\'.quote-selection\').val(selection);
+    jQuery(this).parent().find(\'.quick-quote-form\').submit();
+})', View::POS_READY, 'podium-quote');
+
 
 ?><div class="row" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">
@@ -21,7 +30,10 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_RE
             <div class="popover-content podium-content">
                 <?= $model->content ?>
                 <div class="podium-action-bar">
-                    <a href="" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></a>
+<?= Html::beginForm(['post', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id], 'post', ['class' => 'quick-quote-form']); ?>
+                    <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
+<?= Html::endForm(); ?>
+                    <button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button>
                     <a href="<?= Url::to(['thread', 'cid' => $category, 'fid' => $model->forum_id, 'id' => $model->thread_id, 'slug' => $slug, '#' => 'post' . $model->id]) ?>" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
                     <a href="" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a>
                     <a href="" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>

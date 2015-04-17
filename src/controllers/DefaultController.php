@@ -4,6 +4,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
+use bizley\podium\components\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
@@ -154,7 +155,7 @@ class DefaultController extends Controller
                                     if ($post->save()) {
 
                                         $forum->updateCounters(['posts' => 1]);
-                                        $thread->updateCounters(['posts' => 1]);
+                                        $this->updateCounters(['posts' => 1]);
                                     }
                                 }
 
@@ -236,7 +237,7 @@ class DefaultController extends Controller
         }
     }
 
-    public function actionPost($cid = null, $fid = null, $tid = null)
+    public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
             $this->error('Sorry! We can not find the thread you are looking for.');
@@ -265,9 +266,25 @@ class DefaultController extends Controller
                     return $this->redirect(['index']);
                 }
                 else {
+                    
                     $model = new Post;
                     
                     $postData = Yii::$app->request->post();
+                    
+                    $replyFor = null;
+                    if (is_numeric($pid) && $pid > 0) {
+                        $replyFor = Post::findOne((int)$pid);
+                        if ($replyFor) {
+                            
+                            if (isset($postData['quote']) && !empty($postData['quote'])) {
+                                $model->content = Helper::prepareQuote($replyFor, $postData['quote']);
+                            }
+                            else {
+                                $model->content = Helper::prepareQuote($replyFor);
+                            }                            
+                        }
+                    }
+                    
                     $preview = '';
                     
                     if ($model->load($postData)) {
@@ -310,6 +327,7 @@ class DefaultController extends Controller
                     }
 
                     return $this->render('post', [
+                                'replyFor' => $replyFor,
                                 'preview'  => $preview,
                                 'model'    => $model,
                                 'category' => $category,
