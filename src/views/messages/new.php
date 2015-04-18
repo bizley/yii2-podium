@@ -1,6 +1,7 @@
 <?php
 
 use bizley\ajaxdropdown\AjaxDropdown;
+use bizley\podium\components\Helper;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -27,7 +28,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <?= $form->field($model, 'receiver_id')->widget(AjaxDropdown::classname(), [
                         'source' => Url::to(['members/fieldlist']),
                         'singleMode' => true,
@@ -38,13 +39,13 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
             </div>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Message Topic')])->label(false) ?>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
                             'clientOptions' => [
                                 'height' => '100',
@@ -58,7 +59,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-8 col-sm-offset-3">
+                <div class="col-sm-9 col-sm-offset-3">
                     <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Send Message'), ['class' => 'btn btn-block btn-primary', 'name' => 'send-button']) ?>
                 </div>
             </div>

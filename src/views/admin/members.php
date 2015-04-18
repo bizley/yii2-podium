@@ -8,6 +8,7 @@ use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Forum Members');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
@@ -32,6 +33,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 
 <br>
 
+<?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -121,6 +123,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 ]);
 
 ?>
+<?php Pjax::end(); ?>
 
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModalDelete">
     <div class="modal-dialog">

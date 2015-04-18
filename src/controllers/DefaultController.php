@@ -155,7 +155,9 @@ class DefaultController extends Controller
                                     if ($post->save()) {
 
                                         $forum->updateCounters(['posts' => 1]);
-                                        $this->updateCounters(['posts' => 1]);
+                                        $this->updateCounters(['posts' => 1, 'views' => 1]);
+                                        $this->touch('new_post_at');
+                                        $this->touch('edited_post_at');
                                     }
                                 }
 
@@ -305,7 +307,9 @@ class DefaultController extends Controller
                                     if ($model->save()) {
 
                                         $forum->updateCounters(['posts' => 1]);
-                                        $thread->updateCounters(['posts' => 1]);
+                                        $thread->updateCounters(['posts' => 1, 'views' => 1]);
+                                        $thread->touch('new_post_at');
+                                        $thread->touch('edited_post_at');
                                     }
 
                                     $transaction->commit();

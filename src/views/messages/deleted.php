@@ -6,6 +6,7 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\Pjax;
 
 $this->title                   = Yii::t('podium/view', 'Deleted Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
@@ -30,7 +31,8 @@ $this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
         <?= $this->render('/elements/messages/_navbar', ['active' => 'trash']) ?>
         
         <br>
-        
+
+<?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -99,6 +101,7 @@ $this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
         ]
     ],
 ]); ?>
+<?php Pjax::end(); ?>
     </div>
 </div><br>
 

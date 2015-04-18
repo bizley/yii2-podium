@@ -5,7 +5,6 @@
  * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
  * @version 1.0
  */
-
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
@@ -173,6 +172,11 @@ class Installation extends Component
             'table'   => 'user_activity',
             'call'    => 'createUserActivityIndex',
             'percent' => 66
+        ],
+        [
+            'table'   => 'user_view',
+            'call'    => 'createUserView',
+            'percent' => 69
         ],
         [
             'table'   => 'user',
@@ -614,18 +618,20 @@ class Installation extends Component
     protected function _createThread($name)
     {
         return $this->_createTable($name, [
-                    'id'          => Schema::TYPE_PK,
-                    'name'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'slug'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'forum_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'author_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'pinned'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'locked'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'views'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'id'             => Schema::TYPE_PK,
+                    'name'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
                     'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
@@ -722,6 +728,24 @@ class Installation extends Component
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
+     * Creates User View database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createUserView($name)
+    {
+        return $this->_createTable($name, [
+                    'id'               => Schema::TYPE_PK,
+                    'user_id'          => Schema::TYPE_INTEGER,
+                    'thread_id'        => Schema::TYPE_INTEGER,
+                    'new_last_seen'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_last_seen' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (thread_id) REFERENCES {{%podium_thread}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
 

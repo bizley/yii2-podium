@@ -8,6 +8,7 @@ use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\Pjax;
 
 $this->title                   = Yii::t('podium/view', 'Moderation Team');
 $this->params['breadcrumbs'][] = $this->title;
@@ -21,6 +22,7 @@ echo Html::endTag('ul'); ?>
 
 <br>
 
+<?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -78,3 +80,4 @@ echo Html::endTag('ul'); ?>
 ]);
 
 ?>
+<?php Pjax::end(); ?>
