@@ -61,10 +61,10 @@ class AdminController extends Controller
 
         return $this->render('members', [
                     'dataProvider' => $dataProvider,
-                    'searchModel'  => $searchModel
+                    'searchModel'  => $searchModel,
         ]);
     }
-
+    
     public function actionView($id = null)
     {
         $model = User::findOne((int)$id);

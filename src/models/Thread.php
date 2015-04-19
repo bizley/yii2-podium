@@ -5,6 +5,7 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use Yii;
 use yii\behaviors\SluggableBehavior;
@@ -29,8 +30,25 @@ use yii\helpers\HtmlPurifier;
 class Thread extends ActiveRecord
 {
 
-    public $post;
+    const DESC_EDITED   = 'Edited Posts';
+    const DESC_HOT      = 'Hot Thread';
+    const DESC_NEW      = 'New Posts';
+    const DESC_NO_NEW   = 'No New Posts';
+    const DESC_LOCKED   = 'Locked Thread';
+    const DESC_PINNED   = 'Pinned Thread';
     
+    const CLASS_DEFAULT = 'default';
+    const CLASS_EDITED  = 'warning';
+    const CLASS_NEW     = 'success';
+    
+    const ICON_HOT      = 'fire';
+    const ICON_LOCKED   = 'lock';
+    const ICON_NEW      = 'leaf';
+    const ICON_NO_NEW   = 'comment';
+    const ICON_PINNED   = 'pushpin';
+
+    public $post;
+
     /**
      * @inheritdoc
      */
@@ -47,7 +65,7 @@ class Thread extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class'     => SluggableBehavior::className(),
                 'attribute' => 'name'
             ]
         ];
@@ -62,13 +80,13 @@ class Thread extends ActiveRecord
             ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
             ['post', 'required', 'on' => ['new']],
             ['post', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
-            }, 'on' => ['new']],
+                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+                }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['name', 'validateName'],
         ];
     }
-    
+
     /**
      * Validates name
      * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
@@ -82,18 +100,22 @@ class Thread extends ActiveRecord
             }
         }
     }
-    
-    public function getLatestPost()
+
+    public function getView()
     {
-        //<a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
-        return '';
+        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
     }
     
+    public function getLatest()
+    {
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
+    }
+
     public function search($forum_id = null)
     {
         $query = self::find();
         if ($forum_id) {
-            $query->where(['forum_id' => (int)$forum_id]);
+            $query->where(['forum_id' => (int) $forum_id]);
         }
 
         $dataProvider = new ActiveDataProvider([
@@ -103,5 +125,111 @@ class Thread extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
 
         return $dataProvider;
+    }
+
+    public function getIcon()
+    {
+        $icon   = self::ICON_NO_NEW;
+        $append = false;
+
+        if ($this->locked) {
+            $icon   = self::ICON_LOCKED;
+            $append = true;
+        }
+        elseif ($this->pinned) {
+            $icon   = self::ICON_PINNED;
+            $append = true;
+        }
+        elseif ($this->posts >= Config::getInstance()->get('hot_minimum')) {
+            $icon   = self::ICON_HOT;
+            $append = true;
+        }
+
+        if ($this->view) {
+            if ($this->new_post_at > $this->view->new_last_seen) {
+                if (!$append) {
+                    $icon = self::ICON_NEW;
+                }
+            }
+            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+                if (!$append) {
+                    $icon = self::ICON_NEW;
+                }
+            }
+        }
+        else {
+            if (!$append) {
+                $icon = self::ICON_NEW;
+            }
+        }
+
+        return $icon;
+    }
+
+    public function getDescription()
+    {
+        $description = self::DESC_NO_NEW;
+        $append      = false;
+
+        if ($this->locked) {
+            $description = self::DESC_LOCKED;
+            $append      = true;
+        }
+        elseif ($this->pinned) {
+            $description = self::DESC_PINNED;
+            $append      = true;
+        }
+        elseif ($this->posts >= Config::getInstance()->get('hot_minimum')) {
+            $description = self::DESC_HOT;
+            $append      = true;
+        }
+
+        if ($this->view) {
+            if ($this->new_post_at > $this->view->new_last_seen) {
+                if (!$append) {
+                    $description = self::DESC_NEW;
+                }
+                else {
+                    $description .= ' (' . self::DESC_NEW . ')';
+                }
+            }
+            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+                if (!$append) {
+                    $description = self::DESC_EDITED;
+                }
+                else {
+                    $description = ' (' . self::DESC_EDITED . ')';
+                }
+            }
+        }
+        else {
+            if (!$append) {
+                $description = self::DESC_NEW;
+            }
+            else {
+                $description .= ' (' . self::DESC_NEW . ')';
+            }
+        }
+
+        return $description;
+    }
+
+    public function getClass()
+    {
+        $class = self::CLASS_DEFAULT;
+
+        if ($this->view) {
+            if ($this->new_post_at > $this->view->new_last_seen) {
+                $class = self::CLASS_NEW;
+            }
+            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+                $class = self::CLASS_EDITED;
+            }
+        }
+        else {
+            $class = self::CLASS_NEW;
+        }
+
+        return $class;
     }
 }

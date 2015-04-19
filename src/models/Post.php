@@ -66,6 +66,11 @@ class Post extends ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'author_id']);
     }
     
+    public function getThread()
+    {
+        return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
+    }
+    
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
@@ -183,5 +188,31 @@ class Post extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
 
         return $dataProvider;
+    }
+    
+    public function markSeen()
+    {
+        try {
+            if (!(new Query)->from('{{%podium_post_view}}')->where(['post_id' => $this->id, 'user_id' => Yii::$app->user->id])->exists()) {
+                Yii::$app->db->createCommand()->insert('{{%podium_post_view}}', ['post_id' => $this->id, 'user_id' => Yii::$app->user->id, 'created_at' => time()])->execute();
+                $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
+                if ($threadView) {
+                    if ($threadView->new_last_seen < $this->created_at) {
+                        $threadView->new_last_seen = $this->created_at;
+                        $threadView->save();
+                    }
+                }
+                else {
+                    $threadView = new ThreadView;
+                    $threadView->user_id = Yii::$app->user->id;
+                    $threadView->thread_id = $this->thread_id;
+                    $threadView->new_last_seen = $this->created_at;
+                    $threadView->save();
+                }                
+            }
+        }
+        catch (Exception $e) {
+            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+        }
     }
 }

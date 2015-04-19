@@ -30,6 +30,8 @@ blockquote footer::before, blockquote small::before, blockquote .small::before {
     display:none;
 }
 .podium-content:hover .podium-action-bar { display:block }
+.podium-go-to-new { display:none }
+.podium-thread-line:hover .podium-go-to-new { display:inline }
 @media (max-width: 767px) {
     .podium-avatar { display:none !important }
 }

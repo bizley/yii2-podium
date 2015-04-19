@@ -28,7 +28,7 @@ $this->registerJs('jQuery(\'#podiumModalUnBan\').on(\'show.bs.modal\', function(
     jQuery(\'#unbanUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-unban');
 
-echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
+echo $this->render('/elements/admin/_navbar', ['active' => 'members']); echo $nivelNombre;
 ?>
 
 <br>

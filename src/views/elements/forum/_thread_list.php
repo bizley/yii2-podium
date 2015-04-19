@@ -10,5 +10,5 @@ echo ListView::widget([
     'emptyText' => Yii::t('podium/view', 'No threads have been added yet.'),
     'emptyTextOptions' => ['tag' => 'td', 'class' => 'text-muted', 'colspan' => 4],
     'options' => ['tag' => 'tbody'],
-    'itemOptions' => ['tag' => 'tr']
+    'itemOptions' => ['tag' => 'tr', 'class' => 'podium-thread-line']
 ]);

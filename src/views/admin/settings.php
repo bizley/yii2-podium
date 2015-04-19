@@ -26,6 +26,11 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model, 'hot_minimum')->textInput()->label(Yii::t('podium/view', 'Minimum number of posts for thread to become Hot')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model, 'version')->textInput(['readonly' => true])->label(Yii::t('podium/view', 'Database version')) ?>
                     </div>
                 </div>

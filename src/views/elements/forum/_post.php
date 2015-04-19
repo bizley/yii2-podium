@@ -15,6 +15,7 @@ $this->registerJs('jQuery(\'.podium-quote\').click(function(e){
     jQuery(this).parent().find(\'.quick-quote-form\').submit();
 })', View::POS_READY, 'podium-quote');
 
+$model->markSeen();
 
 ?><div class="row" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">

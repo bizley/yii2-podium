@@ -75,10 +75,9 @@ class Forum extends ActiveRecord
         }
     }
     
-    public function getLatestPost()
+    public function getLatest()
     {
-        //<a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
-        return '';
+        return $this->hasOne(Post::className(), ['forum_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
     
     public function search($category_id = null)
