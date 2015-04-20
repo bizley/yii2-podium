@@ -131,50 +131,62 @@ class DefaultController extends Controller
                     $model = new Thread;
                     $model->setScenario('new');
 
-                    if ($model->load(Yii::$app->request->post())) {
+                    $postData = Yii::$app->request->post();
+                    
+                    $preview = '';
+                    
+                    if ($model->load($postData)) {
 
                         $model->category_id = $category->id;
                         $model->forum_id    = $forum->id;
                         $model->author_id   = Yii::$app->user->id;
 
                         if ($model->validate()) {
-
-                            $transaction = Thread::getDb()->beginTransaction();
-                            try {
-                                if ($model->save()) {
-
-                                    $forum->updateCounters(['threads' => 1]);
-
-                                    $post            = new Post;
-                                    $post->content   = $model->post;
-                                    $post->thread_id = $model->id;
-                                    $post->forum_id  = $model->forum_id;
-                                    $post->author_id = Yii::$app->user->id;
-                                    $post->likes     = 0;
-                                    $post->dislikes  = 0;
-                                    if ($post->save()) {
-
-                                        $forum->updateCounters(['posts' => 1]);
-                                        $this->updateCounters(['posts' => 1, 'views' => 1]);
-                                        $this->touch('new_post_at');
-                                        $this->touch('edited_post_at');
-                                    }
-                                }
-
-                                $transaction->commit();
-
-                                Cache::getInstance()->delete('forum.threadscount');
-                                Cache::getInstance()->delete('forum.postscount');
-                                $this->success('New thread has been created.');
-
-                                return $this->redirect(['thread', 'cid'  => $category->id,
-                                            'fid'  => $forum->id, 'id'   => $model->id,
-                                            'slug' => $model->slug]);
+                            
+                            if (isset($postData['preview-button'])) {
+                                $preview = $model->post;
                             }
-                            catch (Exception $e) {
-                                $transaction->rollBack();
-                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                                $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
+                            else {
+
+                                //$transaction = Thread::getDb()->beginTransaction();
+                                //try {
+                                    if ($model->save()) {
+
+                                        $forum->updateCounters(['threads' => 1]);
+
+                                        $post            = new Post;
+                                        $post->content   = $model->post;
+                                        $post->thread_id = $model->id;
+                                        $post->forum_id  = $model->forum_id;
+                                        $post->author_id = Yii::$app->user->id;
+                                        $post->likes     = 0;
+                                        $post->dislikes  = 0;
+                                        if ($post->save()) {
+
+                                            $forum->updateCounters(['posts' => 1]);
+                                            $model->updateCounters(['posts' => 1, 'views' => 1]);
+                                            $model->touch('new_post_at');
+                                            $model->touch('edited_post_at');
+                                        }
+                                    }
+
+                                    //$transaction->commit();
+                                    
+                                    Cache::getInstance()->delete('forum.threadscount');
+                                    Cache::getInstance()->delete('forum.postscount');
+                                    $this->success('New thread has been created.');
+
+                                    return $this->redirect(['thread', 'cid'  => $category->id,
+                                                'fid'  => $forum->id, 'id'   => $model->id,
+                                                'slug' => $model->slug]);
+                                //}
+//                                catch (Exception $e) {
+//                                    \yii\helpers\VarDumper::dump($e);
+//                                    die();
+//                                    $transaction->rollBack();
+//                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+//                                    $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
+//                                }
                             }
                         }
                     }
@@ -182,6 +194,7 @@ class DefaultController extends Controller
             }
 
             return $this->render('new-thread', [
+                        'preview'  => $preview,
                         'model'    => $model,
                         'category' => $category,
                         'forum'    => $forum,
