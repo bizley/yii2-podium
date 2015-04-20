@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Podium Installation
- * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
- * @version 1.0
- */
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
@@ -19,6 +14,12 @@ use yii\di\Instance;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
 use yii\rbac\DbManager;
+
+/**
+ * Podium Installation
+ * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
+ * @version 1.0
+ */
 
 /**
  * Podium Installation
@@ -715,6 +716,7 @@ class Installation extends Component
                     'id'         => Schema::TYPE_PK,
                     'user_id'    => Schema::TYPE_INTEGER,
                     'username'   => Schema::TYPE_STRING,
+                    'user_slug'  => Schema::TYPE_STRING,
                     'user_role'  => Schema::TYPE_INTEGER,
                     'url'        => Schema::TYPE_STRING . ' NOT NULL',
                     'ip'         => Schema::TYPE_STRING . '(15)',

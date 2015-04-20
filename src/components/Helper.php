@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Podium Helper
- * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
- * @version 1.0
- */
-
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
@@ -13,6 +7,12 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
+
+/**
+ * Podium Helper
+ * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
+ * @version 1.0
+ */
 
 /**
  * Podium Helper
@@ -39,7 +39,7 @@ class Helper
      */
     public static function deletedUserTag($simple = false)
     {
-        return self::podiumUserTag('', 0, null, $simple);
+        return self::podiumUserTag('', 0, null, null, $simple);
     }
     
     /**
@@ -79,10 +79,10 @@ class Helper
      * @param boolean $simple Wheter to return simple tag instead of full
      * @return string Tag
      */
-    public static function podiumUserTag($name, $role, $id = null, $simple = false)
+    public static function podiumUserTag($name, $role, $id = null, $slug = null, $simple = false)
     {
         $icon = Html::tag('span', '', ['class' => $id ? 'glyphicon glyphicon-user' : 'glyphicon glyphicon-ban-circle']);
-        $url = $id ? ['members/view', 'id' => $id] : '#';
+        $url = $id ? ['members/view', 'id' => $id, 'slug' => $slug] : '#';
         switch ($role) {
             case 0:
                 $colourClass = 'text-muted';

@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @author Bizley
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
@@ -55,6 +52,7 @@ class Post extends ActiveRecord
     {
         return [
             ['content', 'required'],
+            ['content', 'string', 'min' => 10],
             ['content', 'filter', 'filter' => function($value) {
                     return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
                 }],
@@ -201,12 +199,17 @@ class Post extends ActiveRecord
                         $threadView->new_last_seen = $this->created_at;
                         $threadView->save();
                     }
+                    if ($threadView->edited_last_seen < $this->updated_at) {
+                        $threadView->edited_last_seen = $this->updated_at;
+                        $threadView->save();
+                    }
                 }
                 else {
-                    $threadView = new ThreadView;
-                    $threadView->user_id = Yii::$app->user->id;
-                    $threadView->thread_id = $this->thread_id;
-                    $threadView->new_last_seen = $this->created_at;
+                    $threadView                   = new ThreadView;
+                    $threadView->user_id          = Yii::$app->user->id;
+                    $threadView->thread_id        = $this->thread_id;
+                    $threadView->new_last_seen    = $this->created_at;
+                    $threadView->edited_last_seen = $this->updated_at;
                     $threadView->save();
                 }                
             }

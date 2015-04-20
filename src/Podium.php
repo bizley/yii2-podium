@@ -1,5 +1,15 @@
 <?php
 
+namespace bizley\podium;
+
+use bizley\podium\components\Config;
+use bizley\podium\components\Installation;
+use bizley\podium\models\Activity;
+use Yii;
+use yii\base\BootstrapInterface;
+use yii\base\Module;
+use yii\web\GroupUrlRule;
+
 /**
  * Podium Module
  * Yii 2 forum module
@@ -15,16 +25,6 @@
  * @see http://www.yiiframework.com
  * @see https://github.com/yiisoft/yii2
  */
-
-namespace bizley\podium;
-
-use bizley\podium\components\Config;
-use bizley\podium\components\Installation;
-use bizley\podium\models\Activity;
-use Yii;
-use yii\base\BootstrapInterface;
-use yii\base\Module;
-use yii\web\GroupUrlRule;
 
 /**
  * Podium Module
@@ -105,7 +105,7 @@ class Podium extends Module implements BootstrapInterface
                     'install'                                            => 'install/run',
                     'login'                                              => 'account/login',
                     'logout'                                             => 'profile/logout',
-                    'members/view/<id:\d+>'                              => 'members/view',
+                    'members/view/<id:\d+>/<slug:[\w\-]+>'               => 'members/view',
                     'members'                                            => 'members/index',
                     'members/ignore/<id:\d+>'                            => 'members/ignore',
                     'messages/delete/<id:\d+>'                           => 'messages/delete',
@@ -120,6 +120,7 @@ class Podium extends Module implements BootstrapInterface
                     'reactivate'                                         => 'account/reactivate',
                     'register'                                           => 'account/register',
                     'reset'                                              => 'account/reset',
+                    'show/<id:\d+>'                                      => 'default/show',
                     'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/thread',
                 ],
                     ])], false);

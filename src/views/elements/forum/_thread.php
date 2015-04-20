@@ -20,5 +20,10 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_RE
 <td class="text-center"><?= $model->posts > 0 ? $model->posts - 1 : 0 ?></td>
 <td class="text-center"><?= $model->views ?></td>
 <td>
-    <small><?= $model->latest->user->getPodiumTag() ?><br><?= Yii::$app->formatter->asDatetime($model->latest->created_at) ?></small>
+    <small>
+<?php if (!empty($model->latest) && !empty($model->latest->user)): ?>
+        <?= $model->latest->user->getPodiumTag() ?><br>
+<?php endif; ?>
+        <?= Yii::$app->formatter->asDatetime($model->latest->created_at) ?>
+    </small>
 </td>

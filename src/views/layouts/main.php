@@ -1,7 +1,8 @@
 <?php
-use yii\helpers\Html;
-use bizley\podium\widgets\Alert;
+
 use bizley\podium\assets\PodiumAsset;
+use bizley\podium\widgets\Alert;
+use yii\helpers\Html;
 
 PodiumAsset::register($this);
 $this->beginPage() ?>

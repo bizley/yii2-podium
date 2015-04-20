@@ -35,7 +35,7 @@ $model->markSeen();
                     <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
 <?= Html::endForm(); ?>
                     <button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button>
-                    <a href="<?= Url::to(['thread', 'cid' => $category, 'fid' => $model->forum_id, 'id' => $model->thread_id, 'slug' => $slug, '#' => 'post' . $model->id]) ?>" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
+                    <a href="<?= Url::to(['show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
                     <a href="" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a>
                     <a href="" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>
                     <a href="" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report this post') ?>"><span class="glyphicon glyphicon-flag"></span></a>

@@ -16,7 +16,7 @@ $lastActive = Activity::lastActive();
 <?php if (!empty($lastActive['names'])): ?>
         <p>
 <?php foreach ($lastActive['names'] as $id => $name): ?>
-            <?= Helper::podiumUserTag($name['name'], $name['role'], $id) ?>
+            <?= Helper::podiumUserTag($name['name'], $name['role'], $id, $name['slug']) ?>
 <?php endforeach; ?>
         </p>
 <?php endif; ?>

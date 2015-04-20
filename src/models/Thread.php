@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @author Bizley
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
@@ -79,6 +76,7 @@ class Thread extends ActiveRecord
         return [
             ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
             ['post', 'required', 'on' => ['new']],
+            ['post', 'string', 'min' => 10, 'on' => ['new']],
             ['post', 'filter', 'filter' => function($value) {
                     return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
                 }, 'on' => ['new']],

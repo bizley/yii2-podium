@@ -8,6 +8,8 @@ use yii\helpers\Url;
 use yii\widgets\ListView;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
+//$this->registerJs('var anchor=window.location.hash; var aid=anchor.substr(1); ', View::POS_READY, 'anchor-marked');
+
 $this->title                   = Html::encode($thread->name);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['category', 'id' => $category->id, 'slug' => $category->slug]];

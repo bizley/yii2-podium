@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @author Bizley
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -81,9 +78,9 @@ class Activity extends ActiveRecord
             $activity->url = $url;
         }
         else {
-            $activity = new Activity();
+            $activity      = new Activity();
             $activity->url = $url;
-            $activity->ip = $ip;
+            $activity->ip  = $ip;
         }
         return $activity->save();
     }
@@ -92,14 +89,16 @@ class Activity extends ActiveRecord
     {
         $activity = self::findOne(['user_id' => Yii::$app->user->id]);
         if (!$activity) {
-            $activity = new Activity();
+            $activity          = new Activity();
             $activity->user_id = Yii::$app->user->id;
         }
-        $activity->username = Yii::$app->user->getIdentity()->getPodiumName();
-        $activity->user_role = Yii::$app->user->getIdentity()->role;
-        $activity->url = $url;
-        $activity->ip = $ip;
-        $activity->anonymous = Yii::$app->user->getIdentity()->anonymous;
+        $user                = Yii::$app->user->getIdentity();
+        $activity->username  = $user->getPodiumName();
+        $activity->user_role = $user->role;
+        $activity->user_slug = $user->slug;
+        $activity->url       = $url;
+        $activity->ip        = $ip;
+        $activity->anonymous = $user->anonymous;
 
         return $activity->save();
     }
@@ -109,17 +108,18 @@ class Activity extends ActiveRecord
         $last = Cache::getInstance()->get('forum.lastactive');
         if ($last === false) {
             
-            $last = [];
-            $last['count'] = self::find()->where(['>', 'updated_at', time() - 15 * 60])->count();
-            $last['members'] = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->count();
+            $last              = [];
+            $last['count']     = self::find()->where(['>', 'updated_at', time() - 15 * 60])->count();
+            $last['members']   = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->count();
             $last['anonymous'] = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 1]])->count();
-            $last['guests'] = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['user_id' => null]])->count();
-            $last['names'] = [];
-            $members = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->asArray()->all();
+            $last['guests']    = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['user_id' => null]])->count();
+            $last['names']     = [];
+            $members           = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->asArray()->all();
             foreach ($members as $member) {
                 $last['names'][$member['user_id']] = [
                     'name' => $member['username'],
                     'role' => $member['user_role'],
+                    'slug' => $member['user_slug'],
                 ];
             }
             

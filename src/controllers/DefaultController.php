@@ -11,6 +11,7 @@ use bizley\podium\models\Post;
 use bizley\podium\models\Thread;
 use Exception;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
@@ -137,6 +138,8 @@ class DefaultController extends Controller
                     
                     if ($model->load($postData)) {
 
+                        $model->posts       = 0;
+                        $model->views       = 0;
                         $model->category_id = $category->id;
                         $model->forum_id    = $forum->id;
                         $model->author_id   = Yii::$app->user->id;
@@ -148,8 +151,8 @@ class DefaultController extends Controller
                             }
                             else {
 
-                                //$transaction = Thread::getDb()->beginTransaction();
-                                //try {
+                                $transaction = Thread::getDb()->beginTransaction();
+                                try {
                                     if ($model->save()) {
 
                                         $forum->updateCounters(['threads' => 1]);
@@ -170,7 +173,7 @@ class DefaultController extends Controller
                                         }
                                     }
 
-                                    //$transaction->commit();
+                                    $transaction->commit();
                                     
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
@@ -179,14 +182,12 @@ class DefaultController extends Controller
                                     return $this->redirect(['thread', 'cid'  => $category->id,
                                                 'fid'  => $forum->id, 'id'   => $model->id,
                                                 'slug' => $model->slug]);
-                                //}
-//                                catch (Exception $e) {
-//                                    \yii\helpers\VarDumper::dump($e);
-//                                    die();
-//                                    $transaction->rollBack();
-//                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-//                                    $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
-//                                }
+                                }
+                                catch (Exception $e) {
+                                    $transaction->rollBack();
+                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                    $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
+                                }
                             }
                         }
                     }
@@ -357,4 +358,48 @@ class DefaultController extends Controller
         }
     }
 
+    public function actionShow($id = null)
+    {
+        if (!is_numeric($id) || $id < 1) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+        
+        $post = Post::findOne((int)$id);
+        if (!$post) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+        
+        if ($post->thread) {
+            
+            $url = [
+                'thread', 
+                'cid'  => $post->thread->category_id,
+                'fid'  => $post->forum_id, 
+                'id'   => $post->thread_id, 
+                'slug' => $post->thread->slug
+            ];
+            
+            try {
+                $count = (new Query)->from('{{%podium_post}}')->where(['and', ['thread_id' => $post->thread_id], ['<', 'id', $post->id]])->orderBy(['id' => SORT_ASC])->count();
+                $page = floor($count / 10) + 1;
+                
+                if ($page > 1) {
+                    $url['page'] = $page;
+                }
+                $url['#'] = 'post' . $post->id;
+
+                return $this->redirect($url);
+            }
+            catch (Exception $e) {
+                $this->error('Sorry! We can not find the post you are looking for.');
+                return $this->redirect(['index']);
+            }
+        }
+        else {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }        
+    }
 }        

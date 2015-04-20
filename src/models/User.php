@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @author Bizley
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -468,7 +465,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getPodiumTag($simple = false)
     {
-        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $simple);
+        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $this->slug, $simple);
     }
 
     public function isIgnoredBy($user_id)
