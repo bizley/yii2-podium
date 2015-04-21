@@ -100,6 +100,7 @@ class Podium extends Module implements BootstrapInterface
                     'admin/view/<id:\d+>'                                => 'admin/view',
                     'admin'                                              => 'admin/index',
                     'category/<id:\d+>/<slug:[\w\-]+>'                   => 'default/category',
+                    'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'       => 'default/edit',
                     'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/forum',
                     'home'                                               => 'default/index',
                     'install'                                            => 'install/run',

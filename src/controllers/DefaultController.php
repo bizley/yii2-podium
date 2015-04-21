@@ -331,9 +331,7 @@ class DefaultController extends Controller
                                     Cache::getInstance()->delete('forum.postscount');
                                     $this->success('New reply has been added.');
 
-                                    return $this->redirect(['thread', 'cid'  => $category->id,
-                                                'fid'  => $forum->id, 'id'   => $thread->id,
-                                                'slug' => $thread->slug]);
+                                    return $this->redirect(['show', 'id' => $model->id]);
                                 }
                                 catch (Exception $e) {
                                     $transaction->rollBack();
@@ -401,5 +399,90 @@ class DefaultController extends Controller
             $this->error('Sorry! We can not find the post you are looking for.');
             return $this->redirect(['index']);
         }        
+    }
+    
+    public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
+    {
+        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        $category = Category::findOne(['id' => (int) $cid]);
+
+        if (!$category) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+        else {
+            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+
+            if (!$forum) {
+                $this->error('Sorry! We can not find the post you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
+                            'forum_id' => $forum->id]);
+
+                if (!$thread) {
+                    $this->error('Sorry! We can not find the post you are looking for.');
+                    return $this->redirect(['index']);
+                }
+                else {
+                    
+                    $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id, 'author_id' => Yii::$app->user->id]);
+                    if (!$model) {
+                        $this->error('Sorry! We can not find the post you are looking for.');
+                        return $this->redirect(['index']);
+                    }
+                    else {
+                        $postData = Yii::$app->request->post();
+                    
+                        $preview = '';
+
+                        if ($model->load($postData)) {
+
+                            if ($model->validate()) {
+
+                                if (isset($postData['preview-button'])) {
+                                    $preview = $model->content;
+                                }
+                                else {
+
+                                    $transaction = Post::getDb()->beginTransaction();
+                                    try {
+                                        if ($model->save()) {
+
+                                            $thread->updateCounters(['views' => 1]);
+                                            $thread->touch('edited_post_at');
+                                        }
+
+                                        $transaction->commit();
+
+                                        $this->success('Post has been updated.');
+
+                                        return $this->redirect(['show', 'id' => $model->id]);
+                                    }
+                                    catch (Exception $e) {
+                                        $transaction->rollBack();
+                                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                        $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                    }
+                                }
+                            }
+                        }
+
+                        return $this->render('edit', [
+                                    'preview'  => $preview,
+                                    'model'    => $model,
+                                    'category' => $category,
+                                    'forum'    => $forum,
+                                    'thread'   => $thread,
+                        ]);
+                    }
+                }
+            }
+        }
     }
 }        

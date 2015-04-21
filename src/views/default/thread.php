@@ -6,6 +6,7 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ListView;
+use yii\widgets\Pjax;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
 //$this->registerJs('var anchor=window.location.hash; var aid=anchor.substr(1); ', View::POS_READY, 'anchor-marked');
@@ -16,6 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url
 $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' => ['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
+Pjax::begin();
 echo ListView::widget([
     'dataProvider' => $dataProvider,
     'itemView' => '/elements/forum/_post',
@@ -24,7 +26,9 @@ echo ListView::widget([
     'emptyText' => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
     'pager' => ['options' => ['class' => 'pagination pull-right']]
-]); ?>
+]); 
+Pjax::end();
+?>
 
 <br>
 <div class="row">

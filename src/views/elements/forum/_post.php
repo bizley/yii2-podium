@@ -34,7 +34,11 @@ $model->markSeen();
 <?= Html::beginForm(['post', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id], 'post', ['class' => 'quick-quote-form']); ?>
                     <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
 <?= Html::endForm(); ?>
+<?php if ($model->author_id != Yii::$app->user->id): ?>
                     <button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button>
+<?php else: ?>
+                    <a href="<?= Url::to(['edit', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit post') ?>"><span class="glyphicon glyphicon-edit"></span></a>
+<?php endif; ?>
                     <a href="<?= Url::to(['show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
                     <a href="" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a>
                     <a href="" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>
