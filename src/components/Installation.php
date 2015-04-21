@@ -592,6 +592,7 @@ class Installation extends Component
                     'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                     'FOREIGN KEY (thread_id) REFERENCES {{%podium_thread}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
                     'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);

@@ -5,11 +5,12 @@ use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\View;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
-//$this->registerJs('var anchor=window.location.hash; var aid=anchor.substr(1); ', View::POS_READY, 'anchor-marked');
+$this->registerJs('var anchor=window.location.hash; if (anchor.match(/^#post[0-9]+$/)) jQuery(anchor).find(\'.podium-content\').addClass(\'podium-gradient\');', View::POS_READY, 'anchor-marked');
 
 $this->title                   = Html::encode($thread->name);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];

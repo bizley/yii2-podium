@@ -179,7 +179,9 @@ class Post extends ActiveRecord
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 10,
+                'defaultPageSize' => 10,
+                'pageSizeLimit' => false,
+                'forcePageParam' => false
             ],
         ]);
 

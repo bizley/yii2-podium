@@ -452,6 +452,10 @@ class DefaultController extends Controller
 
                                     $transaction = Post::getDb()->beginTransaction();
                                     try {
+                                        
+                                        $model->edited = 1;
+                                        $model->edited_at = time();
+                                        
                                         if ($model->save()) {
 
                                             $thread->updateCounters(['views' => 1]);
