@@ -192,32 +192,57 @@ class Post extends ActiveRecord
     
     public function markSeen()
     {
-        try {
-            if (!(new Query)->from('{{%podium_post_view}}')->where(['post_id' => $this->id, 'user_id' => Yii::$app->user->id])->exists()) {
-                Yii::$app->db->createCommand()->insert('{{%podium_post_view}}', ['post_id' => $this->id, 'user_id' => Yii::$app->user->id, 'created_at' => time()])->execute();
-                $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
-                if ($threadView) {
-                    if ($threadView->new_last_seen < $this->created_at) {
-                        $threadView->new_last_seen = $this->created_at;
-                        $threadView->save();
-                    }
-                    if ($threadView->edited_last_seen < $this->updated_at) {
-                        $threadView->edited_last_seen = $this->updated_at;
+        //try {
+            
+            $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
+            
+            if (!$threadView) {
+                $threadView                   = new ThreadView;
+                $threadView->user_id          = Yii::$app->user->id;
+                $threadView->thread_id        = $this->thread_id;
+                $threadView->new_last_seen    = $this->created_at;
+                $threadView->edited_last_seen = $this->edited_at;
+                $threadView->save();
+            }
+            else {
+                if ($this->edited) {
+                    if ($threadView->edited_last_seen < $this->edited_at) {
+                        $threadView->edited_last_seen = $this->edited_at;
                         $threadView->save();
                     }
                 }
                 else {
-                    $threadView                   = new ThreadView;
-                    $threadView->user_id          = Yii::$app->user->id;
-                    $threadView->thread_id        = $this->thread_id;
-                    $threadView->new_last_seen    = $this->created_at;
-                    $threadView->edited_last_seen = $this->updated_at;
-                    $threadView->save();
-                }                
+                    if ($threadView->new_last_seen < $this->created_at) {
+                        $threadView->new_last_seen = $this->created_at;
+                        $threadView->save();
+                    }
+                }
             }
-        }
-        catch (Exception $e) {
-            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-        }
+//            if (!(new Query)->from('{{%podium_post_view}}')->where(['post_id' => $this->id, 'user_id' => Yii::$app->user->id])->exists()) {
+//                Yii::$app->db->createCommand()->insert('{{%podium_post_view}}', ['post_id' => $this->id, 'user_id' => Yii::$app->user->id, 'created_at' => time()])->execute();
+//                $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
+//                if ($threadView) {
+//                    if ($threadView->new_last_seen < $this->created_at) {
+//                        $threadView->new_last_seen = $this->created_at;
+//                        $threadView->save();
+//                    }
+//                    if ($threadView->edited_last_seen < $this->updated_at) {
+//                        $threadView->edited_last_seen = $this->updated_at;
+//                        $threadView->save();
+//                    }
+//                }
+//                else {
+//                    $threadView                   = new ThreadView;
+//                    $threadView->user_id          = Yii::$app->user->id;
+//                    $threadView->thread_id        = $this->thread_id;
+//                    $threadView->new_last_seen    = $this->created_at;
+//                    $threadView->edited_last_seen = $this->updated_at;
+//                    $threadView->save();
+//                }                
+//            }
+//        }
+//        catch (Exception $e) {
+//            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+//        }
     }
 }

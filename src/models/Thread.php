@@ -108,6 +108,29 @@ class Thread extends ActiveRecord
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
+    
+    public function getFirstNewNotSeen()
+    {
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'created_at', $this->view ? $this->view->new_last_seen : 0])->orderBy(['id' => SORT_ASC]);
+    }
+    
+    public function getFirstEditedNotSeen()
+    {
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'edited_at', $this->view ? $this->view->edited_last_seen : 0])->orderBy(['id' => SORT_ASC]);
+    }
+    
+    public function firstToSee()
+    {
+        if ($this->firstNewNotSeen) {
+            return $this->firstNewNotSeen;
+        }
+        elseif ($this->firstEditedNotSeen) {
+            return $this->firstEditedNotSeen;
+        }
+        else {
+            return $this->latest;
+        }
+    }
 
     public function search($forum_id = null)
     {

@@ -4,10 +4,12 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs('jQuery(\'[data-toggle="popover"]\').popover();', View::POS_READY, 'bootstrap-popover');
+
+$firstToSee = $model->firstToSee();
 
 ?><td class="podium-thread-line">
-    <a href="<?= Url::to(['thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the new post') ?>">
+    <a href="<?= Url::to(['show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($firstToSee->content)) ?><br><strong><?= $firstToSee->user->getPodiumName() ?></strong> <?= Yii::$app->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
         <span class="glyphicon glyphicon-leaf"></span>
     </a>
     <a href="<?= Url::to(['thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="pull-left btn btn-<?= $model->getClass() ?>" style="margin-right:10px" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', $model->getDescription()) ?>">
