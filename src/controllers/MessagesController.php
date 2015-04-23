@@ -20,7 +20,7 @@ class MessagesController extends Controller
             'access' => [
                 'class'        => AccessControl::className(),
                 'denyCallback' => function () {
-                    return $this->redirect(['login']);
+                    return $this->redirect(['account/login']);
                 },
                 'rules'  => [
                     [

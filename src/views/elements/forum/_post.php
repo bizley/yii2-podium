@@ -15,7 +15,9 @@ $this->registerJs('jQuery(\'.podium-quote\').click(function(e){
     jQuery(this).parent().find(\'.quick-quote-form\').submit();
 })', View::POS_READY, 'podium-quote');
 
-$model->markSeen();
+if (!Yii::$app->user->isGuest) {
+    $model->markSeen();
+}
 
 ?><div class="row" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">
@@ -25,7 +27,12 @@ $model->markSeen();
         <div class="popover right podium">
             <div class="arrow"></div>
             <div class="popover-title">
-                <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?></small>
+                <small class="pull-right">
+                    <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?>
+<?php if ($model->edited && $model->edited_at): ?>
+                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->edited_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->edited_at, 'long')]); ?>)</em>
+<?php endif; ?>
+                </small>
                 <?= $model->user->getPodiumTag() ?>
             </div>
             <div class="popover-content podium-content">

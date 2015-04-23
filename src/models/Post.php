@@ -192,8 +192,7 @@ class Post extends ActiveRecord
     
     public function markSeen()
     {
-        //try {
-            
+        if (!Yii::$app->user->isGuest) {
             $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
             
             if (!$threadView) {
@@ -203,46 +202,42 @@ class Post extends ActiveRecord
                 $threadView->new_last_seen    = $this->created_at;
                 $threadView->edited_last_seen = $this->edited_at;
                 $threadView->save();
+                $this->thread->updateCounters(['views' => 1]);
             }
             else {
                 if ($this->edited) {
                     if ($threadView->edited_last_seen < $this->edited_at) {
                         $threadView->edited_last_seen = $this->edited_at;
                         $threadView->save();
+                        $this->thread->updateCounters(['views' => 1]);
                     }
                 }
                 else {
+                    $save = false;
                     if ($threadView->new_last_seen < $this->created_at) {
                         $threadView->new_last_seen = $this->created_at;
+                        $save = true;
+                    }
+                    if ($threadView->edited_last_seen < max($this->created_at, $this->edited_at)) {
+                        $threadView->edited_last_seen = max($this->created_at, $this->edited_at);
+                        $save = true;
+                    }
+                    if ($save) {
                         $threadView->save();
+                        $this->thread->updateCounters(['views' => 1]);
                     }
                 }
             }
-//            if (!(new Query)->from('{{%podium_post_view}}')->where(['post_id' => $this->id, 'user_id' => Yii::$app->user->id])->exists()) {
-//                Yii::$app->db->createCommand()->insert('{{%podium_post_view}}', ['post_id' => $this->id, 'user_id' => Yii::$app->user->id, 'created_at' => time()])->execute();
-//                $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
-//                if ($threadView) {
-//                    if ($threadView->new_last_seen < $this->created_at) {
-//                        $threadView->new_last_seen = $this->created_at;
-//                        $threadView->save();
-//                    }
-//                    if ($threadView->edited_last_seen < $this->updated_at) {
-//                        $threadView->edited_last_seen = $this->updated_at;
-//                        $threadView->save();
-//                    }
-//                }
-//                else {
-//                    $threadView                   = new ThreadView;
-//                    $threadView->user_id          = Yii::$app->user->id;
-//                    $threadView->thread_id        = $this->thread_id;
-//                    $threadView->new_last_seen    = $this->created_at;
-//                    $threadView->edited_last_seen = $this->updated_at;
-//                    $threadView->save();
-//                }                
-//            }
-//        }
-//        catch (Exception $e) {
-//            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-//        }
+        }
+    }
+    
+    public function isMod($user_id = null)
+    {
+        if (Yii::$app->user->can('admin')) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

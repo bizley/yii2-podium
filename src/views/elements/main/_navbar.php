@@ -9,7 +9,7 @@ $items = [
     ['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']],
 ];
 if (Yii::$app->user->isGuest) {
-    $items[] = ['label' => Yii::t('podium/layout', 'Login'), 'url' => ['account/login']];
+    $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => ['account/login']];
     $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => ['account/register']];
 }
 else {

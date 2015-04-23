@@ -36,7 +36,7 @@ echo Html::endTag('ul'); ?>
             'encodeLabel'        => false,
             'format'             => 'raw',
             'value'              => function ($model) {
-                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id]);
+                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug]);
             },
         ],
         [
@@ -61,7 +61,7 @@ echo Html::endTag('ul'); ?>
             'header'         => Yii::t('podium/view', 'Actions'),
             'contentOptions' => ['class' => 'text-right'],
             'headerOptions'  => ['class' => 'text-right'],
-            'template'       => '{view} {pm}',
+            'template'       => '{view}' . (!Yii::$app->user->isGuest ? ' {pm}' : ''),
             'buttons'        => [
                 'view' => function($url) {
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);

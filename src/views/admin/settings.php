@@ -13,7 +13,7 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
         <div class="panel panel-default">
-<?php $form = ActiveForm::begin(['id' => 'new-forum-form']); ?>
+<?php $form = ActiveForm::begin(['id' => 'settings-form']); ?>
             <div class="panel-heading">
                 <h3 class="panel-title"><?= Yii::t('podium/view', 'Podium Settings') ?></h3>
             </div>
@@ -27,6 +27,11 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <?= $form->field($model, 'hot_minimum')->textInput()->label(Yii::t('podium/view', 'Minimum number of posts for thread to become Hot')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'members_visible')->checkBox()->label(Yii::t('podium/view', 'Allow guests to list members')) ?>
                     </div>
                 </div>
                 <div class="row">

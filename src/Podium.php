@@ -2,6 +2,7 @@
 
 namespace bizley\podium;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Installation;
 use bizley\podium\models\Activity;
@@ -213,6 +214,7 @@ class Podium extends Module implements BootstrapInterface
                 'itemChildTable'  => '{{%podium_auth_item_child}}',
                 'assignmentTable' => '{{%podium_auth_assignment}}',
                 'ruleTable'       => '{{%podium_auth_rule}}',
+                'cache'           => Cache::getInstance()->cache
             ],
         ]);
     }

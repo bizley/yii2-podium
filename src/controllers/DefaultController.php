@@ -108,7 +108,14 @@ class DefaultController extends Controller
     public function actionNewThread($cid = null, $fid = null)
     {
         if (!Yii::$app->user->can('createThread')) {
-            $this->error('Sorry! You do not have the required permission to perform this action.');
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to create a new thread.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
         }
         else {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1) {
@@ -165,9 +172,9 @@ class DefaultController extends Controller
                                         $post->likes     = 0;
                                         $post->dislikes  = 0;
                                         if ($post->save()) {
-
+                                            $post->markSeen();
                                             $forum->updateCounters(['posts' => 1]);
-                                            $model->updateCounters(['posts' => 1, 'views' => 1]);
+                                            $model->updateCounters(['posts' => 1]);
                                             $model->touch('new_post_at');
                                             $model->touch('edited_post_at');
                                         }
@@ -255,102 +262,130 @@ class DefaultController extends Controller
 
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
-        }
-
-        $category = Category::findOne(['id' => (int) $cid]);
-
-        if (!$category) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+        if (!Yii::$app->user->can('createPost')) {
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to post a reply.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
         }
         else {
-            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+            if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
+                $this->error('Sorry! We can not find the thread you are looking for.');
+                return $this->redirect(['index']);
+            }
 
-            if (!$forum) {
+            $category = Category::findOne(['id' => (int) $cid]);
+
+            if (!$category) {
                 $this->error('Sorry! We can not find the thread you are looking for.');
                 return $this->redirect(['index']);
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
-                            'forum_id' => $forum->id]);
+                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
-                if (!$thread) {
+                if (!$forum) {
                     $this->error('Sorry! We can not find the thread you are looking for.');
                     return $this->redirect(['index']);
                 }
                 else {
-                    
-                    $model = new Post;
-                    
-                    $postData = Yii::$app->request->post();
-                    
-                    $replyFor = null;
-                    if (is_numeric($pid) && $pid > 0) {
-                        $replyFor = Post::findOne((int)$pid);
-                        if ($replyFor) {
-                            
-                            if (isset($postData['quote']) && !empty($postData['quote'])) {
-                                $model->content = Helper::prepareQuote($replyFor, $postData['quote']);
-                            }
-                            else {
-                                $model->content = Helper::prepareQuote($replyFor);
-                            }                            
-                        }
+                    $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
+                                'forum_id' => $forum->id]);
+
+                    if (!$thread) {
+                        $this->error('Sorry! We can not find the thread you are looking for.');
+                        return $this->redirect(['index']);
                     }
-                    
-                    $preview = '';
-                    
-                    if ($model->load($postData)) {
+                    else {
 
-                        $model->thread_id = $thread->id;
-                        $model->forum_id  = $forum->id;
-                        $model->author_id = Yii::$app->user->id;
+                        $model = new Post;
 
-                        if ($model->validate()) {
+                        $postData = Yii::$app->request->post();
 
-                            if (isset($postData['preview-button'])) {
-                                $preview = $model->content;
+                        $replyFor = null;
+                        if (is_numeric($pid) && $pid > 0) {
+                            $replyFor = Post::findOne((int)$pid);
+                            if ($replyFor) {
+
+                                if (isset($postData['quote']) && !empty($postData['quote'])) {
+                                    $model->content = Helper::prepareQuote($replyFor, $postData['quote']);
+                                }
+                                else {
+                                    $model->content = Helper::prepareQuote($replyFor);
+                                }                            
                             }
-                            else {
-                            
-                                $transaction = Post::getDb()->beginTransaction();
-                                try {
-                                    if ($model->save()) {
+                        }
 
-                                        $forum->updateCounters(['posts' => 1]);
-                                        $thread->updateCounters(['posts' => 1, 'views' => 1]);
-                                        $thread->touch('new_post_at');
-                                        $thread->touch('edited_post_at');
+                        $preview = '';
+                        $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one();
+
+                        if ($model->load($postData)) {
+
+                            $model->thread_id = $thread->id;
+                            $model->forum_id  = $forum->id;
+                            $model->author_id = Yii::$app->user->id;
+
+                            if ($model->validate()) {
+
+                                if (isset($postData['preview-button'])) {
+                                    $preview = $model->content;
+                                }
+                                else {
+
+                                    $transaction = Post::getDb()->beginTransaction();
+                                    try {
+                                        
+                                        if ($previous->author_id == Yii::$app->user->id) {
+                                            $previous->content .= '<hr>' . $model->content;
+                                            $previous->edited = 1;
+                                            $previous->edited_at = time();
+                                            
+                                            if ($previous->save()) {
+                                                $previous->markSeen();
+                                                $thread->touch('edited_post_at');
+                                                $id = $previous->id;
+                                            }
+                                        }
+                                        else {
+                                            if ($model->save()) {
+                                                $model->markSeen();
+                                                $forum->updateCounters(['posts' => 1]);
+                                                $thread->updateCounters(['posts' => 1]);
+                                                $thread->touch('new_post_at');
+                                                $thread->touch('edited_post_at');
+                                                $id = $model->id;
+                                            }
+                                        }
+
+                                        $transaction->commit();
+
+                                        Cache::getInstance()->delete('forum.postscount');
+                                        $this->success('New reply has been added.');
+
+                                        return $this->redirect(['show', 'id' => $id]);
                                     }
-
-                                    $transaction->commit();
-
-                                    Cache::getInstance()->delete('forum.postscount');
-                                    $this->success('New reply has been added.');
-
-                                    return $this->redirect(['show', 'id' => $model->id]);
-                                }
-                                catch (Exception $e) {
-                                    $transaction->rollBack();
-                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                                    $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                    catch (Exception $e) {
+                                        $transaction->rollBack();
+                                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                        $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    return $this->render('post', [
-                                'replyFor' => $replyFor,
-                                'preview'  => $preview,
-                                'model'    => $model,
-                                'category' => $category,
-                                'forum'    => $forum,
-                                'thread'   => $thread,
-                                'previous' => Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one(),
-                    ]);
+                        return $this->render('post', [
+                                    'replyFor' => $replyFor,
+                                    'preview'  => $preview,
+                                    'model'    => $model,
+                                    'category' => $category,
+                                    'forum'    => $forum,
+                                    'thread'   => $thread,
+                                    'previous' => $previous,
+                        ]);
+                    }
                 }
             }
         }
@@ -422,68 +457,78 @@ class DefaultController extends Controller
                 return $this->redirect(['index']);
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
-                            'forum_id' => $forum->id]);
+                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
 
                 if (!$thread) {
                     $this->error('Sorry! We can not find the post you are looking for.');
                     return $this->redirect(['index']);
                 }
                 else {
-                    
                     $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id, 'author_id' => Yii::$app->user->id]);
+                    
                     if (!$model) {
                         $this->error('Sorry! We can not find the post you are looking for.');
                         return $this->redirect(['index']);
                     }
                     else {
-                        $postData = Yii::$app->request->post();
-                    
-                        $preview = '';
+                        if (Yii::$app->user->can('updateOwnPost', ['post' => $model]) || Yii::$app->user->can('updatePost', ['item' => $model])) {
+                            $postData = Yii::$app->request->post();
 
-                        if ($model->load($postData)) {
+                            $preview = '';
 
-                            if ($model->validate()) {
+                            if ($model->load($postData)) {
 
-                                if (isset($postData['preview-button'])) {
-                                    $preview = $model->content;
-                                }
-                                else {
+                                if ($model->validate()) {
 
-                                    $transaction = Post::getDb()->beginTransaction();
-                                    try {
-                                        
-                                        $model->edited = 1;
-                                        $model->edited_at = time();
-                                        
-                                        if ($model->save()) {
-
-                                            $thread->updateCounters(['views' => 1]);
-                                            $thread->touch('edited_post_at');
-                                        }
-
-                                        $transaction->commit();
-
-                                        $this->success('Post has been updated.');
-
-                                        return $this->redirect(['show', 'id' => $model->id]);
+                                    if (isset($postData['preview-button'])) {
+                                        $preview = $model->content;
                                     }
-                                    catch (Exception $e) {
-                                        $transaction->rollBack();
-                                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                                        $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                    else {
+
+                                        $transaction = Post::getDb()->beginTransaction();
+                                        try {
+
+                                            $model->edited = 1;
+                                            $model->edited_at = time();
+
+                                            if ($model->save()) {
+                                                $model->markSeen();
+                                                $thread->touch('edited_post_at');
+                                            }
+
+                                            $transaction->commit();
+
+                                            $this->success('Post has been updated.');
+
+                                            return $this->redirect(['show', 'id' => $model->id]);
+                                        }
+                                        catch (Exception $e) {
+                                            $transaction->rollBack();
+                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        return $this->render('edit', [
-                                    'preview'  => $preview,
-                                    'model'    => $model,
-                                    'category' => $category,
-                                    'forum'    => $forum,
-                                    'thread'   => $thread,
-                        ]);
+                            return $this->render('edit', [
+                                        'preview'  => $preview,
+                                        'model'    => $model,
+                                        'category' => $category,
+                                        'forum'    => $forum,
+                                        'thread'   => $thread,
+                            ]);
+                        }
+                        else {
+                            if (Yii::$app->user->isGuest) {
+                                $this->warning('Please sign in to edit the post.');
+                                return $this->redirect(['account/login']);
+                            }
+                            else {
+                                $this->error('Sorry! You do not have the required permission to perform this action.');
+                                return $this->redirect(['default/index']);
+                            }
+                        }
                     }
                 }
             }

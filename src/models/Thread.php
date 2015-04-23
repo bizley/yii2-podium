@@ -141,6 +141,7 @@ class Thread extends ActiveRecord
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => false,
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
@@ -244,6 +245,7 @@ class Thread extends ActiveRecord
                 $class = self::CLASS_NEW;
             }
             elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+                                //\yii\helpers\VarDumper::dump([$this->edited_post_at, $this->view->edited_last_seen]);die();
                 $class = self::CLASS_EDITED;
             }
         }

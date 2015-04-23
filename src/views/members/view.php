@@ -12,14 +12,16 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Members List
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('jQuery(\'#podiumModalIgnore\').on(\'show.bs.modal\', function(e) {
+if (!Yii::$app->user->isGuest) {
+    $this->registerJs('jQuery(\'#podiumModalIgnore\').on(\'show.bs.modal\', function(e) {
     var button = jQuery(e.relatedTarget);
     jQuery(\'#ignoreUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-ban');
-$this->registerJs('jQuery(\'#podiumModalUnIgnore\').on(\'show.bs.modal\', function(e) {
+    $this->registerJs('jQuery(\'#podiumModalUnIgnore\').on(\'show.bs.modal\', function(e) {
     var button = jQuery(e.relatedTarget);
     jQuery(\'#unignoreUrl\').attr(\'href\', button.data(\'url\'));
 });', View::POS_READY, 'bootstrap-modal-unban');
+}
 
 echo Html::beginTag('ul', ['class' => 'nav nav-tabs']);
 echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-user"></span> ' . Yii::t('podium/view', 'Members List'), ['index']), ['role' => 'presentation']);
@@ -32,6 +34,7 @@ echo Html::endTag('ul'); ?>
     <div class="col-sm-9">
         <div class="panel panel-default">
             <div class="panel-body">
+<?php if (!Yii::$app->user->isGuest): ?>
                 <div class="pull-right">
 <?php if ($model->id !== Yii::$app->user->id): ?>
                     <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]); ?>
@@ -50,7 +53,8 @@ echo Html::endTag('ul'); ?>
                 </div>
 <?php if ($model->isIgnoredBy(Yii::$app->user->id)): ?>
                 <h4 class="text-danger"><?= Yii::t('podium/view', 'You are ignoring this user.') ?></h4>
-<?php endif; ?>                
+<?php endif; ?>
+<?php endif; ?>
                 <h2>
                     <?= Html::encode($model->getPodiumName()) ?> 
                     <small>
@@ -91,7 +95,7 @@ echo Html::endTag('ul'); ?>
 <?php endif; ?>
     </div>
 </div>
-
+<?php if (!Yii::$app->user->isGuest): ?>
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalIgnoreLabel" aria-hidden="true" id="podiumModalIgnore">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -129,3 +133,4 @@ echo Html::endTag('ul'); ?>
         </div>
     </div>
 </div>
+<?php endif; ?>
