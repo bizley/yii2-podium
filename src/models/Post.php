@@ -69,6 +69,11 @@ class Post extends ActiveRecord
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
+    public function getThumb()
+    {
+        return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+    }
+    
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);

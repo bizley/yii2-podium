@@ -180,6 +180,11 @@ class Installation extends Component
             'percent' => 69
         ],
         [
+            'table'   => 'post_thumb',
+            'call'    => 'createPostThumb',
+            'percent' => 72
+        ],
+        [
             'table'   => 'user',
             'call'    => 'addAdmin',
             'percent' => 100
@@ -232,7 +237,8 @@ class Installation extends Component
     {
         try {
             $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name',
-                'value'], [['name', 'Podium'], ['version', '1.0'], ['hot_minimum', '20'], ['members_visible', '1']])->execute();
+                'value'], [['name', 'Podium'], ['version', '1.0'], ['hot_minimum',
+                    '20'], ['members_visible', '1']])->execute();
             return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
         }
         catch (Exception $e) {
@@ -594,6 +600,25 @@ class Installation extends Component
     }
 
     /**
+     * Creates Post Thumb database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createPostThumb($name)
+    {
+        return $this->_createTable($name, [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'post_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'thumb'      => Schema::TYPE_SMALLINT . ' NOT NULL',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (post_id) REFERENCES {{%podium_post}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+
+    /**
      * Creates database table.
      * @param string $name Table name.
      * @param array $columns Table columns.
@@ -638,7 +663,7 @@ class Installation extends Component
                     'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
         ]);
     }
-    
+
     /**
      * Creates Thread View database table.
      * @param string $name Table name.

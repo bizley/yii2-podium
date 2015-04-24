@@ -8,11 +8,14 @@ use bizley\podium\components\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
+use bizley\podium\models\PostThumb;
 use bizley\podium\models\Thread;
 use Exception;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
+use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\web\Controller;
 
 class DefaultController extends Controller
@@ -532,6 +535,100 @@ class DefaultController extends Controller
                     }
                 }
             }
+        }
+    }
+    
+    public function actionThumb()
+    {
+        if (Yii::$app->request->isAjax) {
+            
+            $data = [
+                'error' => 1,
+                'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Error while voting on this post!'), ['class' => 'text-danger']),
+            ];
+            
+            if (!Yii::$app->user->isGuest) {
+                $postId = Yii::$app->request->post('post');
+                $thumb  = Yii::$app->request->post('thumb');
+                
+                if (is_numeric($postId) && $postId > 0 && in_array($thumb, ['up', 'down'])) {
+                    
+                    $post = Post::findOne((int)$postId);
+                    if ($post) {
+                        
+                        if ($post->author_id == Yii::$app->user->id) {
+                            return Json::encode([
+                                'error' => 1,
+                                'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'You can not vote on your own post!'), ['class' => 'text-danger']),
+                            ]);
+                        }
+                        
+                        $count = 0;
+                        $votes = Cache::getInstance()->get('user.votes.' . Yii::$app->user->id);
+                        if ($votes !== false) {
+                            if ($votes['expire'] < time()) {
+                                $votes = false;
+                            }
+                            elseif ($votes['count'] >= 10) {
+                                return Json::encode([
+                                    'error' => 1,
+                                    'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', '10 votes per hour limit reached!'), ['class' => 'text-danger']),
+                                ]);
+                            }
+                            else {
+                                $count = $votes['count'];
+                            }
+                        }
+                        
+                        if ($post->thumb) {
+                            if ($post->thumb->thumb == 1 && $thumb == 'down') {
+                                $post->thumb->thumb = -1;
+                                if ($post->thumb->save()) {
+                                    $post->updateCounters(['likes' => -1, 'dislikes' => 1]);
+                                }
+                            }
+                            elseif ($post->thumb->thumb == -1 && $thumb == 'up') {
+                                $post->thumb->thumb = 1;
+                                if ($post->thumb->save()) {
+                                    $post->updateCounters(['likes' => 1, 'dislikes' => -1]);
+                                }
+                            }
+                        }
+                        else {
+                            $postThumb          = new PostThumb;
+                            $postThumb->post_id = $post->id;
+                            $postThumb->user_id = Yii::$app->user->id;
+                            $postThumb->thumb   = $thumb == 'up' ? 1 : -1;
+                            if ($postThumb->save()) {
+                                if ($thumb == 'up') {
+                                    $post->updateCounters(['likes' => 1]);
+                                }
+                                else {
+                                    $post->updateCounters(['dislikes' => 1]);
+                                }
+                            }
+                        }
+                        $data = [
+                            'error'    => 0,
+                            'likes'    => '+' . $post->likes,
+                            'dislikes' => '-' . $post->dislikes,
+                            'summ'     => $post->likes - $post->dislikes,
+                            'msg'      => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'Your vote has been saved!'), ['class' => 'text-success']),
+                        ];
+                        if ($count == 0) {
+                            Cache::getInstance()->set('user.votes.' . Yii::$app->user->id, ['count' => 1, 'expire' => time() + 3600]);
+                        }
+                        else {
+                            Cache::getInstance()->setElement('user.votes.' . Yii::$app->user->id, 'count', $count + 1);
+                        }
+                    }
+                }
+            }
+            
+            return Json::encode($data);
+        }
+        else {
+            return $this->redirect(['index']);
         }
     }
 }        

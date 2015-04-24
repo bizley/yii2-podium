@@ -5,9 +5,6 @@
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
-use Exception;
-use Yii;
 use yii\db\ActiveRecord;
 
 /**
