@@ -506,4 +506,19 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->save();
     }
 
+    public function getThreadsCount()
+    {
+        return (new Query)->from('{{%podium_thread}}')->where(['author_id' => $this->id])->count();
+    }
+    
+    public function getPostsCount()
+    {
+        $cache = Cache::getInstance()->getElement('user.postscount', $this->id);
+        if ($cache === false) {
+            $cache = (new Query)->from('{{%podium_post}}')->where(['author_id' => $this->id])->count();
+            Cache::getInstance()->setElement('user.postscount', $this->id, $cache);
+        }
+
+        return $cache;
+    }
 }

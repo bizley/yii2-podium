@@ -81,6 +81,9 @@ elseif ($rating < 0) {
                     <span class="podium-rating-details hidden label label-default">+<?= $model->likes ?> / -<?= $model->dislikes ?></span>
                 </small>
                 <?= $model->user->getPodiumTag() ?>
+                <small>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->user->getPostsCount() ?></span>
+                </small>
             </div>
             <div class="popover-content podium-content">
                 <?= $model->content ?>
@@ -95,7 +98,7 @@ elseif ($rating < 0) {
                     <a href="<?= Url::to(['edit', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit post') ?>"><span class="glyphicon glyphicon-edit"></span></a>
 <?php endif; ?>
                     <a href="<?= Url::to(['show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
-<?php if ($model->author_id != Yii::$app->user->id): ?>
+<?php if (!Yii::$app->user->isGuest && $model->author_id != Yii::$app->user->id): ?>
 <?php if ($model->thumb && $model->thumb->thumb == 1): ?>
                     <a href="#" class="btn btn-xs disabled text-muted podium-thumb-up" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a>
 <?php else: ?>
@@ -106,8 +109,8 @@ elseif ($rating < 0) {
 <?php else: ?>
                     <a href="#" class="btn btn-danger btn-xs podium-thumb-down" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>
 <?php endif; ?>
+                    <a href="<?= Url::to(['report', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id, 'slug' => $model->thread->slug]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report this post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
 <?php endif; ?>
-                    <a href="" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report this post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
                 </div>
             </div>
         </div>

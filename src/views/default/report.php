@@ -1,12 +1,13 @@
 <?php
 
 use bizley\podium\components\Helper;
+use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
-$this->title                   = Yii::t('podium/view', 'Edit Post');
+$this->title                   = Yii::t('podium/view', 'Report Post');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['category', 'id' => $category->id, 'slug' => $category->slug]];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' => ['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
@@ -14,40 +15,31 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($thread->name), 'url' 
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<?php if (!empty($preview)): ?>
-<div class="row">
-    <div class="col-sm-10 col-sm-offset-1">
-        <?= Alert::widget(['body' => '<strong><small>' . Yii::t('podium/view', 'Post Preview') . '</small></strong>:<hr>' . $preview, 'options' => ['class' => 'alert-info']]); ?>
-    </div>
-</div>
-<?php endif; ?>
+<?= $this->render('/elements/forum/_post', ['model' => $post, 'category' => $category->id, 'slug' => $thread->slug]) ?>
+<br>
 
 <div class="row">
-    <div class="col-sm-10 col-sm-offset-1">
+    <div class="col-sm-10 col-sm-offset-2">
         <div class="panel panel-default">
-<?php $form = ActiveForm::begin(['id' => 'edit-post-form']); ?>
+<?php $form = ActiveForm::begin(['id' => 'report-post-form']); ?>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Post'))->widget(Summernote::className(), [
+                        <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Summernote::className(), [
                             'clientOptions' => [
-                                'height' => '200',
+                                'height' => '100',
                                 'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                 'codemirror' => null,
-                                'toolbar' => Helper::summerNoteToolbars('full'),
+                                'toolbar' => Helper::summerNoteToolbars(),
                             ],
-                            'plugins' => ['fontstyle']
                         ]) ?>
                     </div>
                 </div>
             </div>
             <div class="panel-footer">
                 <div class="row">
-                    <div class="col-sm-8">
-                        <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Post'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
-                    </div>
-                    <div class="col-sm-4">
-                        <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']) ?>
+                    <div class="col-sm-12">
+                        <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Report Post'), ['class' => 'btn btn-block btn-danger', 'name' => 'save-button']) ?>
                     </div>
                 </div>
             </div>

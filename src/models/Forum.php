@@ -95,4 +95,18 @@ class Forum extends ActiveRecord
 
         return $dataProvider;
     }
+    
+    public function getMods()
+    {
+        $mods    = [];
+        $modteam = User::find()->select(['id', 'role'])->where(['status' => User::STATUS_ACTIVE, 'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]])->asArray()->all();
+        
+        foreach ($modteam as $user) {
+            if ($user['role'] == User::ROLE_ADMIN) {
+                $mods[] = $user['id'];
+            }
+        }
+        
+        return $mods;        
+    }
 }

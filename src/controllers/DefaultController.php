@@ -7,6 +7,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
+use bizley\podium\models\Message;
 use bizley\podium\models\Post;
 use bizley\podium\models\PostThumb;
 use bizley\podium\models\Thread;
@@ -187,6 +188,7 @@ class DefaultController extends Controller
                                     
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
+                                    Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
                                     $this->success('New thread has been created.');
 
                                     return $this->redirect(['thread', 'cid'  => $category->id,
@@ -366,6 +368,7 @@ class DefaultController extends Controller
                                         $transaction->commit();
 
                                         Cache::getInstance()->delete('forum.postscount');
+                                        Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
                                         $this->success('New reply has been added.');
 
                                         return $this->redirect(['show', 'id' => $id]);
@@ -629,6 +632,115 @@ class DefaultController extends Controller
         }
         else {
             return $this->redirect(['index']);
+        }
+    }
+    
+    public function actionReport($cid = null, $fid = null, $tid = null, $pid = null, $slug = null)
+    {
+        if (!Yii::$app->user->isGuest) {
+            if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1 || empty($slug)) {
+                $this->error('Sorry! We can not find the post you are looking for.');
+                return $this->redirect(['index']);
+            }
+
+            $category = Category::findOne(['id' => (int) $cid]);
+
+            if (!$category) {
+                $this->error('Sorry! We can not find the post you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+
+                if (!$forum) {
+                    $this->error('Sorry! We can not find the post you are looking for.');
+                    return $this->redirect(['index']);
+                }
+                else {
+                    $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug]);
+
+                    if (!$thread) {
+                        $this->error('Sorry! We can not find the post you are looking for.');
+                        return $this->redirect(['index']);
+                    }
+                    else {
+                        $post = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
+
+                        if (!$post) {
+                            $this->error('Sorry! We can not find the post you are looking for.');
+                            return $this->redirect(['index']);
+                        }
+                        else {
+                            if ($post->author_id == Yii::$app->user->id) {
+                                $this->info('You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.');
+                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                            }
+                            else {
+
+                                $model = new Message;
+                                $model->setScenario('report');
+                                
+                                if ($model->load(Yii::$app->request->post())) {
+
+                                    if ($model->validate()) {
+
+                                        try {
+
+                                            $mods    = $forum->getMods();
+                                            $package = [];
+                                            foreach ($mods as $mod) {
+                                                if ($mod != Yii::$app->user->id) {
+                                                    $package[] = [
+                                                        'sender_id'       => Yii::$app->user->id,
+                                                        'receiver_id'     => $mod,
+                                                        'topic'           => Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
+                                                        'content'         => $model->content . '<hr>' . 
+                                                            Html::a(Yii::t('podium/view', 'Direct link to the post'), ['show', 'id' => $post->id]) . '<hr>' .
+                                                            '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><blockquote>' . $post->content . '</blockquote>',
+                                                        'sender_status'   => Message::STATUS_REMOVED,
+                                                        'receiver_status' => Message::STATUS_NEW,
+                                                        'created_at'      => time(),
+                                                        'updated_at'      => time(),
+                                                    ];
+                                                }
+                                            }
+                                            if (!empty($package)) {
+                                                Yii::$app->db->createCommand()->batchInsert('{{%podium_message}}', 
+                                                    ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 'receiver_status', 'created_at', 'updated_at'], 
+                                                        array_values($package))->execute();
+                                                
+                                                Cache::getInstance()->delete('user.newmessages');
+                                                
+                                                $this->success('Thank you for your report. The moderation team will take a look at this post.');
+                                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                            }
+                                            else {
+                                                $this->warning('Apparently there is no one we can send this report to except you and you already reporting it so...');
+                                            }
+                                        }
+                                        catch (Exception $e) {
+                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            $this->error('Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.');
+                                        }
+                                    }
+                                }
+
+                                return $this->render('report', [
+                                            'model'    => $model,
+                                            'category' => $category,
+                                            'forum'    => $forum,
+                                            'thread'   => $thread,
+                                            'post'     => $post,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            $this->warning('Please sign in to report the post.');
+            return $this->redirect(['account/login']);
         }
     }
 }        

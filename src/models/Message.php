@@ -85,6 +85,15 @@ class Message extends ActiveRecord
         ];
     }
 
+    public function scenarios()
+    {
+        return array_merge(
+            parent::scenarios(),
+            ['report' => ['content']]
+        );
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -98,7 +107,7 @@ class Message extends ActiveRecord
                 return HtmlPurifier::process($value);
             }],
             ['content', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
             }],
         ];
     }

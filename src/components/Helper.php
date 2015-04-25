@@ -55,13 +55,13 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style|class],hr,ul,ol,li,blockquote,pre,sup,sub,h1,h2,h3,h4,h5,h6,table[class],tbody,tr,td[style],small',
+                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style|class],hr,ul,ol,li,blockquote,pre,sup,sub,h1,h2,h3,h4,h5,h6,table[class],tbody,tr,td[style],small,b,strong,i,em,u',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
                 break;
             default:
                 $config = [
-                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li',
+                    'HTML.Allowed' => 'img[src|style|class|alt],a[href|target],br,p,span[style],hr,ul,ol,li,b,strong,i,em,u',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
         }

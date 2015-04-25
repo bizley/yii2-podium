@@ -9,7 +9,7 @@ use yii\web\View;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title                   = Yii::t('podium/view', 'New Message');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');

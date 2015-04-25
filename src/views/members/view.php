@@ -62,18 +62,20 @@ echo Html::endTag('ul'); ?>
                     </small>
                 </h2>
                 
+                <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
+                
                 <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
 <?php if ($model->status != User::STATUS_REGISTERED): ?>
                 <p>
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {NAME}', ['NAME' => Html::encode($model->getPodiumName())]) ?></a> 
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {NAME}', ['NAME' => Html::encode($model->getPodiumName())]) ?></a>
+                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a> 
+                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a>
                 </p>
 <?php endif; ?>
             </div>
             <div class="panel-footer">
                 <ul class="list-inline">
-                    <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge">0</span></li>
-                    <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge">0</span></li>
+                    <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= $model->getThreadsCount() ?></span></li>
+                    <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge"><?= $model->getPostsCount() ?></span></li>
                 </ul>
             </div>
         </div>

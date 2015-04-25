@@ -16,6 +16,7 @@ use yii\widgets\FragmentCache;
  * config => Podium configuration
  * members.fieldlist => list of active users w/pages
  * user.newmessages => list of users' new messages count
+ * user.postscount => list of users' posts count
  * forum.lastactive => number of last active users
  * forum.memberscount => number of activated and banned users
  * forum.threadscount => number of forum threads

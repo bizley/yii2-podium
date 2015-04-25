@@ -185,6 +185,11 @@ class Installation extends Component
             'percent' => 72
         ],
         [
+            'table'   => 'moderator',
+            'call'    => 'createModerator',
+            'percent' => 75
+        ],
+        [
             'table'   => 'user',
             'call'    => 'addAdmin',
             'percent' => 100
@@ -573,6 +578,22 @@ class Installation extends Component
     protected function _createMessageSenderIndex($name)
     {
         return $this->_createIndex('idx-podium_message-sender_id', $name, 'sender_id');
+    }
+
+    /**
+     * Creates Moderator database table.
+     * @param string $name Table name.
+     * @return string Result message.
+     */
+    protected function _createModerator($name)
+    {
+        return $this->_createTable($name, [
+                    'id'       => Schema::TYPE_PK,
+                    'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
     }
 
     /**

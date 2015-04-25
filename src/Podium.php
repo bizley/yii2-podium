@@ -18,13 +18,13 @@ use yii\web\GroupUrlRule;
  * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
  * @version 1.0
  * 
- * @see https://github.com/bizley-code/Yii2-Podium
+ * https://github.com/bizley-code/Yii2-Podium
  * Please report all issues at GitHub
- * @see https://github.com/bizley-code/Yii2-Podium/issues
+ * https://github.com/bizley-code/Yii2-Podium/issues
  * 
  * Podium requires Yii 2
- * @see http://www.yiiframework.com
- * @see https://github.com/yiisoft/yii2
+ * http://www.yiiframework.com
+ * https://github.com/yiisoft/yii2
  */
 
 /**
@@ -37,22 +37,22 @@ class Podium extends Module implements BootstrapInterface
      * @var string Controller namespace
      */
     public $controllerNamespace = 'bizley\podium\controllers';
-    
+
     /**
      * @var array Module parameters
      */
     public $params;
-    
+
     /**
      * @var string Module version
      */
     public $version = '1.0';
-    
+
     /**
      * @var Config Module configuration instance
      */
     protected $_config;
-    
+
     /**
      * @var boolean Installation flag
      */
@@ -69,12 +69,12 @@ class Podium extends Module implements BootstrapInterface
     public function afterAction($action, $result)
     {
         $result = parent::afterAction($action, $result);
-        
+
         Activity::add();
-        
+
         return $result;
     }
-    
+
     /**
      * Bootstrap method to be called during application bootstrap stage.
      * Adding routing rules.
@@ -87,47 +87,48 @@ class Podium extends Module implements BootstrapInterface
             new GroupUrlRule([
                 'prefix' => 'podium',
                 'rules'  => [
-                    'activate/<token:[\w\-]+>'                           => 'account/activate',
-                    'admin/ban/<id:\d+>'                                 => 'admin/ban',
-                    'admin/delete/<id:\d+>'                              => 'admin/delete',
-                    'admin/delete-category/<id:\d+>'                     => 'admin/delete-category',
-                    'admin/delete-forum/<cid:\d+>/<id:\d+>'              => 'admin/delete-forum',
-                    'admin/edit-category/<id:\d+>'                       => 'admin/edit-category',
-                    'admin/edit-forum/<cid:\d+>/<id:\d+>'                => 'admin/edit-forum',
-                    'admin/forums/<cid:\d+>'                             => 'admin/forums',
-                    'admin/new-forum/<cid:\d+>'                          => 'admin/new-forum',
-                    'admin/pm/<id:\d+>'                                  => 'admin/pm',
-                    'admin/update/<id:\d+>'                              => 'admin/update',
-                    'admin/view/<id:\d+>'                                => 'admin/view',
-                    'admin'                                              => 'admin/index',
-                    'category/<id:\d+>/<slug:[\w\-]+>'                   => 'default/category',
-                    'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'       => 'default/edit',
-                    'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/forum',
-                    'home'                                               => 'default/index',
-                    'install'                                            => 'install/run',
-                    'login'                                              => 'account/login',
-                    'logout'                                             => 'profile/logout',
-                    'members/view/<id:\d+>/<slug:[\w\-]+>'               => 'members/view',
-                    'members'                                            => 'members/index',
-                    'members/ignore/<id:\d+>'                            => 'members/ignore',
-                    'messages/delete/<id:\d+>'                           => 'messages/delete',
-                    'messages/new/<user:\d+>'                            => 'messages/new',
-                    'messages/reply/<id:\d+>'                            => 'messages/reply',
-                    'messages/view/<id:\d+>'                             => 'messages/view',
-                    'new-email/<token:[\w\-]+>'                          => 'account/new-email',
-                    'new-thread/<cid:\d+>/<fid:\d+>'                     => 'default/new-thread',
-                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'       => 'default/post',
-                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                 => 'default/post',
-                    'profile'                                            => 'profile/index',
-                    'reactivate'                                         => 'account/reactivate',
-                    'register'                                           => 'account/register',
-                    'reset'                                              => 'account/reset',
-                    'show/<id:\d+>'                                      => 'default/show',
-                    'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/thread',
+                    'activate/<token:[\w\-]+>'                                      => 'account/activate',
+                    'admin/ban/<id:\d+>'                                            => 'admin/ban',
+                    'admin/delete/<id:\d+>'                                         => 'admin/delete',
+                    'admin/delete-category/<id:\d+>'                                => 'admin/delete-category',
+                    'admin/delete-forum/<cid:\d+>/<id:\d+>'                         => 'admin/delete-forum',
+                    'admin/edit-category/<id:\d+>'                                  => 'admin/edit-category',
+                    'admin/edit-forum/<cid:\d+>/<id:\d+>'                           => 'admin/edit-forum',
+                    'admin/forums/<cid:\d+>'                                        => 'admin/forums',
+                    'admin/new-forum/<cid:\d+>'                                     => 'admin/new-forum',
+                    'admin/pm/<id:\d+>'                                             => 'admin/pm',
+                    'admin/update/<id:\d+>'                                         => 'admin/update',
+                    'admin/view/<id:\d+>'                                           => 'admin/view',
+                    'admin'                                                         => 'admin/index',
+                    'category/<id:\d+>/<slug:[\w\-]+>'                              => 'default/category',
+                    'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/edit',
+                    'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>'                       => 'default/forum',
+                    'home'                                                          => 'default/index',
+                    'install'                                                       => 'install/run',
+                    'login'                                                         => 'account/login',
+                    'logout'                                                        => 'profile/logout',
+                    'members/view/<id:\d+>/<slug:[\w\-]+>'                          => 'members/view',
+                    'members'                                                       => 'members/index',
+                    'members/ignore/<id:\d+>'                                       => 'members/ignore',
+                    'messages/delete/<id:\d+>'                                      => 'messages/delete',
+                    'messages/new/<user:\d+>'                                       => 'messages/new',
+                    'messages/reply/<id:\d+>'                                       => 'messages/reply',
+                    'messages/view/<id:\d+>'                                        => 'messages/view',
+                    'new-email/<token:[\w\-]+>'                                     => 'account/new-email',
+                    'new-thread/<cid:\d+>/<fid:\d+>'                                => 'default/new-thread',
+                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/post',
+                    'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                            => 'default/post',
+                    'profile'                                                       => 'profile/index',
+                    'reactivate'                                                    => 'account/reactivate',
+                    'register'                                                      => 'account/register',
+                    'report/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>/<slug:[\w\-]+>' => 'default/report',
+                    'reset'                                                         => 'account/reset',
+                    'show/<id:\d+>'                                                 => 'default/show',
+                    'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
                 ],
                     ])], false);
     }
-    
+
     /**
      * Gets Podium configuration instance.
      * 
@@ -141,7 +142,7 @@ class Podium extends Module implements BootstrapInterface
 
         return $this->_config;
     }
-    
+
     /**
      * Checks wheter Podium has been already installed.
      * 
@@ -151,7 +152,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return $this->_installed;
     }
-    
+
     /**
      * Gets parameter by its name.
      * If not set returns $default.
@@ -169,7 +170,7 @@ class Podium extends Module implements BootstrapInterface
 
         return $params[$name];
     }
-    
+
     /**
      * Redirects to Podium main controller's action.
      * 
@@ -200,7 +201,7 @@ class Podium extends Module implements BootstrapInterface
         $this->layout     = 'main';
         $this->_installed = Installation::check();
     }
-    
+
     /**
      * Registers user authorization.
      * @see \bizley\podium\components\Installation
@@ -233,7 +234,7 @@ class Podium extends Module implements BootstrapInterface
             ]);
         }
     }
-    
+
     /**
      * Registers user identity.
      * @see \bizley\podium\models\User
@@ -269,4 +270,5 @@ class Podium extends Module implements BootstrapInterface
             ],
         ];
     }
+
 }
