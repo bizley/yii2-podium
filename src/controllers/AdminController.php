@@ -429,5 +429,58 @@ class AdminController extends Controller
                     'model' => $model,
         ]);
     }
+    
+    public function actionPromote($id = null)
+    {
+        $model = User::findOne((int)$id);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find User with this ID.');
+        }
+        else {
+            $model->setScenario('role');
+            if ($model->role != User::ROLE_MEMBER) {
+                $this->error('You can only promote Members to Moderators.');
+            }
+            else {
+                $transaction = User::getDb()->beginTransaction();
+                try {
+                    $model->role = User::ROLE_MODERATOR;
+                    if ($model->save()) {
+                        if (empty(Yii::$app->authManager->getRolesByUser($model->id))) {
+                            if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
+
+                                $transaction->commit();
+                                
+                                $this->success('User has been promoted.');
+                                return $this->redirect(['mods', 'id' => $model->id]);
+                            }
+                        }
+                        else {
+                            if (Yii::$app->authManager->revokeAll($model->id)) {
+                                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
+
+                                    $transaction->commit();
+
+                                    $this->success('User has been promoted.');
+                                    return $this->redirect(['mods', 'id' => $model->id]);
+                                }
+                            }
+                        }
+                    }
+                    
+                    $this->error('Sorry! There was an error while promoting the user.');
+                }
+                catch (Exception $e) {
+                    $transaction->rollBack();
+                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    $this->error('Sorry! There was an error while promoting the user.');
+                }
+            }
+        }
+
+        return $this->redirect(['members']);
+
+    }
 }
         

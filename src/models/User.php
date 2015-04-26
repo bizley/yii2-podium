@@ -79,9 +79,9 @@ class User extends ActiveRecord implements IdentityInterface
             'installation'   => [],
             'token'          => [],
             'ban'            => [],
+            'role'           => [],
             'passwordChange' => ['password', 'password_repeat'],
-            'account'        => ['username', 'anonymous', 'new_email', 'password',
-                'password_repeat', 'timezone', 'current_password'],
+            'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
         ];
     }
 
