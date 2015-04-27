@@ -133,6 +133,11 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Activity::className(), ['user_id' => 'id']);
     }
+    
+    public function getMods()
+    {
+        return $this->hasMany(Mod::className(), ['user_id' => 'id']);
+    }
 
     public function passwordRequirements()
     {

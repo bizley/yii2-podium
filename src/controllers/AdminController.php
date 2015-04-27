@@ -447,25 +447,16 @@ class AdminController extends Controller
                 try {
                     $model->role = User::ROLE_MODERATOR;
                     if ($model->save()) {
-                        if (empty(Yii::$app->authManager->getRolesByUser($model->id))) {
-                            if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
-
-                                $transaction->commit();
-                                
-                                $this->success('User has been promoted.');
-                                return $this->redirect(['mods', 'id' => $model->id]);
-                            }
+                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
+                            Yii::$app->authManager->revokeAll($model->id);
                         }
-                        else {
-                            if (Yii::$app->authManager->revokeAll($model->id)) {
-                                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
+                        
+                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
 
-                                    $transaction->commit();
+                            $transaction->commit();
 
-                                    $this->success('User has been promoted.');
-                                    return $this->redirect(['mods', 'id' => $model->id]);
-                                }
-                            }
+                            $this->success('User has been promoted.');
+                            return $this->redirect(['mods', 'id' => $model->id]);
                         }
                     }
                     
@@ -480,7 +471,75 @@ class AdminController extends Controller
         }
 
         return $this->redirect(['members']);
+    }
+    
+    public function actionDemote($id = null)
+    {
+        $model = User::findOne((int)$id);
 
+        if (empty($model)) {
+            $this->error('Sorry! We can not find User with this ID.');
+        }
+        else {
+            $model->setScenario('role');
+            if ($model->role != User::ROLE_MODERATOR) {
+                $this->error('You can only demote Moderators to Members.');
+            }
+            else {
+                $transaction = User::getDb()->beginTransaction();
+                try {
+                    $model->role = User::ROLE_MEMBER;
+                    if ($model->save()) {
+                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
+                            Yii::$app->authManager->revokeAll($model->id);
+                        }
+
+                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
+
+                            Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', 'user_id = :id', [':id' => $model->id])->execute();
+                            
+                            $transaction->commit();
+
+                            $this->success('User has been demoted.');
+                            return $this->redirect(['members']);
+                        }
+                    }
+                    
+                    $this->error('Sorry! There was an error while demoting the user.');
+                }
+                catch (Exception $e) {
+                    $transaction->rollBack();
+                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    $this->error('Sorry! There was an error while demoting the user.');
+                }
+            }
+        }
+
+        return $this->redirect(['members']);
+    }
+    
+    public function actionMods($id = null)
+    {
+        $mod = null;
+        $moderators = User::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
+        
+        if (is_numeric($id) && $id > 0) {
+            if (isset($moderators[$id])) {
+                $mod = $moderators[$id];
+            }
+        }
+        
+        if ($id == null) {
+            foreach ($moderators as $moderator) {
+                $mod = $moderator;
+                break;
+            }
+        }
+        
+        return $this->render('mods', [
+                    'moderators' => $moderators,
+                    'mod' => $mod,
+        ]);
     }
 }
         
