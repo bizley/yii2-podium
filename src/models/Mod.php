@@ -30,4 +30,8 @@ class Mod extends ActiveRecord
         return '{{%podium_moderator}}';
     }
 
+    public function getForum()
+    {
+        return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
+    }
 }

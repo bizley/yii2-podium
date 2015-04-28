@@ -37,6 +37,14 @@ if (!empty($items)) {
 
 <br>
 
+<?php if (empty($moderators)): ?>
+<div class="row">
+    <div class="col-sm-12">
+        <h3><?= Yii::t('podium/view', 'No moderators have been added yet.') ?></h3>
+    </div>
+</div>
+<?php else: ?>
+
 <div class="row">
     <br>
     <div class="col-sm-3">
@@ -46,7 +54,9 @@ if (!empty($items)) {
 <?php endforeach; ?>
         <?= Html::endTag('ul'); ?>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-9">
+        <div class="row">
+            <div class="col-sm-4">
 <?php /*if (empty($items)): ?>
         <h3><?= Yii::t('podium/view', 'No categories have been added yet.') ?></h3>
 <?php else: ?>
@@ -59,32 +69,26 @@ if (!empty($items)) {
             ]
         ]); ?>
 <?php endif;*/ ?>
-        <h4>Forums not moderated by </h4>
-        <?= Sortable::widget([
-            'connected'=>true,
-            'items'=>[
-                ['content'=>'From Item 1'],
-                ['content'=>'From Item 2'],
-                ['content'=>'From Item 3'],
-                ['content'=>'From Item 4'],
-            ]
-        ]); ?>
-    </div>
-    <div class="col-sm-1 text-center">
-        <br>
-        <h1><span class="glyphicon glyphicon-transfer"></span></h1>
-    </div>
-    <div class="col-sm-4">
-        <h4 class="text-right">Forums moderated by </h4>
-        <?= Sortable::widget([
-            'connected'=>true,
-            'itemOptions'=>['class'=>'alert alert-warning'],
-            'items'=>[
-                ['content'=>'To Item 1'],
-                ['content'=>'To Item 2'],
-                ['content'=>'To Item 3'],
-                ['content'=>'To Item 4'],
-            ]
-        ]); ?>
+                <h4><?= Yii::t('podium/view', 'Forums not moderated by {name}', ['name' => $mod->getPodiumName()]) ?></h4>
+                <?= Sortable::widget([
+                    'connected' => true,
+                    'items' => $forums
+                ]); ?>
+            </div>
+            <div class="col-sm-1 text-center">
+                <br>
+                <h1><span class="glyphicon glyphicon-transfer"></span></h1>
+            </div>
+            <div class="col-sm-4">
+                <h4 class="text-right"><?= Yii::t('podium/view', 'Forums moderated by {name}', ['name' => $mod->getPodiumName()]) ?></h4>
+                <?= Sortable::widget([
+                    'connected' => true,
+                    'itemOptions' => ['class' => 'alert alert-info'],
+                    'items' => $moderated
+                ]); ?>
+            </div>
+        </div>
     </div>
 </div><br>
+
+<?php endif; ?>

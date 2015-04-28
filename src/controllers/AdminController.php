@@ -7,6 +7,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
+use bizley\podium\models\Mod;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
@@ -536,9 +537,28 @@ class AdminController extends Controller
             }
         }
         
+        $moderated = [];
+        if ($mod) {
+            $tmp = Mod::find()->where(['user_id' => $mod->id])->all();
+            foreach ($tmp as $tmp) {
+                $moderated[] = [
+                    'content' => Html::encode($tmp->forum->name)
+                ];
+            }
+        }
+        $forums = [];
+        $tmp2 = Forum::find()->indexBy('id')->all();
+        foreach ($tmp2 as $tmp2) {
+            $forums[] = [
+                'content' => Html::encode($tmp2->name)
+            ];
+        }
+        
         return $this->render('mods', [
                     'moderators' => $moderators,
-                    'mod' => $mod,
+                    'mod'        => $mod,
+                    'moderated'  => $moderated,
+                    'forums'     => $forums
         ]);
     }
 }
