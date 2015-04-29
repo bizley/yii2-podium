@@ -31,6 +31,7 @@ $items = [];
 
 if (!empty($items)) {
     $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+    $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
 }
 
 ?>
@@ -56,35 +57,38 @@ if (!empty($items)) {
     </div>
     <div class="col-sm-9">
         <div class="row">
-            <div class="col-sm-4">
-<?php /*if (empty($items)): ?>
-        <h3><?= Yii::t('podium/view', 'No categories have been added yet.') ?></h3>
-<?php else: ?>
-        <?= Sortable::widget([
-            'showHandle' => true,
-            'handleLabel' => '<span class="btn btn-default btn-xs pull-left" style="margin-right:10px"><span class="glyphicon glyphicon-move"></span></span> ',
-            'items' => $items,
-            'pluginEvents' => [
-                'sortupdate' => 'function(e, ui) { jQuery.post(\'' . Url::to(['sort-category']) . '\', {id:ui.item.find(\'.podium-forum\').data(\'id\'), new:ui.item.index()}).done(function(data){ jQuery(\'#podiumSortInfo\').html(data); }).fail(function(){ jQuery(\'#podiumSortInfo\').html(\'<span class="text-danger">' . Yii::t('podium/view', 'Sorry! There was some error while changing the order of the categories.') . '</span>\'); }); }',
-            ]
-        ]); ?>
-<?php endif;*/ ?>
+            <div class="col-sm-12" id="podiumModInfo">
+                <span class="text-info"><?= Yii::t('podium/view', 'Drag and drop forums to select which ones are moderated by this user.') ?></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-5">
                 <h4><?= Yii::t('podium/view', 'Forums not moderated by {name}', ['name' => $mod->getPodiumName()]) ?></h4>
                 <?= Sortable::widget([
+                    'options' => ['id' => 'forumsNotModerated'],
                     'connected' => true,
-                    'items' => $forums
+                    'items' => $forums,
+                    'pluginEvents' => [
+                        'sortstart' => 'function(e, ui) { console.log(1, ui); }',
+                        'sortupdate' => 'function(e, ui) { console.log(2, ui); }',
+                    ]
                 ]); ?>
             </div>
             <div class="col-sm-1 text-center">
                 <br>
                 <h1><span class="glyphicon glyphicon-transfer"></span></h1>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <h4 class="text-right"><?= Yii::t('podium/view', 'Forums moderated by {name}', ['name' => $mod->getPodiumName()]) ?></h4>
                 <?= Sortable::widget([
+                    'options' => ['id' => 'forumsModerated'],
                     'connected' => true,
                     'itemOptions' => ['class' => 'alert alert-info'],
-                    'items' => $moderated
+                    'items' => $moderated,
+                    'pluginEvents' => [
+                        'sortstart' => 'function(e, ui) { console.log(3, ui); }',
+                        'sortupdate' => 'function(e, ui) { console.log(4, ui); }',
+                    ]
                 ]); ?>
             </div>
         </div>
