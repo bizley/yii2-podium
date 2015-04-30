@@ -7,7 +7,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
-use bizley\podium\models\Mod;
+use bizley\podium\models\ForumSearch;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
@@ -48,7 +48,7 @@ class AdminController extends Controller
     public function actionIndex()
     {
         if ($this->module->getParam('mode') == 'INSTALL') {
-            $this->warning('Parameter {MODE} with {INSTALL} value found in configuration! Make sure you remove this parameter in production environment.', ['MODE' => '<code>mode</code>',
+            $this->warning('Parameter {MODE} with {INSTALL} value found in configuration! Make sure you remove this parameter in production environment.', ['MODE'    => '<code>mode</code>',
                 'INSTALL' => '<code>INSTALL</code>']);
         }
 
@@ -65,25 +65,25 @@ class AdminController extends Controller
                     'searchModel'  => $searchModel,
         ]);
     }
-    
+
     public function actionView($id = null)
     {
-        $model = User::findOne((int)$id);
-        
+        $model = User::findOne((int) $id);
+
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
             return $this->redirect(['members']);
         }
-        
+
         return $this->render('view', [
-            'model' => $model
+                    'model' => $model
         ]);
     }
-    
+
     public function actionDelete($id = null)
     {
-        $model = User::findOne((int)$id);
-        
+        $model = User::findOne((int) $id);
+
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
@@ -100,14 +100,14 @@ class AdminController extends Controller
                 $this->error('Sorry! There was some error while deleting the user.');
             }
         }
-        
+
         return $this->redirect(['members']);
     }
-    
+
     public function actionBan($id = null)
     {
-        $model = User::findOne((int)$id);
-        
+        $model = User::findOne((int) $id);
+
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
@@ -116,7 +116,7 @@ class AdminController extends Controller
         }
         else {
             $model->setScenario('ban');
-            
+
             if ($model->status == User::STATUS_ACTIVE) {
                 if ($model->ban()) {
                     Cache::getInstance()->delete('members.fieldlist');
@@ -139,38 +139,40 @@ class AdminController extends Controller
                 $this->error('Sorry! User has got the wrong status.');
             }
         }
-        
+
         return $this->redirect(['members']);
     }
-    
+
     public function actionForums($cid = null)
     {
-        $model = Category::findOne((int)$cid);
-        
+        $model = Category::findOne((int) $cid);
+
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
             return $this->redirect(['categories']);
         }
-        
+
         return $this->render('forums', [
-                    'model' => $model,
-                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-                    'forums' => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                    'model'      => $model,
+                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                        'id' => SORT_ASC])->all(),
+                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC,
+                        'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     public function actionCategories()
     {
         return $this->render('categories', [
                     'dataProvider' => (new Category())->show(),
         ]);
     }
-    
+
     public function actionNewCategory()
     {
-        $model = new Category();
+        $model          = new Category();
         $model->visible = 1;
-        $model->sort = 0;
+        $model->sort    = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $this->success('New category has been created.');
@@ -178,25 +180,26 @@ class AdminController extends Controller
         }
         else {
             return $this->render('category', [
-                        'model' => $model,
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                        'model'      => $model,
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all()
             ]);
         }
     }
-    
+
     public function actionNewForum($cid = null)
     {
-        $category = Category::findOne((int)$cid);
-        
+        $category = Category::findOne((int) $cid);
+
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
             return $this->redirect(['categories']);
         }
-        
-        $model = new Forum();
+
+        $model              = new Forum();
         $model->category_id = $category->id;
-        $model->visible = 1;
-        $model->sort = 0;
+        $model->visible     = 1;
+        $model->sort        = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $this->success('New forum has been created.');
@@ -204,23 +207,25 @@ class AdminController extends Controller
         }
         else {
             return $this->render('forum', [
-                        'model' => $model,
-                        'forums' => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                        'model'      => $model,
+                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all(),
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all()
             ]);
         }
     }
-    
+
     public function actionEditForum($cid = null, $id = null)
     {
-        $category = Category::findOne((int)$cid);
-        
+        $category = Category::findOne((int) $cid);
+
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
             return $this->redirect(['categories']);
         }
-        
-        $model = Forum::findOne(['id' => (int)$id, 'category_id' => $category->id]);
+
+        $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Forum with this ID.');
@@ -233,17 +238,19 @@ class AdminController extends Controller
             }
             else {
                 return $this->render('forum', [
-                            'model' => $model,
-                            'forums' => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                            'model'      => $model,
+                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all(),
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all()
                 ]);
             }
         }
     }
-    
+
     public function actionEditCategory($id = null)
     {
-        $model = Category::findOne((int)$id);
+        $model = Category::findOne((int) $id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
@@ -256,23 +263,24 @@ class AdminController extends Controller
             }
             else {
                 return $this->render('category', [
-                            'model' => $model,
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                            'model'      => $model,
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all()
                 ]);
             }
         }
     }
-    
+
     public function actionDeleteForum($cid = null, $id = null)
     {
-        $category = Category::findOne((int)$cid);
-        
+        $category = Category::findOne((int) $cid);
+
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
             return $this->redirect(['categories']);
         }
-        
-        $model = Forum::findOne(['id' => (int)$id, 'category_id' => $category->id]);
+
+        $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
         if (empty($model)) {
             Cache::getInstance()->delete('forum.threadscount');
@@ -285,15 +293,15 @@ class AdminController extends Controller
             }
             else {
                 $this->error('Sorry! There was some error while deleting the forum.');
-            }            
+            }
         }
-        
+
         return $this->redirect(['forums', 'cid' => $category->id]);
     }
-    
+
     public function actionDeleteCategory($id = null)
     {
-        $model = Category::findOne((int)$id);
+        $model = Category::findOne((int) $id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
@@ -306,12 +314,12 @@ class AdminController extends Controller
             }
             else {
                 $this->error('Sorry! There was some error while deleting the category.');
-            }            
+            }
         }
-        
+
         return $this->redirect(['categories']);
     }
-    
+
     public function actionSortCategory()
     {
         if (Yii::$app->request->isAjax) {
@@ -319,14 +327,15 @@ class AdminController extends Controller
             $new     = Yii::$app->request->post('new');
 
             if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
-                $moved = Category::findOne((int)$modelId);
+                $moved = Category::findOne((int) $modelId);
                 if ($moved) {
-                    $query = (new Query())->from('{{%podium_category}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
-                    $next = 0;
+                    $query   = (new Query())->from('{{%podium_category}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->indexBy('id');
+                    $next    = 0;
                     $newSort = -1;
                     try {
                         foreach ($query->each() as $id => $forum) {
-                            if ($next == (int)$new) {
+                            if ($next == (int) $new) {
                                 $newSort = $next;
                                 $next++;
                             }
@@ -360,7 +369,7 @@ class AdminController extends Controller
             return $this->redirect(['categories']);
         }
     }
-    
+
     public function actionSortForum()
     {
         if (Yii::$app->request->isAjax) {
@@ -369,15 +378,17 @@ class AdminController extends Controller
             $new           = Yii::$app->request->post('new');
 
             if (is_numeric($modelId) && is_numeric($modelCategory) && is_numeric($new) && $modelId > 0 && $modelCategory > 0 && $new >= 0) {
-                $moved = Forum::findOne((int)$modelId);
-                $movedCategory = Category::findOne((int)$modelCategory);
+                $moved         = Forum::findOne((int) $modelId);
+                $movedCategory = Category::findOne((int) $modelCategory);
                 if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
-                    $query = (new Query())->from('{{%podium_forum}}')->where('id != :id AND category_id = :cid')->params([':id' => $moved->id, ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
-                    $next = 0;
+                    $query   = (new Query())->from('{{%podium_forum}}')->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
+                                ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->indexBy('id');
+                    $next    = 0;
                     $newSort = -1;
                     try {
                         foreach ($query->each() as $id => $forum) {
-                            if ($next == (int)$new) {
+                            if ($next == (int) $new) {
                                 $newSort = $next;
                                 $next++;
                             }
@@ -411,11 +422,11 @@ class AdminController extends Controller
             return $this->redirect(['forums']);
         }
     }
-    
+
     public function actionSettings()
     {
         $model = new ConfigForm();
-        
+
         if ($data = Yii::$app->request->post('ConfigForm')) {
             if ($model->update($data)) {
                 $this->success('Settings have been updated.');
@@ -425,15 +436,15 @@ class AdminController extends Controller
                 $this->error('One of the setting\'s value is too long (255 characters max).');
             }
         }
-        
+
         return $this->render('settings', [
                     'model' => $model,
         ]);
     }
-    
+
     public function actionPromote($id = null)
     {
-        $model = User::findOne((int)$id);
+        $model = User::findOne((int) $id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find User with this ID.');
@@ -451,7 +462,7 @@ class AdminController extends Controller
                         if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
                             Yii::$app->authManager->revokeAll($model->id);
                         }
-                        
+
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
 
                             $transaction->commit();
@@ -460,7 +471,7 @@ class AdminController extends Controller
                             return $this->redirect(['mods', 'id' => $model->id]);
                         }
                     }
-                    
+
                     $this->error('Sorry! There was an error while promoting the user.');
                 }
                 catch (Exception $e) {
@@ -473,10 +484,10 @@ class AdminController extends Controller
 
         return $this->redirect(['members']);
     }
-    
+
     public function actionDemote($id = null)
     {
-        $model = User::findOne((int)$id);
+        $model = User::findOne((int) $id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find User with this ID.');
@@ -498,14 +509,14 @@ class AdminController extends Controller
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
 
                             Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', 'user_id = :id', [':id' => $model->id])->execute();
-                            
+
                             $transaction->commit();
 
                             $this->success('User has been demoted.');
                             return $this->redirect(['members']);
                         }
                     }
-                    
+
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
                 catch (Exception $e) {
@@ -518,48 +529,34 @@ class AdminController extends Controller
 
         return $this->redirect(['members']);
     }
-    
+
     public function actionMods($id = null)
     {
-        $mod = null;
+        $mod        = null;
         $moderators = User::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
-        
+
         if (is_numeric($id) && $id > 0) {
             if (isset($moderators[$id])) {
                 $mod = $moderators[$id];
             }
         }
-        
+
         if ($id == null) {
             foreach ($moderators as $moderator) {
                 $mod = $moderator;
                 break;
             }
         }
-        
-        $moderated = [];
-        if ($mod) {
-            $tmp = Mod::find()->where(['user_id' => $mod->id])->all();
-            foreach ($tmp as $tmp) {
-                $moderated[] = [
-                    'content' => Html::encode($tmp->forum->name)
-                ];
-            }
-        }
-        $forums = [];
-        $tmp2 = Forum::find()->indexBy('id')->all();
-        foreach ($tmp2 as $tmp2) {
-            $forums[] = [
-                'content' => Html::encode($tmp2->name)
-            ];
-        }
-        
+
+        $searchModel  = new ForumSearch();
+        $dataProvider = $searchModel->searchForMods(Yii::$app->request->get());
+
         return $this->render('mods', [
-                    'moderators' => $moderators,
-                    'mod'        => $mod,
-                    'moderated'  => $moderated,
-                    'forums'     => $forums
+                    'moderators'   => $moderators,
+                    'mod'          => $mod,
+                    'searchModel'  => $searchModel,
+                    'dataProvider' => $dataProvider
         ]);
     }
+
 }
-        
