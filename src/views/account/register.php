@@ -1,9 +1,12 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\web\View;
 
 $this->title                   = Yii::t('podium/view', 'Registration');
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_READY, 'bootstrap-popover');
 ?>
 <div class="row">
     <div class="col-sm-4">
@@ -12,7 +15,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'email')->textInput(['placeholder' => Yii::t('podium/view', 'E-mail')])->label(false) ?>
             </div>
             <div class="form-group">
-                <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'Password')])->label(false) ?>
+                <?= $form->field($model, 'password')->passwordInput([
+                    'placeholder'    => Yii::t('podium/view', 'Password'),
+                    'data-container' => 'body',
+                    'data-toggle'    => 'popover',
+                    'data-placement' => 'right',
+                    'data-content'   => Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'),
+                    'data-trigger'   => 'focus'
+                ])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= $form->field($model, 'password_repeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat Password')])->label(false) ?>

@@ -5,6 +5,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\Podium;
+use Exception;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\SluggableBehavior;
@@ -81,6 +82,7 @@ class User extends ActiveRecord implements IdentityInterface
             'ban'            => [],
             'role'           => [],
             'passwordChange' => ['password', 'password_repeat'],
+            'register'       => ['email', 'password', 'password_repeat'],
             'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
         ];
     }
@@ -427,7 +429,21 @@ class User extends ActiveRecord implements IdentityInterface
             $this->removeActivationToken();
             $this->status = self::STATUS_ACTIVE;
 
-            return $this->save();
+            $transaction = self::getDb()->beginTransaction();
+            try {
+                if ($this->save()) {
+                    
+                    if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $this->id)) {
+                    
+                        $transaction->commit();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception $e) {
+                $transaction->rollBack();
+                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+            }
         }
 
         return false;

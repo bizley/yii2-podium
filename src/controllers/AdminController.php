@@ -530,6 +530,44 @@ class AdminController extends Controller
         return $this->redirect(['members']);
     }
 
+    public function actionMod($uid = null, $fid = null)
+    {
+        if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
+            $this->error('Sorry! We can not find the moderator or forum with this ID.');
+            return $this->redirect(['mods']);
+        }
+        else {
+            $mod = User::findOne(['id' => $uid, 'role' => User::ROLE_MODERATOR]);
+            if (!$mod) {
+                $this->error('Sorry! We can not find the moderator with this ID.');
+                return $this->redirect(['mods']);
+            }
+            else {
+                $forum = Forum::findOne(['id' => $fid]);
+                if (!$forum) {
+                    $this->error('Sorry! We can not find the forum with this ID.');
+                }
+                else {
+                    try {
+                        if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $forum->id, 'user_id' => $mod->id])->exists()) {
+                            Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                        }
+                        else {
+                            Yii::$app->db->createCommand()->insert('{{%podium_moderator}}', ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                        }
+                        $this->success('Moderation list has been updated.');
+                    }
+                    catch (Exception $e) {
+                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        $this->error('Sorry! There was an error while updating the moderatoration list.');
+                    }
+                }
+                
+                return $this->redirect(['mods', 'id' => $uid]);
+            }
+        }
+    }
+
     public function actionMods($id = null)
     {
         $mod        = null;
@@ -551,11 +589,56 @@ class AdminController extends Controller
         $searchModel  = new ForumSearch();
         $dataProvider = $searchModel->searchForMods(Yii::$app->request->get());
 
+        $postData = Yii::$app->request->post();
+        if ($postData) {
+            $mod_id    = !empty($postData['mod_id']) && is_numeric($postData['mod_id']) && $postData['mod_id'] > 0 ? $postData['mod_id'] : 0;
+            $selection = !empty($postData['selection']) ? $postData['selection'] : [];
+            $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
+            
+            if ($mod_id != $mod->id) {
+                $this->error('Sorry! There was an error while selecting the moderator ID.');
+            }
+            else {
+                try {
+                    $add = [];
+                    foreach ($selection as $select) {
+                        if (!in_array($select, $pre)) {
+                            if ((new Query)->from('{{%podium_forum}}')->where(['id' => $select])->exists() && (new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $select, 'user_id' => $mod->id])->exists() === false) {
+                                $add[] = [$select, $mod->id];
+                            }
+                        }
+                    }
+                    $remove = [];
+                    foreach ($pre as $p) {
+                        if (!in_array($p, $selection)) {
+                            if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $p, 'user_id' => $mod->id])->exists()) {
+                                $remove[] = $p;
+                            }
+                        }
+                    }
+                    if (!empty($add)) {
+                        Yii::$app->db->createCommand()->batchInsert('{{%podium_moderator}}', ['forum_id', 'user_id'], $add)->execute();
+                    }
+                    if (!empty($remove)) {
+                        Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
+                    }
+                    
+                    $this->success('Moderation list has been saved.');
+                }
+                catch (Exception $e) {
+                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    $this->error('Sorry! There was an error while saving the moderatoration list.');
+                }
+                
+                return $this->refresh();
+            }
+        }
+        
         return $this->render('mods', [
                     'moderators'   => $moderators,
                     'mod'          => $mod,
                     'searchModel'  => $searchModel,
-                    'dataProvider' => $dataProvider
+                    'dataProvider' => $dataProvider,
         ]);
     }
 

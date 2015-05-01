@@ -95,6 +95,8 @@ class Podium extends Module implements BootstrapInterface
                     'admin/edit-category/<id:\d+>'                                  => 'admin/edit-category',
                     'admin/edit-forum/<cid:\d+>/<id:\d+>'                           => 'admin/edit-forum',
                     'admin/forums/<cid:\d+>'                                        => 'admin/forums',
+                    'admin/mod/<uid:\d+>/<fid:\d+>'                                 => 'admin/mod',
+                    'admin/mods/<id:\d+>'                                           => 'admin/mods',
                     'admin/new-forum/<cid:\d+>'                                     => 'admin/new-forum',
                     'admin/pm/<id:\d+>'                                             => 'admin/pm',
                     'admin/update/<id:\d+>'                                         => 'admin/update',

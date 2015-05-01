@@ -66,6 +66,7 @@ class AccountController extends Controller
     public function actionRegister()
     {
         $model = new User();
+        $model->setScenario('register');
 
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
             try {
@@ -203,14 +204,14 @@ class AccountController extends Controller
 
     public function actionActivate($token)
     {
-        $model = User::findByActivationTokenToken($token);
+        $model = User::findByActivationToken($token);
 
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
                 Cache::getInstance()->delete('members.fieldlist');
                 Cache::getInstance()->delete('forum.memberscount');
-                $this->success('Your account has been activated.');
+                $this->success('Your account has been activated. You can sign in now.');
             }
             else {
                 $this->error('Sorry! There was some error while activating your account. Contact administrator about this problem.');
