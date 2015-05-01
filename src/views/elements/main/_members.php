@@ -26,6 +26,6 @@ $lastActive = Activity::lastActive();
             <li><?= Yii::t('podium/view', 'Members') ?> <span class="badge"><?= Activity::totalMembers() ?></span></li>
             <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= Activity::totalThreads() ?></span></li>
             <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge"><?= Activity::totalPosts() ?></span></li>
-        </ul>                
+        </ul>
     </div>
 </div>

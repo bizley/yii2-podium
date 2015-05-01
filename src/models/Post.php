@@ -27,6 +27,8 @@ use yii\helpers\HtmlPurifier;
 class Post extends ActiveRecord
 {
 
+    public $topic;
+    
     /**
      * @inheritdoc
      */
@@ -51,14 +53,28 @@ class Post extends ActiveRecord
     public function rules()
     {
         return [
+            ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
+            ['topic', 'validateTopic', 'on' => ['firstPost']],
             ['content', 'required'],
             ['content', 'string', 'min' => 10],
-            ['content', 'filter', 'filter' => function($value) {
-                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
-                }],
+            ['content', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full')); }],
         ];
     }
 
+    /**
+     * Validates topic
+     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
+     * @param string $attribute
+     */
+    public function validateTopic($attribute)
+    {
+        if (!$this->hasErrors()) {
+            if (!preg_match('/^[\w\s\p{L}]{1,255}$/u', $this->topic)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
+            }
+        }
+    }
+    
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'author_id']);

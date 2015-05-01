@@ -254,4 +254,14 @@ class Thread extends ActiveRecord
 
         return $class;
     }
+    
+    public function isMod($user_id = null)
+    {
+        if (Yii::$app->user->can('admin')) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

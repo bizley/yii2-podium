@@ -19,6 +19,7 @@ use yii\widgets\FragmentCache;
  * user.postscount => list of users' posts count
  * forum.lastactive => number of last active users
  * forum.memberscount => number of activated and banned users
+ * forum.moderators => moderators for each forum
  * forum.threadscount => number of forum threads
  * forum.postscount => number of forum posts
  * user.votes.ID => user's votes per hour

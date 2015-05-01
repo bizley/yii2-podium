@@ -27,6 +27,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel panel-default">
 <?php $form = ActiveForm::begin(['id' => 'edit-post-form']); ?>
             <div class="panel-body">
+<?php if ($isFirstPost): ?>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'topic')->textInput()->label(Yii::t('podium/view', 'Topic')) ?>
+                    </div>
+                </div>
+<?php endif; ?>
                 <div class="row">
                     <div class="col-sm-12">
                         <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Post'))->widget(Summernote::className(), [

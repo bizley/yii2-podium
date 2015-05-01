@@ -19,6 +19,26 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' =
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<?php if (Yii::$app->user->can('updateThread', ['item' => $thread])): ?>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <ul class="list-inline">
+                    <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
+                    <li><a href="<?= Url::to(['pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= Yii::t('podium/view', 'Pin Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Lock Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Delete Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-random"></span> <?= Yii::t('podium/view', 'Move Posts') ?></a></li>
+                    <li><a href="<?= Url::to(['deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-remove"></span> <?= Yii::t('podium/view', 'Delete Posts') ?></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div><br>
+<?php endif; ?>
+
 <?php if (Yii::$app->user->isGuest): ?>
 <div class="row">
     <div class="col-sm-12 text-right">

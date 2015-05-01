@@ -478,6 +478,15 @@ class DefaultController extends Controller
                     }
                     else {
                         if (Yii::$app->user->can('updateOwnPost', ['post' => $model]) || Yii::$app->user->can('updatePost', ['item' => $model])) {
+                            
+                            $isFirstPost = false;
+                            $firstPost   = Post::find()->where(['forum_id' => $forum->id, 'thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one();
+                            if ($firstPost->id == $model->id) {
+                                $model->setScenario('firstPost');
+                                $model->topic = $thread->name;
+                                $isFirstPost = true;
+                            }                            
+                            
                             $postData = Yii::$app->request->post();
 
                             $preview = '';
@@ -494,10 +503,16 @@ class DefaultController extends Controller
                                         $transaction = Post::getDb()->beginTransaction();
                                         try {
 
-                                            $model->edited = 1;
+                                            $model->edited    = 1;
                                             $model->edited_at = time();
 
                                             if ($model->save()) {
+                                                
+                                                if ($isFirstPost) {
+                                                    $thread->name = $model->topic;
+                                                    $thread->save();
+                                                }
+                                                
                                                 $model->markSeen();
                                                 $thread->touch('edited_post_at');
                                             }
@@ -518,11 +533,12 @@ class DefaultController extends Controller
                             }
 
                             return $this->render('edit', [
-                                        'preview'  => $preview,
-                                        'model'    => $model,
-                                        'category' => $category,
-                                        'forum'    => $forum,
-                                        'thread'   => $thread,
+                                        'preview'     => $preview,
+                                        'model'       => $model,
+                                        'category'    => $category,
+                                        'forum'       => $forum,
+                                        'thread'      => $thread,
+                                        'isFirstPost' => $isFirstPost
                             ]);
                         }
                         else {

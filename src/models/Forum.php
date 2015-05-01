@@ -5,11 +5,13 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 /**
  * Forum model
@@ -98,13 +100,22 @@ class Forum extends ActiveRecord
     
     public function getMods()
     {
-        $mods    = [];
-        $modteam = User::find()->select(['id', 'role'])->where(['status' => User::STATUS_ACTIVE, 'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]])->asArray()->all();
-        
-        foreach ($modteam as $user) {
-            if ($user['role'] == User::ROLE_ADMIN) {
-                $mods[] = $user['id'];
+        $mods = Cache::getInstance()->getElement('forum.moderators', $this->id);
+        if ($mods === false) {
+            $mods    = [];
+            $modteam = User::find()->select(['id', 'role'])->where(['status' => User::STATUS_ACTIVE, 'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]])->asArray()->all();
+
+            foreach ($modteam as $user) {
+                if ($user['role'] == User::ROLE_ADMIN) {
+                    $mods[] = $user['id'];
+                }
+                else {
+                    if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $this->id, 'user_id' => $user->id])->exists()) {
+                        $mods[] = $user['id'];
+                    }
+                }
             }
+            Cache::getInstance()->setElement('forum.moderators', $this->id, $mods);
         }
         
         return $mods;        
