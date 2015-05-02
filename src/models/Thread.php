@@ -144,7 +144,7 @@ class Thread extends ActiveRecord
             'pagination' => false,
         ]);
 
-        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+        $dataProvider->sort->defaultOrder = ['pinned' => SORT_DESC, 'updated_at' => SORT_DESC, 'id' => SORT_ASC];
 
         return $dataProvider;
     }

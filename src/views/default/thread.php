@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel-heading">
                 <ul class="list-inline">
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
-                    <li><a href="<?= Url::to(['pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= Yii::t('podium/view', 'Pin Thread') ?></a></li>
-                    <li><a href="<?= Url::to(['lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Lock Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= Yii::t('podium/view', $thread->pinned ? 'Unpin Thread' : 'Pin Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', $thread->locked ? 'Unlock Thread' : 'Lock Thread') ?></a></li>
                     <li><a href="<?= Url::to(['move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>
                     <li><a href="<?= Url::to(['delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Delete Thread') ?></a></li>
                     <li><a href="<?= Url::to(['moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-random"></span> <?= Yii::t('podium/view', 'Move Posts') ?></a></li>
@@ -62,6 +62,7 @@ echo ListView::widget([
 Pjax::end();
 ?>
 
+<?php if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))): ?>
 <?php if (!Yii::$app->user->isGuest): ?>
 <br>
 <div class="row">
@@ -113,6 +114,13 @@ Pjax::end();
     <div class="col-sm-12 text-right">
         <a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary"><?= Yii::t('podium/view', 'Sign in to reply') ?></a>
         <a href="<?= Url::to(['account/register']) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Register new account') ?></a>
+    </div>
+</div>
+<?php endif; ?>
+<?php else: ?>
+<div class="row">
+    <div class="col-sm-12 text-right">
+        <h4><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'This thread is locked.') ?></h4>
     </div>
 </div>
 <?php endif; ?>

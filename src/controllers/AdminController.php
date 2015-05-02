@@ -555,6 +555,7 @@ class AdminController extends Controller
                         else {
                             Yii::$app->db->createCommand()->insert('{{%podium_moderator}}', ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
                         }
+                        Cache::getInstance()->deleteElement('forum.moderators', $forum->id);
                         $this->success('Moderation list has been updated.');
                     }
                     catch (Exception $e) {
@@ -622,7 +623,7 @@ class AdminController extends Controller
                     if (!empty($remove)) {
                         Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
                     }
-                    
+                    Cache::getInstance()->delete('forum.moderators');
                     $this->success('Moderation list has been saved.');
                 }
                 catch (Exception $e) {

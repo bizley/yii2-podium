@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
 <div class="row">
     <div class="col-sm-12">
-        <div class="panel-group" role="tablist" aria-multiselectable="true">
+        <div class="panel-group" role="tablist">
             <?= $this->render('/elements/forum/_forum_section', ['model' => $model]) ?>
         </div>
     </div>
