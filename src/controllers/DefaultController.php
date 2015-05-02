@@ -882,4 +882,169 @@ class DefaultController extends Controller
             }
         }
     }
+    
+    public function actionMove($cid = null, $fid = null, $id = null, $slug = null)
+    {
+        $verify = $this->_verifyThread($cid, $fid, $id, $slug);
+        
+        if ($verify === false) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        list($category, $forum, $thread) = $verify;
+        
+        if (Yii::$app->user->can('moveThread', ['item' => $thread])) {
+
+            $postData = Yii::$app->request->post();
+            if ($postData) {
+                $moveTo = $postData['forum'];
+                if (is_numeric($moveTo) && $moveTo > 0 && $moveTo != $forum->id) {
+                    
+                    $newParent = Forum::findOne(['id' => $moveTo]);
+                    if ($newParent) {
+                    
+                        $postsCount = $thread->posts;
+                        
+                        $oldParent = Forum::findOne(['id' => $thread->forum_id]);
+                        if ($oldParent) {
+                            $transaction = Forum::getDb()->beginTransaction();
+                            try {
+                                $oldParent->updateCounters(['threads' => -1, 'posts' => -$postsCount]);
+                                $newParent->updateCounters(['threads' => 1, 'posts' => $postsCount]);
+                                
+                                $thread->forum_id    = $newParent->id;
+                                $thread->category_id = $newParent->category_id;
+                                if ($thread->save()) {
+                                    Post::updateAll(['forum_id' => $newParent->id], 'thread_id = :tid', [':tid' => $thread->id]);
+                                }
+                                
+                                $transaction->commit();
+                                $this->success('Thread has been moved.');
+                                return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                            }
+                            catch (Exception $e) {
+                                $transaction->rollBack();
+                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                $this->error('Sorry! There was an error while moving the thread.');
+                            }
+                        }
+                        else {
+                            $this->error('Sorry! There was an error while moving the thread.');
+                        }
+                    }
+                    else {
+                        $this->error('Sorry! We can not find the forum you want to move this thread to.');
+                    }
+                }
+                else {
+                    $this->error('Incorrect forum ID.');
+                }
+            }
+            
+            $categories = Category::find()->orderBy(['name' => SORT_ASC])->all();
+            $forums     = Forum::find()->orderBy(['name' => SORT_ASC])->all();
+            
+            $list    = [];
+            $options = [];
+            foreach ($categories as $cat) {
+                $catlist = [];
+                foreach ($forums as $for) {
+                    if ($for->category_id == $cat->id) {
+                        $catlist[$for->id] = (Yii::$app->user->can('updateThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        if ($for->id == $forum->id) {
+                            $options[$for->id] = ['disabled' => true];
+                        }
+                    }
+                }
+                $list[Html::encode($cat->name)] = $catlist;
+            }
+            
+            return $this->render('move', [
+                'category' => $category,
+                'forum'    => $forum,
+                'thread'   => $thread,
+                'list'     => $list,
+                'options'  => $options
+            ]);
+        }
+        else {
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to update the thread.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
+        }
+    }
+    
+    public function actionDelete($cid = null, $fid = null, $id = null, $slug = null)
+    {
+        $verify = $this->_verifyThread($cid, $fid, $id, $slug);
+        
+        if ($verify === false) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        list($category, $forum, $thread) = $verify;
+        
+        if (Yii::$app->user->can('updateThread', ['item' => $thread])) {
+
+            $postData = Yii::$app->request->post();
+            if ($postData) {
+                $delete = $postData['thread'];
+                if (is_numeric($delete) && $delete > 0 && $delete == $thread->id) {
+                    
+                    $toDelete = Thread::findOne(['id' => $delete]);
+                    if ($toDelete) {
+                    
+                        $transaction = Thread::getDb()->beginTransaction();
+                        try {
+                            if ($toDelete->delete()) {
+                                $forum->updateCounters(['threads' => -1, 'posts' => -$toDelete->posts]);
+                                $transaction->commit();
+                                
+                                Cache::getInstance()->delete('forum.threadscount');
+                                Cache::getInstance()->delete('forum.postscount');
+                                Cache::getInstance()->delete('user.postscount');
+                                
+                                $this->success('Thread has been deleted.');
+                                return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
+                            }
+                        }
+                        catch (Exception $e) {
+                            $transaction->rollBack();
+                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                            $this->error('Sorry! There was an error while deleting the thread.');
+                        }
+                    }
+                    else {
+                        $this->error('Sorry! We can not find the thread you want to delete.');
+                    }
+                }
+                else {
+                    $this->error('Incorrect thread ID.');
+                }
+            }
+            
+            return $this->render('delete', [
+                'category' => $category,
+                'forum'    => $forum,
+                'thread'   => $thread,
+            ]);
+        }
+        else {
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to delete the thread.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
+        }
+    }
 }        

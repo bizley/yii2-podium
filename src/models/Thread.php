@@ -98,6 +98,11 @@ class Thread extends ActiveRecord
             }
         }
     }
+    
+    public function getForum()
+    {
+        return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
+    }
 
     public function getView()
     {
@@ -261,6 +266,9 @@ class Thread extends ActiveRecord
             return true;
         }
         else {
+            if (in_array($user_id, $this->forum->getMods())) {
+                return true;
+            }
             return false;
         }
     }

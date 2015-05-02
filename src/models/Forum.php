@@ -120,4 +120,17 @@ class Forum extends ActiveRecord
         
         return $mods;        
     }
+    
+    public function isMod($user_id = null)
+    {
+        if (Yii::$app->user->can('admin')) {
+            return true;
+        }
+        else {
+            if (in_array($user_id, $this->getMods())) {
+                return true;
+            }
+            return false;
+        }
+    }
 }
