@@ -1115,7 +1115,7 @@ class DefaultController extends Controller
                                                 break;
                                             }
                                             else {
-                                                $nPost = Post::findOne(['id' => $post]);
+                                                $nPost = Post::findOne(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
                                                 if (!$nPost) {
                                                     $this->error('We can not find the post with this ID.');
                                                     $error = true;
@@ -1125,14 +1125,25 @@ class DefaultController extends Controller
                                                     $nPost->thread_id = $nThread->id;
                                                     $nPost->forum_id  = $nThread->forum_id;
                                                     $nPost->save();
-                                                    $thread->updateCounters(['posts' => -1]);
-                                                    $forum->updateCounters(['posts' => -1]);
-                                                    $nThread->updateCounters(['posts' => 1]);
-                                                    $nThread->forum->updateCounters(['posts' => 1]);
                                                 }
                                             }
                                         }
                                         if (!$error) {
+                                            
+                                            $wholeThread = false;
+                                            if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                                                $thread->updateCounters(['posts' => -count($posts)]);
+                                                $forum->updateCounters(['posts' => -count($posts)]);
+                                            }
+                                            else {
+                                                $wholeThread = true;
+                                                $thread->delete();
+                                                $forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
+                                            }
+                                            
+                                            $nThread->updateCounters(['posts' => count($posts)]);
+                                            $nThread->forum->updateCounters(['posts' => count($posts)]);
+                                            
                                             $transaction->commit();
                                             
                                             Cache::getInstance()->delete('forum.threadscount');
@@ -1140,7 +1151,12 @@ class DefaultController extends Controller
                                             Cache::getInstance()->delete('user.postscount');
 
                                             $this->success('Posts have been moved.');
-                                            return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                            if ($wholeThread) {
+                                                return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
+                                            }
+                                            else {
+                                                return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                            }
                                         }
                                     }
                                 }
@@ -1189,6 +1205,103 @@ class DefaultController extends Controller
                 'list'         => $list,
                 'options'      => $options,
                 'listforum'    => $listforum,
+                'dataProvider' => (new Post)->search($forum->id, $thread->id)
+            ]);
+        }
+        else {
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to update the thread.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
+        }
+    }
+    
+    public function actionDeleteposts($cid = null, $fid = null, $id = null, $slug = null)
+    {
+        $verify = $this->_verifyThread($cid, $fid, $id, $slug);
+        
+        if ($verify === false) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        list($category, $forum, $thread) = $verify;
+        
+        if (Yii::$app->user->can('deletePost', ['item' => $thread])) {
+
+            if (Yii::$app->request->post()) {
+                
+                $posts     = Yii::$app->request->post('post');
+                
+                if (empty($posts) || !is_array($posts)) {
+                    $this->error('You have to select at least one post.');
+                }
+                else {
+                    $transaction = Post::getDb()->beginTransaction();
+                    try {
+                        $error = false;
+                        foreach ($posts as $post) {
+                            if (!is_numeric($post) || $post < 1) {
+                                $this->error('Incorrect post ID.');
+                                $error = true;
+                                break;
+                            }
+                            else {
+                                $nPost = Post::findOne(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
+                                if (!$nPost) {
+                                    $this->error('We can not find the post with this ID.');
+                                    $error = true;
+                                    break;
+                                }
+                                else {
+                                    $nPost->delete();
+                                }
+                            }
+                        }
+                        if (!$error) {
+                            
+                            $wholeThread = false;
+                            if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                                $thread->updateCounters(['posts' => -count($posts)]);
+                                $forum->updateCounters(['posts' => -count($posts)]);
+                            }
+                            else {
+                                $wholeThread = true;
+                                $thread->delete();
+                                $forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
+                            }
+                            
+                            $transaction->commit();
+
+                            Cache::getInstance()->delete('forum.threadscount');
+                            Cache::getInstance()->delete('forum.postscount');
+                            Cache::getInstance()->delete('user.postscount');
+
+                            $this->success('Posts have been deleted.');
+                            if ($wholeThread) {
+                                return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
+                            }
+                            else {
+                                return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                            }
+                        }
+                    }
+                    catch (Exception $e) {
+                        $transaction->rollBack();
+                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        $this->error('Sorry! There was an error while deleting the posts.');
+                    }
+                }
+            }
+            
+            return $this->render('deleteposts', [
+                'category'     => $category,
+                'forum'        => $forum,
+                'thread'       => $thread,
                 'dataProvider' => (new Post)->search($forum->id, $thread->id)
             ]);
         }
