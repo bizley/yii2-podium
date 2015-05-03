@@ -48,10 +48,8 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
-        $dataProvider = (new Category())->search();
-
         return $this->render('index', [
-                    'dataProvider' => $dataProvider
+                    'dataProvider' => (new Category())->search()
         ]);
     }
 
@@ -298,7 +296,7 @@ class DefaultController extends Controller
                             }
 
                             $preview = '';
-                            $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one();
+                            $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_DESC])->one();
 
                             if ($model->load($postData)) {
 
@@ -770,7 +768,7 @@ class DefaultController extends Controller
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('updateThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('pinThread', ['item' => $thread])) {
             if ($thread->pinned) {
                 $thread->pinned = 0;
             }
@@ -851,7 +849,7 @@ class DefaultController extends Controller
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('updateThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('lockThread', ['item' => $thread])) {
             if ($thread->locked) {
                 $thread->locked = 0;
             }
@@ -991,7 +989,7 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('updateThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('deleteThread', ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -1039,6 +1037,164 @@ class DefaultController extends Controller
         else {
             if (Yii::$app->user->isGuest) {
                 $this->warning('Please sign in to delete the thread.');
+                return $this->redirect(['account/login']);
+            }
+            else {
+                $this->error('Sorry! You do not have the required permission to perform this action.');
+                return $this->redirect(['default/index']);
+            }
+        }
+    }
+    
+    public function actionMoveposts($cid = null, $fid = null, $id = null, $slug = null)
+    {
+        $verify = $this->_verifyThread($cid, $fid, $id, $slug);
+        
+        if ($verify === false) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        list($category, $forum, $thread) = $verify;
+        
+        if (Yii::$app->user->can('movePost', ['item' => $thread])) {
+
+            if (Yii::$app->request->post()) {
+                
+                $posts     = Yii::$app->request->post('post');
+                $newthread = Yii::$app->request->post('newthread');
+                $newname   = Yii::$app->request->post('newname');
+                $newforum  = Yii::$app->request->post('newforum');
+                
+                if (empty($posts) || !is_array($posts)) {
+                    $this->error('You have to select at least one post.');
+                }
+                else {
+                    if (!is_numeric($newthread) || $newthread < 0) {
+                        $this->error('You have to select a thread for this posts to be moved to.');
+                    }
+                    else {
+                        if ($newthread == 0 && (empty($newname) || empty($newforum) || !is_numeric($newforum) || $newforum < 1)) {
+                            $this->error('If you want to move posts to a new thread you have to enter its name and select parent forum.');
+                        }
+                        else {
+                            if ($newthread == $thread->id) {
+                                $this->error('Are you trying to move posts from this thread to this very same thread?');
+                            }
+                            else {
+                                $transaction = Thread::getDb()->beginTransaction();
+                                try {
+                                    if ($newthread == 0) {
+                                        $parent = Forum::findOne(['id' => $newforum]);
+                                        if (!$parent) {
+                                            $this->error('We can not find the parent forum with this ID.');
+                                        }
+                                        else {
+                                            $nThread = new Thread;
+                                            $nThread->name        = $newname;
+                                            $nThread->posts       = 0;
+                                            $nThread->views       = 0;
+                                            $nThread->category_id = $parent->category_id;
+                                            $nThread->forum_id    = $parent->id;
+                                            $nThread->author_id   = Yii::$app->user->id;
+                                            $nThread->save();
+                                        }
+                                    }
+                                    else {
+                                        $nThread = Thread::findOne(['id' => $newthread]);
+                                        if (!$nThread) {
+                                            $this->error('We can not find the thread with this ID.');
+                                        }
+                                    }
+                                    if (!empty($nThread)) {
+                                        $error = false;
+                                        foreach ($posts as $post) {
+                                            if (!is_numeric($post) || $post < 1) {
+                                                $this->error('Incorrect post ID.');
+                                                $error = true;
+                                                break;
+                                            }
+                                            else {
+                                                $nPost = Post::findOne(['id' => $post]);
+                                                if (!$nPost) {
+                                                    $this->error('We can not find the post with this ID.');
+                                                    $error = true;
+                                                    break;
+                                                }
+                                                else {
+                                                    $nPost->thread_id = $nThread->id;
+                                                    $nPost->forum_id  = $nThread->forum_id;
+                                                    $nPost->save();
+                                                    $thread->updateCounters(['posts' => -1]);
+                                                    $forum->updateCounters(['posts' => -1]);
+                                                    $nThread->updateCounters(['posts' => 1]);
+                                                    $nThread->forum->updateCounters(['posts' => 1]);
+                                                }
+                                            }
+                                        }
+                                        if (!$error) {
+                                            $transaction->commit();
+                                            
+                                            Cache::getInstance()->delete('forum.threadscount');
+                                            Cache::getInstance()->delete('forum.postscount');
+                                            Cache::getInstance()->delete('user.postscount');
+
+                                            $this->success('Posts have been moved.');
+                                            return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                        }
+                                    }
+                                }
+                                catch (Exception $e) {
+                                    $transaction->rollBack();
+                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                    $this->error('Sorry! There was an error while moving the posts.');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $categories = Category::find()->orderBy(['name' => SORT_ASC])->all();
+            $forums     = Forum::find()->orderBy(['name' => SORT_ASC])->all();
+            $threads    = Thread::find()->orderBy(['name' => SORT_ASC])->all();
+            
+            $list      = [0 => Yii::t('podium/view', 'Create new thread')];
+            $listforum = [];
+            $options   = [];
+            foreach ($categories as $cat) {
+                $catlist = [];
+                foreach ($forums as $for) {
+                    $forlist = [];
+                    if ($for->category_id == $cat->id) {
+                        $catlist[$for->id] = (Yii::$app->user->can('updateThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        foreach ($threads as $thr) {
+                            if ($thr->category_id == $cat->id && $thr->forum_id == $for->id) {
+                                $forlist[$thr->id] = (Yii::$app->user->can('updateThread', ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
+                                if ($thr->id == $thread->id) {
+                                    $options[$thr->id] = ['disabled' => true];
+                                }
+                            }
+                        }
+                        $list[Html::encode($cat->name) . ' > ' . Html::encode($for->name)] = $forlist;
+                    }
+                }
+                $listforum[Html::encode($cat->name)] = $catlist;
+            }
+            
+            return $this->render('moveposts', [
+                'category'     => $category,
+                'forum'        => $forum,
+                'thread'       => $thread,
+                'list'         => $list,
+                'options'      => $options,
+                'listforum'    => $listforum,
+                'dataProvider' => (new Post)->search($forum->id, $thread->id)
+            ]);
+        }
+        else {
+            if (Yii::$app->user->isGuest) {
+                $this->warning('Please sign in to update the thread.');
                 return $this->redirect(['account/login']);
             }
             else {

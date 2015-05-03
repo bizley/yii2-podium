@@ -11,8 +11,10 @@ class Config
     public $cache;
     protected static $_instance = false;
     protected $_defaults = [
-        'name'    => 'Podium',
-        'version' => '1.0'
+        'name'            => 'Podium',
+        'version'         => '1.0',
+        'hot_minimum'     => 20,
+        'members_visible' => 1
     ];
     
     protected function __construct()

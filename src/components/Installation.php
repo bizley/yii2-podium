@@ -283,19 +283,8 @@ class Installation extends Component
             $updatePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($updatePost);
 
-            $updateThread              = $this->authManager->createPermission('updateThread');
-            $updateThread->description = 'Update thread';
-            $updateThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($updateThread);
-
             $authorRule = new AuthorRule;
             $this->authManager->add($authorRule);
-
-            $updateOwnThread              = $this->authManager->createPermission('updateOwnThread');
-            $updateOwnThread->description = 'Update own thread';
-            $updateOwnThread->ruleName    = $authorRule->name;
-            $this->authManager->add($updateOwnThread);
-            $this->authManager->addChild($updateOwnThread, $updateThread);
 
             $updateOwnPost              = $this->authManager->createPermission('updateOwnPost');
             $updateOwnPost->description = 'Update own post';
@@ -313,7 +302,7 @@ class Installation extends Component
             $deleteOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($deleteOwnPost);
             $this->authManager->addChild($deleteOwnPost, $deletePost);
-
+            
             $user = $this->authManager->createRole('user');
             $this->authManager->add($user);
             $this->authManager->addChild($user, $viewThread);
@@ -323,10 +312,25 @@ class Installation extends Component
             $this->authManager->addChild($user, $updateOwnPost);
             $this->authManager->addChild($user, $deleteOwnPost);
 
+            $updateThread              = $this->authManager->createPermission('updateThread');
+            $updateThread->description = 'Update thread';
+            $updateThread->ruleName    = $moderatorRule->name;
+            $this->authManager->add($updateThread);
+            
+            $deleteThread              = $this->authManager->createPermission('deleteThread');
+            $deleteThread->description = 'Delete thread';
+            $deleteThread->ruleName    = $moderatorRule->name;
+            $this->authManager->add($deleteThread);
+            
             $pinThread              = $this->authManager->createPermission('pinThread');
             $pinThread->description = 'Pin thread';
             $pinThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($pinThread);
+            
+            $lockThread              = $this->authManager->createPermission('lockThread');
+            $lockThread->description = 'Lock thread';
+            $lockThread->ruleName    = $moderatorRule->name;
+            $this->authManager->add($lockThread);
 
             $moveThread              = $this->authManager->createPermission('moveThread');
             $moveThread->description = 'Move thread';
@@ -347,7 +351,9 @@ class Installation extends Component
             $this->authManager->addChild($moderator, $updatePost);
             $this->authManager->addChild($moderator, $updateThread);
             $this->authManager->addChild($moderator, $deletePost);
+            $this->authManager->addChild($moderator, $deleteThread);
             $this->authManager->addChild($moderator, $pinThread);
+            $this->authManager->addChild($moderator, $lockThread);
             $this->authManager->addChild($moderator, $moveThread);
             $this->authManager->addChild($moderator, $movePost);
             $this->authManager->addChild($moderator, $banUser);
@@ -364,6 +370,18 @@ class Installation extends Component
             $deleteForum              = $this->authManager->createPermission('deleteForum');
             $deleteForum->description = 'Delete forum';
             $this->authManager->add($deleteForum);
+            
+            $createCategory              = $this->authManager->createPermission('createCategory');
+            $createCategory->description = 'Create category';
+            $this->authManager->add($createCategory);
+
+            $updateCategory              = $this->authManager->createPermission('updateCategory');
+            $updateCategory->description = 'Update category';
+            $this->authManager->add($updateCategory);
+
+            $deleteCategory              = $this->authManager->createPermission('deleteCategory');
+            $deleteCategory->description = 'Delete category';
+            $this->authManager->add($deleteCategory);
 
             $settings              = $this->authManager->createPermission('settings');
             $settings->description = 'Settings';
@@ -374,6 +392,9 @@ class Installation extends Component
             $this->authManager->addChild($admin, $createForum);
             $this->authManager->addChild($admin, $updateForum);
             $this->authManager->addChild($admin, $deleteForum);
+            $this->authManager->addChild($admin, $createCategory);
+            $this->authManager->addChild($admin, $updateCategory);
+            $this->authManager->addChild($admin, $deleteCategory);
             $this->authManager->addChild($admin, $settings);
             $this->authManager->addChild($admin, $moderator);
 

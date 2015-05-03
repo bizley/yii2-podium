@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="row">
                     <div class="col-sm-12">
                         <?= Html::label(Yii::t('podium/view', 'Select a forum for this thread to be moved to'), 'forum') ?>
-                        <p><?= Yii::t('podium/view', 'Forums you can moderate are marked with asterisk.') ?></p>
+                        <p><?= Yii::t('podium/view', '* Forums you can moderate are marked with asterisk.') ?></p>
                         <?= Html::dropDownList('forum', null, $list, ['id' => 'forum', 'class' => 'form-control', 'options' => $options, 'encode' => false]) ?>
                     </div>
                 </div>
