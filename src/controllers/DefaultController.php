@@ -420,7 +420,7 @@ class DefaultController extends Controller
     
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
+        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
             $this->error('Sorry! We can not find the post you are looking for.');
             return $this->redirect(['index']);
         }
@@ -447,7 +447,7 @@ class DefaultController extends Controller
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {                 
-                        $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id, 'author_id' => Yii::$app->user->id]);
+                        $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
 
                         if (!$model) {
                             $this->error('Sorry! We can not find the post you are looking for.');
@@ -996,31 +996,24 @@ class DefaultController extends Controller
                 $delete = $postData['thread'];
                 if (is_numeric($delete) && $delete > 0 && $delete == $thread->id) {
                     
-                    $toDelete = Thread::findOne(['id' => $delete]);
-                    if ($toDelete) {
-                    
-                        $transaction = Thread::getDb()->beginTransaction();
-                        try {
-                            if ($toDelete->delete()) {
-                                $forum->updateCounters(['threads' => -1, 'posts' => -$toDelete->posts]);
-                                $transaction->commit();
-                                
-                                Cache::getInstance()->delete('forum.threadscount');
-                                Cache::getInstance()->delete('forum.postscount');
-                                Cache::getInstance()->delete('user.postscount');
-                                
-                                $this->success('Thread has been deleted.');
-                                return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
-                            }
-                        }
-                        catch (Exception $e) {
-                            $transaction->rollBack();
-                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                            $this->error('Sorry! There was an error while deleting the thread.');
+                    $transaction = Thread::getDb()->beginTransaction();
+                    try {
+                        if ($thread->delete()) {
+                            $forum->updateCounters(['threads' => -1, 'posts' => -$thread->posts]);
+                            $transaction->commit();
+
+                            Cache::getInstance()->delete('forum.threadscount');
+                            Cache::getInstance()->delete('forum.postscount');
+                            Cache::getInstance()->delete('user.postscount');
+
+                            $this->success('Thread has been deleted.');
+                            return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                         }
                     }
-                    else {
-                        $this->error('Sorry! We can not find the thread you want to delete.');
+                    catch (Exception $e) {
+                        $transaction->rollBack();
+                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        $this->error('Sorry! There was an error while deleting the thread.');
                     }
                 }
                 else {
@@ -1316,4 +1309,116 @@ class DefaultController extends Controller
             }
         }
     }
-}        
+    
+    public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
+    {
+        if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        $category = Category::findOne(['id' => (int) $cid]);
+
+        if (!$category) {
+            $this->error('Sorry! We can not find the post you are looking for.');
+            return $this->redirect(['index']);
+        }
+        else {
+            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+
+            if (!$forum) {
+                $this->error('Sorry! We can not find the post you are looking for.');
+                return $this->redirect(['index']);
+            }
+            else {
+                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+
+                if (!$thread) {
+                    $this->error('Sorry! We can not find the post you are looking for.');
+                    return $this->redirect(['index']);
+                }
+                else {
+                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
+                        $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
+                        
+                        if (!$model) {
+                            $this->error('Sorry! We can not find the post you are looking for.');
+                            return $this->redirect(['index']);
+                        }
+                        else {
+                            if (Yii::$app->user->can('deleteOwnPost', ['post' => $model]) || Yii::$app->user->can('deletePost', ['item' => $model])) {
+
+                                $postData = Yii::$app->request->post();
+                                if ($postData) {
+                                    $delete = $postData['post'];
+                                    if (is_numeric($delete) && $delete > 0 && $delete == $model->id) {
+
+                                        $transaction = Post::getDb()->beginTransaction();
+                                        try {
+                                            if ($model->delete()) {
+                                                
+                                                $wholeThread = false;
+                                                if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                                                    $thread->updateCounters(['posts' => -1]);
+                                                    $forum->updateCounters(['posts' => -1]);
+                                                }
+                                                else {
+                                                    $wholeThread = true;
+                                                    $thread->delete();
+                                                    $forum->updateCounters(['posts' => -1, 'threads' => -1]);
+                                                }
+                                                
+                                                $transaction->commit();
+
+                                                Cache::getInstance()->delete('forum.threadscount');
+                                                Cache::getInstance()->delete('forum.postscount');
+                                                Cache::getInstance()->delete('user.postscount');
+
+                                                $this->success('Post has been deleted.');
+                                                if ($wholeThread) {
+                                                    return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
+                                                }
+                                                else {
+                                                    return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                                }
+                                            }
+                                        }
+                                        catch (Exception $e) {
+                                            $transaction->rollBack();
+                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            $this->error('Sorry! There was an error while deleting the post.');
+                                        }
+                                    }
+                                    else {
+                                        $this->error('Incorrect thread ID.');
+                                    }
+                                }
+
+                                return $this->render('deletepost', [
+                                            'model'       => $model,
+                                            'category'    => $category,
+                                            'forum'       => $forum,
+                                            'thread'      => $thread,
+                                ]);
+                            }
+                            else {
+                                if (Yii::$app->user->isGuest) {
+                                    $this->warning('Please sign in to delete the post.');
+                                    return $this->redirect(['account/login']);
+                                }
+                                else {
+                                    $this->error('Sorry! You do not have the required permission to perform this action.');
+                                    return $this->redirect(['default/index']);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        $this->info('This thread is locked.');
+                        return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
+                    }
+                }
+            }
+        }
+    }
+}

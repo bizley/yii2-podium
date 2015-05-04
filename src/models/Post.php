@@ -221,7 +221,7 @@ class Post extends ActiveRecord
                 $threadView->user_id          = Yii::$app->user->id;
                 $threadView->thread_id        = $this->thread_id;
                 $threadView->new_last_seen    = $this->created_at;
-                $threadView->edited_last_seen = !empty($this->edited_at) ? $this->edited_at : 0;
+                $threadView->edited_last_seen = !empty($this->edited_at) ? $this->edited_at : $this->created_at;
                 $threadView->save();
                 $this->thread->updateCounters(['views' => 1]);
             }
@@ -249,16 +249,6 @@ class Post extends ActiveRecord
                     }
                 }
             }
-        }
-    }
-    
-    public function isMod($user_id = null)
-    {
-        if (Yii::$app->user->can('admin')) {
-            return true;
-        }
-        else {
-            return false;
         }
     }
 }

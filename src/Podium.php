@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @version 0.1 (beta)
+ * @license TBA
+ * 
+ * https://github.com/bizley-code/Yii2-Podium
+ * Please report all issues at GitHub
+ * https://github.com/bizley-code/Yii2-Podium/issues
+ * 
+ * Podium requires Yii 2
+ * http://www.yiiframework.com
+ * https://github.com/yiisoft/yii2
+ */
 namespace bizley\podium;
 
 use bizley\podium\components\Cache;
@@ -13,22 +29,8 @@ use yii\web\GroupUrlRule;
 
 /**
  * Podium Module
- * Yii 2 forum module
- * 
- * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
- * @version 1.0
- * 
- * https://github.com/bizley-code/Yii2-Podium
- * Please report all issues at GitHub
- * https://github.com/bizley-code/Yii2-Podium/issues
- * 
- * Podium requires Yii 2
- * http://www.yiiframework.com
- * https://github.com/yiisoft/yii2
- */
-
-/**
- * Podium Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
 class Podium extends Module implements BootstrapInterface
 {
@@ -104,6 +106,7 @@ class Podium extends Module implements BootstrapInterface
                     'admin'                                                         => 'admin/index',
                     'category/<id:\d+>/<slug:[\w\-]+>'                              => 'default/category',
                     'delete/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/delete',
+                    'deletepost/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'            => 'default/deletepost',
                     'deleteposts/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'       => 'default/deleteposts',
                     'demote/<id:\d+>'                                               => 'admin/demote',
                     'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/edit',
@@ -136,7 +139,7 @@ class Podium extends Module implements BootstrapInterface
                     'show/<id:\d+>'                                                 => 'default/show',
                     'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
                 ],
-                    ])], false);
+            ])], false);
     }
 
     /**
