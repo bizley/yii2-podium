@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
@@ -17,12 +21,10 @@ use yii\rbac\DbManager;
 
 /**
  * Podium Installation
- * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
- * @version 1.0
- */
-
-/**
- * Podium Installation
+ * Installation requires database connection to be configured first.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * 
  * @property \yii\rbac\DbManager $authManager Authorization Manager
  * @property \yii\db\Connection $db Database connection
@@ -31,17 +33,17 @@ class Installation extends Component
 {
 
     /**
-     * @var Connection Database connection.
+     * @var Connection database connection.
      */
     public $db = 'db';
 
     /**
-     * @var DbManager Authorization Manager.
+     * @var DbManager authorization manager.
      */
     public $authManager = 'authManager';
 
     /**
-     * @var boolean Errors flag.
+     * @var boolean errors flag.
      */
     protected $_errors = false;
 
@@ -51,12 +53,7 @@ class Installation extends Component
     protected $_prefix = 'podium_';
 
     /**
-     * @var string Additional SQL fragment that will be appended to the generated SQL.
-     */
-    protected $_tableOptions = null;
-
-    /**
-     * @var array Installation steps.
+     * @var array installation steps.
      */
     protected $_steps = [
         [
@@ -195,10 +192,15 @@ class Installation extends Component
             'percent' => 100
         ],
     ];
+    
+    /**
+     * @var string additional SQL fragment that will be appended to the generated SQL.
+     */
+    protected $_tableOptions = null;
 
     /**
      * Adds Administrator account.
-     * @return string Result message.
+     * @return string result message.
      */
     protected function _addAdmin()
     {
@@ -236,7 +238,7 @@ class Installation extends Component
 
     /**
      * Adds Config settings.
-     * @return string Result message.
+     * @return string result message.
      */
     protected function _addConfig()
     {
@@ -254,7 +256,7 @@ class Installation extends Component
 
     /**
      * Adds permission rules.
-     * @return string Result message.
+     * @return string result message.
      */
     protected function _addRules()
     {
@@ -409,8 +411,8 @@ class Installation extends Component
 
     /**
      * Creates Authorization Assignment database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createAuthAssignment($name)
     {
@@ -425,8 +427,8 @@ class Installation extends Component
 
     /**
      * Creates Authorization Item database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createAuthItem($name)
     {
@@ -445,8 +447,8 @@ class Installation extends Component
 
     /**
      * Creates Authorization Item Child database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createAuthItemChild($name)
     {
@@ -461,8 +463,8 @@ class Installation extends Component
 
     /**
      * Creates Authorization Item database table index.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createAuthItemIndex($name)
     {
@@ -471,8 +473,8 @@ class Installation extends Component
 
     /**
      * Creates Authorization Rule database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createAuthRule($name)
     {
@@ -487,8 +489,8 @@ class Installation extends Component
 
     /**
      * Creates Config database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createConfig($name)
     {
@@ -501,8 +503,8 @@ class Installation extends Component
 
     /**
      * Creates Category database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createCategory($name)
     {
@@ -519,8 +521,8 @@ class Installation extends Component
 
     /**
      * Creates Forum database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createForum($name)
     {
@@ -542,10 +544,10 @@ class Installation extends Component
 
     /**
      * Creates database table index.
-     * @param string $index Index name.
-     * @param string $name Table name.
-     * @param string|array Table columns.
-     * @return string Result message.
+     * @param string $index index name.
+     * @param string $name table name.
+     * @param string|array table columns.
+     * @return string result message.
      */
     protected function _createIndex($index, $name, $columns)
     {
@@ -562,8 +564,8 @@ class Installation extends Component
 
     /**
      * Creates Message database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createMessage($name)
     {
@@ -583,8 +585,8 @@ class Installation extends Component
 
     /**
      * Creates Message database table index.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createMessageReceiverIndex($name)
     {
@@ -593,8 +595,8 @@ class Installation extends Component
 
     /**
      * Creates Message database table index.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createMessageSenderIndex($name)
     {
@@ -603,8 +605,8 @@ class Installation extends Component
 
     /**
      * Creates Moderator database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createModerator($name)
     {
@@ -619,8 +621,8 @@ class Installation extends Component
 
     /**
      * Creates Post database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createPost($name)
     {
@@ -643,8 +645,8 @@ class Installation extends Component
 
     /**
      * Creates Post Thumb database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createPostThumb($name)
     {
@@ -662,9 +664,9 @@ class Installation extends Component
 
     /**
      * Creates database table.
-     * @param string $name Table name.
-     * @param array $columns Table columns.
-     * @return string Result message.
+     * @param string $name table name.
+     * @param array $columns table columns.
+     * @return string result message.
      */
     protected function _createTable($name, $columns)
     {
@@ -681,8 +683,8 @@ class Installation extends Component
 
     /**
      * Creates Thread database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createThread($name)
     {
@@ -708,8 +710,8 @@ class Installation extends Component
 
     /**
      * Creates Thread View database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createThreadView($name)
     {
@@ -726,8 +728,8 @@ class Installation extends Component
 
     /**
      * Creates User database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createUser($name)
     {
@@ -753,8 +755,8 @@ class Installation extends Component
 
     /**
      * Creates User Activity database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createUserActivity($name)
     {
@@ -775,8 +777,8 @@ class Installation extends Component
 
     /**
      * Creates User Activity database table index.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createUserActivityIndex($name)
     {
@@ -785,8 +787,8 @@ class Installation extends Component
 
     /**
      * Creates User Ignore database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createUserIgnore($name)
     {
@@ -801,8 +803,8 @@ class Installation extends Component
 
     /**
      * Creates User Meta database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createUserMeta($name)
     {
@@ -821,8 +823,8 @@ class Installation extends Component
 
     /**
      * Creates Vocabulary database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createVocabulary($name)
     {
@@ -834,8 +836,8 @@ class Installation extends Component
 
     /**
      * Creates Vocabulary database table index.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createVocabularyIndex($name)
     {
@@ -844,8 +846,8 @@ class Installation extends Component
 
     /**
      * Creates Vocabulary Junction database table.
-     * @param string $name Table name.
-     * @return string Result message.
+     * @param string $name table name.
+     * @return string result message.
      */
     protected function _createVocabularyJunction($name)
     {
@@ -860,8 +862,8 @@ class Installation extends Component
 
     /**
      * Prepares error message.
-     * @param string $content Message content.
-     * @return string Prepared message.
+     * @param string $content message content.
+     * @return string prepared message.
      */
     protected function _outputDanger($content)
     {
@@ -870,8 +872,8 @@ class Installation extends Component
 
     /**
      * Prepares success message.
-     * @param string $content Message content.
-     * @return string Prepared message.
+     * @param string $content message content.
+     * @return string prepared message.
      */
     protected function _outputSuccess($content)
     {
@@ -880,7 +882,7 @@ class Installation extends Component
 
     /**
      * Checks if User database table exists.
-     * @return boolean Wheter User database exists.
+     * @return boolean wheter User database exists.
      */
     public static function check()
     {
@@ -912,8 +914,8 @@ class Installation extends Component
 
     /**
      * Starts next step of installation.
-     * @param integer $step Step number.
-     * @return array Step data.   
+     * @param integer $step step number.
+     * @return array step data.
      */
     public function step($step)
     {

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
@@ -14,9 +18,19 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;
 
+/**
+ * Podium Account controller
+ * All actions concerning user account.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class AccountController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -48,7 +62,38 @@ class AccountController extends Controller
             'flash' => FlashBehavior::className(),
         ];
     }
+    
+    /**
+     * Activating the account based on the provided activation token.
+     * @param string $token
+     * @return \yii\web\Response
+     */
+    public function actionActivate($token)
+    {
+        $model = User::findByActivationToken($token);
 
+        if ($model) {
+            $model->setScenario('token');
+            if ($model->activate()) {
+                Cache::getInstance()->delete('members.fieldlist');
+                Cache::getInstance()->delete('forum.memberscount');
+                $this->success('Your account has been activated. You can sign in now.');
+            }
+            else {
+                $this->error('Sorry! There was some error while activating your account. Contact administrator about this problem.');
+            }
+            return $this->module->goPodium();
+        }
+        else {
+            $this->error('The provided activation token is invalid or expired.');
+            return $this->module->goPodium();
+        }
+    }
+
+    /**
+     * Signing in.
+     * @return string|\yii\web\Response
+     */
     public function actionLogin()
     {
         $model = new LoginForm();
@@ -62,7 +107,104 @@ class AccountController extends Controller
             ]);
         }
     }
+    
+    /**
+     * Activating new email address based on the provided token.
+     * @param string $token
+     * @return \yii\web\Response
+     */
+    public function actionNewEmail($token)
+    {
+        $model = User::findByEmailToken($token);
 
+        if ($model) {
+            $model->setScenario('token');
+            if ($model->changeEmail()) {
+                $this->success('Your new e-mail address has been activated.');
+            }
+            else {
+                $this->error('Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.');
+            }
+            return $this->module->goPodium();
+        }
+        else {
+            $this->error('The provided activation token is invalid or expired.');
+            return $this->module->goPodium();
+        }
+    }
+
+    /**
+     * Changing the account password with provided token.
+     * @param string $token
+     * @return string|\yii\web\Response
+     */
+    public function actionPassword($token)
+    {
+        $model = User::findByPasswordResetToken($token);
+
+        if ($model) {
+            $model->setScenario('passwordChange');
+            if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
+                $this->success('Your account password has been changed.');
+                return $this->module->goPodium();
+            }
+            else {
+                return $this->render('password', [
+                        'model' => $model
+                ]);
+            }
+        }
+        else {
+            $this->error('The provided password reset token is invalid or expired.');
+            return $this->module->goPodium();
+        }
+    }
+    
+    /**
+     * Resending the account activation link.
+     * @return string|\yii\web\Response
+     */
+    public function actionReactivate()
+    {
+        $model = new ReForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            if ($model->reactivate()) {
+                try {
+                    $mailer = Yii::$app->mailer->compose('/mail/reactivate', [
+                                'forum' => $this->module->getParam('name', 'Podium Forum'),
+                                'link'  => Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
+                            ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
+                            ->setTo($model->getUser()->email)
+                            ->setSubject(Yii::t('podium/mail', '{NAME} password reset link', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
+                    if ($mailer->send()) {
+                        $this->success('The account activation link has been sent to your e-mail address.');
+                    }
+                    else {
+                        $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
+                    }
+
+                    return $this->module->goPodium();
+                }
+                catch (Exception $e) {
+                    $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
+                }
+            }
+            else {
+                $this->error('Sorry! We can not find the account with that user name or e-mail address.');
+            }
+        }
+
+        return $this->render('reactivate', [
+                    'model' => $model,
+        ]);
+    }
+    
+    /**
+     * Registering the new account and sending the activation link.
+     * @return string|\yii\web\Response
+     */
     public function actionRegister()
     {
         $model = new User();
@@ -106,6 +248,10 @@ class AccountController extends Controller
         }
     }
 
+    /**
+     * Sending the account password reset link.
+     * @return string|\yii\web\Response
+     */
     public function actionReset()
     {
         $model = new ReForm();
@@ -142,106 +288,4 @@ class AccountController extends Controller
                     'model' => $model,
         ]);
     }
-
-    public function actionReactivate()
-    {
-        $model = new ReForm();
-
-        if ($model->load(Yii::$app->request->post())) {
-
-            if ($model->reactivate()) {
-                try {
-                    $mailer = Yii::$app->mailer->compose('/mail/reactivate', [
-                                'forum' => $this->module->getParam('name', 'Podium Forum'),
-                                'link'  => Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
-                            ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
-                            ->setTo($model->getUser()->email)
-                            ->setSubject(Yii::t('podium/mail', '{NAME} password reset link', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
-                    if ($mailer->send()) {
-                        $this->success('The account activation link has been sent to your e-mail address.');
-                    }
-                    else {
-                        $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
-                    }
-
-                    return $this->module->goPodium();
-                }
-                catch (Exception $e) {
-                    $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
-                }
-            }
-            else {
-                $this->error('Sorry! We can not find the account with that user name or e-mail address.');
-            }
-        }
-
-        return $this->render('reactivate', [
-                    'model' => $model,
-        ]);
-    }
-
-    public function actionPassword($token)
-    {
-        $model = User::findByPasswordResetToken($token);
-
-        if ($model) {
-            $model->setScenario('passwordChange');
-            if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
-                $this->success('Your account password has been changed.');
-                return $this->module->goPodium();
-            }
-            else {
-                return $this->render('password', [
-                        'model' => $model
-                ]);
-            }
-        }
-        else {
-            $this->error('The provided password reset token is invalid or expired.');
-            return $this->module->goPodium();
-        }
-    }
-
-    public function actionActivate($token)
-    {
-        $model = User::findByActivationToken($token);
-
-        if ($model) {
-            $model->setScenario('token');
-            if ($model->activate()) {
-                Cache::getInstance()->delete('members.fieldlist');
-                Cache::getInstance()->delete('forum.memberscount');
-                $this->success('Your account has been activated. You can sign in now.');
-            }
-            else {
-                $this->error('Sorry! There was some error while activating your account. Contact administrator about this problem.');
-            }
-            return $this->module->goPodium();
-        }
-        else {
-            $this->error('The provided activation token is invalid or expired.');
-            return $this->module->goPodium();
-        }
-    }
-    
-    public function actionNewEmail($token)
-    {
-        $model = User::findByEmailToken($token);
-
-        if ($model) {
-            $model->setScenario('token');
-            if ($model->changeEmail()) {
-                $this->success('Your new e-mail address has been activated.');
-            }
-            else {
-                $this->error('Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.');
-            }
-            return $this->module->goPodium();
-        }
-        else {
-            $this->error('The provided activation token is invalid or expired.');
-            return $this->module->goPodium();
-        }
-    }
-    
 }

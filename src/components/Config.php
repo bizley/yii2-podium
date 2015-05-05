@@ -1,35 +1,71 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\components;
 
 use Exception;
 use Yii;
 use yii\db\Query;
 
+/**
+ * Config helper
+ * Handles the module configuration.
+ * Every default configuration value is saved in database first time when 
+ * administrator saves Podium settings.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class Config
 {
+    /**
+     * @var Cache cache object instance
+     */
     public $cache;
-    protected static $_instance = false;
+    
+    /**
+     * @var array configuration defaults.
+     * Those values are stored in cached configuration but saved only when 
+     * administrator saves Podium settings.
+     */
     protected $_defaults = [
         'name'            => 'Podium',
-        'version'         => '1.0',
+        'version'         => '0.1',
         'hot_minimum'     => 20,
         'members_visible' => 1
     ];
     
+    /**
+     * @var boolean|Config configuration object instance
+     */
+    protected static $_instance = false;
+    
+    /**
+     * Singleton construct.
+     */
     protected function __construct()
     {
         $this->cache = Cache::getInstance();
     }
     
-    public static function getInstance()
+    /**
+     * Alias for [[fromCache()]].
+     * @return array
+     */
+    public function all()
     {
-        if (self::$_instance === false) {
-            self::$_instance = new Config();
-        }
-        return self::$_instance;
+        return $this->fromCache();
     }
-
+    
+    /**
+     * Gets all configuration values from cache.
+     * If cache is empty this merges default values with the ones stored in database 
+     * and saves it to cache.
+     * @return array
+     */
     public function fromCache()
     {
         try {
@@ -47,11 +83,21 @@ class Config
         }
     }
     
-    public function all()
+    /**
+     * Gets configuration value of the given name from cache.
+     * @param string $name configuration name
+     * @return string|null
+     */
+    public function get($name)
     {
-        return $this->fromCache();
+        $config = $this->fromCache();
+        return isset($config[$name]) ? $config[$name] : null;
     }
     
+    /**
+     * Gets all configuration values from database.
+     * @return array
+     */
     public function getFromDb()
     {
         $config = [];
@@ -68,12 +114,25 @@ class Config
         return $config;
     }
     
-    public function get($name)
+    /**
+     * Calls for Cache instance.
+     * @return Cache
+     */
+    public static function getInstance()
     {
-        $config = $this->fromCache();
-        return isset($config[$name]) ? $config[$name] : null;
+        if (self::$_instance === false) {
+            self::$_instance = new Config();
+        }
+        return self::$_instance;
     }
-    
+
+    /**
+     * Sets configuration value of the given name.
+     * Every change automatically updates the cache.
+     * @param string $name configuration name
+     * @param string $value configuration value
+     * @return boolean
+     */
     public function set($name, $value)
     {
         try {

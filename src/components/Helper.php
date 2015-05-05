@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
@@ -10,21 +14,17 @@ use yii\helpers\HtmlPurifier;
 
 /**
  * Podium Helper
- * @author Paweł Bizley Brzozowski <pawel@bizley.pl>
- * @version 1.0
- */
-
-/**
- * Podium Helper
  * Static methods for html output and other little things.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
 class Helper
 {
     
     /**
      * Gets image source for default avatar image in base64.
-     * 
-     * @return string Image source
+     * @return string image source
      */
     public static function defaultAvatar()
     {
@@ -33,9 +33,8 @@ class Helper
     
     /**
      * Gets user tag for deleted user.
-     * 
-     * @param boolean $simple Wheter to return simple tag instead of full
-     * @return string Tag
+     * @param boolean $simple wheter to return simple tag instead of full
+     * @return string tag
      */
     public static function deletedUserTag($simple = false)
     {
@@ -44,9 +43,8 @@ class Helper
     
     /**
      * Gets HTMLPurifier configuration set.
-     * 
-     * @param string $type Set name
-     * @return array Configuration
+     * @param string $type set name
+     * @return array configuration
      */
     public static function podiumPurifierConfig($type = '')
     {
@@ -72,12 +70,11 @@ class Helper
     
     /**
      * Gets user tag.
-     * 
-     * @param string $name User name
-     * @param integer $role User role
-     * @param integer|null $id User ID
-     * @param boolean $simple Wheter to return simple tag instead of full
-     * @return string Tag
+     * @param string $name user name
+     * @param integer $role user role
+     * @param integer|null $id user ID
+     * @param boolean $simple wheter to return simple tag instead of full
+     * @return string tag
      */
     public static function podiumUserTag($name, $role, $id = null, $slug = null, $simple = false)
     {
@@ -108,20 +105,19 @@ class Helper
     
     /**
      * Gets quote html.
-     * 
-     * @param \bizley\podium\models\Post $post Post model to be quoted
-     * @param string $quote Partial text to be quoted
-     * @return string Quote html
+     * @param \bizley\podium\models\Post $post post model to be quoted
+     * @param string $quote partial text to be quoted
+     * @return string quote html
      */
     public static function prepareQuote($post, $quote = '')
     {
         $content = !empty($quote) ? nl2br(HtmlPurifier::process($quote)) : $post->content;
-        
         return Html::tag('blockquote', Html::tag('small', $post->user->getPodiumTag() . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at)) . $content) . '<br>';
     }
     
     /**
      * Gets background image style base64 encoded.
+     * @return string style
      */
     public static function replyBgd()
     {
@@ -130,9 +126,8 @@ class Helper
     
     /**
      * Gets role label html.
-     * 
-     * @param integer|null $role Role ID
-     * @return string Label html
+     * @param integer|null $role role ID
+     * @return string label html
      */
     public static function roleLabel($role = null)
     {
@@ -155,9 +150,8 @@ class Helper
     
     /**
      * Gets sorting icon.
-     * 
-     * @param string|null $attribute Sorting attribute name
-     * @return string|null Icon html or null if empty attribute
+     * @param string|null $attribute sorting attribute name
+     * @return string|null icon html or null if empty attribute
      */
     public static function sortOrder($attribute = null)
     {
@@ -176,9 +170,8 @@ class Helper
     
     /**
      * Gets User status label.
-     * 
-     * @param integer|null $status Status ID
-     * @return string Label html
+     * @param integer|null $status status ID
+     * @return string label html
      */
     public static function statusLabel($status = null)
     {
@@ -201,8 +194,7 @@ class Helper
     
     /**
      * Gets SummerNote toolbars.
-     * 
-     * @param string $type Name of the set
+     * @param string $type name of the set
      * @return array toolbars configuration
      */
     public static function summerNoteToolbars($type = 'minimal')
@@ -233,9 +225,8 @@ class Helper
 
     /**
      * Gets timezones array.
-     * @see http://php.net/manual/en/timezones.php
-     * 
-     * @return array Timezones
+     * http://php.net/manual/en/timezones.php
+     * @return array timezones
      */
     public static function timeZones()
     {
