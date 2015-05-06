@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
@@ -17,9 +21,19 @@ use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\Controller;
 
+/**
+ * Podium Admin controller
+ * All actions concerning module administration.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class AdminController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -45,65 +59,11 @@ class AdminController extends Controller
         ];
     }
 
-    public function actionIndex()
-    {
-        if ($this->module->getParam('mode') == 'INSTALL') {
-            $this->warning('Parameter {MODE} with {INSTALL} value found in configuration! Make sure you remove this parameter in production environment.', ['MODE'    => '<code>mode</code>',
-                'INSTALL' => '<code>INSTALL</code>']);
-        }
-
-        return $this->render('index');
-    }
-
-    public function actionMembers()
-    {
-        $searchModel  = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->get());
-
-        return $this->render('members', [
-                    'dataProvider' => $dataProvider,
-                    'searchModel'  => $searchModel,
-        ]);
-    }
-
-    public function actionView($id = null)
-    {
-        $model = User::findOne((int) $id);
-
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Member with this ID.');
-            return $this->redirect(['members']);
-        }
-
-        return $this->render('view', [
-                    'model' => $model
-        ]);
-    }
-
-    public function actionDelete($id = null)
-    {
-        $model = User::findOne((int) $id);
-
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Member with this ID.');
-        }
-        elseif ($model->id == Yii::$app->user->id) {
-            $this->error('Sorry! You can not delete your own account.');
-        }
-        else {
-            if ($model->delete()) {
-                Cache::getInstance()->delete('members.fieldlist');
-                Cache::getInstance()->delete('forum.memberscount');
-                $this->success('User has been deleted.');
-            }
-            else {
-                $this->error('Sorry! There was some error while deleting the user.');
-            }
-        }
-
-        return $this->redirect(['members']);
-    }
-
+    /**
+     * Banning the user of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
     public function actionBan($id = null)
     {
         $model = User::findOne((int) $id);
@@ -142,135 +102,79 @@ class AdminController extends Controller
 
         return $this->redirect(['members']);
     }
-
-    public function actionForums($cid = null)
-    {
-        $model = Category::findOne((int) $cid);
-
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
-        }
-
-        return $this->render('forums', [
-                    'model'      => $model,
-                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                        'id' => SORT_ASC])->all(),
-                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC,
-                        'id' => SORT_ASC])->all()
-        ]);
-    }
-
+    
+    /**
+     * Listing categories.
+     * @return string
+     */
     public function actionCategories()
     {
         return $this->render('categories', [
                     'dataProvider' => (new Category())->show(),
         ]);
     }
-
-    public function actionNewCategory()
+    
+    /**
+     * Deleting the user of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionDelete($id = null)
     {
-        $model          = new Category();
-        $model->visible = 1;
-        $model->sort    = 0;
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $this->success('New category has been created.');
-            return $this->redirect(['categories']);
-        }
-        else {
-            return $this->render('category', [
-                        'model'      => $model,
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all()
-            ]);
-        }
-    }
-
-    public function actionNewForum($cid = null)
-    {
-        $category = Category::findOne((int) $cid);
-
-        if (empty($category)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
-        }
-
-        $model              = new Forum();
-        $model->category_id = $category->id;
-        $model->visible     = 1;
-        $model->sort        = 0;
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $this->success('New forum has been created.');
-            return $this->redirect(['forums', 'cid' => $category->id]);
-        }
-        else {
-            return $this->render('forum', [
-                        'model'      => $model,
-                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all(),
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all()
-            ]);
-        }
-    }
-
-    public function actionEditForum($cid = null, $id = null)
-    {
-        $category = Category::findOne((int) $cid);
-
-        if (empty($category)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
-        }
-
-        $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
+        $model = User::findOne((int) $id);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Forum with this ID.');
-            return $this->redirect(['forums', 'cid' => $category->id]);
+            $this->error('Sorry! We can not find Member with this ID.');
+        }
+        elseif ($model->id == Yii::$app->user->id) {
+            $this->error('Sorry! You can not delete your own account.');
         }
         else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $this->success('Forum has been updated.');
-                return $this->redirect(['forums']);
+            if ($model->delete()) {
+                Cache::getInstance()->delete('members.fieldlist');
+                Cache::getInstance()->delete('forum.memberscount');
+                $this->success('User has been deleted.');
             }
             else {
-                return $this->render('forum', [
-                            'model'      => $model,
-                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all(),
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all()
-                ]);
+                $this->error('Sorry! There was some error while deleting the user.');
             }
         }
-    }
 
-    public function actionEditCategory($id = null)
+        return $this->redirect(['members']);
+    }
+    
+    /**
+     * Deleting the category of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionDeleteCategory($id = null)
     {
         $model = Category::findOne((int) $id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
         }
         else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $this->success('Category has been updated.');
-                return $this->redirect(['categories']);
+            if ($model->delete()) {
+                Cache::getInstance()->delete('forum.threadscount');
+                Cache::getInstance()->delete('forum.postscount');
+                $this->success('Category has been deleted.');
             }
             else {
-                return $this->render('category', [
-                            'model'      => $model,
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all()
-                ]);
+                $this->error('Sorry! There was some error while deleting the category.');
             }
         }
-    }
 
+        return $this->redirect(['categories']);
+    }
+    
+    /**
+     * Deleting the forum of given ID.
+     * @param integer $cid parent category ID
+     * @param integer $id forum ID
+     * @return \yii\web\Response
+     */
     public function actionDeleteForum($cid = null, $id = null)
     {
         $category = Category::findOne((int) $cid);
@@ -298,193 +202,12 @@ class AdminController extends Controller
 
         return $this->redirect(['forums', 'cid' => $category->id]);
     }
-
-    public function actionDeleteCategory($id = null)
-    {
-        $model = Category::findOne((int) $id);
-
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-        }
-        else {
-            if ($model->delete()) {
-                Cache::getInstance()->delete('forum.threadscount');
-                Cache::getInstance()->delete('forum.postscount');
-                $this->success('Category has been deleted.');
-            }
-            else {
-                $this->error('Sorry! There was some error while deleting the category.');
-            }
-        }
-
-        return $this->redirect(['categories']);
-    }
-
-    public function actionSortCategory()
-    {
-        if (Yii::$app->request->isAjax) {
-            $modelId = Yii::$app->request->post('id');
-            $new     = Yii::$app->request->post('new');
-
-            if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
-                $moved = Category::findOne((int) $modelId);
-                if ($moved) {
-                    $query   = (new Query())->from('{{%podium_category}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->indexBy('id');
-                    $next    = 0;
-                    $newSort = -1;
-                    try {
-                        foreach ($query->each() as $id => $forum) {
-                            if ($next == (int) $new) {
-                                $newSort = $next;
-                                $next++;
-                            }
-                            Yii::$app->db->createCommand()->update('{{%podium_category}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
-                            $next++;
-                        }
-                        if ($newSort == -1) {
-                            $newSort = $next;
-                        }
-                        $moved->sort = $newSort;
-                        if (!$moved->save()) {
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
-                        }
-                        else {
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
-                        }
-                    }
-                    catch (Exception $e) {
-                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
-                    }
-                }
-                else {
-                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'), ['class' => 'text-danger']);
-                }
-            }
-            else {
-                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
-            }
-        }
-        else {
-            return $this->redirect(['categories']);
-        }
-    }
-
-    public function actionSortForum()
-    {
-        if (Yii::$app->request->isAjax) {
-            $modelId       = Yii::$app->request->post('id');
-            $modelCategory = Yii::$app->request->post('category');
-            $new           = Yii::$app->request->post('new');
-
-            if (is_numeric($modelId) && is_numeric($modelCategory) && is_numeric($new) && $modelId > 0 && $modelCategory > 0 && $new >= 0) {
-                $moved         = Forum::findOne((int) $modelId);
-                $movedCategory = Category::findOne((int) $modelCategory);
-                if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
-                    $query   = (new Query())->from('{{%podium_forum}}')->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
-                                ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->indexBy('id');
-                    $next    = 0;
-                    $newSort = -1;
-                    try {
-                        foreach ($query->each() as $id => $forum) {
-                            if ($next == (int) $new) {
-                                $newSort = $next;
-                                $next++;
-                            }
-                            Yii::$app->db->createCommand()->update('{{%podium_forum}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
-                            $next++;
-                        }
-                        if ($newSort == -1) {
-                            $newSort = $next;
-                        }
-                        $moved->sort = $newSort;
-                        if (!$moved->save()) {
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
-                        }
-                        else {
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
-                        }
-                    }
-                    catch (Exception $e) {
-                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
-                    }
-                }
-                else {
-                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), ['class' => 'text-danger']);
-                }
-            }
-            else {
-                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
-            }
-        }
-        else {
-            return $this->redirect(['forums']);
-        }
-    }
-
-    public function actionSettings()
-    {
-        $model = new ConfigForm();
-
-        if ($data = Yii::$app->request->post('ConfigForm')) {
-            if ($model->update($data)) {
-                $this->success('Settings have been updated.');
-                return $this->refresh();
-            }
-            else {
-                $this->error('One of the setting\'s value is too long (255 characters max).');
-            }
-        }
-
-        return $this->render('settings', [
-                    'model' => $model,
-        ]);
-    }
-
-    public function actionPromote($id = null)
-    {
-        $model = User::findOne((int) $id);
-
-        if (empty($model)) {
-            $this->error('Sorry! We can not find User with this ID.');
-        }
-        else {
-            $model->setScenario('role');
-            if ($model->role != User::ROLE_MEMBER) {
-                $this->error('You can only promote Members to Moderators.');
-            }
-            else {
-                $transaction = User::getDb()->beginTransaction();
-                try {
-                    $model->role = User::ROLE_MODERATOR;
-                    if ($model->save()) {
-                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
-                            Yii::$app->authManager->revokeAll($model->id);
-                        }
-
-                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
-
-                            $transaction->commit();
-
-                            $this->success('User has been promoted.');
-                            return $this->redirect(['mods', 'id' => $model->id]);
-                        }
-                    }
-
-                    $this->error('Sorry! There was an error while promoting the user.');
-                }
-                catch (Exception $e) {
-                    $transaction->rollBack();
-                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
-                    $this->error('Sorry! There was an error while promoting the user.');
-                }
-            }
-        }
-
-        return $this->redirect(['members']);
-    }
-
+    
+    /**
+     * Demoting the user of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
     public function actionDemote($id = null)
     {
         $model = User::findOne((int) $id);
@@ -529,7 +252,131 @@ class AdminController extends Controller
 
         return $this->redirect(['members']);
     }
+    
+    /**
+     * Editing the category of given ID.
+     * @param integer $id
+     * @return string|\yii\web\Response
+     */
+    public function actionEditCategory($id = null)
+    {
+        $model = Category::findOne((int) $id);
 
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Category with this ID.');
+            return $this->redirect(['categories']);
+        }
+        else {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $this->success('Category has been updated.');
+                return $this->redirect(['categories']);
+            }
+            else {
+                return $this->render('category', [
+                            'model'      => $model,
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all()
+                ]);
+            }
+        }
+    }
+    
+    /**
+     * Editing the forum of given ID.
+     * @param integer $cid parent category ID
+     * @param integer $id forum ID
+     * @return string|\yii\web\Response
+     */
+    public function actionEditForum($cid = null, $id = null)
+    {
+        $category = Category::findOne((int) $cid);
+
+        if (empty($category)) {
+            $this->error('Sorry! We can not find Category with this ID.');
+            return $this->redirect(['categories']);
+        }
+
+        $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Forum with this ID.');
+            return $this->redirect(['forums', 'cid' => $category->id]);
+        }
+        else {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $this->success('Forum has been updated.');
+                return $this->redirect(['forums']);
+            }
+            else {
+                return $this->render('forum', [
+                            'model'      => $model,
+                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all(),
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->all()
+                ]);
+            }
+        }
+    }
+    
+    /**
+     * Listing the forums of given category ID.
+     * @param integer $cid parent category ID
+     * @return string|\yii\web\Response
+     */
+    public function actionForums($cid = null)
+    {
+        $model = Category::findOne((int) $cid);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Category with this ID.');
+            return $this->redirect(['categories']);
+        }
+
+        return $this->render('forums', [
+                    'model'      => $model,
+                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                        'id' => SORT_ASC])->all(),
+                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC,
+                        'id' => SORT_ASC])->all()
+        ]);
+    }
+    
+    /**
+     * Dashboard
+     * @return string
+     */
+    public function actionIndex()
+    {
+        if ($this->module->getParam('mode') == 'INSTALL') {
+            $this->warning('Parameter {MODE} with {INSTALL} value found in configuration! Make sure you remove this parameter in production environment.', ['MODE'    => '<code>mode</code>',
+                'INSTALL' => '<code>INSTALL</code>']);
+        }
+
+        return $this->render('index');
+    }
+
+    /**
+     * Listing the users.
+     * @return string
+     */
+    public function actionMembers()
+    {
+        $searchModel  = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
+
+        return $this->render('members', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel,
+        ]);
+    }
+    
+    /**
+     * Adding/removing forum from the moderation list for user of given ID.
+     * @param integer $uid user ID
+     * @param integer $fid forum ID
+     * @return \yii\web\Response
+     */
     public function actionMod($uid = null, $fid = null)
     {
         if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
@@ -568,7 +415,12 @@ class AdminController extends Controller
             }
         }
     }
-
+    
+    /**
+     * Listing and updating moderation list for the forum of given ID.
+     * @param integer $id forum ID
+     * @return string|\yii\web\Response
+     */
     public function actionMods($id = null)
     {
         $mod        = null;
@@ -642,5 +494,262 @@ class AdminController extends Controller
                     'dataProvider' => $dataProvider,
         ]);
     }
+    
+    /**
+     * Adding new category.
+     * @return string|\yii\web\Response
+     */
+    public function actionNewCategory()
+    {
+        $model          = new Category();
+        $model->visible = 1;
+        $model->sort    = 0;
 
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $this->success('New category has been created.');
+            return $this->redirect(['categories']);
+        }
+        else {
+            return $this->render('category', [
+                        'model'      => $model,
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all()
+            ]);
+        }
+    }
+    
+    /**
+     * Adding new forum.
+     * @param integer $cid parent category ID
+     * @return string|\yii\web\Response
+     */
+    public function actionNewForum($cid = null)
+    {
+        $category = Category::findOne((int) $cid);
+
+        if (empty($category)) {
+            $this->error('Sorry! We can not find Category with this ID.');
+            return $this->redirect(['categories']);
+        }
+
+        $model              = new Forum();
+        $model->category_id = $category->id;
+        $model->visible     = 1;
+        $model->sort        = 0;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $this->success('New forum has been created.');
+            return $this->redirect(['forums', 'cid' => $category->id]);
+        }
+        else {
+            return $this->render('forum', [
+                        'model'      => $model,
+                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all(),
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
+                            'id' => SORT_ASC])->all()
+            ]);
+        }
+    }
+    
+    /**
+     * Promoting the user of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionPromote($id = null)
+    {
+        $model = User::findOne((int) $id);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find User with this ID.');
+        }
+        else {
+            $model->setScenario('role');
+            if ($model->role != User::ROLE_MEMBER) {
+                $this->error('You can only promote Members to Moderators.');
+            }
+            else {
+                $transaction = User::getDb()->beginTransaction();
+                try {
+                    $model->role = User::ROLE_MODERATOR;
+                    if ($model->save()) {
+                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
+                            Yii::$app->authManager->revokeAll($model->id);
+                        }
+
+                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
+
+                            $transaction->commit();
+
+                            $this->success('User has been promoted.');
+                            return $this->redirect(['mods', 'id' => $model->id]);
+                        }
+                    }
+
+                    $this->error('Sorry! There was an error while promoting the user.');
+                }
+                catch (Exception $e) {
+                    $transaction->rollBack();
+                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    $this->error('Sorry! There was an error while promoting the user.');
+                }
+            }
+        }
+
+        return $this->redirect(['members']);
+    }
+    
+    /**
+     * Updating the module configuration.
+     * @return string|\yii\web\Response
+     */
+    public function actionSettings()
+    {
+        $model = new ConfigForm();
+
+        if ($data = Yii::$app->request->post('ConfigForm')) {
+            if ($model->update($data)) {
+                $this->success('Settings have been updated.');
+                return $this->refresh();
+            }
+            else {
+                $this->error('One of the setting\'s value is too long (255 characters max).');
+            }
+        }
+
+        return $this->render('settings', [
+                    'model' => $model,
+        ]);
+    }
+    
+    /**
+     * Updating the categories order.
+     * @return string|\yii\web\Response
+     */
+    public function actionSortCategory()
+    {
+        if (Yii::$app->request->isAjax) {
+            $modelId = Yii::$app->request->post('id');
+            $new     = Yii::$app->request->post('new');
+
+            if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
+                $moved = Category::findOne((int) $modelId);
+                if ($moved) {
+                    $query   = (new Query())->from('{{%podium_category}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->indexBy('id');
+                    $next    = 0;
+                    $newSort = -1;
+                    try {
+                        foreach ($query->each() as $id => $forum) {
+                            if ($next == (int) $new) {
+                                $newSort = $next;
+                                $next++;
+                            }
+                            Yii::$app->db->createCommand()->update('{{%podium_category}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                            $next++;
+                        }
+                        if ($newSort == -1) {
+                            $newSort = $next;
+                        }
+                        $moved->sort = $newSort;
+                        if (!$moved->save()) {
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                        }
+                        else {
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
+                        }
+                    }
+                    catch (Exception $e) {
+                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                    }
+                }
+                else {
+                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'), ['class' => 'text-danger']);
+                }
+            }
+            else {
+                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
+            }
+        }
+        else {
+            return $this->redirect(['categories']);
+        }
+    }
+    
+    /**
+     * Updating the forums order.
+     * @return string|\yii\web\Response
+     */
+    public function actionSortForum()
+    {
+        if (Yii::$app->request->isAjax) {
+            $modelId       = Yii::$app->request->post('id');
+            $modelCategory = Yii::$app->request->post('category');
+            $new           = Yii::$app->request->post('new');
+
+            if (is_numeric($modelId) && is_numeric($modelCategory) && is_numeric($new) && $modelId > 0 && $modelCategory > 0 && $new >= 0) {
+                $moved         = Forum::findOne((int) $modelId);
+                $movedCategory = Category::findOne((int) $modelCategory);
+                if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
+                    $query   = (new Query())->from('{{%podium_forum}}')->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
+                                ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC,
+                                'id' => SORT_ASC])->indexBy('id');
+                    $next    = 0;
+                    $newSort = -1;
+                    try {
+                        foreach ($query->each() as $id => $forum) {
+                            if ($next == (int) $new) {
+                                $newSort = $next;
+                                $next++;
+                            }
+                            Yii::$app->db->createCommand()->update('{{%podium_forum}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                            $next++;
+                        }
+                        if ($newSort == -1) {
+                            $newSort = $next;
+                        }
+                        $moved->sort = $newSort;
+                        if (!$moved->save()) {
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                        }
+                        else {
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
+                        }
+                    }
+                    catch (Exception $e) {
+                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                    }
+                }
+                else {
+                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), ['class' => 'text-danger']);
+                }
+            }
+            else {
+                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
+            }
+        }
+        else {
+            return $this->redirect(['forums']);
+        }
+    }
+
+    /**
+     * Listing the details of user of given ID.
+     * @param integer $id
+     * @return string|\yii\web\Response
+     */
+    public function actionView($id = null)
+    {
+        $model = User::findOne((int) $id);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+            return $this->redirect(['members']);
+        }
+
+        return $this->render('view', [
+                    'model' => $model
+        ]);
+    }
 }

@@ -1,11 +1,25 @@
 <?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
+namespace bizley\podium\widgets;
+
+/**
+ * Podium Alert widget
+ * Displays the flash messages.
+ * This widget is added to Yii 2 with advanced template only so I have copied it 
+ * here in case you are using the basic template.
+ * 
+ * @since 0.1
+ */
+
 /**
  * @link http://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
-namespace bizley\podium\widgets;
 
 /**
  * Alert widget renders a message from session flash. All flash messages are displayed

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\widgets;
 
 use bizley\podium\components\Helper;
@@ -9,12 +13,31 @@ use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;
 
+/**
+ * Podium Avatar widget
+ * Renders user avatar image for each post.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class Avatar extends Widget
 {
 
+    /**
+     * @var User|null Post author
+     */
     public $author;
+    
+    /**
+     * @var boolean Wheter user name should appear underneath the image
+     */
     public $showName = true;
 
+    /**
+     * Renders the image.
+     * Based on user settings the avatar can be uploaded image, Gravatar image or default one.
+     * @return string
+     */
     public function run()
     {
         if ($this->author instanceof User) {
