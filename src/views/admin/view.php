@@ -69,8 +69,8 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                 <p><?= Yii::t('podium/view', 'Last action') ?>: <code><?= Html::encode($model->activity->url) ?></code> <small><?= Yii::t('podium/view', 'IP') ?>: <code><?= Html::encode($model->activity->ip) ?></code> <?= Yii::t('podium/view', 'Date') ?>: <?= Yii::$app->formatter->asDatetime($model->updated_at) ?> (<?= Yii::$app->formatter->asRelativeTime($model->activity->updated_at) ?>)</small></p>
 <?php endif; ?>
                 <p>
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a> 
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a>
+                    <a href="<?= Url::to(['members/threads', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a> 
+                    <a href="<?= Url::to(['members/posts', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a>
                 </p>
 <?php endif; ?>
             </div>

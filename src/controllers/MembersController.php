@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
@@ -7,16 +11,26 @@ use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
+use Exception;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;
 
+/**
+ * Podium Members controller
+ * All actions concerning forum members.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class MembersController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -45,6 +59,10 @@ class MembersController extends Controller
         ];
     }
 
+    /**
+     * Listing the active users for ajax.
+     * @return string|\yii\web\Response
+     */
     public function actionFieldlist()
     {
         if (Yii::$app->request->isAjax) {
@@ -102,32 +120,11 @@ class MembersController extends Controller
             return $this->redirect(['default/index']);
         }
     }
-
-    public function actionIndex()
-    {
-        $searchModel  = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->get(), true);
-
-        return $this->render('index', [
-                    'dataProvider' => $dataProvider,
-                    'searchModel'  => $searchModel
-        ]);
-    }
     
-    public function actionView($id = null)
-    {
-        $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
-        
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Member with this ID.');
-            return $this->redirect(['index']);
-        }
-        
-        return $this->render('view', [
-            'model' => $model
-        ]);
-    }
-    
+    /**
+     * Ignoring the user of given ID.
+     * @return \yii\web\Response
+     */
     public function actionIgnore($id = null)
     {
         if (!Yii::$app->user->isGuest) {
@@ -164,7 +161,26 @@ class MembersController extends Controller
         
         return $this->redirect(['index']);
     }
+
+    /**
+     * Listing the users.
+     * @return string
+     */
+    public function actionIndex()
+    {
+        $searchModel  = new UserSearch;
+        $dataProvider = $searchModel->search(Yii::$app->request->get(), true);
+
+        return $this->render('index', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel
+        ]);
+    }
     
+    /**
+     * Listing the moderation team.
+     * @return string
+     */    
     public function actionMods()
     {
         $searchModel  = new UserSearch();
@@ -173,6 +189,51 @@ class MembersController extends Controller
         return $this->render('mods', [
                     'dataProvider' => $dataProvider,
                     'searchModel'  => $searchModel
+        ]);
+    }
+    
+    /**
+     * Listing threads started by user of given ID.
+     * @return string|\yii\web\Response
+     */
+    public function actionThreads($id = null, $slug = null)
+    {
+        if (!is_numeric($id) || $id < 1 || empty($slug)) {
+            $this->error('Sorry! We can not find the user you are looking for.');
+            return $this->redirect(['index']);
+        }
+
+        $user = User::findOne(['id' => (int)$id, 'slug' => $slug]);
+        if (!$user) {
+            $this->error('Sorry! We can not find the user you are looking for.');
+            return $this->redirect(['index']);
+        }
+        else {
+
+            $model = null;
+            
+            return $this->render('threads', [
+                        'model' => $model,
+                        'user'  => $user,
+            ]);
+        }
+    }
+    
+    /**
+     * Viewing user profile.
+     * @return string|\yii\web\Response
+     */
+    public function actionView($id = null)
+    {
+        $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
+        
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Member with this ID.');
+            return $this->redirect(['index']);
+        }
+        
+        return $this->render('view', [
+            'model' => $model
         ]);
     }
 }                

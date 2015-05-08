@@ -116,6 +116,8 @@ class Podium extends Module implements BootstrapInterface
                     'lock/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'              => 'default/lock',
                     'login'                                                         => 'account/login',
                     'logout'                                                        => 'profile/logout',
+                    'members/posts/<id:\d+>/<slug:[\w\-]+>'                         => 'members/posts',
+                    'members/threads/<id:\d+>/<slug:[\w\-]+>'                       => 'members/threads',
                     'members/view/<id:\d+>/<slug:[\w\-]+>'                          => 'members/view',
                     'members'                                                       => 'members/index',
                     'members/ignore/<id:\d+>'                                       => 'members/ignore',
