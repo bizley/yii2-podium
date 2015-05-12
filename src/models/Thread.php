@@ -153,6 +153,26 @@ class Thread extends ActiveRecord
 
         return $dataProvider;
     }
+    
+    public function searchByUser($user_id)
+    {
+        $query = self::find();
+        $query->where(['author_id' => (int) $user_id]);
+        if (Yii::$app->user->isGuest) {
+            $query->joinWith(['forum' => function($q) {
+                $q->where(['podium_forum.visible' => 1]);
+            }]);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => false,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['updated_at' => SORT_DESC, 'id' => SORT_ASC];
+
+        return $dataProvider;
+    }
 
     public function getIcon()
     {

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
@@ -11,9 +15,19 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
+/**
+ * Podium Messages controller
+ * All actions concerning members messages.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class MessagesController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -42,28 +56,51 @@ class MessagesController extends Controller
         ];
     }
 
-    public function actionInbox()
+    /**
+     * Deleting the message of given ID.
+     * @param integer $id
+     * @param integer $perm wheter to delete message permanently
+     * @return \yii\web\Response
+     */
+    public function actionDelete($id = null, $perm = 0)
     {
-        $searchModel  = new MessageSearch();
-        $dataProvider = $searchModel->searchInbox(Yii::$app->request->get());
+        if (!is_numeric($id) || $id < 1 || !in_array($perm, [0, 1])) {
+            $this->error('Sorry! We can not find the message you are looking for.');
+            return $this->redirect(['inbox']);
+        }
+        else {
         
-        return $this->render('inbox', [
-                'dataProvider' => $dataProvider,
-                'searchModel'  => $searchModel
-        ]);
+            $model = Message::findOne(['and', ['id' => (int)$id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
+
+            if ($model) {
+                if ($model->remove($perm)) {
+                    if ($perm) {
+                        $this->success('Message has been deleted permanently.');
+                    }
+                    else {
+                        $this->success('Message has been moved to Deleted Messages.');
+                    }
+                }
+                else {
+                    $this->error('Sorry! We can not delete this message. Contact administrator about this problem.');
+                }            
+            }
+            else {
+                $this->error('Sorry! We can not find the message with the given ID.');
+            }
+            if ($perm) {
+                return $this->redirect(['deleted']);
+            }
+            else {
+                return $this->redirect(['inbox']);
+            }
+        }
     }
     
-    public function actionSent()
-    {
-        $searchModel  = new MessageSearch();
-        $dataProvider = $searchModel->searchSent(Yii::$app->request->get());
-        
-        return $this->render('sent', [
-                'dataProvider' => $dataProvider,
-                'searchModel'  => $searchModel
-        ]);
-    }
-    
+    /**
+     * Listing the deleted messages.
+     * @return string
+     */
     public function actionDeleted()
     {
         $searchModel  = new MessageSearch();
@@ -75,6 +112,26 @@ class MessagesController extends Controller
         ]);
     }
     
+    /**
+     * Listing the messages inbox.
+     * @return string
+     */
+    public function actionInbox()
+    {
+        $searchModel  = new MessageSearch();
+        $dataProvider = $searchModel->searchInbox(Yii::$app->request->get());
+        
+        return $this->render('inbox', [
+                'dataProvider' => $dataProvider,
+                'searchModel'  => $searchModel
+        ]);
+    }
+    
+    /**
+     * Adding a new message.
+     * @param integer $user message receiver's ID
+     * @return string|\yii\web\Response
+     */
     public function actionNew($user = null)
     {
         $model = new Message();
@@ -123,57 +180,11 @@ class MessagesController extends Controller
         ]);
     }
     
-    public function actionView($id = null)
-    {
-        $model = Message::findOne(['and', ['id' => $id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
-        
-        if ($model) {
-            
-            if ($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_NEW) {
-                $model->receiver_status = Message::STATUS_READ;
-                if ($model->save()) {
-                    Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
-                }
-            }
-            
-            return $this->render('view', [
-                    'model' => $model
-            ]);
-        }
-        else {
-            $this->error('Sorry! We can not find the message with the given ID.');
-            return $this->redirect(['inbox']);
-        }        
-    }
-    
-    public function actionDelete($id = null, $perm = 0)
-    {
-        $model = Message::findOne(['and', ['id' => $id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
-        
-        if ($model) {
-            if ($model->remove($perm)) {
-                if ($perm) {
-                    $this->success('Message has been deleted permanently.');
-                }
-                else {
-                    $this->success('Message has been moved to Deleted Messages.');
-                }
-            }
-            else {
-                $this->error('Sorry! We can not delete this message. Contact administrator about this problem.');
-            }            
-        }
-        else {
-            $this->error('Sorry! We can not find the message with the given ID.');
-        }
-        if ($perm) {
-            return $this->redirect(['deleted']);
-        }
-        else {
-            return $this->redirect(['inbox']);
-        }
-    }
-    
+    /**
+     * Replying to the message of given ID.
+     * @param integer $id
+     * @return string|\yii\web\Response
+     */
     public function actionReply($id = null)
     {
         $model = new Message();
@@ -215,5 +226,46 @@ class MessagesController extends Controller
         }
     }
     
-}
-                
+    /**
+     * Listing the sent messages.
+     * @return string
+     */
+    public function actionSent()
+    {
+        $searchModel  = new MessageSearch();
+        $dataProvider = $searchModel->searchSent(Yii::$app->request->get());
+        
+        return $this->render('sent', [
+                'dataProvider' => $dataProvider,
+                'searchModel'  => $searchModel
+        ]);
+    }
+    
+    /**
+     * Viewing the message of given ID.
+     * @param integer $id
+     * @return string|\yii\web\Response
+     */  
+    public function actionView($id = null)
+    {
+        $model = Message::findOne(['and', ['id' => $id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
+        
+        if ($model) {
+            
+            if ($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_NEW) {
+                $model->receiver_status = Message::STATUS_READ;
+                if ($model->save()) {
+                    Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+                }
+            }
+            
+            return $this->render('view', [
+                    'model' => $model
+            ]);
+        }
+        else {
+            $this->error('Sorry! We can not find the message with the given ID.');
+            return $this->redirect(['inbox']);
+        }        
+    }
+}                

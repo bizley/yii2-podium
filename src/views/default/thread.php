@@ -53,7 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
 echo ListView::widget([
     'dataProvider' => $dataProvider,
     'itemView' => '/elements/forum/_post',
-    'viewParams' => ['category' => $category->id, 'slug' => $thread->slug],
     'summary' => '',
     'emptyText' => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],

@@ -86,19 +86,22 @@ elseif ($rating < 0) {
                 </small>
             </div>
             <div class="popover-content podium-content">
+<?php if (isset($parent)): ?>
+                
+<?php endif; ?>
                 <?= $model->content ?>
                 <div class="podium-action-bar">
-<?= Html::beginForm(['post', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id], 'post', ['class' => 'quick-quote-form']); ?>
-                    <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
-<?= Html::endForm(); ?>
+                    <?= Html::beginForm(['default/post', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id], 'post', ['class' => 'quick-quote-form']); ?>
+                        <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
+                    <?= Html::endForm(); ?>
                     <span class="podium-thumb-info"></span>
 <?php if (!Yii::$app->user->isGuest && $model->author_id != Yii::$app->user->id): ?>
                     <button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button>
 <?php endif; ?>
 <?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can('updatePost', ['item' => $model->thread])): ?>
-                    <a href="<?= Url::to(['edit', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit post') ?>"><span class="glyphicon glyphicon-edit"></span></a>
+                    <a href="<?= Url::to(['default/edit', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit post') ?>"><span class="glyphicon glyphicon-edit"></span></a>
 <?php endif; ?>
-                    <a href="<?= Url::to(['show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
+                    <a href="<?= Url::to(['default/show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
 <?php if (!Yii::$app->user->isGuest && $model->author_id != Yii::$app->user->id): ?>
 <?php if ($model->thumb && $model->thumb->thumb == 1): ?>
                     <a href="#" class="btn btn-xs disabled text-muted podium-thumb-up" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a>
@@ -110,10 +113,10 @@ elseif ($rating < 0) {
 <?php else: ?>
                     <a href="#" class="btn btn-danger btn-xs podium-thumb-down" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>
 <?php endif; ?>
-                    <a href="<?= Url::to(['report', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id, 'slug' => $model->thread->slug]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
+                    <a href="<?= Url::to(['default/report', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id, 'slug' => $model->thread->slug]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
 <?php endif; ?>
 <?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can('deletePost', ['item' => $model->thread])): ?>
-                    <a href="<?= Url::to(['deletepost', 'cid' => $category, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete post') ?>"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="<?= Url::to(['default/deletepost', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete post') ?>"><span class="glyphicon glyphicon-trash"></span></a>
 <?php endif; ?>
                 </div>
             </div>

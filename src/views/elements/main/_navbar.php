@@ -9,6 +9,9 @@ $items = [
     ['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']],
 ];
 if (Yii::$app->user->isGuest) {
+    if (Config::getInstance()->get('members_visible')) {
+        $items[] = ['label' => Yii::t('podium/layout', 'Members'), 'url' => ['members/index']];
+    }
     $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => ['account/login']];
     $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => ['account/register']];
 }

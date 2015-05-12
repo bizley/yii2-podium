@@ -85,6 +85,11 @@ class Post extends ActiveRecord
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
+    public function getForum()
+    {
+        return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
+    }
+    
     public function getThumb()
     {
         return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
@@ -196,6 +201,30 @@ class Post extends ActiveRecord
     public function search($forum_id, $thread_id)
     {
         $query = self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'defaultPageSize' => 10,
+                'pageSizeLimit' => false,
+                'forcePageParam' => false
+            ],
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+
+        return $dataProvider;
+    }
+    
+    public function searchByUser($user_id)
+    {
+        $query = self::find();
+        $query->where(['author_id' => $user_id]);
+        if (Yii::$app->user->isGuest) {
+            $query->joinWith(['forum' => function($q) {
+                $q->where(['podium_forum.visible' => 1]);
+            }]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
