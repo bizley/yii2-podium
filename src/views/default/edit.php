@@ -43,7 +43,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'codemirror' => null,
                                 'toolbar' => Helper::summerNoteToolbars('full'),
                             ],
-                            'plugins' => ['fontstyle']
                         ]) ?>
                     </div>
                 </div>

@@ -1,10 +1,11 @@
 <?php
 
+use bizley\podium\components\Helper;
+use cebe\gravatar\Gravatar;
+use kartik\select2\Select2;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
-use cebe\gravatar\Gravatar;
-use yii\bootstrap\ActiveForm;
-use bizley\podium\components\Helper;
 
 $this->title                   = Yii::t('podium/view', 'Account Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['index']];
@@ -33,14 +34,14 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model, 'timezone')->dropDownList(Helper::timeZones(), [
-                            'placeholder' => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
-                            'data-container' => 'body',
-                            'data-toggle' => 'popover',
-                            'data-placement' => 'right',
-                            'data-content' => Yii::t('podium/view', 'Select your time zone for proper dates display.'),
-                            'data-trigger' => 'focus',
-                        ])->label(Yii::t('podium/view', 'Time Zone')) ?>
+                        <?= $form->field($model, 'timezone')->widget(Select2::classname(), [
+                            'data'          => Helper::timeZones(),
+                            'theme'         => Select2::THEME_KRAJEE,
+                            'options'       => ['placeholder' => Yii::t('podium/view', 'Select your time zone for proper dates display...')],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])->label(Yii::t('podium/view', 'Time Zone')); ?>
                     </div>
                 </div>
                 <div class="row">

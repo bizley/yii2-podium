@@ -13,7 +13,6 @@ use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;
@@ -63,58 +62,37 @@ class MembersController extends Controller
      * Listing the active users for ajax.
      * @return string|\yii\web\Response
      */
-    public function actionFieldlist()
+    public function actionFieldlist($q = null)
     {
         if (Yii::$app->request->isAjax) {
-            $request = Yii::$app->request;
-            $results = ['data' => [], 'page' => 1, 'total' => 0];
-            $query   = $request->post('query');
-            $page    = $request->post('page', 1);
+            
+            if (!is_null($q) && is_string($q)) {
+                
+                $cache = Cache::getInstance()->get('members.fieldlist');
+                if ($cache === false || empty($cache[$q])) {
+                    if ($cache === false) {
+                        $cache = [];
+                    }
+                    
+                    $users = User::find()->where(['and', ['status' => User::STATUS_ACTIVE], ['or', ['like', 'username', $q], ['username' => null]]])->orderBy('username, id');
+                    $results = ['results' => []];
+                    foreach ($users->each() as $user) {
+                        $results['results'][] = ['id' => $user->id, 'text' => $user->getPodiumTag(true)];
+                    }
+                    if (!empty($results['results'])) {
+                        $cache[$q] = Json::encode($results);
+                        Cache::getInstance()->set('members.fieldlist', $cache);
+                    }
+                    else {
+                        return Json::encode(['results' => []]);
+                    }
+                }
 
-            $currentPage = 0;
-            if (!empty($page) && is_numeric($page) && $page > 0) {
-                $currentPage = $page - 1;
+                return $cache[$q];
             }
-
-            $query = preg_replace('/[^\p{L}\w]/', '', $query);
-
-            $cache = Cache::getInstance()->get('members.fieldlist');
-            if ($cache === false || empty($cache[$query . '-' . $currentPage])) {
-                if ($cache === false) {
-                    $cache = [];
-                }
-
-                if (empty($query)) {
-                    $queryObject = User::find()->where(['status' => User::STATUS_ACTIVE])->orderBy('username, id');
-                }
-                else {
-                    $queryObject = User::find()->where(['and', ['status' => User::STATUS_ACTIVE], ['or', ['like', 'username', $query], ['username' => null]]])->orderBy('username, id');
-                }        
-                $provider = new ActiveDataProvider([
-                    'query' => $queryObject,
-                    'pagination' => [
-                        'pageSize' => 10,
-                    ],
-                ]);
-
-                $provider->getPagination()->setPage($currentPage);
-
-                foreach ($provider->getModels() as $data) {
-                    $results['data'][] = [
-                        'id'    => $data->id,
-                        'mark'  => 0,
-                        'value' => $data->getPodiumTag(true),
-                    ];
-                }
-
-                $results['page']  = $provider->getPagination()->getPage() + 1;
-                $results['total'] = $provider->getPagination()->getPageCount();
-
-                $cache[$query . '-' . $currentPage] = Json::encode($results);
-                Cache::getInstance()->set('members.fieldlist', $cache);
+            else {
+                return Json::encode(['results' => []]);
             }
-
-            return $cache[$query . '-' . $currentPage];
         }
         else {
             return $this->redirect(['default/index']);

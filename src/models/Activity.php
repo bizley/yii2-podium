@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -9,8 +13,11 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * Activity model
- *
+ * Podium Activity model
+ * Members tracking and counting.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property string $username
@@ -40,7 +47,55 @@ class Activity extends ActiveRecord
             TimestampBehavior::className(),
         ];
     }
+    
+    /**
+     * Adds guest activity.
+     * @param string $ip
+     * @param string $url
+     * @return boolean
+     */
+    protected static function _addGuest($ip, $url)
+    {
+        $activity = self::findOne(['ip' => $ip, 'user_id' => null]);
+        if ($activity) {
+            $activity->url = $url;
+        }
+        else {
+            $activity      = new Activity();
+            $activity->url = $url;
+            $activity->ip  = $ip;
+        }
+        return $activity->save();
+    }
+    
+    /**
+     * Adds registered user activity.
+     * @param string $ip
+     * @param string $url
+     * @return boolean
+     */
+    protected static function _addUser($ip, $url)
+    {
+        $activity = self::findOne(['user_id' => Yii::$app->user->id]);
+        if (!$activity) {
+            $activity          = new Activity();
+            $activity->user_id = Yii::$app->user->id;
+        }
+        $user                = Yii::$app->user->getIdentity();
+        $activity->username  = $user->getPodiumName();
+        $activity->user_role = $user->role;
+        $activity->user_slug = $user->slug;
+        $activity->url       = $url;
+        $activity->ip        = $ip;
+        $activity->anonymous = $user->anonymous;
 
+        return $activity->save();
+    }
+
+    /**
+     * Adds user activity.
+     * @return boolean
+     */
     public static function add()
     {
         try {
@@ -71,38 +126,10 @@ class Activity extends ActiveRecord
         }
     }
     
-    protected static function _addGuest($ip, $url)
-    {
-        $activity = self::findOne(['ip' => $ip, 'user_id' => null]);
-        if ($activity) {
-            $activity->url = $url;
-        }
-        else {
-            $activity      = new Activity();
-            $activity->url = $url;
-            $activity->ip  = $ip;
-        }
-        return $activity->save();
-    }
-    
-    protected static function _addUser($ip, $url)
-    {
-        $activity = self::findOne(['user_id' => Yii::$app->user->id]);
-        if (!$activity) {
-            $activity          = new Activity();
-            $activity->user_id = Yii::$app->user->id;
-        }
-        $user                = Yii::$app->user->getIdentity();
-        $activity->username  = $user->getPodiumName();
-        $activity->user_role = $user->role;
-        $activity->user_slug = $user->slug;
-        $activity->url       = $url;
-        $activity->ip        = $ip;
-        $activity->anonymous = $user->anonymous;
-
-        return $activity->save();
-    }
-    
+    /**
+     * Updates tracking.
+     * @return array
+     */
     public static function lastActive()
     {
         $last = Cache::getInstance()->get('forum.lastactive');
@@ -129,6 +156,10 @@ class Activity extends ActiveRecord
         return $last;
     }
     
+    /**
+     * Counts number of registered users.
+     * @return integer
+     */
     public static function totalMembers()
     {
         $members = Cache::getInstance()->get('forum.memberscount');
@@ -141,18 +172,10 @@ class Activity extends ActiveRecord
         return $members;
     }
     
-    public static function totalThreads()
-    {
-        $threads = Cache::getInstance()->get('forum.threadscount');
-        if ($threads === false) {
-            
-            $threads = Thread::find()->count();
-            Cache::getInstance()->set('forum.threadscount', $threads);
-        }
-        
-        return $threads;
-    }
-    
+    /**
+     * Counts number of created posts.
+     * @return integer
+     */
     public static function totalPosts()
     {
         $posts = Cache::getInstance()->get('forum.postscount');
@@ -163,5 +186,21 @@ class Activity extends ActiveRecord
         }
         
         return $posts;
+    }
+    
+    /**
+     * Counts number of created threads.
+     * @return integer
+     */
+    public static function totalThreads()
+    {
+        $threads = Cache::getInstance()->get('forum.threadscount');
+        if ($threads === false) {
+            
+            $threads = Thread::find()->count();
+            Cache::getInstance()->set('forum.threadscount', $threads);
+        }
+        
+        return $threads;
     }
 }

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
@@ -13,9 +17,19 @@ use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\UploadedFile;
 
+/**
+ * Podium Profile controller
+ * All actions concerning member profile.
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class ProfileController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -43,27 +57,11 @@ class ProfileController extends Controller
             'flash' => FlashBehavior::className(),
         ];
     }
-
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->module->goPodium();
-    }
-
-    public function actionIndex()
-    {
-        $model = User::findOne(Yii::$app->user->id);
-
-        if (empty($model)) {
-            return $this->redirect(['account/login']);
-        }
-
-        return $this->render('profile', [
-                    'model' => $model
-        ]);
-    }
-
+    
+    /**
+     * Updating the profile details.
+     * @return string|\yii\web\Response
+     */
     public function actionDetails()
     {
         $model = User::findOne(Yii::$app->user->id);
@@ -116,7 +114,11 @@ class ProfileController extends Controller
                     'model' => $model
         ]);
     }
-
+    
+    /**
+     * Updating the forum details.
+     * @return string|\yii\web\Response
+     */
     public function actionForum()
     {
         $model = Meta::findOne(['user_id' => Yii::$app->user->id]);
@@ -168,5 +170,32 @@ class ProfileController extends Controller
                 'user' => User::findOne(Yii::$app->user->id)
         ]);
     }
-}
-                
+
+    /**
+     * Showing the profile card.
+     * @return string|\yii\web\Response
+     */
+    public function actionIndex()
+    {
+        $model = User::findOne(Yii::$app->user->id);
+
+        if (empty($model)) {
+            return $this->redirect(['account/login']);
+        }
+
+        return $this->render('profile', [
+                    'model' => $model
+        ]);
+    }
+    
+    /**
+     * Signing out.
+     * @return \yii\web\Response
+     */
+    public function actionLogout()
+    {
+        Yii::$app->user->logout();
+
+        return $this->module->goPodium();
+    }
+}                

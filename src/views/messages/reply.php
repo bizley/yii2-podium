@@ -48,9 +48,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                                 'codemirror' => null,
                                 'toolbar' => Helper::summerNoteToolbars('full'),
                             ],
-                            'plugins' => ['fontstyle']
                         ]) ?>
-        
                 </div>
             </div>
             <div class="row">
