@@ -138,6 +138,7 @@ class Podium extends Module implements BootstrapInterface
                     'register'                                                      => 'account/register',
                     'report/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>/<slug:[\w\-]+>' => 'default/report',
                     'reset'                                                         => 'account/reset',
+                    'search'                                                        => 'default/search',
                     'show/<id:\d+>'                                                 => 'default/show',
                     'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
                 ],

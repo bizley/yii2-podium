@@ -1373,6 +1373,12 @@ class DefaultController extends Controller
         }
     }
     
+    
+    public function actionSearch()
+    {
+        
+    }
+    
     /**
      * Direct link for the post of given ID.
      * @param integer $id

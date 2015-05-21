@@ -187,10 +187,7 @@ class MembersController extends Controller
             return $this->redirect(['index']);
         }
         else {
-
-            return $this->render('posts', [
-                        'user' => $user,
-            ]);
+            return $this->render('posts', ['user' => $user]);
         }
     }
     
@@ -211,10 +208,7 @@ class MembersController extends Controller
             return $this->redirect(['index']);
         }
         else {
-
-            return $this->render('threads', [
-                        'user' => $user,
-            ]);
+            return $this->render('threads', ['user' => $user]);
         }
     }
     
@@ -231,8 +225,6 @@ class MembersController extends Controller
             return $this->redirect(['index']);
         }
         
-        return $this->render('view', [
-            'model' => $model
-        ]);
+        return $this->render('view', ['model' => $model]);
     }
 }                
