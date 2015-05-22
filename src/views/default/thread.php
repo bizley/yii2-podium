@@ -110,6 +110,7 @@ Pjax::end();
 </div>
 <?php else: ?>
 <div class="row">
+    <br>
     <div class="col-sm-12 text-right">
         <a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary"><?= Yii::t('podium/view', 'Sign in to reply') ?></a>
         <a href="<?= Url::to(['account/register']) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Register new account') ?></a>

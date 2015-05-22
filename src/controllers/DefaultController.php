@@ -13,6 +13,7 @@ use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
 use bizley\podium\models\Post;
+use bizley\podium\models\PostSearch;
 use bizley\podium\models\PostThumb;
 use bizley\podium\models\Thread;
 use Exception;
@@ -1376,7 +1377,13 @@ class DefaultController extends Controller
     
     public function actionSearch()
     {
-        
+        $searchModel  = new PostSearch;
+        $dataProvider = $searchModel->search(Yii::$app->request->post());
+
+        return $this->render('search', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel
+        ]);
     }
     
     /**
