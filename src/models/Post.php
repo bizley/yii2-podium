@@ -112,33 +112,52 @@ class Post extends ActiveRecord
         }
     }
 
-    protected function _insertWords()
+    protected function _prepareWords()
+    {
+        $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(preg_replace(['/\n/', '/\<br ?\/?\>/i'], ' ', $this->content)))));
+        $allWords = [];
+        foreach ($wordsRaw as $word) {
+            if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
+                $allWords[] = $word;
+            }
+        }
+        
+        return $allWords;
+    }
+    
+    protected function _addNewWords($allWords)
     {
         try {
-            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(str_replace(["\n", '<br>', '<br />'], ' ', $this->content)))));
-            $words    = [];
-            $vocabulary = [];
-            foreach ($wordsRaw as $word) {
-                if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
-                    $words[] = $word;
-                }
-            }
+            $newWords = $allWords;
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
+            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyFound) {
-                if (($key = array_search($vocabularyFound['word'], $words)) !== false) {
-                    unset($words[$key]);
+                if (($key = array_search($vocabularyFound['word'], $allWords)) !== false) {
+                    unset($newWords[$key]);
                 }
             }
             $formatWords = [];
-            foreach ($words as $word) {
+            foreach ($newWords as $word) {
                 $formatWords[] = [$word];
             }
             if (!empty($formatWords)) {
                 Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
             }
+        }
+        catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    protected function _insertWords()
+    {
+        try {
+            $vocabulary = [];
+            $allWords   = $this->_prepareWords();
+            
+            $this->_addNewWords($allWords);
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
+            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
             }
@@ -154,31 +173,12 @@ class Post extends ActiveRecord
     protected function _updateWords()
     {
         try {
-            $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(str_replace(["\n", '<br>', '<br />'], ' ', $this->content)))));
-            $words    = [];
             $vocabulary = [];
-            foreach ($wordsRaw as $word) {
-                if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
-                    $words[] = $word;
-                }
-            }
-
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
-            foreach ($query->each() as $vocabularyFound) {
-                if (($key = array_search($vocabularyFound['word'], $words)) !== false) {
-                    unset($words[$key]);
-                }
-            }
+            $allWords   = $this->_prepareWords();
             
-            $formatWords = [];
-            foreach ($words as $word) {
-                $formatWords[] = [$word];
-            }
-            if (!empty($formatWords)) {
-                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
-            }
+            $this->_addNewWords($allWords);
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $words]);
+            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
             }

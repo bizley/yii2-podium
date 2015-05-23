@@ -13,9 +13,9 @@ use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
 use bizley\podium\models\Post;
-use bizley\podium\models\PostSearch;
 use bizley\podium\models\PostThumb;
 use bizley\podium\models\Thread;
+use bizley\podium\models\Vocabulary;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -1374,15 +1374,21 @@ class DefaultController extends Controller
         }
     }
     
-    
+    /**
+     * Searching through the forum.
+     * @return string
+     */
     public function actionSearch()
     {
-        $searchModel  = new PostSearch;
-        $dataProvider = $searchModel->search(Yii::$app->request->post());
-
+        $dataProvider = null;
+        $searchModel  = new Vocabulary;
+        if ($searchModel->load(Yii::$app->request->get(), '')) {
+            $dataProvider = $searchModel->search();
+        }
+        
         return $this->render('search', [
-                    'dataProvider' => $dataProvider,
-                    'searchModel'  => $searchModel
+            'dataProvider' => $dataProvider,
+            'query' => $searchModel->query
         ]);
     }
     

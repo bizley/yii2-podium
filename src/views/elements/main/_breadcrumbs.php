@@ -10,9 +10,9 @@ use yii\widgets\Breadcrumbs;
         <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]); ?>
     </div>
     <div class="col-sm-3">
-        <?= Html::beginForm(['default/search']); ?>
+        <?= Html::beginForm(['default/search'], 'get'); ?>
         <div class="input-group">
-            <?= Html::textInput('search', null, ['class' => 'form-control']); ?>
+            <?= Html::textInput('query', null, ['class' => 'form-control']); ?>
             <div class="input-group-btn">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="glyphicon glyphicon-search"></span></button>
                 <ul class="dropdown-menu dropdown-menu-right" role="menu">

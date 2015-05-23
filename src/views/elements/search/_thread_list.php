@@ -1,6 +1,5 @@
 <?php
 
-use bizley\podium\models\Thread;
 use yii\widgets\ListView;
 
 echo ListView::widget([
