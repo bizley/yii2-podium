@@ -14,6 +14,7 @@ use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
 use bizley\podium\models\Post;
 use bizley\podium\models\PostThumb;
+use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
 use Exception;
@@ -1385,10 +1386,15 @@ class DefaultController extends Controller
         if ($searchModel->load(Yii::$app->request->get(), '')) {
             $dataProvider = $searchModel->search();
         }
+        else {
+            $model = new SearchForm;
+            $model->match = 'all';
+        }
         
         return $this->render('search', [
             'dataProvider' => $dataProvider,
-            'query' => $searchModel->query
+            'query' => $searchModel->query,
+            'model' => $model
         ]);
     }
     

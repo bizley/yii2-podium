@@ -5,6 +5,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum')
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<?php if (!empty($dataProvider)): ?>
 <div class="row">
     <div class="col-sm-12">
         <div class="panel-group" role="tablist">
@@ -12,3 +13,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<?php else: ?>
+<div class="row">
+<?= $this->render('/elements/search/_search', ['model' => $model]) ?>
+</div>
+<?php endif;

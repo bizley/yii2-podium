@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-if (!empty($dataProvider)): ?>
+?>
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="forumSearch">
         <h4 class="panel-title">
@@ -20,6 +20,3 @@ if (!empty($dataProvider)): ?>
         <?= $this->render('/elements/forum/_icons') ?>
     </div>
 </div>
-<?php else: ?>
-<?= $this->render('/elements/search/_search') ?>
-<?php endif;
