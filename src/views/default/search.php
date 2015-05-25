@@ -15,6 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <?php else: ?>
 <div class="row">
-<?= $this->render('/elements/search/_search', ['model' => $model]) ?>
+<?= $this->render('/elements/search/_search', ['model' => $model, 'list' => $list]) ?>
 </div>
 <?php endif;

@@ -1389,6 +1389,25 @@ class DefaultController extends Controller
         else {
             $model = new SearchForm;
             $model->match = 'all';
+            
+            $categories = Category::find()->orderBy(['name' => SORT_ASC])->all();
+            $forums     = Forum::find()->orderBy(['name' => SORT_ASC])->all();
+            
+            $list = [];
+            foreach ($categories as $cat) {
+                $catlist = [];
+                foreach ($forums as $for) {
+                    if ($for->category_id == $cat->id) {
+                        $catlist[$for->id] = '|-- ' . Html::encode($for->name);
+                    }
+                }
+                $list[Html::encode($cat->name)] = $catlist;
+            }
+            
+            return $this->render('search', [
+                'model' => $model,
+                'list' => $list,
+            ]);
         }
         
         return $this->render('search', [
