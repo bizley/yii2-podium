@@ -13,7 +13,6 @@ use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;

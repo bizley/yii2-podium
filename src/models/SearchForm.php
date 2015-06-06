@@ -35,18 +35,12 @@ class SearchForm extends Model
 
     public function searchAdvanced()
     {
-        switch ($this->type) {
-            case 'topics':
-                $query = Thread::find()->joinWith(['firstNewNotSeen'])->where(['like', 'name', $this->query]);
-                
-                break;
-            
-            case 'posts':
-            default:
-                
+        if ($this->type == 'topics') {
+            $query = Thread::find()->where(['like', 'name', $this->query]);
         }
-        
-        //$query = self::find()->select('post_id, thread_id')->joinWith(['posts'])->where(['like', 'word', $this->query]);
+        else {
+            $query = Vocabulary::find()->select('post_id, thread_id')->joinWith(['posts'])->where(['like', 'word', $this->query]);
+        }       
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

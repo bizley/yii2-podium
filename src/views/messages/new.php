@@ -1,5 +1,5 @@
 <?php
-use bizley\ajaxdropdown\AjaxDropdown;
+
 use bizley\podium\components\Helper;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
@@ -14,11 +14,6 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile')
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
-
-$this->registerJs('jQuery(\'#test\').click(function(){ jQuery(\'#message-receiver_id_ajaxDropDownWidget\').trigger(\'add\', [{id:1,value:"test",mark:0,additional:"<b>aaa</b>"}, {id:2,value:"dwa",mark:1}]); })', View::POS_READY, 'test-click');
-$this->registerJs('jQuery(\'#test2\').click(function(){ jQuery(\'#message-receiver_id_ajaxDropDownWidget\').trigger(\'removeOne\', [1,2]); })', View::POS_READY, 'test-click2');
-$this->registerJs('jQuery(\'#test3\').click(function(){ jQuery(\'#message-receiver_id_ajaxDropDownWidget\').trigger(\'removeAll\'); })', View::POS_READY, 'test-click3');
-
 ?>
 <div class="row">
     <div class="col-sm-3">
@@ -30,24 +25,7 @@ $this->registerJs('jQuery(\'#test3\').click(function(){ jQuery(\'#message-receiv
         
         <br>
         
-        <button class="btn btn-danger" id="test">add</button>
-        <button class="btn btn-danger" id="test2">remove 1</button>
-        <button class="btn btn-danger" id="test3">remove all</button>
-        
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
-            <div class="row">
-                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
-                <div class="col-sm-9">
-                    <?= $form->field($model, 'receiver_id')->widget(AjaxDropdown::classname(), [
-                        'source' => Url::to(['members/fieldlist2']),
-                        //'singleMode' => true,
-                        //'singleModeBottom' => true,
-                        //'additionalCode' => '---',
-                        'inputOptions' => ['placeholder' => Yii::t('podium/view', 'Select a member...')],
-                        'data' => $data
-                        ])->label(false); ?>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
                 <div class="col-sm-9">

@@ -1407,6 +1407,7 @@ class DefaultController extends Controller
             }
             
             if ($model->load(Yii::$app->request->post())) {
+                //if (mb_strlen($model->query, 'UTF-8') )
                 $dataProvider = $model->searchAdvanced();
             }
             
