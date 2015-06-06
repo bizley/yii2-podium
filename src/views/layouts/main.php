@@ -25,7 +25,7 @@ $this->beginPage() ?>
         <?= $content ?>
     </div>
     <?= $this->render('/elements/main/_footer') ?>
-<?php $this->endBody() ?>
+<?php $this->endBody() ?>    
     
 </body>
 </html>

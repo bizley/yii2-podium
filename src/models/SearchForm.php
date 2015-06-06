@@ -3,6 +3,7 @@
 namespace bizley\podium\models;
 
 use yii\base\Model;
+use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;
 
 class SearchForm extends Model
@@ -32,5 +33,35 @@ class SearchForm extends Model
         ];
     }
 
-    
+    public function searchAdvanced()
+    {
+        switch ($this->type) {
+            case 'topics':
+                $query = Thread::find()->joinWith(['firstNewNotSeen'])->where(['like', 'name', $this->query]);
+                
+                break;
+            
+            case 'posts':
+            default:
+                
+        }
+        
+        //$query = self::find()->select('post_id, thread_id')->joinWith(['posts'])->where(['like', 'word', $this->query]);
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+//            'sort' => [
+//                'defaultOrder' => ['thread_id' => SORT_DESC],
+//                'attributes' => [
+//                    'thread_id' => [
+//                        'asc'     => ['thread_id' => SORT_ASC],
+//                        'desc'    => ['thread_id' => SORT_DESC],
+//                        'default' => SORT_DESC,
+//                    ],
+//                ]
+//            ],
+        ]);
+
+        return $dataProvider;
+    }
 }

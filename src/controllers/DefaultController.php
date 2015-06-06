@@ -1388,7 +1388,9 @@ class DefaultController extends Controller
         }
         else {
             $model = new SearchForm;
-            $model->match = 'all';
+            $model->match   = 'all';
+            $model->type    = 'posts';
+            $model->display = 'topics';
             
             $categories = Category::find()->orderBy(['name' => SORT_ASC])->all();
             $forums     = Forum::find()->orderBy(['name' => SORT_ASC])->all();
@@ -1404,16 +1406,21 @@ class DefaultController extends Controller
                 $list[Html::encode($cat->name)] = $catlist;
             }
             
+            if ($model->load(Yii::$app->request->post())) {
+                $dataProvider = $model->searchAdvanced();
+            }
+            
             return $this->render('search', [
-                'model' => $model,
-                'list' => $list,
+                'model'        => $model,
+                'list'         => $list,
+                'dataProvider' => $dataProvider,
+                'query'        => $model->query,
             ]);
         }
         
         return $this->render('search', [
             'dataProvider' => $dataProvider,
-            'query' => $searchModel->query,
-            'model' => $model
+            'query'        => $searchModel->query,
         ]);
     }
     
