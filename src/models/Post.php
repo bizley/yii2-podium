@@ -130,7 +130,7 @@ class Post extends ActiveRecord
         try {
             $newWords = $allWords;
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
+            $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyFound) {
                 if (($key = array_search($vocabularyFound['word'], $allWords)) !== false) {
                     unset($newWords[$key]);
@@ -141,7 +141,7 @@ class Post extends ActiveRecord
                 $formatWords[] = [$word];
             }
             if (!empty($formatWords)) {
-                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary}}', ['word'], $formatWords)->execute();
+                Yii::$app->db->createCommand()->batchInsert(Vocabulary::tableName(), ['word'], $formatWords)->execute();
             }
         }
         catch (Exception $e) {
@@ -157,7 +157,7 @@ class Post extends ActiveRecord
             
             $this->_addNewWords($allWords);
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
+            $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
             }
@@ -178,7 +178,7 @@ class Post extends ActiveRecord
             
             $this->_addNewWords($allWords);
 
-            $query = (new Query)->from('{{%podium_vocabulary}}')->where(['word' => $allWords]);
+            $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
             }

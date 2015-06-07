@@ -140,7 +140,7 @@ class Message extends ActiveRecord
     public function send()
     {
         $query = new Query;
-        if (!$query->select('id')->from('{{%podium_user}}')->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
+        if (!$query->select('id')->from(User::tableName())->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
             return false;
         }
         

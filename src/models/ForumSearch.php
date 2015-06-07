@@ -23,7 +23,7 @@ class ForumSearch extends Forum
 
     public function isMod($user_id)
     {
-        return (new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $this->id, 'user_id' => $user_id])->exists();
+        return (new Query)->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user_id])->exists();
     }
     
     public function searchForMods($params)

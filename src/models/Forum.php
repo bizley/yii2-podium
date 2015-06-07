@@ -110,7 +110,7 @@ class Forum extends ActiveRecord
                     $mods[] = $user['id'];
                 }
                 else {
-                    if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $this->id, 'user_id' => $user->id])->exists()) {
+                    if ((new Query)->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user->id])->exists()) {
                         $mods[] = $user['id'];
                     }
                 }

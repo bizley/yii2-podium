@@ -124,6 +124,11 @@ class Thread extends ActiveRecord
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'edited_at', $this->view ? $this->view->edited_last_seen : 0])->orderBy(['id' => SORT_ASC]);
     }
     
+    public function getAuthor()
+    {
+        return $this->hasOne(User::className(), ['id' => 'author_id']);
+    }
+    
     public function firstToSee()
     {
         if ($this->firstNewNotSeen) {

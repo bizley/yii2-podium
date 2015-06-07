@@ -12,6 +12,7 @@ use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
+use bizley\podium\models\Mod;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
@@ -231,7 +232,7 @@ class AdminController extends Controller
 
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
 
-                            Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', 'user_id = :id', [':id' => $model->id])->execute();
+                            Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->id])->execute();
 
                             $transaction->commit();
 
@@ -396,11 +397,11 @@ class AdminController extends Controller
                 }
                 else {
                     try {
-                        if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $forum->id, 'user_id' => $mod->id])->exists()) {
-                            Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                        if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum->id, 'user_id' => $mod->id])->exists()) {
+                            Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
                         }
                         else {
-                            Yii::$app->db->createCommand()->insert('{{%podium_moderator}}', ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                            Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
                         }
                         Cache::getInstance()->deleteElement('forum.moderators', $forum->id);
                         $this->success('Moderation list has been updated.');
@@ -456,7 +457,7 @@ class AdminController extends Controller
                     $add = [];
                     foreach ($selection as $select) {
                         if (!in_array($select, $pre)) {
-                            if ((new Query)->from('{{%podium_forum}}')->where(['id' => $select])->exists() && (new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $select, 'user_id' => $mod->id])->exists() === false) {
+                            if ((new Query)->from(Forum::tableName())->where(['id' => $select])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $select, 'user_id' => $mod->id])->exists() === false) {
                                 $add[] = [$select, $mod->id];
                             }
                         }
@@ -464,16 +465,16 @@ class AdminController extends Controller
                     $remove = [];
                     foreach ($pre as $p) {
                         if (!in_array($p, $selection)) {
-                            if ((new Query)->from('{{%podium_moderator}}')->where(['forum_id' => $p, 'user_id' => $mod->id])->exists()) {
+                            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $p, 'user_id' => $mod->id])->exists()) {
                                 $remove[] = $p;
                             }
                         }
                     }
                     if (!empty($add)) {
-                        Yii::$app->db->createCommand()->batchInsert('{{%podium_moderator}}', ['forum_id', 'user_id'], $add)->execute();
+                        Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
                     }
                     if (!empty($remove)) {
-                        Yii::$app->db->createCommand()->delete('{{%podium_moderator}}', ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
+                        Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
                     }
                     Cache::getInstance()->delete('forum.moderators');
                     $this->success('Moderation list has been saved.');
@@ -636,7 +637,7 @@ class AdminController extends Controller
             if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
                 $moved = Category::findOne((int) $modelId);
                 if ($moved) {
-                    $query   = (new Query())->from('{{%podium_category}}')->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
+                    $query   = (new Query())->from(Category::tableName())->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
                                 'id' => SORT_ASC])->indexBy('id');
                     $next    = 0;
                     $newSort = -1;
@@ -646,7 +647,7 @@ class AdminController extends Controller
                                 $newSort = $next;
                                 $next++;
                             }
-                            Yii::$app->db->createCommand()->update('{{%podium_category}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                            Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
                             $next++;
                         }
                         if ($newSort == -1) {
@@ -692,7 +693,7 @@ class AdminController extends Controller
                 $moved         = Forum::findOne((int) $modelId);
                 $movedCategory = Category::findOne((int) $modelCategory);
                 if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
-                    $query   = (new Query())->from('{{%podium_forum}}')->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
+                    $query   = (new Query())->from(Forum::tableName())->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
                                 ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC,
                                 'id' => SORT_ASC])->indexBy('id');
                     $next    = 0;
@@ -703,7 +704,7 @@ class AdminController extends Controller
                                 $newSort = $next;
                                 $next++;
                             }
-                            Yii::$app->db->createCommand()->update('{{%podium_forum}}', ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                            Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
                             $next++;
                         }
                         if ($newSort == -1) {

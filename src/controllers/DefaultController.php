@@ -262,7 +262,7 @@ class DefaultController extends Controller
                                             if ($model->delete()) {
                                                 
                                                 $wholeThread = false;
-                                                if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                                                if ((new Query)->from(Post::tableName())->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
                                                     $thread->updateCounters(['posts' => -1]);
                                                     $forum->updateCounters(['posts' => -1]);
                                                 }
@@ -379,7 +379,7 @@ class DefaultController extends Controller
                         if (!$error) {
                             
                             $wholeThread = false;
-                            if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                            if ((new Query)->from(Post::tableName())->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
                                 $thread->updateCounters(['posts' => -count($posts)]);
                                 $forum->updateCounters(['posts' => -count($posts)]);
                             }
@@ -859,7 +859,7 @@ class DefaultController extends Controller
                                         if (!$error) {
                                             
                                             $wholeThread = false;
-                                            if ((new Query)->from('{{%podium_post}}')->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
+                                            if ((new Query)->from(Post::tableName())->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
                                                 $thread->updateCounters(['posts' => -count($posts)]);
                                                 $forum->updateCounters(['posts' => -count($posts)]);
                                             }
@@ -1336,7 +1336,7 @@ class DefaultController extends Controller
                                                 }
                                             }
                                             if (!empty($package)) {
-                                                Yii::$app->db->createCommand()->batchInsert('{{%podium_message}}', 
+                                                Yii::$app->db->createCommand()->batchInsert(Message::tableName(), 
                                                     ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 'receiver_status', 'created_at', 'updated_at'], 
                                                         array_values($package))->execute();
                                                 
@@ -1406,9 +1406,13 @@ class DefaultController extends Controller
                 $list[Html::encode($cat->name)] = $catlist;
             }
             
-            if ($model->load(Yii::$app->request->post())) {
-                //if (mb_strlen($model->query, 'UTF-8') )
-                $dataProvider = $model->searchAdvanced();
+            if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+                if (empty($model->query) && empty($model->author)) {
+                    $this->error('You have to enter words or author\'s name first.');
+                }
+                else {
+                    $dataProvider = $model->searchAdvanced();
+                }
             }
             
             return $this->render('search', [
@@ -1416,6 +1420,7 @@ class DefaultController extends Controller
                 'list'         => $list,
                 'dataProvider' => $dataProvider,
                 'query'        => $model->query,
+                'author'       => $model->author,
             ]);
         }
         
@@ -1454,7 +1459,7 @@ class DefaultController extends Controller
             ];
             
             try {
-                $count = (new Query)->from('{{%podium_post}}')->where(['and', ['thread_id' => $post->thread_id], ['<', 'id', $post->id]])->orderBy(['id' => SORT_ASC])->count();
+                $count = (new Query)->from(Post::tableName())->where(['and', ['thread_id' => $post->thread_id], ['<', 'id', $post->id]])->orderBy(['id' => SORT_ASC])->count();
                 $page = floor($count / 10) + 1;
                 
                 if ($page > 1) {

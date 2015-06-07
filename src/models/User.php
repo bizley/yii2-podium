@@ -502,7 +502,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from('{{%podium_message}}')->where(['receiver_id' => $this->id,
+            $cache = (new Query)->from(Message::tableName())->where(['receiver_id' => $this->id,
                         'receiver_status' => Message::STATUS_NEW])->count();
             Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
         }
@@ -529,14 +529,14 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getThreadsCount()
     {
-        return (new Query)->from('{{%podium_thread}}')->where(['author_id' => $this->id])->count();
+        return (new Query)->from(Thread::tableName())->where(['author_id' => $this->id])->count();
     }
     
     public function getPostsCount()
     {
         $cache = Cache::getInstance()->getElement('user.postscount', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from('{{%podium_post}}')->where(['author_id' => $this->id])->count();
+            $cache = (new Query)->from(Post::tableName())->where(['author_id' => $this->id])->count();
             Cache::getInstance()->setElement('user.postscount', $this->id, $cache);
         }
 

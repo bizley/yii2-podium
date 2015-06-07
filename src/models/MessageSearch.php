@@ -61,7 +61,7 @@ class MessageSearch extends Message
 
         $dataProvider->query->andFilterWhere(['like', 'topic', $this->topic]);
         $dataProvider->query->joinWith(['senderUser' => function($q) {
-            $q->where(['like', 'podium_user.username', $this->senderName]);
+            $q->where(['like', User::tableName() . '.username', $this->senderName]);
         }]);
 
         return $dataProvider;
