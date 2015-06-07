@@ -2,6 +2,18 @@
 
 use yii\helpers\Html;
 
+if (!isset($author)) {
+    $author = '';
+}
+if (!isset($model)) {
+    $type    = 'posts';
+    $display = 'topics';
+}
+else {
+    $type    = $model->type;
+    $display = $model->display;
+}
+
 ?>
 <?php if (!empty($dataProvider)): ?>
 <?php
@@ -12,17 +24,17 @@ if (!empty($query)) {
 if (!empty($author)) {
     $title .= ' by "{author}"';
 }
-$this->title                   = Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $model->type == 'topics' ? 'threads' : 'posts']);
+$this->title                   = Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $type == 'topics' ? 'threads' : 'posts']);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Search Forum'), 'url' => ['default/search']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
     <div class="col-sm-12">
-<?php switch ($model->display): ?>
+<?php switch ($display): ?>
 <?php case 'topics': ?>
         <div class="panel-group" role="tablist">
-            <?= $this->render('/elements/search/_forum_search_topics', ['dataProvider' => $dataProvider, 'query' => $query, 'author' => $author, 'type' => $model->type]) ?>
+            <?= $this->render('/elements/search/_forum_search_topics', ['dataProvider' => $dataProvider, 'query' => $query, 'author' => $author, 'type' => $type]) ?>
         </div>
 <?php endswitch; ?>
     </div>

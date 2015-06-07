@@ -51,6 +51,7 @@ class SearchForm extends Model
                         $query->orWhere(['like', 'name', $word]);
                     }
                 }
+                $query->groupBy(Thread::tableName() . 'id');
             }
             if (!empty($this->author)) {
                 $query->andWhere(['like', 'username', $this->author])->joinWith(['author']);
@@ -99,6 +100,7 @@ class SearchForm extends Model
                         $query->orWhere(['like', 'word', $word]);
                     }
                 }
+                $query->groupBy('post_id');
             }
             if (!empty($this->author)) {
                 $query->andWhere(['like', 'username', $this->author])->joinWith(['posts' => function($q) {
