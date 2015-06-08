@@ -1411,7 +1411,24 @@ class DefaultController extends Controller
                     $this->error('You have to enter words or author\'s name first.');
                 }
                 else {
-                    $dataProvider = $model->searchAdvanced();
+                    $stop = false;
+                    if (!empty($model->query)) {
+                        $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
+                        $checkedWords = [];
+                        foreach ($words as $word) {
+                            if (mb_strlen($word, 'UTF-8') > 2) {
+                                $checkedWords[] = $word;
+                            }
+                        }
+                        $model->query = implode(' ', $checkedWords);
+                        if (mb_strlen($model->query, 'UTF-8') < 3) {
+                            $this->error('You have to enter word at least 3 characters long.');
+                            $stop = true;
+                        }
+                    }
+                    if (!$stop) {
+                        $dataProvider = $model->searchAdvanced();
+                    }
                 }
             }
             

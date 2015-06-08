@@ -198,6 +198,11 @@ class Post extends ActiveRecord
         }
     }
     
+    public function isMod($user_id = null)
+    {
+        return $this->forum->isMod($user_id);
+    }
+    
     public function search($forum_id, $thread_id)
     {
         $query = self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]);
@@ -222,7 +227,7 @@ class Post extends ActiveRecord
         $query->where(['author_id' => $user_id]);
         if (Yii::$app->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
-                $q->where(['podium_forum.visible' => 1]);
+                $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
         }
 

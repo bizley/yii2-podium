@@ -114,6 +114,11 @@ class Thread extends ActiveRecord
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
     
+    public function getPostData()
+    {
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_ASC]);
+    }
+    
     public function getFirstNewNotSeen()
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'created_at', $this->view ? $this->view->new_last_seen : 0])->orderBy(['id' => SORT_ASC]);

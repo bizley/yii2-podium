@@ -26,17 +26,17 @@ class MessageSearch extends Message
         $query = self::find();
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
-            'sort' => [
+            'query' => $query,
+            'sort'  => [
                 'attributes' => ['id', 'topic', 'created_at', 
                     'senderName' => [
-                        'asc' => ['podium_user.username' => SORT_ASC, 'podium_user.id' => SORT_ASC],
-                        'desc' => ['podium_user.username' => SORT_DESC, 'podium_user.id' => SORT_DESC],
+                        'asc' => [User::tableName() . '.username' => SORT_ASC, User::tableName() . '.id' => SORT_ASC],
+                        'desc' => [User::tableName() . '.username' => SORT_DESC, User::tableName() . '.id' => SORT_DESC],
                         'default' => SORT_ASC
                     ],
                     'receiverName' => [
-                        'asc' => ['podium_user.username' => SORT_ASC, 'podium_user.id' => SORT_ASC],
-                        'desc' => ['podium_user.username' => SORT_DESC, 'podium_user.id' => SORT_DESC],
+                        'asc' => [User::tableName() . '.username' => SORT_ASC, User::tableName() . '.id' => SORT_ASC],
+                        'desc' => [User::tableName() . '.username' => SORT_DESC, User::tableName() . '.id' => SORT_DESC],
                         'default' => SORT_ASC
                     ]
                 ],
@@ -80,7 +80,7 @@ class MessageSearch extends Message
 
         $dataProvider->query->andFilterWhere(['like', 'topic', $this->topic]);
         $dataProvider->query->joinWith(['receiverUser' => function($q) {
-            $q->where(['like', 'podium_user.username', $this->receiverName]);
+            $q->where(['like', User::tableName() . '.username', $this->receiverName]);
         }]);
 
         return $dataProvider;
@@ -98,22 +98,24 @@ class MessageSearch extends Message
         if (!($this->load($params) && $this->validate())) {
             $dataProvider->query->joinWith([
                 'receiverUser' => function($q) {
-                    $q->from('podium_user pdu_receiver');
+                    $q->from(User::tableName() . ' pdu_receiver');
                 }, 
                 'senderUser' => function($q) {
-                    $q->from('podium_user pdu_sender');
+                    $q->from(User::tableName() . ' pdu_sender');
                 }
             ]);
             return $dataProvider;
         }
 
         $dataProvider->query->andFilterWhere(['like', 'topic', $this->topic]);
-        $dataProvider->query->joinWith(['receiverUser' => function($q) {
-            $q->from('podium_user pdu_receiver')->where(['like', 'pdu_receiver.username', $this->receiverName]);
-        }]);
-        $dataProvider->query->joinWith(['senderUser' => function($q) {
-            $q->from('podium_user pdu_sender')->where(['like', 'pdu_sender.username', $this->senderName]);
-        }]);
+        $dataProvider->query->joinWith([
+            'receiverUser' => function($q) {
+                $q->from(User::tableName() . ' pdu_receiver')->where(['like', 'pdu_receiver.username', $this->receiverName]);
+            },
+            'senderUser' => function($q) {
+                $q->from(User::tableName() . ' pdu_sender')->where(['like', 'pdu_sender.username', $this->senderName]);
+            }
+        ]);
 
         return $dataProvider;
     }

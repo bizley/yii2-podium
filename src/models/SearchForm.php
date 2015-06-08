@@ -41,8 +41,7 @@ class SearchForm extends Model
         if ($this->type == 'topics') {
             $query = Thread::find();
             if (!empty($this->query)) {
-                $rawQuery = preg_replace('/\s+/', ' ', $this->query);
-                $words = explode(' ', $rawQuery);
+                $words = explode(' ', $this->query);
                 foreach ($words as $word) {
                     if ($this->match == 'all') {
                         $query->andWhere(['like', 'name', $word]);
@@ -51,7 +50,6 @@ class SearchForm extends Model
                         $query->orWhere(['like', 'name', $word]);
                     }
                 }
-                $query->groupBy(Thread::tableName() . 'id');
             }
             if (!empty($this->author)) {
                 $query->andWhere(['like', 'username', $this->author])->joinWith(['author']);
@@ -86,21 +84,30 @@ class SearchForm extends Model
                     }
                 }
             }
+            $sort = [
+                'defaultOrder' => [Thread::tableName() . '.id' => SORT_DESC],
+                'attributes' => [
+                    Thread::tableName() . '.id' => [
+                        'asc'     => [Thread::tableName() . '.id' => SORT_ASC],
+                        'desc'    => [Thread::tableName() . '.id' => SORT_DESC],
+                        'default' => SORT_DESC,
+                    ],
+                ]
+            ];
         }
         else {
             $query = Vocabulary::find()->select('post_id, thread_id')->joinWith(['posts']);
             if (!empty($this->query)) {
-                $rawQuery = preg_replace('/\s+/', ' ', $this->query);
-                $words = explode(' ', $rawQuery);
+                $words = explode(' ', $this->query);
+                $countWords = 0;
                 foreach ($words as $word) {
-                    if ($this->match == 'all') {
-                        $query->andWhere(['like', 'word', $word]);
-                    }
-                    else {
-                        $query->orWhere(['like', 'word', $word]);
-                    }
+                    $query->orWhere(['like', 'word', $word]);
+                    $countWords++;
                 }
                 $query->groupBy('post_id');
+                if ($this->match == 'all' && $countWords > 1) {
+                    $query->select(['post_id', 'thread_id', 'COUNT(post_id) AS c'])->having(['>', 'c', $countWords - 1]);
+                }
             }
             if (!empty($this->author)) {
                 $query->andWhere(['like', 'username', $this->author])->joinWith(['posts' => function($q) {
@@ -137,20 +144,21 @@ class SearchForm extends Model
                     }
                 }
             }
+            $sort = [
+                'defaultOrder' => ['post_id' => SORT_DESC],
+                'attributes' => [
+                    'post_id' => [
+                        'asc'     => ['post_id' => SORT_ASC],
+                        'desc'    => ['post_id' => SORT_DESC],
+                        'default' => SORT_DESC,
+                    ],
+                ]
+            ];
         }       
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-//            'sort' => [
-//                'defaultOrder' => ['thread_id' => SORT_DESC],
-//                'attributes' => [
-//                    'thread_id' => [
-//                        'asc'     => ['thread_id' => SORT_ASC],
-//                        'desc'    => ['thread_id' => SORT_DESC],
-//                        'default' => SORT_DESC,
-//                    ],
-//                ]
-//            ],
+            'sort'  => $sort,
         ]);
 
         return $dataProvider;

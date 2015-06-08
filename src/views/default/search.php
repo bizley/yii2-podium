@@ -32,7 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="col-sm-12">
 <?php switch ($display): ?>
-<?php case 'topics': ?>
+<?php case 'posts': ?>
+        <div class="panel-group" role="tablist">
+            <?= $this->render('/elements/search/_forum_search_posts', ['dataProvider' => $dataProvider, 'query' => $query, 'author' => $author, 'type' => $type]) ?>
+        </div>
+<?php break; default: ?>
         <div class="panel-group" role="tablist">
             <?= $this->render('/elements/search/_forum_search_topics', ['dataProvider' => $dataProvider, 'query' => $query, 'author' => $author, 'type' => $type]) ?>
         </div>

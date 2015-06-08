@@ -110,9 +110,7 @@ class AdminController extends Controller
      */
     public function actionCategories()
     {
-        return $this->render('categories', [
-                    'dataProvider' => (new Category())->show(),
-        ]);
+        return $this->render('categories', ['dataProvider' => (new Category())->show()]);
     }
     
     /**
@@ -229,18 +227,13 @@ class AdminController extends Controller
                         if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
                             Yii::$app->authManager->revokeAll($model->id);
                         }
-
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
-
                             Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->id])->execute();
-
                             $transaction->commit();
-
                             $this->success('User has been demoted.');
                             return $this->redirect(['members']);
                         }
                     }
-
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
                 catch (Exception $e) {
@@ -275,8 +268,7 @@ class AdminController extends Controller
             else {
                 return $this->render('category', [
                             'model'      => $model,
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all()
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
                 ]);
             }
         }
@@ -311,10 +303,8 @@ class AdminController extends Controller
             else {
                 return $this->render('forum', [
                             'model'      => $model,
-                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all(),
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->all()
+                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
                 ]);
             }
         }
@@ -336,10 +326,8 @@ class AdminController extends Controller
 
         return $this->render('forums', [
                     'model'      => $model,
-                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                        'id' => SORT_ASC])->all(),
-                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC,
-                        'id' => SORT_ASC])->all()
+                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
     
@@ -350,8 +338,10 @@ class AdminController extends Controller
     public function actionIndex()
     {
         if ($this->module->getParam('mode') == 'INSTALL') {
-            $this->warning('Parameter {MODE} with {INSTALL} value found in configuration! Make sure you remove this parameter in production environment.', ['MODE'    => '<code>mode</code>',
-                'INSTALL' => '<code>INSTALL</code>']);
+            $this->warning('Parameter {mode} with {install} value found in configuration! Make sure you remove this parameter in production environment.', [
+                'mode'    => '<code>mode</code>',
+                'install' => '<code>INSTALL</code>'
+            ]);
         }
 
         return $this->render('index');
@@ -513,8 +503,7 @@ class AdminController extends Controller
         else {
             return $this->render('category', [
                         'model'      => $model,
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all()
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
             ]);
         }
     }
@@ -545,10 +534,8 @@ class AdminController extends Controller
         else {
             return $this->render('forum', [
                         'model'      => $model,
-                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all(),
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC,
-                            'id' => SORT_ASC])->all()
+                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
             ]);
         }
     }
@@ -578,16 +565,12 @@ class AdminController extends Controller
                         if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
                             Yii::$app->authManager->revokeAll($model->id);
                         }
-
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
-
                             $transaction->commit();
-
                             $this->success('User has been promoted.');
                             return $this->redirect(['mods', 'id' => $model->id]);
                         }
                     }
-
                     $this->error('Sorry! There was an error while promoting the user.');
                 }
                 catch (Exception $e) {
@@ -619,9 +602,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->render('settings', [
-                    'model' => $model,
-        ]);
+        return $this->render('settings', ['model' => $model]);
     }
     
     /**
@@ -637,8 +618,8 @@ class AdminController extends Controller
             if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
                 $moved = Category::findOne((int) $modelId);
                 if ($moved) {
-                    $query   = (new Query())->from(Category::tableName())->where('id != :id')->params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->indexBy('id');
+                    $query = (new Query)->from(Category::tableName())->where('id != :id')->
+                            params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
                     $next    = 0;
                     $newSort = -1;
                     try {
@@ -693,9 +674,8 @@ class AdminController extends Controller
                 $moved         = Forum::findOne((int) $modelId);
                 $movedCategory = Category::findOne((int) $modelCategory);
                 if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
-                    $query   = (new Query())->from(Forum::tableName())->where('id != :id AND category_id = :cid')->params([':id' => $moved->id,
-                                ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC,
-                                'id' => SORT_ASC])->indexBy('id');
+                    $query = (new Query)->from(Forum::tableName())->where('id != :id AND category_id = :cid')->
+                            params([':id' => $moved->id, ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
                     $next    = 0;
                     $newSort = -1;
                     try {
@@ -749,8 +729,6 @@ class AdminController extends Controller
             return $this->redirect(['members']);
         }
 
-        return $this->render('view', [
-                    'model' => $model
-        ]);
+        return $this->render('view', ['model' => $model]);
     }
 }

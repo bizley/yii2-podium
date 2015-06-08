@@ -5,6 +5,7 @@
  */
 namespace bizley\podium\models;
 
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
@@ -48,7 +49,7 @@ class Vocabulary extends ActiveRecord
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
-    public function getPost()
+    public function getPostData()
     {
         return $this->hasOne(Post::className(), ['id' => 'post_id']);
     }
@@ -61,7 +62,15 @@ class Vocabulary extends ActiveRecord
     
     public function search()
     {
-        $query = self::find()->select('post_id, thread_id')->joinWith(['posts'])->where(['like', 'word', $this->query]);
+        $query = self::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);
+        if (Yii::$app->user->isGuest) {
+            $query->joinWith(['posts' => function($q) {
+                $q->joinWith(['forum'])->where([Forum::tableName() . '.visible' => 1]);
+            }]);
+        }
+        else {
+            $query->joinWith(['posts']);
+        }
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

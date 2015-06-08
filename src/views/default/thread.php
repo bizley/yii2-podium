@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-</div><br>
+</div>
 <?php endif; ?>
 
 <?php if (Yii::$app->user->isGuest): ?>
@@ -45,9 +45,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary"><?= Yii::t('podium/view', 'Sign in to reply') ?></a>
         <a href="<?= Url::to(['account/register']) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Register new account') ?></a>
     </div>
-</div><br>
+</div>
 <?php endif; ?>
 
+<div class="row">
+    <div class="col-sm-12">
+        <h4><?= Html::encode($thread->name) ?></h4>
+    </div>
+</div><br>
 
 <?php Pjax::begin();
 echo ListView::widget([
