@@ -8,6 +8,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
+use bizley\podium\components\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
@@ -81,18 +82,22 @@ class AdminController extends Controller
             if ($model->status == User::STATUS_ACTIVE) {
                 if ($model->ban()) {
                     Cache::getInstance()->delete('members.fieldlist');
+                    Log::info('User banned', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->success('User has been banned.');
                 }
                 else {
+                    Log::error('Error while banning user', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->error('Sorry! There was some error while banning the user.');
                 }
             }
             elseif ($model->status == User::STATUS_BANNED) {
                 if ($model->unban()) {
                     Cache::getInstance()->delete('members.fieldlist');
+                    Log::info('User unbanned', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->success('User has been unbanned.');
                 }
                 else {
+                    Log::error('Error while unbanning user', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->error('Sorry! There was some error while unbanning the user.');
                 }
             }
@@ -132,9 +137,11 @@ class AdminController extends Controller
             if ($model->delete()) {
                 Cache::getInstance()->delete('members.fieldlist');
                 Cache::getInstance()->delete('forum.memberscount');
+                Log::info('User deleted', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('User has been deleted.');
             }
             else {
+                Log::error('Error while deleting user', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->error('Sorry! There was some error while deleting the user.');
             }
         }
@@ -158,9 +165,11 @@ class AdminController extends Controller
             if ($model->delete()) {
                 Cache::getInstance()->delete('forum.threadscount');
                 Cache::getInstance()->delete('forum.postscount');
+                Yii::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Category has been deleted.');
             }
             else {
+                Log::error('Error while deleting category', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->error('Sorry! There was some error while deleting the category.');
             }
         }
@@ -186,15 +195,17 @@ class AdminController extends Controller
         $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
         if (empty($model)) {
-            Cache::getInstance()->delete('forum.threadscount');
-            Cache::getInstance()->delete('forum.postscount');
             $this->error('Sorry! We can not find Forum with this ID.');
         }
         else {
             if ($model->delete()) {
+                Cache::getInstance()->delete('forum.threadscount');
+                Cache::getInstance()->delete('forum.postscount');
+                Log::info('Forum deleted', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Forum has been deleted.');
             }
             else {
+                Log::error('Error while deleting forum', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->error('Sorry! There was some error while deleting the forum.');
             }
         }
@@ -230,15 +241,17 @@ class AdminController extends Controller
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
                             Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->id])->execute();
                             $transaction->commit();
+                            Log::info('User demoted', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->success('User has been demoted.');
                             return $this->redirect(['members']);
                         }
                     }
+                    Log::error('Error while demoting user', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
                 catch (Exception $e) {
                     $transaction->rollBack();
-                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
             }

@@ -67,39 +67,64 @@ class Installation extends Component
             'percent' => 4
         ],
         [
+            'table'   => 'log',
+            'call'    => 'createLog',
+            'percent' => 7
+        ],
+        [
+            'table'   => 'log',
+            'call'    => 'createLogLevelIndex',
+            'percent' => 8
+        ],
+        [
+            'table'   => 'log',
+            'call'    => 'createLogCategoryIndex',
+            'percent' => 9
+        ],
+        [
+            'table'   => 'log',
+            'call'    => 'createLogModelIndex',
+            'percent' => 10
+        ],
+        [
+            'table'   => 'log',
+            'call'    => 'createLogBlameIndex',
+            'percent' => 11
+        ],
+        [
             'table'   => 'category',
             'call'    => 'createCategory',
-            'percent' => 7
+            'percent' => 12
         ],
         [
             'table'   => 'forum',
             'call'    => 'createForum',
-            'percent' => 10
+            'percent' => 13
         ],
         [
             'table'   => 'thread',
             'call'    => 'createThread',
-            'percent' => 13
+            'percent' => 16
         ],
         [
             'table'   => 'post',
             'call'    => 'createPost',
-            'percent' => 16
-        ],
-        [
-            'table'   => 'vocabulary',
-            'call'    => 'createVocabulary',
             'percent' => 19
         ],
         [
             'table'   => 'vocabulary',
-            'call'    => 'createVocabularyIndex',
+            'call'    => 'createVocabulary',
             'percent' => 21
+        ],
+        [
+            'table'   => 'vocabulary',
+            'call'    => 'createVocabularyIndex',
+            'percent' => 24
         ],
         [
             'table'   => 'vocabulary_junction',
             'call'    => 'createVocabularyJunction',
-            'percent' => 24
+            'percent' => 25
         ],
         [
             'table'   => 'message',
@@ -230,6 +255,7 @@ class Installation extends Component
             }
         }
         catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -249,6 +275,7 @@ class Installation extends Component
             return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
         }
         catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
         }
@@ -403,6 +430,7 @@ class Installation extends Component
             return $this->_outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
         }
         catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -556,12 +584,72 @@ class Installation extends Component
             return $this->_outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
         }
         catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
+    /**
+     * Creates Log database table.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createLog($name)
+    {
+        return $this->_createTable($name, [
+                    'id'       => Schema::TYPE_BIGPK,
+                    'level'    => Schema::TYPE_INTEGER,
+                    'category' => Schema::TYPE_STRING,
+                    'log_time' => Schema::TYPE_DOUBLE,
+                    'prefix'   => Schema::TYPE_TEXT,
+                    'message'  => Schema::TYPE_TEXT,
+                    'model'    => Schema::TYPE_INTEGER,
+                    'blame'    => Schema::TYPE_INTEGER,
+        ]);
+    }
+    
+    /**
+     * Creates Log database table index.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createLogBlameIndex($name)
+    {
+        return $this->_createIndex('idx-podium_log-blame', $name, 'blame');
+    }
+    
+    /**
+     * Creates Log database table index.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createLogCategoryIndex($name)
+    {
+        return $this->_createIndex('idx-podium_log-category', $name, 'category');
+    }
+    
+    /**
+     * Creates Log database table index.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createLogModelIndex($name)
+    {
+        return $this->_createIndex('idx-podium_log-model', $name, 'model');
+    }
+    
+    /**
+     * Creates Log database table index.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createLogLevelIndex($name)
+    {
+        return $this->_createIndex('idx-podium_log-level', $name, 'level');
+    }
+    
     /**
      * Creates Message database table.
      * @param string $name table name.
@@ -675,6 +763,7 @@ class Installation extends Component
             return $this->_outputSuccess(Yii::t('podium/flash', 'Table has been created'));
         }
         catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
             return $this->_outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -891,7 +980,7 @@ class Installation extends Component
             return true;
         }
         catch (Exception $e) {
-            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
         }
 
         return false;
@@ -928,5 +1017,4 @@ class Installation extends Component
             'error'   => $this->_errors
         ];
     }
-
 }

@@ -20,6 +20,7 @@ namespace bizley\podium;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
+use bizley\podium\components\DbTarget;
 use bizley\podium\components\Installation;
 use bizley\podium\models\Activity;
 use Yii;
@@ -31,6 +32,7 @@ use yii\web\GroupUrlRule;
  * Podium Module
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
+ * requires 'bootstrap' => ['log', 'podium'],
  */
 class Podium extends Module implements BootstrapInterface
 {
@@ -211,6 +213,7 @@ class Podium extends Module implements BootstrapInterface
 
         $this->registerIdentity();
         $this->registerAuthorization();
+        $this->registerLogging();
         $this->registerTranslations();
         $this->registerFormatter();
 
@@ -237,7 +240,7 @@ class Podium extends Module implements BootstrapInterface
     }
 
     /**
-     * Registers formatter for registered users with chosen timezone.
+     * Registers formatter for signed users with chosen timezone.
      */
     public function registerFormatter()
     {
@@ -270,6 +273,18 @@ class Podium extends Module implements BootstrapInterface
     }
 
     /**
+     * Registers logging.
+     */
+    public function registerLogging()
+    {
+        $dbTarget = new DbTarget;
+        $dbTarget->logTable   = '{{%podium_log}}';
+        $dbTarget->categories = ['bizley\podium\*'];
+        
+        Yii::$app->log->targets['podium'] = $dbTarget;
+    }
+    
+    /**
      * Registers translations.
      */
     public function registerTranslations()
@@ -286,5 +301,4 @@ class Podium extends Module implements BootstrapInterface
             ],
         ];
     }
-
 }
