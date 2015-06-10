@@ -3,6 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
+use bizley\podium\components\Log;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -145,6 +146,7 @@ class Post extends ActiveRecord
             }
         }
         catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
     }
@@ -166,6 +168,7 @@ class Post extends ActiveRecord
             }
         }
         catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
     }
@@ -194,6 +197,7 @@ class Post extends ActiveRecord
             }
         }
         catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
     }

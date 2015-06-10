@@ -79,7 +79,7 @@ class Config
             return $cache;
         }
         catch (Exception $e) {
-            Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+            Log::error($e->getMessage(), null, __METHOD__);
         }
     }
     
@@ -108,7 +108,7 @@ class Config
             }
         }
         catch (Exception $e) {
-            Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+            Log::error($e->getMessage(), null, __METHOD__);
         }
         
         return $config;
@@ -157,7 +157,7 @@ class Config
             }      
         }
         catch (Exception $e) {
-            Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+            Log::error($e->getMessage(), null, __METHOD__);
         }
         
         return false;

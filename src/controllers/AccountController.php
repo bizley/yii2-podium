@@ -102,7 +102,6 @@ class AccountController extends Controller
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            Log::info('User signed in', !empty($model->id) ? $model->id : '', __METHOD__);
             return $this->module->goPodium();
         }
         else {

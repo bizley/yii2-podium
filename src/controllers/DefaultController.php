@@ -181,7 +181,7 @@ class DefaultController extends Controller
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
-                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                        Log::error($e->getMessage(), null, __METHOD__);
                         $this->error('Sorry! There was an error while deleting the thread.');
                     }
                 }
@@ -292,7 +292,7 @@ class DefaultController extends Controller
                                         }
                                         catch (Exception $e) {
                                             $transaction->rollBack();
-                                            Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                                            Log::error($e->getMessage(), null, __METHOD__);
                                             $this->error('Sorry! There was an error while deleting the post.');
                                         }
                                     }
@@ -410,7 +410,7 @@ class DefaultController extends Controller
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
-                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                        Log::error($e->getMessage(), null, __METHOD__);
                         $this->error('Sorry! There was an error while deleting the posts.');
                     }
                 }
@@ -529,7 +529,7 @@ class DefaultController extends Controller
                                             }
                                             catch (Exception $e) {
                                                 $transaction->rollBack();
-                                                Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                                                Log::error($e->getMessage(), null, __METHOD__);
                                                 $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
                                             }
                                         }
@@ -713,12 +713,14 @@ class DefaultController extends Controller
                                 }
                                 
                                 $transaction->commit();
+                                
+                                Log::info('Thread moved', !empty($thread->id) ? $thread->id : '', __METHOD__);
                                 $this->success('Thread has been moved.');
                                 return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
                             catch (Exception $e) {
                                 $transaction->rollBack();
-                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                Log::error($e->getMessage(), null, __METHOD__);
                                 $this->error('Sorry! There was an error while moving the thread.');
                             }
                         }
@@ -885,6 +887,7 @@ class DefaultController extends Controller
                                             Cache::getInstance()->delete('forum.postscount');
                                             Cache::getInstance()->delete('user.postscount');
 
+                                            Log::info('Posts moved', null, __METHOD__);
                                             $this->success('Posts have been moved.');
                                             if ($wholeThread) {
                                                 return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
@@ -897,7 +900,7 @@ class DefaultController extends Controller
                                 }
                                 catch (Exception $e) {
                                     $transaction->rollBack();
-                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                    Log::error($e->getMessage(), null, __METHOD__);
                                     $this->error('Sorry! There was an error while moving the posts.');
                                 }
                             }
@@ -1041,6 +1044,8 @@ class DefaultController extends Controller
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
                                     Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                    
+                                    Log::info('Thread added', !empty($model->id) ? $model->id : '', __METHOD__);
                                     $this->success('New thread has been created.');
 
                                     return $this->redirect(['thread', 'cid'  => $category->id,
@@ -1049,7 +1054,7 @@ class DefaultController extends Controller
                                 }
                                 catch (Exception $e) {
                                     $transaction->rollBack();
-                                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                    Log::error($e->getMessage(), null, __METHOD__);
                                     $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
                                 }
                             }
@@ -1095,9 +1100,11 @@ class DefaultController extends Controller
             }
             if ($thread->save()) {
                 if ($thread->pinned) {
+                    Log::info('Thread pinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
                     $this->success('Thread has been pinned.');
                 }
                 else {
+                    Log::info('Thread unpinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
                     $this->success('Thread has been unpinned.');
                 }
             }
@@ -1231,13 +1238,15 @@ class DefaultController extends Controller
 
                                             Cache::getInstance()->delete('forum.postscount');
                                             Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                            
+                                            Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
                                             $this->success('New reply has been added.');
 
                                             return $this->redirect(['show', 'id' => $id]);
                                         }
                                         catch (Exception $e) {
                                             $transaction->rollBack();
-                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            Log::error($e->getMessage(), null, __METHOD__);
                                             $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
                                         }
                                     }
@@ -1349,6 +1358,7 @@ class DefaultController extends Controller
                                                 
                                                 Cache::getInstance()->delete('user.newmessages');
                                                 
+                                                Log::info('Post reported', !empty($post->id) ? $post->id : '', __METHOD__);
                                                 $this->success('Thank you for your report. The moderation team will take a look at this post.');
                                                 return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                                             }
@@ -1357,7 +1367,7 @@ class DefaultController extends Controller
                                             }
                                         }
                                         catch (Exception $e) {
-                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            Log::error($e->getMessage(), null, __METHOD__);
                                             $this->error('Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.');
                                         }
                                     }

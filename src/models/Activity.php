@@ -7,6 +7,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
+use bizley\podium\components\Log;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -117,12 +118,12 @@ class Activity extends ActiveRecord
                 return true;
             }
             else {
-                Yii::trace('Cannot log user activity', __METHOD__);
+                Log::error('Cannot log user activity', null, __METHOD__);
                 return false;
             }
         }
         catch (Exception $e) {
-            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+            Log::error($e->getMessage(), null, __METHOD__);
         }
     }
     

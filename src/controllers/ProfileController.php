@@ -7,6 +7,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Log;
 use bizley\podium\models\Meta;
 use bizley\podium\models\User;
 use Exception;
@@ -85,20 +86,24 @@ class ProfileController extends Controller
                                     ->setTo($model->new_email)
                                     ->setSubject(Yii::t('podium/mail', 'New e-mail activation link at {NAME}', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
                             if ($mailer->send()) {
+                                Log::info('New email activation link sent', !empty($model->id) ? $model->id : '', __METHOD__);
                                 $this->success('Your account has been updated but your new e-mail address is not active yet. Click the activation link that has been sent to your new e-mail address.');
                             }
                             else {
+                                Log::error('Mailer error while sending new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
                                 $this->warning('Your account has been updated but your new e-mail address is not active yet. '
                                         . 'Unfortunately there was some error while sending you the activation link. '
                                         . 'Contact administrator about this problem.');
                             }
                         } catch (Exception $e) {
+                            Log::error('Error while sending new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->warning('Your account has been updated but your new e-mail address is not active yet. '
                                     . 'Unfortunately there was some error while sending you the activation link. '
                                     . 'Contact administrator about this problem.');
                         }
                     }
                     else {
+                        Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
                         $this->success('Your account has been updated.');
                     }
 
@@ -137,13 +142,14 @@ class ProfileController extends Controller
                 if (!file_exists($path)) {
                     if (!FileHelper::createDirectory($path)) {
                         $folderExists = false;
+                        Log::error('Error while creating avatars folder', null, __METHOD__);
                         $this->error('Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.');
                     }
                 }
                 if ($folderExists) {
                     if (!empty($model->avatar)) {
                         if (!unlink($path . DIRECTORY_SEPARATOR . $model->avatar)) {
-                            // TODO: log error
+                            Log::error('Error while deleting old avatar image', null, __METHOD__);
                         }
                     }
                     $model->avatar = Yii::$app->security->generateRandomString() . '.' . $avatar->getExtension();
@@ -154,9 +160,11 @@ class ProfileController extends Controller
             if ($model->save()) {
                 if ($uploadAvatar) {
                     if (!$avatar->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                        Log::error('Error while saving avatar image', null, __METHOD__);
                         $this->error('Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.');
                     }
                 }
+                Log::info('Profile updated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Your profile details have been updated.');
                 return $this->refresh();
             }

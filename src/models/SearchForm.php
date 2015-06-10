@@ -36,6 +36,7 @@ class SearchForm extends Model
         ];
     }
 
+    // TODO: ograniczenia widocznosci forum
     public function searchAdvanced()
     {
         if ($this->type == 'topics') {

@@ -8,6 +8,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
+use bizley\podium\components\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
 use bizley\podium\models\User;
@@ -82,6 +83,7 @@ class MessagesController extends Controller
                     }
                 }
                 else {
+                    Log::error('Error while deleting message', !empty($model->id) ? $model->id : '', __METHOD__);
                     $this->error('Sorry! We can not delete this message. Contact administrator about this problem.');
                 }            
             }
@@ -157,7 +159,7 @@ class MessagesController extends Controller
                     }
                 }
                 else {
-                    $this->error('Sorry! You can not send message to this member because he ignores you.');
+                    $this->error('Sorry! This member ignores you so you can not send the message.');
                 }
             }
             else {
@@ -208,7 +210,7 @@ class MessagesController extends Controller
                         }
                     }
                     else {
-                        $this->error('Sorry! You can not send message to this member because he ignores you.');
+                        $this->error('Sorry! This member ignores you so you can not send the message.');
                     }
                 }
             }

@@ -9,6 +9,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
+use bizley\podium\components\Log;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
@@ -123,17 +124,19 @@ class MembersController extends Controller
                     if ($model->isIgnoredBy(Yii::$app->user->id)) {
 
                         Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => Yii::$app->user->id, ':iid' => $model->id])->execute();
+                        Log::info('User unignored', !empty($model->id) ? $model->id : '', __METHOD__);
                         $this->success('User has been unignored.');                    
                     }
                     else {
                         Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => Yii::$app->user->id, 'ignored_id' => $model->id])->execute();
+                        Log::info('User ignored', !empty($model->id) ? $model->id : '', __METHOD__);
                         $this->success('User has been ignored.');
                     }
                 }
             }
             catch (Exception $e) {
                 $this->error('Sorry! There was some error while performing this action.');
-                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                Log::error($e->getMessage(), null, __METHOD__);
             }
         }
         

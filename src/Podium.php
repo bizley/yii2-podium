@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * TODO:
+ * -----------------------------------------------------------------------------
+ * panel glowny admina
+ * seo
+ * grupy userow
+ * subskrypcje watkow
+ * massmailing
+ * regulamin
+ * -----------------------------------------------------------------------------
+ * 
  * Podium Module
  * Yii 2 Forum Module
  * 
@@ -149,6 +159,7 @@ class Podium extends Module implements BootstrapInterface
         $dbTarget = new DbTarget;
         $dbTarget->logTable   = '{{%podium_log}}';
         $dbTarget->categories = ['bizley\podium\*'];
+        $dbTarget->logVars    = [];
         
         $app->getLog()->targets['podium'] = $dbTarget;
     }

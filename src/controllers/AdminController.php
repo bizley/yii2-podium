@@ -13,6 +13,7 @@ use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
+use bizley\podium\models\LogSearch;
 use bizley\podium\models\Mod;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
@@ -251,7 +252,7 @@ class AdminController extends Controller
                 }
                 catch (Exception $e) {
                     $transaction->rollBack();
-                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                    Log::error($e->getMessage(), null, __METHOD__);
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
             }
@@ -363,6 +364,21 @@ class AdminController extends Controller
     }
 
     /**
+     * Listing the logs.
+     * @return string
+     */
+    public function actionLogs()
+    {
+        $searchModel  = new LogSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
+
+        return $this->render('logs', [
+                    'dataProvider' => $dataProvider,
+                    'searchModel'  => $searchModel,
+        ]);
+    }
+    
+    /**
      * Listing the users.
      * @return string
      */
@@ -413,7 +429,7 @@ class AdminController extends Controller
                         $this->success('Moderation list has been updated.');
                     }
                     catch (Exception $e) {
-                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                        Log::error($e->getMessage(), null, __METHOD__);
                         $this->error('Sorry! There was an error while updating the moderatoration list.');
                     }
                 }
@@ -486,7 +502,7 @@ class AdminController extends Controller
                     $this->success('Moderation list has been saved.');
                 }
                 catch (Exception $e) {
-                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                    Log::error($e->getMessage(), null, __METHOD__);
                     $this->error('Sorry! There was an error while saving the moderatoration list.');
                 }
                 
@@ -594,7 +610,7 @@ class AdminController extends Controller
                 }
                 catch (Exception $e) {
                     $transaction->rollBack();
-                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                    Log::error($e->getMessage(), null, __METHOD__);
                     $this->error('Sorry! There was an error while promoting the user.');
                 }
             }
@@ -664,7 +680,7 @@ class AdminController extends Controller
                         }
                     }
                     catch (Exception $e) {
-                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                        Log::error($e->getMessage(), null, __METHOD__);
                         return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
                     }
                 }
@@ -722,7 +738,7 @@ class AdminController extends Controller
                         }
                     }
                     catch (Exception $e) {
-                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
+                        Log::error($e->getMessage(), null, __METHOD__);
                         return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
                     }
                 }

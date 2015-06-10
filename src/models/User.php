@@ -4,6 +4,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\components\Log;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
@@ -442,7 +443,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
             catch (Exception $e) {
                 $transaction->rollBack();
-                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                Log::error($e->getMessage(), null, __METHOD__);
             }
         }
 

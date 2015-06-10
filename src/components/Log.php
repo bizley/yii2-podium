@@ -17,6 +17,7 @@ use Yii;
  */
 class Log
 {
+    
     public static function blame()
     {
         if (!Yii::$app->user->isGuest) {
@@ -32,6 +33,15 @@ class Log
             'model' => $model,
             'blame' => self::blame(),
         ], $category);
+    }
+    
+    public static function getTypes()
+    {
+        return [
+            1 => 'error',
+            2 => 'warning',
+            4 => 'info'
+        ];
     }
     
     public static function info($msg, $model = null, $category = 'application')
