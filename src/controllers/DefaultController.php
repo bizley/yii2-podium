@@ -9,6 +9,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\components\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
@@ -173,13 +174,14 @@ class DefaultController extends Controller
                             Cache::getInstance()->delete('forum.postscount');
                             Cache::getInstance()->delete('user.postscount');
 
+                            Log::info('Thread deleted', !empty($thread->id) ? $thread->id : '', __METHOD__);
                             $this->success('Thread has been deleted.');
                             return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                         }
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
-                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                         $this->error('Sorry! There was an error while deleting the thread.');
                     }
                 }
@@ -278,6 +280,7 @@ class DefaultController extends Controller
                                                 Cache::getInstance()->delete('forum.postscount');
                                                 Cache::getInstance()->delete('user.postscount');
 
+                                                Log::info('Post deleted', !empty($model->id) ? $model->id : '', __METHOD__);
                                                 $this->success('Post has been deleted.');
                                                 if ($wholeThread) {
                                                     return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
@@ -289,7 +292,7 @@ class DefaultController extends Controller
                                         }
                                         catch (Exception $e) {
                                             $transaction->rollBack();
-                                            Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                            Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                                             $this->error('Sorry! There was an error while deleting the post.');
                                         }
                                     }
@@ -395,6 +398,7 @@ class DefaultController extends Controller
                             Cache::getInstance()->delete('forum.postscount');
                             Cache::getInstance()->delete('user.postscount');
 
+                            Log::info('Posts deleted', null, __METHOD__);
                             $this->success('Posts have been deleted.');
                             if ($wholeThread) {
                                 return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
@@ -406,7 +410,7 @@ class DefaultController extends Controller
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
-                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                         $this->error('Sorry! There was an error while deleting the posts.');
                     }
                 }
@@ -518,13 +522,14 @@ class DefaultController extends Controller
 
                                                 $transaction->commit();
 
+                                                Log::info('Post updated', !empty($model->id) ? $model->id : '', __METHOD__);
                                                 $this->success('Post has been updated.');
 
                                                 return $this->redirect(['show', 'id' => $model->id]);
                                             }
                                             catch (Exception $e) {
                                                 $transaction->rollBack();
-                                                Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                                                Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                                                 $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
                                             }
                                         }
@@ -638,9 +643,11 @@ class DefaultController extends Controller
             }
             if ($thread->save()) {
                 if ($thread->locked) {
+                    Log::info('Thread locked', !empty($thread->id) ? $thread->id : '', __METHOD__);
                     $this->success('Thread has been locked.');
                 }
                 else {
+                    Log::info('Thread unlocked', !empty($thread->id) ? $thread->id : '', __METHOD__);
                     $this->success('Thread has been unlocked.');
                 }
             }

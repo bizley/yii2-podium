@@ -81,7 +81,7 @@ class Podium extends Module implements BootstrapInterface
 
     /**
      * Bootstrap method to be called during application bootstrap stage.
-     * Adding routing rules.
+     * Adding routing rules and log target.
      * 
      * @param \yii\base\Application $app the application currently running
      */
@@ -145,6 +145,12 @@ class Podium extends Module implements BootstrapInterface
                     'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
                 ],
             ])], false);
+        
+        $dbTarget = new DbTarget;
+        $dbTarget->logTable   = '{{%podium_log}}';
+        $dbTarget->categories = ['bizley\podium\*'];
+        
+        $app->getLog()->targets['podium'] = $dbTarget;
     }
 
     /**
@@ -213,7 +219,6 @@ class Podium extends Module implements BootstrapInterface
 
         $this->registerIdentity();
         $this->registerAuthorization();
-        $this->registerLogging();
         $this->registerTranslations();
         $this->registerFormatter();
 
@@ -272,18 +277,6 @@ class Podium extends Module implements BootstrapInterface
         ]);
     }
 
-    /**
-     * Registers logging.
-     */
-    public function registerLogging()
-    {
-        $dbTarget = new DbTarget;
-        $dbTarget->logTable   = '{{%podium_log}}';
-        $dbTarget->categories = ['bizley\podium\*'];
-        
-        Yii::$app->log->targets['podium'] = $dbTarget;
-    }
-    
     /**
      * Registers translations.
      */

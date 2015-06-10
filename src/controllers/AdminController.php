@@ -165,7 +165,7 @@ class AdminController extends Controller
             if ($model->delete()) {
                 Cache::getInstance()->delete('forum.threadscount');
                 Cache::getInstance()->delete('forum.postscount');
-                Yii::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Category has been deleted.');
             }
             else {
@@ -275,6 +275,7 @@ class AdminController extends Controller
         }
         else {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Log::info('Category updated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Category has been updated.');
                 return $this->redirect(['categories']);
             }
@@ -310,6 +311,7 @@ class AdminController extends Controller
         }
         else {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Log::info('Forum updated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Forum has been updated.');
                 return $this->redirect(['forums']);
             }
@@ -407,10 +409,11 @@ class AdminController extends Controller
                             Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
                         }
                         Cache::getInstance()->deleteElement('forum.moderators', $forum->id);
+                        Log::info('Moderator updated', $mod->id, __METHOD__);
                         $this->success('Moderation list has been updated.');
                     }
                     catch (Exception $e) {
-                        Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                         $this->error('Sorry! There was an error while updating the moderatoration list.');
                     }
                 }
@@ -435,7 +438,6 @@ class AdminController extends Controller
                 $mod = $moderators[$id];
             }
         }
-
         if ($id == null) {
             foreach ($moderators as $moderator) {
                 $mod = $moderator;
@@ -480,10 +482,11 @@ class AdminController extends Controller
                         Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
                     }
                     Cache::getInstance()->delete('forum.moderators');
+                    Log::info('Moderators updated', null, __METHOD__);
                     $this->success('Moderation list has been saved.');
                 }
                 catch (Exception $e) {
-                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                     $this->error('Sorry! There was an error while saving the moderatoration list.');
                 }
                 
@@ -510,6 +513,7 @@ class AdminController extends Controller
         $model->sort    = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Log::info('Category added', !empty($model->id) ? $model->id : '', __METHOD__);
             $this->success('New category has been created.');
             return $this->redirect(['categories']);
         }
@@ -541,6 +545,7 @@ class AdminController extends Controller
         $model->sort        = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Log::info('Forum added', !empty($model->id) ? $model->id : '', __METHOD__);
             $this->success('New forum has been created.');
             return $this->redirect(['forums', 'cid' => $category->id]);
         }
@@ -580,6 +585,7 @@ class AdminController extends Controller
                         }
                         if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
                             $transaction->commit();
+                            Log::info('User promoted', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->success('User has been promoted.');
                             return $this->redirect(['mods', 'id' => $model->id]);
                         }
@@ -588,7 +594,7 @@ class AdminController extends Controller
                 }
                 catch (Exception $e) {
                     $transaction->rollBack();
-                    Yii::trace([$e->getName(), $e->getMessage()], __METHOD__);
+                    Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                     $this->error('Sorry! There was an error while promoting the user.');
                 }
             }
@@ -607,6 +613,7 @@ class AdminController extends Controller
 
         if ($data = Yii::$app->request->post('ConfigForm')) {
             if ($model->update($data)) {
+                Log::info('Settings updated', null, __METHOD__);
                 $this->success('Settings have been updated.');
                 return $this->refresh();
             }
@@ -652,10 +659,12 @@ class AdminController extends Controller
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
                         }
                         else {
+                            Log::info('Categories orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
                         }
                     }
                     catch (Exception $e) {
+                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                         return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
                     }
                 }
@@ -708,10 +717,12 @@ class AdminController extends Controller
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
                         }
                         else {
+                            Log::info('Forums orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
                         }
                     }
                     catch (Exception $e) {
+                        Log::error([$e->getName(), $e->getMessage()], null, __METHOD__);
                         return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
                     }
                 }
