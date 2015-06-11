@@ -35,7 +35,10 @@ class Config
         'name'            => 'Podium',
         'version'         => '0.1',
         'hot_minimum'     => 20,
-        'members_visible' => 1
+        'members_visible' => 1,
+        'from_email'      => 'no-reply@podium-default.net',
+        'from_name'       => 'Podium',
+        'max_attempts'    => 5
     ];
     
     /**

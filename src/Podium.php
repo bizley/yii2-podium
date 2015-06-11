@@ -9,6 +9,11 @@
  * subskrypcje watkow
  * massmailing
  * regulamin
+ * upgrade bazy
+ * box latest topics
+ * rss
+ * zapamietanie pozycji zwinietych boxow
+ * indexy w bazie, klucze obce przez metode
  * -----------------------------------------------------------------------------
  * 
  * Podium Module
@@ -22,7 +27,7 @@
  * Please report all issues at GitHub
  * https://github.com/bizley-code/Yii2-Podium/issues
  * 
- * Podium requires Yii 2
+ * Podium requires Yii 2.0.4 or newer
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
  */
@@ -60,7 +65,7 @@ class Podium extends Module implements BootstrapInterface
     /**
      * @var string Module version
      */
-    public $version = '1.0';
+    public $version = '0.1';
 
     /**
      * @var Config Module configuration instance

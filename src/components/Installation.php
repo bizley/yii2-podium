@@ -87,19 +87,29 @@ class Installation extends Component
             'percent' => 10
         ],
         [
+            'table'   => 'email',
+            'call'    => 'createEmail',
+            'percent' => 11
+        ],
+        [
+            'table'   => 'email',
+            'call'    => 'createEmailIndex',
+            'percent' => 12
+        ],
+        [
             'table'   => 'log',
             'call'    => 'createLogBlameIndex',
-            'percent' => 11
+            'percent' => 13
         ],
         [
             'table'   => 'category',
             'call'    => 'createCategory',
-            'percent' => 12
+            'percent' => 14
         ],
         [
             'table'   => 'forum',
             'call'    => 'createForum',
-            'percent' => 13
+            'percent' => 15
         ],
         [
             'table'   => 'thread',
@@ -263,15 +273,21 @@ class Installation extends Component
     }
 
     /**
-     * Adds Config settings.
+     * Adds Config default settings.
      * @return string result message.
      */
     protected function _addConfig()
     {
         try {
-            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name',
-                'value'], [['name', 'Podium'], ['version', '1.0'], ['hot_minimum',
-                    '20'], ['members_visible', '1']])->execute();
+            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name', 'value'], [
+                    ['name', 'Podium'], 
+                    ['version', '1.0'], 
+                    ['hot_minimum', '20'], 
+                    ['members_visible', '1'],
+                    ['from_email', 'no-reply@podium-default.net'],
+                    ['from_name', 'Podium'],
+                    ['max_attempts', '5'],
+                ])->execute();
             return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
         }
         catch (Exception $e) {
@@ -547,6 +563,27 @@ class Installation extends Component
         ]);
     }
 
+    /**
+     * Creates Email database table.
+     * @param string $name table name.
+     * @return string result message.
+     */
+    protected function _createEmail($name)
+    {
+        return $this->_createTable($name, [
+                    'id'          => Schema::TYPE_PK,
+                    'user_id'     => Schema::TYPE_INTEGER,
+                    'email'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'subject'     => Schema::TYPE_TEXT . ' NOT NULL',
+                    'content'     => Schema::TYPE_TEXT . ' NOT NULL',
+                    'status'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'attempt'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
+        ]);
+    }
+    
     /**
      * Creates Forum database table.
      * @param string $name table name.

@@ -8,7 +8,9 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
+use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\models\Email;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
@@ -105,9 +107,7 @@ class AccountController extends Controller
             return $this->module->goPodium();
         }
         else {
-            return $this->render('login', [
-                        'model' => $model,
-            ]);
+            return $this->render('login', ['model' => $model]);
         }
     }
     
@@ -155,9 +155,7 @@ class AccountController extends Controller
                 return $this->module->goPodium();
             }
             else {
-                return $this->render('password', [
-                        'model' => $model
-                ]);
+                return $this->render('password', ['model' => $model]);
             }
         }
         else {
@@ -177,37 +175,31 @@ class AccountController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             if ($model->reactivate()) {
-                try {
-                    $mailer = Yii::$app->mailer->compose('/mail/reactivate', [
-                                'forum' => $this->module->getParam('name', 'Podium Forum'),
+                
+                if (Email::queue($model->getUser()->email, 
+                        Yii::t('podium/mail', '{name} password reset link', ['name' => Config::getInstance()->get('name')]),
+                        $this->renderPartial('/mail/reactivate', [
+                                'forum' => Config::getInstance()->get('name'),
                                 'link'  => Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
-                            ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
-                            ->setTo($model->getUser()->email)
-                            ->setSubject(Yii::t('podium/mail', '{NAME} password reset link', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
-                    if ($mailer->send()) {
-                        Log::info('Reactivation link sent', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('The account activation link has been sent to your e-mail address.');
-                    }
-                    else {
-                        Log::error('Mailer error while sending reactivation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
-                    }
-
-                    return $this->module->goPodium();
+                            ]),
+                        !empty($model->getUser()->id) ? $model->getUser()->id : null
+                    )) {
+                    Log::info('Reactivation link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
+                    $this->success('The account activation link has been sent to your e-mail address.');
                 }
-                catch (Exception $e) {
-                    Log::error('Error while sending reactivation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                else {
+                    Log::error('Error while queuing reactivation link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
                     $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
                 }
+
+                return $this->module->goPodium();
             }
             else {
                 $this->error('Sorry! We can not find the account with that user name or e-mail address.');
             }
         }
 
-        return $this->render('reactivate', [
-                    'model' => $model,
-        ]);
+        return $this->render('reactivate', ['model' => $model]);
     }
     
     /**
@@ -220,43 +212,32 @@ class AccountController extends Controller
         $model->setScenario('register');
 
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
-            try {
-                $mailer = Yii::$app->mailer->compose('/mail/register', [
-                            'forum' => $this->module->getParam('name', 'Podium Forum'),
+            
+            if (Email::queue($model->email, 
+                    Yii::t('podium/mail', 'Welcome to {name}! This is your activation link', ['name' => Config::getInstance()->get('name')]),
+                    $this->renderPartial('/mail/register', [
+                            'forum' => Config::getInstance()->get('name'),
                             'link'  => Url::to(['account/activate', 'token' => $model->activation_token], true)
-                        ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
-                        ->setTo($model->email)
-                        ->setSubject(Yii::t('podium/mail', 'Welcome to {NAME}! This is your activation link', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
-                if ($mailer->send()) {
-                    Log::info('Activation link sent', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->success('Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.');
-                }
-                else {
-                    Log::warning('Mailer error while sending activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->warning('Your account has been created but it is not active yet. '
-                            . 'Unfortunately there was some error while sending you the activation link. '
-                            . 'Contact administrator about this or try to {LINK}resend the link{CLOSELINK}.', [
-                        'LINK'      => Html::beginTag('a', ['href' => Url::to('account/reactivate')]),
-                        'CLOSELINK' => Html::endTag('a')
-                    ]);
-                }
-
-                return $this->module->goPodium();
+                        ]),
+                    !empty($model->id) ? $model->id : null
+                )) {
+                Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->success('Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.');
             }
-            catch (Exception $e) {
-                Log::warning('Error while sending activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+            else {
+                Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->warning('Your account has been created but it is not active yet. '
                         . 'Unfortunately there was some error while sending you the activation link. '
-                        . 'Contact administrator about this or try to {LINK}resend the link{CLOSELINK}.', [
-                    'LINK'      => Html::beginTag('a', ['href' => Url::to('account/reactivate')]),
-                    'CLOSELINK' => Html::endTag('a')
+                        . 'Contact administrator about this or try to {link}resend the link{closelink}.', [
+                    'link'      => Html::beginTag('a', ['href' => Url::to('account/reactivate')]),
+                    'closelink' => Html::endTag('a')
                 ]);
             }
+            
+            return $this->module->goPodium();
         }
         else {
-            return $this->render('register', [
-                        'model' => $model,
-            ]);
+            return $this->render('register', ['model' => $model]);
         }
     }
 
@@ -271,36 +252,30 @@ class AccountController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             if ($model->reset()) {
-                try {
-                    $mailer = Yii::$app->mailer->compose('/mail/reset', [
-                                'forum' => $this->module->getParam('name', 'Podium Forum'),
+                
+                if (Email::queue($model->getUser()->email, 
+                        Yii::t('podium/mail', '{name} password reset link', ['name' => Config::getInstance()->get('name')]),
+                        $this->renderPartial('/mail/reset', [
+                                'forum' => Config::getInstance()->get('name'),
                                 'link'  => Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true)
-                            ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
-                            ->setTo($model->getUser()->email)
-                            ->setSubject(Yii::t('podium/mail', '{NAME} password reset link', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
-                    if ($mailer->send()) {
-                        Log::info('Password reset link sent', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('The password reset link has been sent to your e-mail address.');
-                    }
-                    else {
-                        Log::error('Mailer error while sending password reset link', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
-                    }
-
-                    return $this->module->goPodium();
+                            ]),
+                        !empty($model->getUser()->id) ? $model->getUser()->id : null
+                    )) {
+                    Log::info('Password reset link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
+                    $this->success('The password reset link has been sent to your e-mail address.');
                 }
-                catch (Exception $e) {
-                    Log::error('Error while sending password reset link', !empty($model->id) ? $model->id : '', __METHOD__);
+                else {
+                    Log::error('Error while queuing password reset link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
                     $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
                 }
+                
+                return $this->module->goPodium();
             }
             else {
                 $this->error('Sorry! We can not find the account with that user name or e-mail address.');
             }
         }
 
-        return $this->render('reset', [
-                    'model' => $model,
-        ]);
+        return $this->render('reset', ['model' => $model]);
     }
 }

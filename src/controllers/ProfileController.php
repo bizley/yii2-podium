@@ -7,10 +7,11 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
 use bizley\podium\models\User;
-use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
@@ -77,26 +78,22 @@ class ProfileController extends Controller
             if ($model->validate()) {
                 if ($model->saveChanges()) {
                     if ($model->new_email) {
-                        try {
-                            $mailer = Yii::$app->mailer->compose('/mail/new_email', [
-                                        'forum' => $this->module->getParam('name', 'Podium Forum'),
+                        
+                        if (Email::queue($model->getUser()->email, 
+                                Yii::t('podium/mail', 'New e-mail activation link at {name}', ['name' => Config::getInstance()->get('name')]),
+                                $this->renderPartial('/mail/new_email', [
+                                        'forum' => Config::getInstance()->get('name'),
                                         'link'  => Url::to(['account/new-email',
-                                            'token' => $model->email_token], true)
-                                    ])->setFrom($this->module->getParam('email', 'no-reply@podium-default.net'))
-                                    ->setTo($model->new_email)
-                                    ->setSubject(Yii::t('podium/mail', 'New e-mail activation link at {NAME}', ['NAME' => $this->module->getParam('name', 'Podium Forum')]));
-                            if ($mailer->send()) {
-                                Log::info('New email activation link sent', !empty($model->id) ? $model->id : '', __METHOD__);
-                                $this->success('Your account has been updated but your new e-mail address is not active yet. Click the activation link that has been sent to your new e-mail address.');
-                            }
-                            else {
-                                Log::error('Mailer error while sending new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                                $this->warning('Your account has been updated but your new e-mail address is not active yet. '
-                                        . 'Unfortunately there was some error while sending you the activation link. '
-                                        . 'Contact administrator about this problem.');
-                            }
-                        } catch (Exception $e) {
-                            Log::error('Error while sending new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                                        'token' => $model->email_token], true)
+                                    ]),
+                                !empty($model->id) ? $model->id : null
+                            )) {
+                            Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                            $this->success('Your account has been updated but your new e-mail address is not active yet. '
+                                    . 'Click the activation link that has been sent to your new e-mail address.');
+                        }
+                        else {
+                            Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->warning('Your account has been updated but your new e-mail address is not active yet. '
                                     . 'Unfortunately there was some error while sending you the activation link. '
                                     . 'Contact administrator about this problem.');
@@ -115,9 +112,7 @@ class ProfileController extends Controller
             }
         }
 
-        return $this->render('details', [
-                    'model' => $model
-        ]);
+        return $this->render('details', ['model' => $model]);
     }
     
     /**
@@ -191,9 +186,7 @@ class ProfileController extends Controller
             return $this->redirect(['account/login']);
         }
 
-        return $this->render('profile', [
-                    'model' => $model
-        ]);
+        return $this->render('profile', ['model' => $model]);
     }
     
     /**

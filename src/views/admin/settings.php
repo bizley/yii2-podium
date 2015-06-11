@@ -36,6 +36,21 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model, 'from_email')->textInput()->label(Yii::t('podium/view', 'Podium "From" email address')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'from_name')->textInput()->label(Yii::t('podium/view', 'Podium "From" email name')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'max_attempts')->textInput()->label(Yii::t('podium/view', 'Maximum number of email sending attempts before giving up')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model, 'version')->textInput(['readonly' => true])->label(Yii::t('podium/view', 'Database version')) ?>
                     </div>
                 </div>
