@@ -1,6 +1,6 @@
 <?php
 
-namespace bizley\podium\console\controllers;
+namespace bizley\podium\console;
 
 use bizley\podium\models\Email;
 use yii\console\Controller;
@@ -9,7 +9,13 @@ use yii\db\Query;
 use yii\di\Instance;
 use yii\helpers\Console;
 
-
+/**
+ * Podium command line tool to send emails.
+ *
+ * @author Tobias Munk <schmunk@usrbin.de>
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since  2.0
+ */
 class QueueController extends Controller
 {
 
@@ -62,6 +68,9 @@ class QueueController extends Controller
         return (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_PENDING])->orderBy(['id' => SORT_ASC])->limit((int)$limit)->all();
     }
 
+    /**
+     * Sends the batch of emails from the queue.
+     */
     public function actionRun($limit = 0)
     {
         $emails = $this->getNewBatch($limit);
@@ -90,16 +99,33 @@ class QueueController extends Controller
         }
     }
     
+    public function actionIndex()
+    {
+        $this->run('/help', ['podium']);
+    }
+    
+    /**
+     * Checks the current status for the mail queue.
+     */
     public function actionCheck()
     {
-        $this->stdout("Queue status:\n");
+        $version = $this->module->version;
+        $this->stdout("\nPodium queue check v{$version}\n");
+        $this->stdout("------------------------------\n");
+        $this->stdout("| EMAILS  | COUNT\n");
+        $this->stdout("------------------------------\n");
         
         $pending = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_PENDING])->count();
         $sent    = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_SENT])->count();
         $gaveup  = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_GAVEUP])->count();
         
-        $this->stdout("$pending pending " . ($pending === 1 ? 'email' : 'emails') . ".\n", Console::FG_YELLOW);
-        $this->stdout("$sent sent " . ($sent === 1 ? 'email' : 'emails') . ".\n", Console::FG_GREEN);
-        $this->stdout("$gaveup " . ($gaveup === 1 ? 'email' : 'emails') . " stucked.\n", Console::FG_RED);
+        $showPending = $this->ansiFormat($pending, Console::FG_YELLOW);
+        $showSent    = $this->ansiFormat($sent, Console::FG_GREEN);
+        $showGaveup  = $this->ansiFormat($gaveup, Console::FG_RED);
+        
+        $this->stdout("| pending | $showPending\n");
+        $this->stdout("| sent    | $showSent\n");
+        $this->stdout("| stucked | $showGaveup\n");
+        $this->stdout("------------------------------\n\n");
     }
 }
