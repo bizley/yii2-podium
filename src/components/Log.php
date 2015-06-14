@@ -20,7 +20,7 @@ class Log
     
     public static function blame()
     {
-        if (!Yii::$app->user->isGuest) {
+        if (Yii::$app instanceof \yii\web\Application && !Yii::$app->user->isGuest) {
             return Yii::$app->user->id;
         }
         return null;

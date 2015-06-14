@@ -7,7 +7,6 @@
  * seo
  * grupy userow
  * subskrypcje watkow
- * massmailing
  * regulamin
  * upgrade bazy
  * box latest topics
@@ -172,10 +171,7 @@ class Module extends BaseModule implements BootstrapInterface
             $app->getLog()->targets['podium'] = $dbTarget;
         }
         elseif ($app instanceof \yii\console\Application) {
-            $app->controllerMap[$this->id] = [
-                'class'  => 'bizley\podium\console\QueueController',
-                'module' => $this
-            ];
+            $app->getModule('podium')->controllerNamespace = 'bizley\podium\console';
         }
     }
 
