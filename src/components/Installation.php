@@ -57,84 +57,222 @@ class Installation extends Component
      */
     protected $_steps = [
         [
-            'table'   => 'config',
-            'call'    => 'createConfig',
-            'percent' => 1
+            'table'  => 'config',
+            'call'   => 'create',
+            'schema' => [
+                'name'  => Schema::TYPE_STRING . ' NOT NULL',
+                'value' => Schema::TYPE_STRING . ' NOT NULL',
+                'PRIMARY KEY (name)',
+            ],
+            'after' => [
+                [
+                    'table' => 'config',
+                    'call'  => 'add',
+                ],
+            ],
         ],
         [
-            'table'   => 'config',
-            'call'    => 'addConfig',
-            'percent' => 4
+            'table'  => 'log',
+            'call'   => 'create',
+            'schema' => [
+                'id'       => Schema::TYPE_BIGPK,
+                'level'    => Schema::TYPE_INTEGER,
+                'category' => Schema::TYPE_STRING,
+                'log_time' => Schema::TYPE_DOUBLE,
+                'prefix'   => Schema::TYPE_TEXT,
+                'message'  => Schema::TYPE_TEXT,
+                'model'    => Schema::TYPE_INTEGER,
+                'blame'    => Schema::TYPE_INTEGER,
+            ],
+            'after' => [
+                [
+                    'table' => 'log',
+                    'call'  => 'index',
+                    'name'  => 'level',
+                    'cols'  => ['level'],
+                ],
+                [
+                    'table' => 'log',
+                    'call'  => 'index',
+                    'name'  => 'category',
+                    'cols'  => ['category'],
+                ],
+                [
+                    'table' => 'log',
+                    'call'  => 'index',
+                    'name'  => 'model',
+                    'cols'  => ['model'],
+                ],
+                [
+                    'table' => 'log',
+                    'call'  => 'index',
+                    'name'  => 'blame',
+                    'cols'  => ['blame'],
+                ],
+            ]
         ],
         [
-            'table'   => 'log',
-            'call'    => 'createLog',
-            'percent' => 7
+            'table'  => 'category',
+            'call'   => 'create',
+            'schema' => [
+                'id'         => Schema::TYPE_PK,
+                'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                'slug'       => Schema::TYPE_STRING . ' NOT NULL',
+                'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+            ]
         ],
         [
-            'table'   => 'log',
-            'call'    => 'createLogLevelIndex',
-            'percent' => 8
+            'table'  => 'forum',
+            'call'   => 'create',
+            'schema' => [
+                'id'          => Schema::TYPE_PK,
+                'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'name'        => Schema::TYPE_STRING . ' NOT NULL',
+                'sub'         => Schema::TYPE_STRING,
+                'slug'        => Schema::TYPE_STRING . ' NOT NULL',
+                'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+            ],
+            'after' => [
+                [
+                    'table'  => 'forum',
+                    'call'   => 'foreign',
+                    'key'    => 'category_id',
+                    'ref'    => 'category',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+            ],
         ],
         [
-            'table'   => 'log',
-            'call'    => 'createLogCategoryIndex',
-            'percent' => 9
+            'table'  => 'thread',
+            'call'   => 'create',
+            'schema' => [
+                'id'             => Schema::TYPE_PK,
+                'name'           => Schema::TYPE_STRING . ' NOT NULL',
+                'slug'           => Schema::TYPE_STRING . ' NOT NULL',
+                'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+            ],
+            'after' => [
+                [
+                    'table'  => 'thread',
+                    'call'   => 'foreign',
+                    'key'    => 'category_id',
+                    'ref'    => 'category',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+                [
+                    'table'  => 'thread',
+                    'call'   => 'foreign',
+                    'key'    => 'forum_id',
+                    'ref'    => 'forum',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+            ],
         ],
         [
-            'table'   => 'log',
-            'call'    => 'createLogModelIndex',
-            'percent' => 10
+            'table'  => 'post',
+            'call'   => 'create',
+            'schema' => [
+                'id'         => Schema::TYPE_PK,
+                'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+            ],
+            'after' => [
+                [
+                    'table'  => 'post',
+                    'call'   => 'foreign',
+                    'key'    => 'thread_id',
+                    'ref'    => 'thread',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+                [
+                    'table'  => 'post',
+                    'call'   => 'foreign',
+                    'key'    => 'forum_id',
+                    'ref'    => 'forum',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+            ],
         ],
         [
-            'table'   => 'email',
-            'call'    => 'createEmail',
-            'percent' => 11
+            'table'  => 'vocabulary',
+            'call'   => 'create',
+            'schema' => [
+                'id'   => Schema::TYPE_PK,
+                'word' => Schema::TYPE_STRING . ' NOT NULL',
+            ],
+            'after' => [
+                [
+                    'table' => 'vocabulary',
+                    'call'  => 'index',
+                    'name'  => 'word',
+                    'cols'  => ['word'],
+                ]
+            ]
         ],
         [
-            'table'   => 'email',
-            'call'    => 'createEmailIndex',
-            'percent' => 12
-        ],
-        [
-            'table'   => 'log',
-            'call'    => 'createLogBlameIndex',
-            'percent' => 13
-        ],
-        [
-            'table'   => 'category',
-            'call'    => 'createCategory',
-            'percent' => 14
-        ],
-        [
-            'table'   => 'forum',
-            'call'    => 'createForum',
-            'percent' => 15
-        ],
-        [
-            'table'   => 'thread',
-            'call'    => 'createThread',
-            'percent' => 16
-        ],
-        [
-            'table'   => 'post',
-            'call'    => 'createPost',
-            'percent' => 19
-        ],
-        [
-            'table'   => 'vocabulary',
-            'call'    => 'createVocabulary',
-            'percent' => 21
-        ],
-        [
-            'table'   => 'vocabulary',
-            'call'    => 'createVocabularyIndex',
-            'percent' => 24
-        ],
-        [
-            'table'   => 'vocabulary_junction',
-            'call'    => 'createVocabularyJunction',
-            'percent' => 25
+            'table'  => 'vocabulary_junction',
+            'call'   => 'create',
+            'schema' => [
+                'id'      => Schema::TYPE_PK,
+                'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+            ],
+            'after' => [
+                [
+                    'table'  => 'vocabulary_junction',
+                    'call'   => 'foreign',
+                    'key'    => 'word_id',
+                    'ref'    => 'vocabulary',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+                [
+                    'table'  => 'vocabulary_junction',
+                    'call'   => 'foreign',
+                    'key'    => 'post_id',
+                    'ref'    => 'post',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+            ],
         ],
         [
             'table'   => 'message',
@@ -205,6 +343,32 @@ class Installation extends Component
             'table'   => 'user_activity',
             'call'    => 'createUserActivityIndex',
             'percent' => 66
+        ],
+        [
+            'table'  => 'email',
+            'call'   => 'create',
+            'schema' => [
+                'id'         => Schema::TYPE_PK,
+                'user_id'    => Schema::TYPE_INTEGER,
+                'email'      => Schema::TYPE_STRING . ' NOT NULL',
+                'subject'    => Schema::TYPE_TEXT . ' NOT NULL',
+                'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                'status'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'attempt'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+            ],
+            'after' => [
+                [
+                    'table'  => 'email',
+                    'call'   => 'foreign',
+                    'key'    => 'user_id',
+                    'ref'    => 'user',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+            ],
         ],
         [
             'table'   => 'thread_view',
