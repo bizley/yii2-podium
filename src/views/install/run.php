@@ -7,7 +7,7 @@ $js = "var nextStep = function(step){
     jQuery.ajax({
         url: '" . Url::to(['install/import']) . "',
         method: 'POST',
-        data: {step: step},
+        data: {step: step, drop: jQuery('#drop')[0].checked},
         dataType: 'json'
     }).fail(function(){
         jQuery('#progressBar').addClass('hide');
@@ -18,7 +18,7 @@ $js = "var nextStep = function(step){
         if (data.percent < 100) nextStep(++step);
         else {
             jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
-            if (data.error) jQuery('#installationFinishedWarning').removeClass('hide');
+            if (data.error) jQuery('#installationFinishedError').removeClass('hide');
             else jQuery('#installationFinished').removeClass('hide');
         }
     });
@@ -35,20 +35,22 @@ $this->registerJs($js, View::POS_READY, 'podium-install');
 
 $this->title                   = Yii::t('podium/view', 'Podium Installation');
 $this->params['breadcrumbs'][] = $this->title;
+$this->params['no-search']     = true;
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
-        <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the administration account and sample posts. Pre-existing data will not be removed.') ?></em><br><br>
+        <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br><br>
+        <label class="text-danger large"><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br><br>
         <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Create database tables required by Podium') ?></button>
     </div>
 </div>
 <div class="row hide" id="installationResults">
     <div class="text-center col-sm-8 col-sm-offset-2" id="progressBar">
         <?= Progress::widget([
-            'percent' => 0,
-            'label' => '0%',
+            'percent'    => 0,
+            'label'      => '0%',
             'barOptions' => ['class' => 'progress-bar progress-bar-striped active'],
-            'options' => ['class' => 'progress']
+            'options'    => ['class' => 'progress']
         ]) ?>      
     </div>
     <div class="col-sm-8 col-sm-offset-2 hide" id="installationError">
@@ -59,9 +61,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <a href="<?= Url::to(['default/index']) ?>" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Installation finished') ?></a>
         </div>
     </div>
-    <div class="row hide" id="installationFinishedWarning">
+    <div class="row hide" id="installationFinishedError">
         <div class="text-center col-sm-12">
-            <a href="<?= Url::to(['default/index']) ?>" class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Installation finished with warnings') ?></a>
+            <button class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Errors during installation') ?></button>
         </div>
     </div><br>
     <div class="col-sm-8 col-sm-offset-2" id="installationProgress">

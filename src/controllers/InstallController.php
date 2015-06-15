@@ -50,8 +50,9 @@ class InstallController extends Controller
 
         if (Yii::$app->request->isPost) {
             $step = Yii::$app->request->post('step');
+            
             if (is_numeric($step)) {
-                $result = (new Installation())->step($step);
+                $result = (new Installation)->step($step, Yii::$app->request->post('drop'));
             }
         }
 
@@ -76,5 +77,23 @@ class InstallController extends Controller
         $this->_passCheck();
         
         return $this->render('run');
-    }    
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if (in_array($action->id, ['import', 'run'])) {
+            if (!empty(Yii::$app->getLog()->targets['podium'])) {
+                Yii::$app->getLog()->targets['podium']->enabled = false;
+            }
+        }
+        
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        return true;
+    }
 }

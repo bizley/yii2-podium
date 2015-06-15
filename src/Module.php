@@ -88,7 +88,7 @@ class Module extends BaseModule implements BootstrapInterface
     {
         $parentResult = parent::afterAction($action, $result);
 
-        if (Yii::$app instanceof \yii\web\Application) {
+        if (Yii::$app instanceof \yii\web\Application && !in_array($action->id, ['import', 'run'])) {
             Activity::add();
         }
 

@@ -6,9 +6,10 @@ use yii\widgets\Breadcrumbs;
 ?>
 
 <div class="row">
-    <div class="col-sm-9">
+    <div class="col-sm-<?= isset($this->params['no-search']) && $this->params['no-search'] === true ? '12' : '9' ?>">
         <?= Breadcrumbs::widget(['links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []]); ?>
     </div>
+<?php if (!isset($this->params['no-search']) || $this->params['no-search'] !== true): ?>
     <div class="col-sm-3">
         <?= Html::beginForm(['default/search'], 'get'); ?>
         <div class="input-group">
@@ -22,4 +23,5 @@ use yii\widgets\Breadcrumbs;
         </div>
         <?= Html::endForm(); ?>
     </div>
+<?php endif; ?>
 </div>

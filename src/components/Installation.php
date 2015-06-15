@@ -33,365 +33,37 @@ class Installation extends Component
 {
 
     /**
+     * @var DbManager authorization manager.
+     */
+    public $authManager = 'authManager';
+    
+    /**
      * @var Connection database connection.
      */
     public $db = 'db';
 
     /**
-     * @var DbManager authorization manager.
+     * @var number of steps
      */
-    public $authManager = 'authManager';
-
+    protected $_count = 0;
+    
     /**
      * @var boolean errors flag.
      */
     protected $_errors = false;
+
+    protected $_path;
+    protected $_table;
+    protected $_percent;
+    protected $_result;
+    protected $_next;
+
 
     /**
      * @var string Podium database prefix.
      */
     protected $_prefix = 'podium_';
 
-    /**
-     * @var array installation steps.
-     */
-    protected $_steps = [
-        [
-            'table'  => 'config',
-            'call'   => 'create',
-            'schema' => [
-                'name'  => Schema::TYPE_STRING . ' NOT NULL',
-                'value' => Schema::TYPE_STRING . ' NOT NULL',
-                'PRIMARY KEY (name)',
-            ],
-            'after' => [
-                [
-                    'table' => 'config',
-                    'call'  => 'add',
-                ],
-            ],
-        ],
-        [
-            'table'  => 'log',
-            'call'   => 'create',
-            'schema' => [
-                'id'       => Schema::TYPE_BIGPK,
-                'level'    => Schema::TYPE_INTEGER,
-                'category' => Schema::TYPE_STRING,
-                'log_time' => Schema::TYPE_DOUBLE,
-                'prefix'   => Schema::TYPE_TEXT,
-                'message'  => Schema::TYPE_TEXT,
-                'model'    => Schema::TYPE_INTEGER,
-                'blame'    => Schema::TYPE_INTEGER,
-            ],
-            'after' => [
-                [
-                    'table' => 'log',
-                    'call'  => 'index',
-                    'name'  => 'level',
-                    'cols'  => ['level'],
-                ],
-                [
-                    'table' => 'log',
-                    'call'  => 'index',
-                    'name'  => 'category',
-                    'cols'  => ['category'],
-                ],
-                [
-                    'table' => 'log',
-                    'call'  => 'index',
-                    'name'  => 'model',
-                    'cols'  => ['model'],
-                ],
-                [
-                    'table' => 'log',
-                    'call'  => 'index',
-                    'name'  => 'blame',
-                    'cols'  => ['blame'],
-                ],
-            ]
-        ],
-        [
-            'table'  => 'category',
-            'call'   => 'create',
-            'schema' => [
-                'id'         => Schema::TYPE_PK,
-                'name'       => Schema::TYPE_STRING . ' NOT NULL',
-                'slug'       => Schema::TYPE_STRING . ' NOT NULL',
-                'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-            ]
-        ],
-        [
-            'table'  => 'forum',
-            'call'   => 'create',
-            'schema' => [
-                'id'          => Schema::TYPE_PK,
-                'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'name'        => Schema::TYPE_STRING . ' NOT NULL',
-                'sub'         => Schema::TYPE_STRING,
-                'slug'        => Schema::TYPE_STRING . ' NOT NULL',
-                'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-            ],
-            'after' => [
-                [
-                    'table'  => 'forum',
-                    'call'   => 'foreign',
-                    'key'    => 'category_id',
-                    'ref'    => 'category',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-            ],
-        ],
-        [
-            'table'  => 'thread',
-            'call'   => 'create',
-            'schema' => [
-                'id'             => Schema::TYPE_PK,
-                'name'           => Schema::TYPE_STRING . ' NOT NULL',
-                'slug'           => Schema::TYPE_STRING . ' NOT NULL',
-                'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
-                'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
-                'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-            ],
-            'after' => [
-                [
-                    'table'  => 'thread',
-                    'call'   => 'foreign',
-                    'key'    => 'category_id',
-                    'ref'    => 'category',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-                [
-                    'table'  => 'thread',
-                    'call'   => 'foreign',
-                    'key'    => 'forum_id',
-                    'ref'    => 'forum',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-            ],
-        ],
-        [
-            'table'  => 'post',
-            'call'   => 'create',
-            'schema' => [
-                'id'         => Schema::TYPE_PK,
-                'content'    => Schema::TYPE_TEXT . ' NOT NULL',
-                'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-            ],
-            'after' => [
-                [
-                    'table'  => 'post',
-                    'call'   => 'foreign',
-                    'key'    => 'thread_id',
-                    'ref'    => 'thread',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-                [
-                    'table'  => 'post',
-                    'call'   => 'foreign',
-                    'key'    => 'forum_id',
-                    'ref'    => 'forum',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-            ],
-        ],
-        [
-            'table'  => 'vocabulary',
-            'call'   => 'create',
-            'schema' => [
-                'id'   => Schema::TYPE_PK,
-                'word' => Schema::TYPE_STRING . ' NOT NULL',
-            ],
-            'after' => [
-                [
-                    'table' => 'vocabulary',
-                    'call'  => 'index',
-                    'name'  => 'word',
-                    'cols'  => ['word'],
-                ]
-            ]
-        ],
-        [
-            'table'  => 'vocabulary_junction',
-            'call'   => 'create',
-            'schema' => [
-                'id'      => Schema::TYPE_PK,
-                'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-            ],
-            'after' => [
-                [
-                    'table'  => 'vocabulary_junction',
-                    'call'   => 'foreign',
-                    'key'    => 'word_id',
-                    'ref'    => 'vocabulary',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-                [
-                    'table'  => 'vocabulary_junction',
-                    'call'   => 'foreign',
-                    'key'    => 'post_id',
-                    'ref'    => 'post',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-            ],
-        ],
-        [
-            'table'   => 'message',
-            'call'    => 'createMessage',
-            'percent' => 27
-        ],
-        [
-            'table'   => 'message',
-            'call'    => 'createMessageSenderIndex',
-            'percent' => 30
-        ],
-        [
-            'table'   => 'message',
-            'call'    => 'createMessageReceiverIndex',
-            'percent' => 33
-        ],
-        [
-            'table'   => 'auth_rule',
-            'call'    => 'createAuthRule',
-            'percent' => 36
-        ],
-        [
-            'table'   => 'auth_item',
-            'call'    => 'createAuthItem',
-            'percent' => 39
-        ],
-        [
-            'table'   => 'auth_item',
-            'call'    => 'createAuthItemIndex',
-            'percent' => 42
-        ],
-        [
-            'table'   => 'auth_item_child',
-            'call'    => 'createAuthItemChild',
-            'percent' => 45
-        ],
-        [
-            'table'   => 'auth_assignment',
-            'call'    => 'createAuthAssignment',
-            'percent' => 48
-        ],
-        [
-            'table'   => 'auth_rule',
-            'call'    => 'addRules',
-            'percent' => 51
-        ],
-        [
-            'table'   => 'user',
-            'call'    => 'createUser',
-            'percent' => 54
-        ],
-        [
-            'table'   => 'user_meta',
-            'call'    => 'createUserMeta',
-            'percent' => 57
-        ],
-        [
-            'table'   => 'user_ignore',
-            'call'    => 'createUserIgnore',
-            'percent' => 60
-        ],
-        [
-            'table'   => 'user_activity',
-            'call'    => 'createUserActivity',
-            'percent' => 63
-        ],
-        [
-            'table'   => 'user_activity',
-            'call'    => 'createUserActivityIndex',
-            'percent' => 66
-        ],
-        [
-            'table'  => 'email',
-            'call'   => 'create',
-            'schema' => [
-                'id'         => Schema::TYPE_PK,
-                'user_id'    => Schema::TYPE_INTEGER,
-                'email'      => Schema::TYPE_STRING . ' NOT NULL',
-                'subject'    => Schema::TYPE_TEXT . ' NOT NULL',
-                'content'    => Schema::TYPE_TEXT . ' NOT NULL',
-                'status'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'attempt'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-            ],
-            'after' => [
-                [
-                    'table'  => 'email',
-                    'call'   => 'foreign',
-                    'key'    => 'user_id',
-                    'ref'    => 'user',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-            ],
-        ],
-        [
-            'table'   => 'thread_view',
-            'call'    => 'createThreadView',
-            'percent' => 69
-        ],
-        [
-            'table'   => 'post_thumb',
-            'call'    => 'createPostThumb',
-            'percent' => 72
-        ],
-        [
-            'table'   => 'moderator',
-            'call'    => 'createModerator',
-            'percent' => 75
-        ],
-        [
-            'table'   => 'user',
-            'call'    => 'addAdmin',
-            'percent' => 100
-        ],
-    ];
-    
     /**
      * @var string additional SQL fragment that will be appended to the generated SQL.
      */
@@ -416,7 +88,7 @@ class Installation extends Component
 
                 $this->authManager->assign($this->authManager->getRole('admin'), $admin->getId());
 
-                return $this->_outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
+                return $this->outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
                                 ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
                                 ' ' . Html::tag('kbd', 'admin') .
                                 ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
@@ -424,14 +96,14 @@ class Installation extends Component
             }
             else {
                 $this->_errors = true;
-                return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
+                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                                 Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
@@ -452,12 +124,12 @@ class Installation extends Component
                     ['from_name', 'Podium'],
                     ['max_attempts', '5'],
                 ])->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
         }
     }
 
@@ -607,170 +279,26 @@ class Installation extends Component
             $this->authManager->addChild($admin, $settings);
             $this->authManager->addChild($admin, $moderator);
 
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
-    /**
-     * Creates Authorization Assignment database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createAuthAssignment($name)
+    protected function _count($array)
     {
-        return $this->_createTable($name, [
-                    'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'created_at' => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (item_name, user_id)',
-                    'FOREIGN KEY (item_name) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Authorization Item database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createAuthItem($name)
-    {
-        return $this->_createTable($name, [
-                    'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'description' => Schema::TYPE_TEXT,
-                    'rule_name'   => Schema::TYPE_STRING . '(64)',
-                    'data'        => Schema::TYPE_TEXT,
-                    'created_at'  => Schema::TYPE_INTEGER,
-                    'updated_at'  => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (name)',
-                    'FOREIGN KEY (rule_name) REFERENCES {{%podium_auth_rule}} (name) ON DELETE SET NULL ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Authorization Item Child database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createAuthItemChild($name)
-    {
-        return $this->_createTable($name, [
-                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'PRIMARY KEY (parent, child)',
-                    'FOREIGN KEY (parent) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (child) REFERENCES {{%podium_auth_item}} (name) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Authorization Item database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createAuthItemIndex($name)
-    {
-        return $this->_createIndex('idx-podium_auth_item-type', $name, 'type');
-    }
-
-    /**
-     * Creates Authorization Rule database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createAuthRule($name)
-    {
-        return $this->_createTable($name, [
-                    'name'       => Schema::TYPE_STRING . '(64) NOT NULL',
-                    'data'       => Schema::TYPE_TEXT,
-                    'created_at' => Schema::TYPE_INTEGER,
-                    'updated_at' => Schema::TYPE_INTEGER,
-                    'PRIMARY KEY (name)',
-        ]);
-    }
-
-    /**
-     * Creates Config database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createConfig($name)
-    {
-        return $this->_createTable($name, [
-                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
-                    'value' => Schema::TYPE_STRING . ' NOT NULL',
-                    'PRIMARY KEY (name)',
-        ]);
-    }
-
-    /**
-     * Creates Category database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createCategory($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-        ]);
-    }
-
-    /**
-     * Creates Email database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createEmail($name)
-    {
-        return $this->_createTable($name, [
-                    'id'          => Schema::TYPE_PK,
-                    'user_id'     => Schema::TYPE_INTEGER,
-                    'email'       => Schema::TYPE_STRING . ' NOT NULL',
-                    'subject'     => Schema::TYPE_TEXT . ' NOT NULL',
-                    'content'     => Schema::TYPE_TEXT . ' NOT NULL',
-                    'status'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'attempt'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
+        foreach ($array as $step) {
+            $this->_count++;
+            if (!empty($step['after'])) {
+                $this->_count($step['after']);
+            }
+        }
     }
     
-    /**
-     * Creates Forum database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createForum($name)
-    {
-        return $this->_createTable($name, [
-                    'id'          => Schema::TYPE_PK,
-                    'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'name'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'sub'         => Schema::TYPE_STRING,
-                    'slug'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
     /**
      * Creates database table index.
      * @param string $index index name.
@@ -782,173 +310,14 @@ class Installation extends Component
     {
         try {
             $this->db->createCommand()->createIndex($index, $name, $columns)->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
-    }
-
-    /**
-     * Creates Log database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createLog($name)
-    {
-        return $this->_createTable($name, [
-                    'id'       => Schema::TYPE_BIGPK,
-                    'level'    => Schema::TYPE_INTEGER,
-                    'category' => Schema::TYPE_STRING,
-                    'log_time' => Schema::TYPE_DOUBLE,
-                    'prefix'   => Schema::TYPE_TEXT,
-                    'message'  => Schema::TYPE_TEXT,
-                    'model'    => Schema::TYPE_INTEGER,
-                    'blame'    => Schema::TYPE_INTEGER,
-        ]);
-    }
-    
-    /**
-     * Creates Log database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createLogBlameIndex($name)
-    {
-        return $this->_createIndex('idx-podium_log-blame', $name, 'blame');
-    }
-    
-    /**
-     * Creates Log database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createLogCategoryIndex($name)
-    {
-        return $this->_createIndex('idx-podium_log-category', $name, 'category');
-    }
-    
-    /**
-     * Creates Log database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createLogModelIndex($name)
-    {
-        return $this->_createIndex('idx-podium_log-model', $name, 'model');
-    }
-    
-    /**
-     * Creates Log database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createLogLevelIndex($name)
-    {
-        return $this->_createIndex('idx-podium_log-level', $name, 'level');
-    }
-    
-    /**
-     * Creates Message database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createMessage($name)
-    {
-        return $this->_createTable($name, [
-                    'id'              => Schema::TYPE_PK,
-                    'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'receiver_id'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'topic'           => Schema::TYPE_STRING . ' NOT NULL',
-                    'content'         => Schema::TYPE_TEXT . ' NOT NULL',
-                    'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'receiver_status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                    'replyto'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
-        ]);
-    }
-
-    /**
-     * Creates Message database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createMessageReceiverIndex($name)
-    {
-        return $this->_createIndex('idx-podium_message-receiver_id', $name, 'receiver_id');
-    }
-
-    /**
-     * Creates Message database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createMessageSenderIndex($name)
-    {
-        return $this->_createIndex('idx-podium_message-sender_id', $name, 'sender_id');
-    }
-
-    /**
-     * Creates Moderator database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createModerator($name)
-    {
-        return $this->_createTable($name, [
-                    'id'       => Schema::TYPE_PK,
-                    'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'forum_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Post database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createPost($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'content'    => Schema::TYPE_TEXT . ' NOT NULL',
-                    'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'FOREIGN KEY (thread_id) REFERENCES {{%podium_thread}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Post Thumb database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createPostThumb($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'post_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'thumb'      => Schema::TYPE_SMALLINT . ' NOT NULL',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (post_id) REFERENCES {{%podium_post}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
     }
 
     /**
@@ -961,69 +330,576 @@ class Installation extends Component
     {
         try {
             $this->db->createCommand()->createTable($name, $columns, $this->_tableOptions)->execute();
-            return $this->_outputSuccess(Yii::t('podium/flash', 'Table has been created'));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table has been created'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->_errors = true;
-            return $this->_outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
     /**
-     * Creates Thread database table.
-     * @param string $name table name.
-     * @return string result message.
+     * Prepares error message.
+     * @param string $content message content.
+     * @return string prepared message.
      */
-    protected function _createThread($name)
+    public function outputDanger($content)
     {
-        return $this->_createTable($name, [
-                    'id'             => Schema::TYPE_PK,
-                    'name'           => Schema::TYPE_STRING . ' NOT NULL',
-                    'slug'           => Schema::TYPE_STRING . ' NOT NULL',
-                    'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                    'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (category_id) REFERENCES {{%podium_category}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (forum_id) REFERENCES {{%podium_forum}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
+        return Html::tag('span', $content, ['class' => 'text-danger']);
     }
 
     /**
-     * Creates Thread View database table.
-     * @param string $name table name.
-     * @return string result message.
+     * Prepares success message.
+     * @param string $content message content.
+     * @return string prepared message.
      */
-    protected function _createThreadView($name)
+    public function outputSuccess($content)
     {
-        return $this->_createTable($name, [
-                    'id'               => Schema::TYPE_PK,
-                    'user_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'thread_id'        => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'new_last_seen'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'edited_last_seen' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (thread_id) REFERENCES {{%podium_thread}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
+        return Html::tag('span', $content, ['class' => 'text-success']);
     }
 
     /**
-     * Creates User database table.
-     * @param string $name table name.
-     * @return string result message.
+     * Checks if User database table exists.
+     * @return boolean wheter User database exists.
      */
-    protected function _createUser($name)
+    public static function check()
     {
-        return $this->_createTable($name, [
+        try {
+            (new User())->getTableSchema();
+            return true;
+        }
+        catch (Exception $e) {
+            Yii::warning('Podium user database table not found - preparing for installation', __METHOD__);
+        }
+
+        return false;
+    }
+
+    public function getCount()
+    {
+        if ($this->_count === 0) {
+            $this->_count(static::steps());
+        }
+        return $this->_count;
+    }
+    
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+    
+    public function getTableOptions()
+    {
+        return $this->_tableOptions;
+    }
+    
+    /**
+     * Initialise component.
+     */
+    public function init()
+    {
+        parent::init();
+
+        try {
+            $this->db = Instance::ensure($this->db, Connection::className());
+            if ($this->db->driverName === 'mysql') {
+                $this->setTableOptions('CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
+            }
+            $this->authManager = Instance::ensure($this->authManager, DbManager::className());
+        }
+        catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+        }
+    }
+    
+    public function setCount()
+    {
+        throw new Exception('Don\'t set count directly.');
+    }
+    
+    public function setErrors($value)
+    {
+        $this->_errors = $value ? true : false;
+    }
+    
+    public function setTableOptions($value)
+    {
+        $this->_tableOptions = $value;
+    }
+    
+    public function setPath($value)
+    {
+        $this->_path = explode('#', str_replace('-', '#after#', $value));
+    }
+    
+    public function getPath()
+    {
+        return $this->_path;
+    }
+    
+    public function setTable($install, $direct = '-')
+    {
+        if (!empty($install)) {
+            $this->_table = $direct;
+        }
+        else {
+            if (!isset($install['table'])) {
+                throw new Exception(Yii::t('podium/flash', 'No table element in the installation step.'));
+            }
+            else {
+                $this->_table = $install['table'];
+            }
+        }
+    }
+    
+    public function getTable()
+    {
+        return $this->_table;
+    }
+    
+    public function setPercent($value)
+    {
+        $this->_percent = (int)$value;
+    }
+    
+    public function getPercent()
+    {
+        return $this->_percent;
+    }
+    
+    public function setNext($value)
+    {
+        $this->_next = $value;
+    }
+    
+    public function getNext()
+    {
+        return $this->_next;
+    }
+    
+    public function setResult($value)
+    {
+        $this->_result = $value;
+    }
+    
+    public function getResult()
+    {
+        return $this->_result;
+    }
+    
+    /**
+     * Starts next step of installation.
+     * @param string $step step number.
+     * @param string $drop wheter to drop table prior to creating it.
+     * @return array step data.
+     */
+    public function step($step, $drop = 'false')
+    {
+        try {
+            $this->setPath($step);
+
+            $install = static::steps();
+            foreach ($this->getPath() as $nextLevel) {
+                if (!isset($install[$nextLevel])) {
+                    $this->setErrors(true);
+                    $this->setTable(null);
+                    $this->setPercent(100);
+                    $this->setNext('stop');
+                    $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
+                    break;
+                }
+                else {
+                    $install = $install[$nextLevel];
+                }
+            }
+
+            $this->setTable($install['table']);
+
+
+
+            $proceed = $this->{'_' . $this->_steps[$step]['call']}('{{%' . $this->_prefix . $this->_steps[$step]['table'] . '}}');
+
+            return [
+                'table'   => $this->_prefix . $this->_steps[$step]['table'],
+                'percent' => $this->_steps[$step]['percent'],
+                'result'  => $proceed,
+                'error'   => $this->_errors
+            ];
+            
+        }
+        catch (Exception $e) {
+            $this->setResult($this->outputDanger($e->getMessage()));
+        }
+        
+        return [
+            'table'   => $this->getTable(),
+            'percent' => $this->getPercent(),
+            'result'  => $this->getResult(),
+            'next'    => $this->getNext(),
+            'error'   => $this->getErrors(),
+        ];
+    }
+    
+    /**
+     * Installation steps.
+     */
+    public static function steps()
+    {
+        return [
+            [
+                'table'  => 'config',
+                'call'   => 'create',
+                'schema' => [
+                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'value' => Schema::TYPE_STRING . ' NOT NULL',
+                    'PRIMARY KEY (name)',
+                ],
+                'after' => [
+                    [
+                        'table' => 'config',
+                        'call'  => 'add',
+                    ],
+                ],
+            ],
+            [
+                'table'  => 'log',
+                'call'   => 'create',
+                'schema' => [
+                    'id'       => Schema::TYPE_BIGPK,
+                    'level'    => Schema::TYPE_INTEGER,
+                    'category' => Schema::TYPE_STRING,
+                    'log_time' => Schema::TYPE_DOUBLE,
+                    'prefix'   => Schema::TYPE_TEXT,
+                    'message'  => Schema::TYPE_TEXT,
+                    'model'    => Schema::TYPE_INTEGER,
+                    'blame'    => Schema::TYPE_INTEGER,
+                ],
+                'after' => [
+                    [
+                        'table' => 'log',
+                        'call'  => 'index',
+                        'name'  => 'level',
+                        'cols'  => ['level'],
+                    ],
+                    [
+                        'table' => 'log',
+                        'call'  => 'index',
+                        'name'  => 'category',
+                        'cols'  => ['category'],
+                    ],
+                    [
+                        'table' => 'log',
+                        'call'  => 'index',
+                        'name'  => 'model',
+                        'cols'  => ['model'],
+                    ],
+                    [
+                        'table' => 'log',
+                        'call'  => 'index',
+                        'name'  => 'blame',
+                        'cols'  => ['blame'],
+                    ],
+                ]
+            ],
+            [
+                'table'  => 'category',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'name'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'       => Schema::TYPE_STRING . ' NOT NULL',
+                    'visible'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'sort'       => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+                'after' => [
+                    [
+                        'table'  => 'forum',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'          => Schema::TYPE_PK,
+                            'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'name'        => Schema::TYPE_STRING . ' NOT NULL',
+                            'sub'         => Schema::TYPE_STRING,
+                            'slug'        => Schema::TYPE_STRING . ' NOT NULL',
+                            'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                            'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                            'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                            'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                            'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'forum',
+                                'call'   => 'foreign',
+                                'key'    => 'category_id',
+                                'ref'    => 'category',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table'  => 'thread',
+                                'call'   => 'create',
+                                'schema' => [
+                                    'id'             => Schema::TYPE_PK,
+                                    'name'           => Schema::TYPE_STRING . ' NOT NULL',
+                                    'slug'           => Schema::TYPE_STRING . ' NOT NULL',
+                                    'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                                    'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                                    'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                                    'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                                    'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                                    'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                                ],
+                                'after' => [
+                                    [
+                                        'table'  => 'thread',
+                                        'call'   => 'foreign',
+                                        'key'    => 'category_id',
+                                        'ref'    => 'category',
+                                        'col'    => 'id',
+                                        'delete' => 'CASCADE',
+                                        'update' => 'CASCADE',
+                                    ],
+                                    [
+                                        'table'  => 'thread',
+                                        'call'   => 'foreign',
+                                        'key'    => 'forum_id',
+                                        'ref'    => 'forum',
+                                        'col'    => 'id',
+                                        'delete' => 'CASCADE',
+                                        'update' => 'CASCADE',
+                                    ],
+                                    [
+                                        'table'  => 'post',
+                                        'call'   => 'create',
+                                        'schema' => [
+                                            'id'         => Schema::TYPE_PK,
+                                            'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                                            'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                                            'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                                            'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                                            'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                                            'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                                            'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                                            'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                                        ],
+                                        'after' => [
+                                            [
+                                                'table'  => 'post',
+                                                'call'   => 'foreign',
+                                                'key'    => 'thread_id',
+                                                'ref'    => 'thread',
+                                                'col'    => 'id',
+                                                'delete' => 'CASCADE',
+                                                'update' => 'CASCADE',
+                                            ],
+                                            [
+                                                'table'  => 'post',
+                                                'call'   => 'foreign',
+                                                'key'    => 'forum_id',
+                                                'ref'    => 'forum',
+                                                'col'    => 'id',
+                                                'delete' => 'CASCADE',
+                                                'update' => 'CASCADE',
+                                            ],
+                                            [
+                                                'table'  => 'vocabulary',
+                                                'call'   => 'create',
+                                                'schema' => [
+                                                    'id'   => Schema::TYPE_PK,
+                                                    'word' => Schema::TYPE_STRING . ' NOT NULL',
+                                                ],
+                                                'after' => [
+                                                    [
+                                                        'table' => 'vocabulary',
+                                                        'call'  => 'index',
+                                                        'name'  => 'word',
+                                                        'cols'  => ['word'],
+                                                    ],
+                                                    [
+                                                        'table'  => 'vocabulary_junction',
+                                                        'call'   => 'create',
+                                                        'schema' => [
+                                                            'id'      => Schema::TYPE_PK,
+                                                            'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                                                            'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                                                        ],
+                                                        'after' => [
+                                                            [
+                                                                'table'  => 'vocabulary_junction',
+                                                                'call'   => 'foreign',
+                                                                'key'    => 'word_id',
+                                                                'ref'    => 'vocabulary',
+                                                                'col'    => 'id',
+                                                                'delete' => 'CASCADE',
+                                                                'update' => 'CASCADE',
+                                                            ],
+                                                            [
+                                                                'table'  => 'vocabulary_junction',
+                                                                'call'   => 'foreign',
+                                                                'key'    => 'post_id',
+                                                                'ref'    => 'post',
+                                                                'col'    => 'id',
+                                                                'delete' => 'CASCADE',
+                                                                'update' => 'CASCADE',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'table'  => 'message',
+                'call'   => 'create',
+                'schema' => [
+                    'id'              => Schema::TYPE_PK,
+                    'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'receiver_id'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'topic'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'content'         => Schema::TYPE_TEXT . ' NOT NULL',
+                    'sender_status'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'receiver_status' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'replyto'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+                'after' => [
+                    [
+                        'table' => 'message',
+                        'call'  => 'index',
+                        'name'  => 'sender_id',
+                        'cols'  => ['sender_id'],
+                    ],
+                    [
+                        'table' => 'message',
+                        'call'  => 'index',
+                        'name'  => 'receiver_id',
+                        'cols'  => ['receiver_id'],
+                    ],
+                ],
+            ],
+            [
+                'table'  => 'auth_rule',
+                'call'   => 'create',
+                'schema' => [
+                    'name'       => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'data'       => Schema::TYPE_TEXT,
+                    'created_at' => Schema::TYPE_INTEGER,
+                    'updated_at' => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (name)',
+                ],
+                'after' => [
+                    [
+                        'table'  => 'auth_item',
+                        'call'   => 'create',
+                        'schema' => [
+                            'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
+                            'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'description' => Schema::TYPE_TEXT,
+                            'rule_name'   => Schema::TYPE_STRING . '(64)',
+                            'data'        => Schema::TYPE_TEXT,
+                            'created_at'  => Schema::TYPE_INTEGER,
+                            'updated_at'  => Schema::TYPE_INTEGER,
+                            'PRIMARY KEY (name)',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'auth_item',
+                                'call'   => 'foreign',
+                                'key'    => 'rule_name',
+                                'ref'    => 'auth_rule',
+                                'col'    => 'name',
+                                'delete' => 'SET NULL',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table' => 'auth_item',
+                                'call'  => 'index',
+                                'name'  => 'type',
+                                'cols'  => ['type'],
+                            ],
+                            [
+                                'table'  => 'auth_item_child',
+                                'call'   => 'create',
+                                'schema' => [
+                                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
+                                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                                    'PRIMARY KEY (parent, child)',
+                                ],
+                                'after' => [
+                                    [
+                                        'table'  => 'auth_item_child',
+                                        'call'   => 'foreign',
+                                        'key'    => 'parent',
+                                        'ref'    => 'auth_item',
+                                        'col'    => 'name',
+                                        'delete' => 'CASCADE',
+                                        'update' => 'CASCADE',
+                                    ],
+                                    [
+                                        'table'  => 'auth_item_child',
+                                        'call'   => 'foreign',
+                                        'key'    => 'child',
+                                        'ref'    => 'auth_item',
+                                        'col'    => 'name',
+                                        'delete' => 'CASCADE',
+                                        'update' => 'CASCADE',
+                                    ],
+                                    [
+                                        'table'  => 'auth_assignment',
+                                        'call'   => 'create',
+                                        'schema' => [
+                                            'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                                            'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
+                                            'created_at' => Schema::TYPE_INTEGER,
+                                            'PRIMARY KEY (item_name, user_id)',
+                                        ],
+                                        'after' => [
+                                            [
+                                                'table'  => 'auth_assignment',
+                                                'call'   => 'foreign',
+                                                'key'    => 'item_name',
+                                                'ref'    => 'auth_item',
+                                                'col'    => 'name',
+                                                'delete' => 'CASCADE',
+                                                'update' => 'CASCADE',
+                                            ],
+                                            [
+                                                'table' => 'auth_rule',
+                                                'call'  => 'addRules',
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'table'  => 'user',
+                'call'   => 'create',
+                'schema' => [
                     'id'                   => Schema::TYPE_PK,
                     'username'             => Schema::TYPE_STRING . ' NOT NULL',
                     'slug'                 => Schema::TYPE_STRING . ' NOT NULL',
@@ -1040,182 +916,213 @@ class Installation extends Component
                     'timezone'             => Schema::TYPE_STRING . '(45)',
                     'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
-        ]);
-    }
-
-    /**
-     * Creates User Activity database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createUserActivity($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'user_id'    => Schema::TYPE_INTEGER,
-                    'username'   => Schema::TYPE_STRING,
-                    'user_slug'  => Schema::TYPE_STRING,
-                    'user_role'  => Schema::TYPE_INTEGER,
-                    'url'        => Schema::TYPE_STRING . ' NOT NULL',
-                    'ip'         => Schema::TYPE_STRING . '(15)',
-                    'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates User Activity database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createUserActivityIndex($name)
-    {
-        return $this->_createIndex('idx-podium_user_activity-ip', $name, 'ip');
-    }
-
-    /**
-     * Creates User Ignore database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createUserIgnore($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'ignored_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (ignored_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates User Meta database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createUserMeta($name)
-    {
-        return $this->_createTable($name, [
-                    'id'         => Schema::TYPE_PK,
-                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
-                    'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                    'avatar'     => Schema::TYPE_STRING,
-                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (user_id) REFERENCES {{%podium_user}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Creates Vocabulary database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createVocabulary($name)
-    {
-        return $this->_createTable($name, [
-                    'id'   => Schema::TYPE_PK,
-                    'word' => Schema::TYPE_STRING . ' NOT NULL',
-        ]);
-    }
-
-    /**
-     * Creates Vocabulary database table index.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createVocabularyIndex($name)
-    {
-        return $this->_createIndex('idx-podium_vocabulary-word', $name, 'word');
-    }
-
-    /**
-     * Creates Vocabulary Junction database table.
-     * @param string $name table name.
-     * @return string result message.
-     */
-    protected function _createVocabularyJunction($name)
-    {
-        return $this->_createTable($name, [
-                    'id'      => Schema::TYPE_PK,
-                    'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    'FOREIGN KEY (word_id) REFERENCES {{%podium_vocabulary}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-                    'FOREIGN KEY (post_id) REFERENCES {{%podium_post}} (id) ON DELETE CASCADE ON UPDATE CASCADE',
-        ]);
-    }
-
-    /**
-     * Prepares error message.
-     * @param string $content message content.
-     * @return string prepared message.
-     */
-    protected function _outputDanger($content)
-    {
-        return Html::tag('span', $content, ['class' => 'text-danger']);
-    }
-
-    /**
-     * Prepares success message.
-     * @param string $content message content.
-     * @return string prepared message.
-     */
-    protected function _outputSuccess($content)
-    {
-        return Html::tag('span', $content, ['class' => 'text-success']);
-    }
-
-    /**
-     * Checks if User database table exists.
-     * @return boolean wheter User database exists.
-     */
-    public static function check()
-    {
-        try {
-            (new User())->getTableSchema();
-            return true;
-        }
-        catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-        }
-
-        return false;
-    }
-
-    /**
-     * Initialise component.
-     */
-    public function init()
-    {
-        parent::init();
-
-        $this->db = Instance::ensure($this->db, Connection::className());
-        if ($this->db->driverName === 'mysql') {
-            $this->_tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        }
-
-        $this->authManager = Instance::ensure($this->authManager, DbManager::className());
-    }
-
-    /**
-     * Starts next step of installation.
-     * @param integer $step step number.
-     * @return array step data.
-     */
-    public function step($step)
-    {
-        $proceed = $this->{'_' . $this->_steps[$step]['call']}('{{%' . $this->_prefix . $this->_steps[$step]['table'] . '}}');
-
-        return [
-            'table'   => $this->_prefix . $this->_steps[$step]['table'],
-            'percent' => $this->_steps[$step]['percent'],
-            'result'  => $proceed,
-            'error'   => $this->_errors
+                ],
+                'after' => [
+                    [
+                        'table'  => 'user_meta',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'         => Schema::TYPE_PK,
+                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
+                            'signature'  => Schema::TYPE_STRING . ' NOT NULL',
+                            'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                            'avatar'     => Schema::TYPE_STRING,
+                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'user_meta',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'  => 'user_ignore',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'         => Schema::TYPE_PK,
+                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'ignored_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'user_ignore',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table'  => 'user_ignore',
+                                'call'   => 'foreign',
+                                'key'    => 'ignored_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'  => 'user_activity',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'         => Schema::TYPE_PK,
+                            'user_id'    => Schema::TYPE_INTEGER,
+                            'username'   => Schema::TYPE_STRING,
+                            'user_slug'  => Schema::TYPE_STRING,
+                            'user_role'  => Schema::TYPE_INTEGER,
+                            'url'        => Schema::TYPE_STRING . ' NOT NULL',
+                            'ip'         => Schema::TYPE_STRING . '(15)',
+                            'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'user_activity',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'  => 'email',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'         => Schema::TYPE_PK,
+                            'user_id'    => Schema::TYPE_INTEGER,
+                            'email'      => Schema::TYPE_STRING . ' NOT NULL',
+                            'subject'    => Schema::TYPE_TEXT . ' NOT NULL',
+                            'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                            'status'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                            'attempt'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'email',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'  => 'thread_view',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'               => Schema::TYPE_PK,
+                            'user_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'thread_id'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'new_last_seen'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'edited_last_seen' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'thread_view',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table'  => 'thread_view',
+                                'call'   => 'foreign',
+                                'key'    => 'thread_id',
+                                'ref'    => 'thread',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'  => 'post_thumb',
+                        'call'   => 'create',
+                        'schema' => [
+                            'id'         => Schema::TYPE_PK,
+                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'post_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'thumb'      => Schema::TYPE_SMALLINT . ' NOT NULL',
+                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'post_thumb',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table'  => 'post_thumb',
+                                'call'   => 'foreign',
+                                'key'    => 'post_id',
+                                'ref'    => 'post',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table'   => 'moderator',
+                        'call'    => 'create',
+                        'schema' => [
+                            'id'       => Schema::TYPE_PK,
+                            'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                            'forum_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                        ],
+                        'after' => [
+                            [
+                                'table'  => 'moderator',
+                                'call'   => 'foreign',
+                                'key'    => 'user_id',
+                                'ref'    => 'user',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                            [
+                                'table'  => 'moderator',
+                                'call'   => 'foreign',
+                                'key'    => 'forum_id',
+                                'ref'    => 'forum',
+                                'col'    => 'id',
+                                'delete' => 'CASCADE',
+                                'update' => 'CASCADE',
+                            ],
+                        ],
+                    ],
+                    [
+                        'table' => 'user',
+                        'call'  => 'addAdmin',
+                    ],
+                ],
+            ],        
         ];
     }
 }
