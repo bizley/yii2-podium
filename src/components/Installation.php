@@ -43,21 +43,18 @@ class Installation extends Component
     public $db = 'db';
 
     /**
-     * @var number of steps
+     * @var number of all steps
      */
-    protected $_count = 0;
+    protected $_installationSteps;
     
     /**
-     * @var boolean errors flag.
+     * @var boolean error flag.
      */
-    protected $_errors = false;
-
-    protected $_path;
-    protected $_table;
-    protected $_percent;
+    protected $_error = false;
+    
+    protected $_table = '-';
+    protected $_percent = 0;
     protected $_result;
-    protected $_next;
-
 
     /**
      * @var string Podium database prefix.
@@ -377,22 +374,67 @@ class Installation extends Component
         return false;
     }
 
-    public function getCount()
+    public function getInstallationSteps()
     {
-        if ($this->_count === 0) {
-            $this->_count(static::steps());
+        if ($this->_installationSteps === null) {
+            $this->_installationSteps = count(static::steps());
         }
-        return $this->_count;
+        return $this->_installationSteps;
     }
     
-    public function getErrors()
+    public function setInstallationSteps()
     {
-        return $this->_errors;
+        throw new Exception('Don\'t set installation steps counter directly!');
+    }
+    
+    public function getError()
+    {
+        return $this->_error;
+    }
+    
+    public function setError($value)
+    {
+        $this->_error = $value ? true : false;
     }
     
     public function getTableOptions()
     {
         return $this->_tableOptions;
+    }
+    
+    public function setTableOptions($value)
+    {
+        $this->_tableOptions = $value;
+    }
+    
+    public function getResult()
+    {
+        return $this->_result;
+    }
+    
+    public function setResult($value)
+    {
+        $this->_result = $value;
+    }
+    
+    public function getPercent()
+    {
+        return $this->_percent;
+    }
+    
+    public function setPercent($value)
+    {
+        $this->_percent = (int)$value;
+    }
+    
+    public function getTable()
+    {
+        return $this->_table;
+    }
+    
+    public function setTable($value)
+    {
+        $this->_table = $value;
     }
     
     /**
@@ -414,96 +456,40 @@ class Installation extends Component
         }
     }
     
-    public function setCount()
-    {
-        throw new Exception('Don\'t set count directly.');
-    }
-    
-    public function setErrors($value)
-    {
-        $this->_errors = $value ? true : false;
-    }
-    
-    public function setTableOptions($value)
-    {
-        $this->_tableOptions = $value;
-    }
-    
-    public function setPath($value)
-    {
-        $this->_path = explode('#', str_replace('-', '#after#', $value));
-    }
-    
-    public function getPath()
-    {
-        return $this->_path;
-    }
-    
-    public function setTable($install, $direct = '-')
-    {
-        if (!empty($install)) {
-            $this->_table = $direct;
-        }
-        else {
-            if (!isset($install['table'])) {
-                throw new Exception(Yii::t('podium/flash', 'No table element in the installation step.'));
-            }
-            else {
-                $this->_table = $install['table'];
-            }
-        }
-    }
-    
-    public function getTable()
-    {
-        return $this->_table;
-    }
-    
-    public function setPercent($value)
-    {
-        $this->_percent = (int)$value;
-    }
-    
-    public function getPercent()
-    {
-        return $this->_percent;
-    }
-    
-    public function setNext($value)
-    {
-        $this->_next = $value;
-    }
-    
-    public function getNext()
-    {
-        return $this->_next;
-    }
-    
-    public function setResult($value)
-    {
-        $this->_result = $value;
-    }
-    
-    public function getResult()
-    {
-        return $this->_result;
-    }
     
     /**
      * Starts next step of installation.
-     * @param string $step step number.
-     * @param string $drop wheter to drop table prior to creating it.
-     * @return array step data.
+     * @param integer $step step number.
+     * @param boolean $drop wheter to drop table prior to creating it.
+     * @return array installation step result.
      */
-    public function step($step, $drop = 'false')
+    public function step($step, $drop = false)
     {
         try {
-            $this->setPath($step);
+            if (!isset(static::steps()[(int)$step])) {
+                return [
+                    'table'   => '-',
+                    'percent' => 100,
+                    'result'  => $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')),
+                    'error'   => true,
+                ];
+            }
+            if ($this->getInstallationSteps() == 0) {
+                return [
+                    'table'   => '-',
+                    'percent' => 100,
+                    'result'  => $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')),
+                    'error'   => true,
+                ];
+            }
+            
+            $percent = floor(100 * ($step + 1) / $this->getInstallationSteps());
+            
 
             $install = static::steps();
             foreach ($this->getPath() as $nextLevel) {
                 if (!isset($install[$nextLevel])) {
-                    $this->setErrors(true);
+                    $this->setError(true);
                     $this->setTable(null);
                     $this->setPercent(100);
                     $this->setNext('stop');
@@ -556,12 +542,10 @@ class Installation extends Component
                     'value' => Schema::TYPE_STRING . ' NOT NULL',
                     'PRIMARY KEY (name)',
                 ],
-                'after' => [
-                    [
-                        'table' => 'config',
-                        'call'  => 'add',
-                    ],
-                ],
+            ],
+            [
+                'table' => 'config',
+                'call'  => 'add',
             ],
             [
                 'table'  => 'log',
@@ -576,32 +560,30 @@ class Installation extends Component
                     'model'    => Schema::TYPE_INTEGER,
                     'blame'    => Schema::TYPE_INTEGER,
                 ],
-                'after' => [
-                    [
-                        'table' => 'log',
-                        'call'  => 'index',
-                        'name'  => 'level',
-                        'cols'  => ['level'],
-                    ],
-                    [
-                        'table' => 'log',
-                        'call'  => 'index',
-                        'name'  => 'category',
-                        'cols'  => ['category'],
-                    ],
-                    [
-                        'table' => 'log',
-                        'call'  => 'index',
-                        'name'  => 'model',
-                        'cols'  => ['model'],
-                    ],
-                    [
-                        'table' => 'log',
-                        'call'  => 'index',
-                        'name'  => 'blame',
-                        'cols'  => ['blame'],
-                    ],
-                ]
+            ],
+            [
+                'table' => 'log',
+                'call'  => 'index',
+                'name'  => 'level',
+                'cols'  => ['level'],
+            ],
+            [
+                'table' => 'log',
+                'call'  => 'index',
+                'name'  => 'category',
+                'cols'  => ['category'],
+            ],
+            [
+                'table' => 'log',
+                'call'  => 'index',
+                'name'  => 'model',
+                'cols'  => ['model'],
+            ],
+            [
+                'table' => 'log',
+                'call'  => 'index',
+                'name'  => 'blame',
+                'cols'  => ['blame'],
             ],
             [
                 'table'  => 'category',
@@ -615,158 +597,146 @@ class Installation extends Component
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
-                'after' => [
-                    [
-                        'table'  => 'forum',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'          => Schema::TYPE_PK,
-                            'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'name'        => Schema::TYPE_STRING . ' NOT NULL',
-                            'sub'         => Schema::TYPE_STRING,
-                            'slug'        => Schema::TYPE_STRING . ' NOT NULL',
-                            'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
-                            'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                            'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                            'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                            'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'forum',
-                                'call'   => 'foreign',
-                                'key'    => 'category_id',
-                                'ref'    => 'category',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table'  => 'thread',
-                                'call'   => 'create',
-                                'schema' => [
-                                    'id'             => Schema::TYPE_PK,
-                                    'name'           => Schema::TYPE_STRING . ' NOT NULL',
-                                    'slug'           => Schema::TYPE_STRING . ' NOT NULL',
-                                    'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                                    'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                                    'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                                    'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                                    'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                                    'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                                ],
-                                'after' => [
-                                    [
-                                        'table'  => 'thread',
-                                        'call'   => 'foreign',
-                                        'key'    => 'category_id',
-                                        'ref'    => 'category',
-                                        'col'    => 'id',
-                                        'delete' => 'CASCADE',
-                                        'update' => 'CASCADE',
-                                    ],
-                                    [
-                                        'table'  => 'thread',
-                                        'call'   => 'foreign',
-                                        'key'    => 'forum_id',
-                                        'ref'    => 'forum',
-                                        'col'    => 'id',
-                                        'delete' => 'CASCADE',
-                                        'update' => 'CASCADE',
-                                    ],
-                                    [
-                                        'table'  => 'post',
-                                        'call'   => 'create',
-                                        'schema' => [
-                                            'id'         => Schema::TYPE_PK,
-                                            'content'    => Schema::TYPE_TEXT . ' NOT NULL',
-                                            'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                                            'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                                            'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                                            'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                                            'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                                            'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                                            'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-                                        ],
-                                        'after' => [
-                                            [
-                                                'table'  => 'post',
-                                                'call'   => 'foreign',
-                                                'key'    => 'thread_id',
-                                                'ref'    => 'thread',
-                                                'col'    => 'id',
-                                                'delete' => 'CASCADE',
-                                                'update' => 'CASCADE',
-                                            ],
-                                            [
-                                                'table'  => 'post',
-                                                'call'   => 'foreign',
-                                                'key'    => 'forum_id',
-                                                'ref'    => 'forum',
-                                                'col'    => 'id',
-                                                'delete' => 'CASCADE',
-                                                'update' => 'CASCADE',
-                                            ],
-                                            [
-                                                'table'  => 'vocabulary',
-                                                'call'   => 'create',
-                                                'schema' => [
-                                                    'id'   => Schema::TYPE_PK,
-                                                    'word' => Schema::TYPE_STRING . ' NOT NULL',
-                                                ],
-                                                'after' => [
-                                                    [
-                                                        'table' => 'vocabulary',
-                                                        'call'  => 'index',
-                                                        'name'  => 'word',
-                                                        'cols'  => ['word'],
-                                                    ],
-                                                    [
-                                                        'table'  => 'vocabulary_junction',
-                                                        'call'   => 'create',
-                                                        'schema' => [
-                                                            'id'      => Schema::TYPE_PK,
-                                                            'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                                                            'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                                                        ],
-                                                        'after' => [
-                                                            [
-                                                                'table'  => 'vocabulary_junction',
-                                                                'call'   => 'foreign',
-                                                                'key'    => 'word_id',
-                                                                'ref'    => 'vocabulary',
-                                                                'col'    => 'id',
-                                                                'delete' => 'CASCADE',
-                                                                'update' => 'CASCADE',
-                                                            ],
-                                                            [
-                                                                'table'  => 'vocabulary_junction',
-                                                                'call'   => 'foreign',
-                                                                'key'    => 'post_id',
-                                                                'ref'    => 'post',
-                                                                'col'    => 'id',
-                                                                'delete' => 'CASCADE',
-                                                                'update' => 'CASCADE',
-                                                            ],
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
+            ],
+            [
+                'table'  => 'forum',
+                'call'   => 'create',
+                'schema' => [
+                    'id'          => Schema::TYPE_PK,
+                    'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'name'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'sub'         => Schema::TYPE_STRING,
+                    'slug'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'visible'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                    'sort'        => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'threads'     => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'posts'       => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
+            ],
+            [
+                'table'  => 'forum',
+                'call'   => 'foreign',
+                'key'    => 'category_id',
+                'ref'    => 'category',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'thread',
+                'call'   => 'create',
+                'schema' => [
+                    'id'             => Schema::TYPE_PK,
+                    'name'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'slug'           => Schema::TYPE_STRING . ' NOT NULL',
+                    'category_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'pinned'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'locked'         => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'posts'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                    'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'thread',
+                'call'   => 'foreign',
+                'key'    => 'category_id',
+                'ref'    => 'category',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'thread',
+                'call'   => 'foreign',
+                'key'    => 'forum_id',
+                'ref'    => 'forum',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'post',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                    'thread_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'author_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'likes'      => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'dislikes'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+                ],
+            ],
+            [
+                'table'  => 'post',
+                'call'   => 'foreign',
+                'key'    => 'thread_id',
+                'ref'    => 'thread',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'post',
+                'call'   => 'foreign',
+                'key'    => 'forum_id',
+                'ref'    => 'forum',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'vocabulary',
+                'call'   => 'create',
+                'schema' => [
+                    'id'   => Schema::TYPE_PK,
+                    'word' => Schema::TYPE_STRING . ' NOT NULL',
+                ],
+            ],
+            [
+                'table' => 'vocabulary',
+                'call'  => 'index',
+                'name'  => 'word',
+                'cols'  => ['word'],
+            ],
+            [
+                'table'  => 'vocabulary_junction',
+                'call'   => 'create',
+                'schema' => [
+                    'id'      => Schema::TYPE_PK,
+                    'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'post_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'vocabulary_junction',
+                'call'   => 'foreign',
+                'key'    => 'word_id',
+                'ref'    => 'vocabulary',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'vocabulary_junction',
+                'call'   => 'foreign',
+                'key'    => 'post_id',
+                'ref'    => 'post',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
             ],
             [
                 'table'  => 'message',
@@ -783,20 +753,18 @@ class Installation extends Component
                     'created_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'      => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
-                'after' => [
-                    [
-                        'table' => 'message',
-                        'call'  => 'index',
-                        'name'  => 'sender_id',
-                        'cols'  => ['sender_id'],
-                    ],
-                    [
-                        'table' => 'message',
-                        'call'  => 'index',
-                        'name'  => 'receiver_id',
-                        'cols'  => ['receiver_id'],
-                    ],
-                ],
+            ],
+            [
+                'table' => 'message',
+                'call'  => 'index',
+                'name'  => 'sender_id',
+                'cols'  => ['sender_id'],
+            ],
+            [
+                'table' => 'message',
+                'call'  => 'index',
+                'name'  => 'receiver_id',
+                'cols'  => ['receiver_id'],
             ],
             [
                 'table'  => 'auth_rule',
@@ -808,93 +776,85 @@ class Installation extends Component
                     'updated_at' => Schema::TYPE_INTEGER,
                     'PRIMARY KEY (name)',
                 ],
-                'after' => [
-                    [
-                        'table'  => 'auth_item',
-                        'call'   => 'create',
-                        'schema' => [
-                            'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
-                            'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'description' => Schema::TYPE_TEXT,
-                            'rule_name'   => Schema::TYPE_STRING . '(64)',
-                            'data'        => Schema::TYPE_TEXT,
-                            'created_at'  => Schema::TYPE_INTEGER,
-                            'updated_at'  => Schema::TYPE_INTEGER,
-                            'PRIMARY KEY (name)',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'auth_item',
-                                'call'   => 'foreign',
-                                'key'    => 'rule_name',
-                                'ref'    => 'auth_rule',
-                                'col'    => 'name',
-                                'delete' => 'SET NULL',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table' => 'auth_item',
-                                'call'  => 'index',
-                                'name'  => 'type',
-                                'cols'  => ['type'],
-                            ],
-                            [
-                                'table'  => 'auth_item_child',
-                                'call'   => 'create',
-                                'schema' => [
-                                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
-                                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                                    'PRIMARY KEY (parent, child)',
-                                ],
-                                'after' => [
-                                    [
-                                        'table'  => 'auth_item_child',
-                                        'call'   => 'foreign',
-                                        'key'    => 'parent',
-                                        'ref'    => 'auth_item',
-                                        'col'    => 'name',
-                                        'delete' => 'CASCADE',
-                                        'update' => 'CASCADE',
-                                    ],
-                                    [
-                                        'table'  => 'auth_item_child',
-                                        'call'   => 'foreign',
-                                        'key'    => 'child',
-                                        'ref'    => 'auth_item',
-                                        'col'    => 'name',
-                                        'delete' => 'CASCADE',
-                                        'update' => 'CASCADE',
-                                    ],
-                                    [
-                                        'table'  => 'auth_assignment',
-                                        'call'   => 'create',
-                                        'schema' => [
-                                            'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
-                                            'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
-                                            'created_at' => Schema::TYPE_INTEGER,
-                                            'PRIMARY KEY (item_name, user_id)',
-                                        ],
-                                        'after' => [
-                                            [
-                                                'table'  => 'auth_assignment',
-                                                'call'   => 'foreign',
-                                                'key'    => 'item_name',
-                                                'ref'    => 'auth_item',
-                                                'col'    => 'name',
-                                                'delete' => 'CASCADE',
-                                                'update' => 'CASCADE',
-                                            ],
-                                            [
-                                                'table' => 'auth_rule',
-                                                'call'  => 'addRules',
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ],
-                    ],
+            ],
+            [
+                'table'  => 'auth_item',
+                'call'   => 'create',
+                'schema' => [
+                    'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'description' => Schema::TYPE_TEXT,
+                    'rule_name'   => Schema::TYPE_STRING . '(64)',
+                    'data'        => Schema::TYPE_TEXT,
+                    'created_at'  => Schema::TYPE_INTEGER,
+                    'updated_at'  => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (name)',
                 ],
+            ],
+            [
+                'table'  => 'auth_item',
+                'call'   => 'foreign',
+                'key'    => 'rule_name',
+                'ref'    => 'auth_rule',
+                'col'    => 'name',
+                'delete' => 'SET NULL',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table' => 'auth_item',
+                'call'  => 'index',
+                'name'  => 'type',
+                'cols'  => ['type'],
+            ],
+            [
+                'table'  => 'auth_item_child',
+                'call'   => 'create',
+                'schema' => [
+                    'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'PRIMARY KEY (parent, child)',
+                ],
+            ],
+            [
+                'table'  => 'auth_item_child',
+                'call'   => 'foreign',
+                'key'    => 'parent',
+                'ref'    => 'auth_item',
+                'col'    => 'name',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'auth_item_child',
+                'call'   => 'foreign',
+                'key'    => 'child',
+                'ref'    => 'auth_item',
+                'col'    => 'name',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'auth_assignment',
+                'call'   => 'create',
+                'schema' => [
+                    'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
+                    'created_at' => Schema::TYPE_INTEGER,
+                    'PRIMARY KEY (item_name, user_id)',
+                ],
+            ],
+            [
+                'table'  => 'auth_assignment',
+                'call'   => 'foreign',
+                'key'    => 'item_name',
+                'ref'    => 'auth_item',
+                'col'    => 'name',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table' => 'auth_rule',
+                'call'  => 'addRules',
             ],
             [
                 'table'  => 'user',
@@ -917,212 +877,196 @@ class Installation extends Component
                     'created_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'           => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
-                'after' => [
-                    [
-                        'table'  => 'user_meta',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'         => Schema::TYPE_PK,
-                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
-                            'signature'  => Schema::TYPE_STRING . ' NOT NULL',
-                            'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                            'avatar'     => Schema::TYPE_STRING,
-                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'user_meta',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'  => 'user_ignore',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'         => Schema::TYPE_PK,
-                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'ignored_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'user_ignore',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table'  => 'user_ignore',
-                                'call'   => 'foreign',
-                                'key'    => 'ignored_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'  => 'user_activity',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'         => Schema::TYPE_PK,
-                            'user_id'    => Schema::TYPE_INTEGER,
-                            'username'   => Schema::TYPE_STRING,
-                            'user_slug'  => Schema::TYPE_STRING,
-                            'user_role'  => Schema::TYPE_INTEGER,
-                            'url'        => Schema::TYPE_STRING . ' NOT NULL',
-                            'ip'         => Schema::TYPE_STRING . '(15)',
-                            'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'user_activity',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'  => 'email',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'         => Schema::TYPE_PK,
-                            'user_id'    => Schema::TYPE_INTEGER,
-                            'email'      => Schema::TYPE_STRING . ' NOT NULL',
-                            'subject'    => Schema::TYPE_TEXT . ' NOT NULL',
-                            'content'    => Schema::TYPE_TEXT . ' NOT NULL',
-                            'status'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                            'attempt'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
-                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'email',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'  => 'thread_view',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'               => Schema::TYPE_PK,
-                            'user_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'thread_id'        => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'new_last_seen'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'edited_last_seen' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'thread_view',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table'  => 'thread_view',
-                                'call'   => 'foreign',
-                                'key'    => 'thread_id',
-                                'ref'    => 'thread',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'  => 'post_thumb',
-                        'call'   => 'create',
-                        'schema' => [
-                            'id'         => Schema::TYPE_PK,
-                            'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'post_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'thumb'      => Schema::TYPE_SMALLINT . ' NOT NULL',
-                            'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'post_thumb',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table'  => 'post_thumb',
-                                'call'   => 'foreign',
-                                'key'    => 'post_id',
-                                'ref'    => 'post',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table'   => 'moderator',
-                        'call'    => 'create',
-                        'schema' => [
-                            'id'       => Schema::TYPE_PK,
-                            'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
-                            'forum_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                        ],
-                        'after' => [
-                            [
-                                'table'  => 'moderator',
-                                'call'   => 'foreign',
-                                'key'    => 'user_id',
-                                'ref'    => 'user',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                            [
-                                'table'  => 'moderator',
-                                'call'   => 'foreign',
-                                'key'    => 'forum_id',
-                                'ref'    => 'forum',
-                                'col'    => 'id',
-                                'delete' => 'CASCADE',
-                                'update' => 'CASCADE',
-                            ],
-                        ],
-                    ],
-                    [
-                        'table' => 'user',
-                        'call'  => 'addAdmin',
-                    ],
+            ],
+            [
+                'table'  => 'user_meta',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
+                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'avatar'     => Schema::TYPE_STRING,
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
-            ],        
+            ],
+            [
+                'table'  => 'user_meta',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'user_ignore',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'ignored_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'user_ignore',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'user_ignore',
+                'call'   => 'foreign',
+                'key'    => 'ignored_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'user_activity',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER,
+                    'username'   => Schema::TYPE_STRING,
+                    'user_slug'  => Schema::TYPE_STRING,
+                    'user_role'  => Schema::TYPE_INTEGER,
+                    'url'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'ip'         => Schema::TYPE_STRING . '(15)',
+                    'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'user_activity',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'email',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER,
+                    'email'      => Schema::TYPE_STRING . ' NOT NULL',
+                    'subject'    => Schema::TYPE_TEXT . ' NOT NULL',
+                    'content'    => Schema::TYPE_TEXT . ' NOT NULL',
+                    'status'     => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'attempt'    => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'email',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'thread_view',
+                'call'   => 'create',
+                'schema' => [
+                    'id'               => Schema::TYPE_PK,
+                    'user_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'thread_id'        => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'new_last_seen'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'edited_last_seen' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'thread_view',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'thread_view',
+                'call'   => 'foreign',
+                'key'    => 'thread_id',
+                'ref'    => 'thread',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'post_thumb',
+                'call'   => 'create',
+                'schema' => [
+                    'id'         => Schema::TYPE_PK,
+                    'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'post_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'thumb'      => Schema::TYPE_SMALLINT . ' NOT NULL',
+                    'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'post_thumb',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'post_thumb',
+                'call'   => 'foreign',
+                'key'    => 'post_id',
+                'ref'    => 'post',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'   => 'moderator',
+                'call'    => 'create',
+                'schema' => [
+                    'id'       => Schema::TYPE_PK,
+                    'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'forum_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'moderator',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'moderator',
+                'call'   => 'foreign',
+                'key'    => 'forum_id',
+                'ref'    => 'forum',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'addAdmin',
+            ],
         ];
     }
 }
