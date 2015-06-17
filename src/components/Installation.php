@@ -52,8 +52,8 @@ class Installation extends Component
      */
     protected $_error = false;
     
-    protected $_table = '-';
-    protected $_percent = 0;
+    protected $_table;
+    protected $_percent;
     protected $_result;
 
     /**
@@ -456,7 +456,36 @@ class Installation extends Component
         }
     }
     
-    
+    protected function _proceedStep($data, $drop = false)
+    {
+        if (empty($data['table'])) {
+            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
+        }
+        else {
+            $this->setTable($data['table']);
+            if (empty($data['call'])) {
+                throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
+            }
+            else {
+                switch ($data['call']) {
+                    case 'create':
+                        
+                        break;
+                    case 'index':
+                        
+                        break;
+                    case 'foreign':
+                        $result = call_user_func([$this, '_foreign' . ucfirst($this->getTable())], $data);
+                        break;
+                    default:
+                        $result = call_user_func([$this, '_' . $data['call'] . ucfirst($this->getTable())], $data);
+                }
+                
+                $this->setResult($result);
+            }
+        }
+    }
+
     /**
      * Starts next step of installation.
      * @param integer $step step number.
@@ -465,55 +494,21 @@ class Installation extends Component
      */
     public function step($step, $drop = false)
     {
+        $this->setTable('-');
+        $this->setPercent(100);
+        $this->setError(true);
+        
         try {
             if (!isset(static::steps()[(int)$step])) {
-                return [
-                    'table'   => '-',
-                    'percent' => 100,
-                    'result'  => $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')),
-                    'error'   => true,
-                ];
+                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
             }
-            if ($this->getInstallationSteps() == 0) {
-                return [
-                    'table'   => '-',
-                    'percent' => 100,
-                    'result'  => $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')),
-                    'error'   => true,
-                ];
+            elseif ($this->getInstallationSteps() == 0) {
+                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
             }
-            
-            $percent = floor(100 * ($step + 1) / $this->getInstallationSteps());
-            
-
-            $install = static::steps();
-            foreach ($this->getPath() as $nextLevel) {
-                if (!isset($install[$nextLevel])) {
-                    $this->setError(true);
-                    $this->setTable(null);
-                    $this->setPercent(100);
-                    $this->setNext('stop');
-                    $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
-                    break;
-                }
-                else {
-                    $install = $install[$nextLevel];
-                }
+            else {
+                $this->setPercent($this->getInstallationSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getInstallationSteps()));
+                $this->_proceedStep(static::steps()[(int)$step], $drop);
             }
-
-            $this->setTable($install['table']);
-
-
-
-            $proceed = $this->{'_' . $this->_steps[$step]['call']}('{{%' . $this->_prefix . $this->_steps[$step]['table'] . '}}');
-
-            return [
-                'table'   => $this->_prefix . $this->_steps[$step]['table'],
-                'percent' => $this->_steps[$step]['percent'],
-                'result'  => $proceed,
-                'error'   => $this->_errors
-            ];
-            
         }
         catch (Exception $e) {
             $this->setResult($this->outputDanger($e->getMessage()));
@@ -523,8 +518,7 @@ class Installation extends Component
             'table'   => $this->getTable(),
             'percent' => $this->getPercent(),
             'result'  => $this->getResult(),
-            'next'    => $this->getNext(),
-            'error'   => $this->getErrors(),
+            'error'   => $this->getError(),
         ];
     }
     
