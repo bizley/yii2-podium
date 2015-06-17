@@ -469,16 +469,21 @@ class Installation extends Component
             else {
                 switch ($data['call']) {
                     case 'create':
-                        
+                        if ($drop) {
+                            $result = call_user_func([$this, '_drop'], $data);
+                            if ($this->getError()) {
+                                
+                            }
+                        }
                         break;
                     case 'index':
                         
                         break;
                     case 'foreign':
-                        $result = call_user_func([$this, '_foreign' . ucfirst($this->getTable())], $data);
+                        $result = call_user_func([$this, '_foreign'], $data);
                         break;
                     default:
-                        $result = call_user_func([$this, '_' . $data['call'] . ucfirst($this->getTable())], $data);
+                        $result = call_user_func([$this, '_' . $data['call']], $data);
                 }
                 
                 $this->setResult($result);
