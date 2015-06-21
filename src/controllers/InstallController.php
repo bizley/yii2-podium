@@ -52,7 +52,7 @@ class InstallController extends Controller
             $step = Yii::$app->request->post('step');
             
             if (is_numeric($step)) {
-                $result = (new Installation)->step($step, Yii::$app->request->post('drop'));
+                $result = (new Installation)->step($step == -1 ? 0 : $step, $step == -1 ? true : false);
             }
         }
 

@@ -12,7 +12,7 @@
  * box latest topics
  * rss
  * zapamietanie pozycji zwinietych boxow
- * indexy w bazie, klucze obce przez metode
+ * czas tokenow usera do configa przeniesc
  * -----------------------------------------------------------------------------
  * 
  * Podium Module

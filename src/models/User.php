@@ -227,10 +227,9 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
     {
         if ($status === null) {
-            return static::find()->where(['or', 'email=:key', 'username=:key'])->params([':key' => $keyfield])->one();
+            return static::find()->where(['or', ['email' => $keyfield], ['username' => $keyfield]])->one();
         }
-        return static::find()->where(['and', 'status=:status', ['or', 'email=:key',
-                        'username=:key']])->params([':status' => $status, ':key' => $keyfield])->one();
+        return static::find()->where(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]])->one();
     }
 
     /**

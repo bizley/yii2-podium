@@ -436,8 +436,8 @@ class DefaultController extends Controller
     }
     
     /**
-     * Editing the post of given category ID, forum ID, thread ID and oen ID.
-     * If this is first post in thread user can change the thread name.
+     * Editing the post of given category ID, forum ID, thread ID and own ID.
+     * If this is the first post in thread user can change the thread name.
      * @param integer $cid
      * @param integer $fid
      * @param integer $tid
@@ -473,7 +473,7 @@ class DefaultController extends Controller
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {                 
-                        $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
+                        $model = Post::findOne(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
 
                         if (!$model) {
                             $this->error('Sorry! We can not find the post you are looking for.');
@@ -483,7 +483,7 @@ class DefaultController extends Controller
                             if (Yii::$app->user->can('updateOwnPost', ['post' => $model]) || Yii::$app->user->can('updatePost', ['item' => $model])) {
 
                                 $isFirstPost = false;
-                                $firstPost   = Post::find()->where(['forum_id' => $forum->id, 'thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->one();
+                                $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->one();
                                 if ($firstPost->id == $model->id) {
                                     $model->setScenario('firstPost');
                                     $model->topic = $thread->name;
@@ -591,7 +591,7 @@ class DefaultController extends Controller
             return $this->redirect(['index']);
         }
         else {
-            $conditions = ['id' => (int) $id];
+            $conditions = ['id' => (int) $id, 'category_id' => $category->id, 'slug' => $slug];
             if (Yii::$app->user->isGuest) {
                 $conditions['visible'] = 1;
             }

@@ -7,7 +7,7 @@ $js = "var nextStep = function(step){
     jQuery.ajax({
         url: '" . Url::to(['install/import']) . "',
         method: 'POST',
-        data: {step: step, drop: jQuery('#drop')[0].checked},
+        data: {step: step},
         dataType: 'json'
     }).fail(function(){
         jQuery('#progressBar').addClass('hide');
@@ -27,8 +27,9 @@ jQuery('#installPodium').click(function(e){
     e.preventDefault();
     jQuery('#startInstallation').addClass('hide');
     jQuery('#installationResults').removeClass('hide');
-    jQuery('#progressBar .progress-bar').css('width', '10pxs');
-    nextStep(0);
+    jQuery('#progressBar .progress-bar').css('width', '10px');
+    var firstStep = jQuery('#drop')[0].checked == true ? -1 : 0;
+    nextStep(firstStep);
 });";
 
 $this->registerJs($js, View::POS_READY, 'podium-install');

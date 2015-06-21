@@ -54,7 +54,7 @@ class Installation extends Component
     
     protected $_table;
     protected $_percent;
-    protected $_result;
+    protected $_result = '';
 
     /**
      * @var string Podium database prefix.
@@ -92,14 +92,14 @@ class Installation extends Component
                                 ' ' . Html::tag('kbd', 'admin'));
             }
             else {
-                $this->_errors = true;
+                $this->setError(true);
                 return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                                 Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->_errors = true;
+            $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
@@ -125,7 +125,7 @@ class Installation extends Component
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->_errors = true;
+            $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
         }
     }
@@ -137,26 +137,26 @@ class Installation extends Component
     protected function _addRules()
     {
         try {
-            $viewThread              = $this->authManager->createPermission('viewThread');
+            $viewThread = $this->authManager->createPermission('viewThread');
             $viewThread->description = 'View thread';
             $this->authManager->add($viewThread);
 
-            $viewForum              = $this->authManager->createPermission('viewForum');
+            $viewForum = $this->authManager->createPermission('viewForum');
             $viewForum->description = 'View forum';
             $this->authManager->add($viewForum);
 
-            $createThread              = $this->authManager->createPermission('createThread');
+            $createThread = $this->authManager->createPermission('createThread');
             $createThread->description = 'Create thread';
             $this->authManager->add($createThread);
 
-            $createPost              = $this->authManager->createPermission('createPost');
+            $createPost = $this->authManager->createPermission('createPost');
             $createPost->description = 'Create post';
             $this->authManager->add($createPost);
 
             $moderatorRule = new ModeratorRule;
             $this->authManager->add($moderatorRule);
 
-            $updatePost              = $this->authManager->createPermission('updatePost');
+            $updatePost = $this->authManager->createPermission('updatePost');
             $updatePost->description = 'Update post';
             $updatePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($updatePost);
@@ -164,18 +164,18 @@ class Installation extends Component
             $authorRule = new AuthorRule;
             $this->authManager->add($authorRule);
 
-            $updateOwnPost              = $this->authManager->createPermission('updateOwnPost');
+            $updateOwnPost = $this->authManager->createPermission('updateOwnPost');
             $updateOwnPost->description = 'Update own post';
             $updateOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($updateOwnPost);
             $this->authManager->addChild($updateOwnPost, $updatePost);
 
-            $deletePost              = $this->authManager->createPermission('deletePost');
+            $deletePost = $this->authManager->createPermission('deletePost');
             $deletePost->description = 'Delete post';
             $deletePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($deletePost);
 
-            $deleteOwnPost              = $this->authManager->createPermission('deleteOwnPost');
+            $deleteOwnPost = $this->authManager->createPermission('deleteOwnPost');
             $deleteOwnPost->description = 'Delete own post';
             $deleteOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($deleteOwnPost);
@@ -190,37 +190,37 @@ class Installation extends Component
             $this->authManager->addChild($user, $updateOwnPost);
             $this->authManager->addChild($user, $deleteOwnPost);
 
-            $updateThread              = $this->authManager->createPermission('updateThread');
+            $updateThread = $this->authManager->createPermission('updateThread');
             $updateThread->description = 'Update thread';
             $updateThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($updateThread);
             
-            $deleteThread              = $this->authManager->createPermission('deleteThread');
+            $deleteThread = $this->authManager->createPermission('deleteThread');
             $deleteThread->description = 'Delete thread';
             $deleteThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($deleteThread);
             
-            $pinThread              = $this->authManager->createPermission('pinThread');
+            $pinThread = $this->authManager->createPermission('pinThread');
             $pinThread->description = 'Pin thread';
             $pinThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($pinThread);
             
-            $lockThread              = $this->authManager->createPermission('lockThread');
+            $lockThread = $this->authManager->createPermission('lockThread');
             $lockThread->description = 'Lock thread';
             $lockThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($lockThread);
 
-            $moveThread              = $this->authManager->createPermission('moveThread');
+            $moveThread = $this->authManager->createPermission('moveThread');
             $moveThread->description = 'Move thread';
             $moveThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($moveThread);
 
-            $movePost              = $this->authManager->createPermission('movePost');
+            $movePost = $this->authManager->createPermission('movePost');
             $movePost->description = 'Move post';
             $movePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($movePost);
 
-            $banUser              = $this->authManager->createPermission('banUser');
+            $banUser = $this->authManager->createPermission('banUser');
             $banUser->description = 'Ban user';
             $this->authManager->add($banUser);
 
@@ -237,31 +237,31 @@ class Installation extends Component
             $this->authManager->addChild($moderator, $banUser);
             $this->authManager->addChild($moderator, $user);
 
-            $createForum              = $this->authManager->createPermission('createForum');
+            $createForum = $this->authManager->createPermission('createForum');
             $createForum->description = 'Create forum';
             $this->authManager->add($createForum);
 
-            $updateForum              = $this->authManager->createPermission('updateForum');
+            $updateForum = $this->authManager->createPermission('updateForum');
             $updateForum->description = 'Update forum';
             $this->authManager->add($updateForum);
 
-            $deleteForum              = $this->authManager->createPermission('deleteForum');
+            $deleteForum = $this->authManager->createPermission('deleteForum');
             $deleteForum->description = 'Delete forum';
             $this->authManager->add($deleteForum);
             
-            $createCategory              = $this->authManager->createPermission('createCategory');
+            $createCategory = $this->authManager->createPermission('createCategory');
             $createCategory->description = 'Create category';
             $this->authManager->add($createCategory);
 
-            $updateCategory              = $this->authManager->createPermission('updateCategory');
+            $updateCategory = $this->authManager->createPermission('updateCategory');
             $updateCategory->description = 'Update category';
             $this->authManager->add($updateCategory);
 
-            $deleteCategory              = $this->authManager->createPermission('deleteCategory');
+            $deleteCategory = $this->authManager->createPermission('deleteCategory');
             $deleteCategory->description = 'Delete category';
             $this->authManager->add($deleteCategory);
 
-            $settings              = $this->authManager->createPermission('settings');
+            $settings = $this->authManager->createPermission('settings');
             $settings->description = 'Settings';
             $this->authManager->add($settings);
 
@@ -280,58 +280,100 @@ class Installation extends Component
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->_errors = true;
+            $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
-    protected function _count($array)
+    public function getIndexName($name)
     {
-        foreach ($array as $step) {
-            $this->_count++;
-            if (!empty($step['after'])) {
-                $this->_count($step['after']);
-            }
-        }
+        return 'idx-' . $this->_table . '-' . $name;
+    }
+    
+    public function getForeignName($name)
+    {
+        return 'fk-' . $this->_table . '-' . (is_array($name) ? implode('_', $name) : $name);
     }
     
     /**
      * Creates database table index.
-     * @param string $index index name.
-     * @param string $name table name.
-     * @param string|array table columns.
+     * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _createIndex($index, $name, $columns)
+    protected function _index($data)
     {
+        if (empty($data['name']) || !is_string($data['name'])) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index name missing.'));
+        }
+        if (empty($data['cols']) || !is_array($data['cols'])) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index columns missing.'));
+        }
         try {
-            $this->db->createCommand()->createIndex($index, $name, $columns)->execute();
+            $this->db->createCommand()->createIndex($this->getIndexName($data['name']), $this->getTable(), $data['cols'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table index has been added'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->_errors = true;
+            $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', 'Error during table index adding') . ': ' .
+                            Html::tag('pre', $e->getMessage()));
+        }
+    }
+    
+    /**
+     * Creates database table foreign key.
+     * @param array $data installation step data.
+     * @return string result message.
+     */
+    protected function _foreign($data)
+    {
+        if (empty($data['key']) || (!is_string($data['key']) && !is_array($data['key']))) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Key name missing.'));
+        }
+        if (empty($data['ref']) || !is_string($data['ref'])) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Key reference missing.'));
+        }
+        if (empty($data['col']) || (!is_string($data['col']) && !is_array($data['col']))) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Referenced columns missing.'));
+        }
+        try {
+            $this->db->createCommand()->addForeignKey(
+                    $this->getForeignName($data['key']), 
+                    $this->getTable(), 
+                    $data['key'], 
+                    $this->getTableName($data['ref']), 
+                    $data['col'],
+                    !empty($data['delete']) ? $data['delete'] : null,
+                    !empty($data['update']) ? $data['update'] : null
+                )->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table foreign key has been added'));
+        }
+        catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            $this->setError(true);
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during table foreign key adding') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
     }
 
     /**
      * Creates database table.
-     * @param string $name table name.
-     * @param array $columns table columns.
+     * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _createTable($name, $columns)
+    protected function _create($data)
     {
+        if (empty($data['schema']) || !is_array($data['schema'])) {
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Database schema missing.'));
+        }
         try {
-            $this->db->createCommand()->createTable($name, $columns, $this->_tableOptions)->execute();
+            $this->db->createCommand()->createTable($this->getTable(), $data['schema'], $this->getTableOptions())->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table has been created'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->_errors = true;
+            $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', 'Error during table creating') . ': ' .
                             Html::tag('pre', $e->getMessage()));
         }
@@ -429,7 +471,12 @@ class Installation extends Component
     
     public function getTable()
     {
-        return $this->_table;
+        return $this->_table == '...' ? '...' : $this->getTableName($this->_table);
+    }
+    
+    public function getTableName($name)
+    {
+        return '{{%' . $this->_prefix . $name . '}}';
     }
     
     public function setTable($value)
@@ -456,7 +503,7 @@ class Installation extends Component
         }
     }
     
-    protected function _proceedStep($data, $drop = false)
+    protected function _proceedStep($data)
     {
         if (empty($data['table'])) {
             throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
@@ -467,17 +514,13 @@ class Installation extends Component
                 throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
             }
             else {
+                $this->setError(false);
                 switch ($data['call']) {
                     case 'create':
-                        if ($drop) {
-                            $result = call_user_func([$this, '_drop'], $data);
-                            if ($this->getError()) {
-                                
-                            }
-                        }
+                        $result = call_user_func([$this, '_create'], $data);
                         break;
                     case 'index':
-                        
+                        $result = call_user_func([$this, '_index'], $data);
                         break;
                     case 'foreign':
                         $result = call_user_func([$this, '_foreign'], $data);
@@ -487,10 +530,51 @@ class Installation extends Component
                 }
                 
                 $this->setResult($result);
+                if ($this->getError()) {
+                    $this->setPercent(100);
+                }
+            }
+        }
+    }
+    
+    protected function _proceedDrops()
+    {
+        $drops   = array_reverse($this->steps());
+        $results = '';
+        $this->setError(false);
+        foreach ($drops as $drop) {
+            if (isset($drop['call']) && $drop['call'] == 'create') {
+                $result = '';
+                $result .= call_user_func([$this, '_drop'], $drop['table']);
+                if ($result != '') {
+                    $result .= '<br>';
+                }
+                $results .= $result;
+                $this->setResult($results);
+                if ($this->getError()) {
+                    $this->setPercent(100);
+                    break;
+                }
             }
         }
     }
 
+    protected function _drop($table)
+    {
+        try {
+            if ($this->db->schema->getTableSchema($this->getTableName($table), true) !== null) {
+                $this->db->createCommand()->dropTable($this->getTableName($table))->execute();
+                return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been dropped.', ['name' => $this->getTableName($table)]));
+            }
+        }
+        catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            $this->setError(true);
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during table {name} dropping', ['name' => $this->getTableName($table)]) . ': ' .
+                            Html::tag('pre', $e->getMessage()));
+        }
+    }
+    
     /**
      * Starts next step of installation.
      * @param integer $step step number.
@@ -499,24 +583,32 @@ class Installation extends Component
      */
     public function step($step, $drop = false)
     {
-        $this->setTable('-');
-        $this->setPercent(100);
-        $this->setError(true);
-        
+        $this->setTable('...');
         try {
             if (!isset(static::steps()[(int)$step])) {
                 $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
+                $this->setError(true);
+                $this->setPercent(100);
             }
             elseif ($this->getInstallationSteps() == 0) {
                 $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
+                $this->setError(true);
+                $this->setPercent(100);
             }
             else {
                 $this->setPercent($this->getInstallationSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getInstallationSteps()));
-                $this->_proceedStep(static::steps()[(int)$step], $drop);
+                if ($drop) {
+                    $this->_proceedDrops();    
+                }
+                else {
+                    $this->_proceedStep(static::steps()[(int)$step]);
+                }
             }
         }
         catch (Exception $e) {
             $this->setResult($this->outputDanger($e->getMessage()));
+            $this->setError(true);
+            $this->setPercent(100);
         }
         
         return [
@@ -544,7 +636,7 @@ class Installation extends Component
             ],
             [
                 'table' => 'config',
-                'call'  => 'add',
+                'call'  => 'addConfig',
             ],
             [
                 'table'  => 'log',
@@ -598,6 +690,30 @@ class Installation extends Component
                 ],
             ],
             [
+                'table' => 'category',
+                'call'  => 'index',
+                'name'  => 'sort',
+                'cols'  => ['sort', 'id'],
+            ],
+            [
+                'table' => 'category',
+                'call'  => 'index',
+                'name'  => 'name',
+                'cols'  => ['name'],
+            ],
+            [
+                'table' => 'category',
+                'call'  => 'index',
+                'name'  => 'display',
+                'cols'  => ['id', 'slug'],
+            ],
+            [
+                'table' => 'category',
+                'call'  => 'index',
+                'name'  => 'display_guest',
+                'cols'  => ['id', 'slug', 'visible'],
+            ],
+            [
                 'table'  => 'forum',
                 'call'   => 'create',
                 'schema' => [
@@ -613,6 +729,36 @@ class Installation extends Component
                     'created_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at'  => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
+            ],
+            [
+                'table' => 'forum',
+                'call'  => 'index',
+                'name'  => 'sort',
+                'cols'  => ['sort', 'id'],
+            ],
+            [
+                'table' => 'forum',
+                'call'  => 'index',
+                'name'  => 'name',
+                'cols'  => ['name'],
+            ],
+            [
+                'table' => 'forum',
+                'call'  => 'index',
+                'name'  => 'display',
+                'cols'  => ['id', 'category_id'],
+            ],
+            [
+                'table' => 'forum',
+                'call'  => 'index',
+                'name'  => 'display_slug',
+                'cols'  => ['id', 'category_id', 'slug'],
+            ],
+            [
+                'table' => 'forum',
+                'call'  => 'index',
+                'name'  => 'display_guest_slug',
+                'cols'  => ['id', 'category_id', 'slug', 'visible'],
             ],
             [
                 'table'  => 'forum',
@@ -642,6 +788,42 @@ class Installation extends Component
                     'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
                     'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'name',
+                'cols'  => ['name'],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'created_at',
+                'cols'  => ['created_at'],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'display',
+                'cols'  => ['id', 'category_id', 'forum_id'],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'display_slug',
+                'cols'  => ['id', 'category_id', 'forum_id', 'slug'],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'sort',
+                'cols'  => ['pinned', 'updated_at', 'id'],
+            ],
+            [
+                'table' => 'thread',
+                'call'  => 'index',
+                'name'  => 'sort_author',
+                'cols'  => ['updated_at', 'id'],
             ],
             [
                 'table'  => 'thread',
@@ -677,6 +859,30 @@ class Installation extends Component
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'edited_at'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                 ],
+            ],
+            [
+                'table' => 'post',
+                'call'  => 'index',
+                'name'  => 'updated_at',
+                'cols'  => ['updated_at'],
+            ],
+            [
+                'table' => 'post',
+                'call'  => 'index',
+                'name'  => 'created_at',
+                'cols'  => ['created_at'],
+            ],
+            [
+                'table' => 'post',
+                'call'  => 'index',
+                'name'  => 'edited_at',
+                'cols'  => ['edited_at'],
+            ],
+            [
+                'table' => 'post',
+                'call'  => 'index',
+                'name'  => 'identify',
+                'cols'  => ['id', 'thread_id', 'forum_id'],
             ],
             [
                 'table'  => 'post',
@@ -764,6 +970,24 @@ class Installation extends Component
                 'call'  => 'index',
                 'name'  => 'receiver_id',
                 'cols'  => ['receiver_id'],
+            ],
+            [
+                'table' => 'message',
+                'call'  => 'index',
+                'name'  => 'topic',
+                'cols'  => ['topic'],
+            ],
+            [
+                'table' => 'message',
+                'call'  => 'index',
+                'name'  => 'inbox',
+                'cols'  => ['receiver_id', 'receiver_status'],
+            ],
+            [
+                'table' => 'message',
+                'call'  => 'index',
+                'name'  => 'sent',
+                'cols'  => ['sender_id', 'sender_status'],
             ],
             [
                 'table'  => 'auth_rule',
@@ -878,6 +1102,66 @@ class Installation extends Component
                 ],
             ],
             [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'username',
+                'cols'  => ['username'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'status',
+                'cols'  => ['status'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'role',
+                'cols'  => ['role'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'email',
+                'cols'  => ['email'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'mod',
+                'cols'  => ['status', 'role'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'find_email',
+                'cols'  => ['status', 'email'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'find_username',
+                'cols'  => ['status', 'username'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'password_reset_token',
+                'cols'  => ['password_reset_token'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'activation_token',
+                'cols'  => ['activation_token'],
+            ],
+            [
+                'table' => 'user',
+                'call'  => 'index',
+                'name'  => 'email_token',
+                'cols'  => ['email_token'],
+            ],
+            [
                 'table'  => 'user_meta',
                 'call'   => 'create',
                 'schema' => [
@@ -944,6 +1228,24 @@ class Installation extends Component
                 ],
             ],
             [
+                'table' => 'user_activity',
+                'call'  => 'index',
+                'name'  => 'updated_at',
+                'cols'  => ['updated_at'],
+            ],
+            [
+                'table' => 'user_activity',
+                'call'  => 'index',
+                'name'  => 'members',
+                'cols'  => ['updated_at', 'user_id', 'anonymous'],
+            ],
+            [
+                'table' => 'user_activity',
+                'call'  => 'index',
+                'name'  => 'guests',
+                'cols'  => ['updated_at', 'user_id'],
+            ],
+            [
                 'table'  => 'user_activity',
                 'call'   => 'foreign',
                 'key'    => 'user_id',
@@ -966,6 +1268,12 @@ class Installation extends Component
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                     'updated_at' => Schema::TYPE_INTEGER . ' NOT NULL',
                 ],
+            ],
+            [
+                'table' => 'email',
+                'call'  => 'index',
+                'name'  => 'status',
+                'cols'  => ['status'],
             ],
             [
                 'table'  => 'email',
