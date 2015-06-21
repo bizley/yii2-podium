@@ -7,7 +7,9 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\components\Installation;
+use bizley\podium\components\Update;
 use Yii;
+use yii\db\Query;
 use yii\helpers\Json;
 use yii\web\Controller;
 
@@ -76,7 +78,60 @@ class InstallController extends Controller
     {
         $this->_passCheck();
         
-        return $this->render('run');
+        return $this->render('run', ['version' => $this->module->version]);
+    }
+    
+    /**
+     * Updating the databases structures.
+     * @return string
+     */
+    public function actionUpdate()
+    {
+        $this->_passCheck();
+        
+        $result = ['error' => Yii::t('podium/view', 'Error')];
+
+        if (Yii::$app->request->isPost) {
+            $step = Yii::$app->request->post('step');
+            
+            if (is_numeric($step)) {
+                $result = (new Update)->step($step);
+            }
+        }
+
+        return Json::encode($result);
+    }
+    
+    /**
+     * Running the upgrade.
+     * @return string
+     */
+    public function actionUpgrade()
+    {
+        $this->_passCheck();
+        
+        $error = '';
+        $info  = '';
+        
+        $mdVersion = $this->module->version;
+        $extractMd = explode('.', $mdVersion);
+        $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->one();
+        if (!isset($dbVersion['value'])) {
+            $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
+        }
+        else {
+            $extractDb = explode('.', $dbVersion['value']);
+            
+            $result = $this->compareVersions($extractMd, $extractDb);
+            if ($result == '=') {
+                $info = Yii::t('podium/flash', 'Module and database versions are the same!');
+            }
+            elseif ($result == '<') {
+                $error = Yii::t('podium/flash', 'Module version appears to be older than database! Please verify your database.');
+            }
+        }
+        
+        return $this->render('upgrade', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
     }
     
     /**
@@ -95,5 +150,26 @@ class InstallController extends Controller
         }
 
         return true;
+    }
+    
+    public function compareVersions($a, $b)
+    {
+        $versionPos = max(count($a), count($b));
+        while (count($a) < $versionPos) {
+            $a[] = 0;
+        }
+        while (count($b) < $versionPos) {
+            $b[] = 0;
+        }
+        
+        for ($v = 0; $v < count($a); $v++) {
+            if ((int)$a[$v] < (int)$b[$v]) {
+                return '<';
+            }
+            elseif ((int)$a[$v] > (int)$b[$v]) {
+                return '>';
+            }
+        }
+        return '=';
     }
 }

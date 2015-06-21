@@ -5,7 +5,7 @@ use yii\bootstrap\Progress;
 
 $js = "var nextStep = function(step){
     jQuery.ajax({
-        url: '" . Url::to(['install/import']) . "',
+        url: '" . Url::to(['install/update']) . "',
         method: 'POST',
         data: {step: step},
         dataType: 'json'
@@ -28,24 +28,28 @@ jQuery('#installPodium').click(function(e){
     jQuery('#startInstallation').addClass('hide');
     jQuery('#installationResults').removeClass('hide');
     jQuery('#progressBar .progress-bar').css('width', '10px');
-    var firstStep = jQuery('#drop')[0].checked == true ? -1 : 0;
-    nextStep(firstStep);
+    nextStep(0);
 });";
 
-$this->registerJs($js, View::POS_READY, 'podium-install');
+$this->registerJs($js, View::POS_READY, 'podium-update');
 
-$this->title                   = Yii::t('podium/view', 'New Installation');
+$this->title                   = Yii::t('podium/view', 'Podium Upgrade');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => 'run'];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
-        <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br>
+<?php if ($error == '' && $info == ''): ?>
+        <em><?= Yii::t('podium/view', 'Podium will attempt to update all database tables to the current version.') ?></em><br>
         <em><?= Yii::t('podium/view', '<strong>Back up your existing database</strong> and then click the button below.') ?></em><br><br>
-        <label class="text-danger large"><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br><br>
-        <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Start Podium Installation') ?></button><br><br>
-        <?= Yii::t('podium/view', 'Version to install') ?> <kbd><?= $version ?></kbd>
+        <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Upgrade Podium Database') ?></button><br><br>
+<?php elseif ($error != ''): ?>
+        <div class="alert alert-danger"><?= $error ?></div>
+<?php elseif ($info != ''): ?>
+        <div class="alert alert-success"><?= $info ?></div>
+<?php endif; ?>
+        <?= Yii::t('podium/view', 'Current database version') ?> <kbd><?= $dbVersion ?></kbd> <span class="glyphicon glyphicon-transfer"></span> <kbd><?= $currentVersion ?></kbd> <?= Yii::t('podium/view', 'Current module version') ?>
     </div>
 </div>
 <div class="row hide" id="installationResults">

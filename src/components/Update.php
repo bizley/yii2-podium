@@ -16,7 +16,7 @@ use yii\helpers\Html;
 use yii\helpers\VarDumper;
 
 /**
- * Podium Installation
+ * Podium Update
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
@@ -24,7 +24,7 @@ use yii\helpers\VarDumper;
  * @property \yii\rbac\DbManager $authManager Authorization Manager
  * @property \yii\db\Connection $db Database connection
  */
-class Installation extends Maintenance
+class Update extends Maintenance
 {
 
     /**
@@ -33,226 +33,6 @@ class Installation extends Maintenance
     protected $_installationSteps;
     
     protected $_percent;
-
-    /**
-     * Adds Administrator account.
-     * @return string result message.
-     */
-    protected function _addAdmin()
-    {
-        try {
-            $admin           = new User();
-            $admin->setScenario('installation');
-            $admin->username = 'admin';
-            $admin->email    = 'podium_admin@podium.net';
-            $admin->status   = User::STATUS_ACTIVE;
-            $admin->role     = User::ROLE_ADMIN;
-            $admin->generateAuthKey();
-            $admin->setPassword('admin');
-            if ($admin->save()) {
-
-                $this->authManager->assign($this->authManager->getRole('admin'), $admin->getId());
-
-                return $this->outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
-                                ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
-                                ' ' . Html::tag('kbd', 'admin') .
-                                ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
-                                ' ' . Html::tag('kbd', 'admin'));
-            }
-            else {
-                $this->setError(true);
-                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
-            }
-        }
-        catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
-        }
-    }
-
-    /**
-     * Adds Config default settings.
-     * @return string result message.
-     */
-    protected function _addConfig()
-    {
-        try {
-            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name', 'value'], [
-                    ['name', 'Podium'], 
-                    ['version', '0.1'], 
-                    ['hot_minimum', '20'], 
-                    ['members_visible', '1'],
-                    ['from_email', 'no-reply@podium-default.net'],
-                    ['from_name', 'Podium'],
-                    ['max_attempts', '5'],
-                ])->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
-        }
-        catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
-        }
-    }
-
-    /**
-     * Adds permission rules.
-     * @return string result message.
-     */
-    protected function _addRules()
-    {
-        try {
-            $viewThread = $this->authManager->createPermission('viewThread');
-            $viewThread->description = 'View thread';
-            $this->authManager->add($viewThread);
-
-            $viewForum = $this->authManager->createPermission('viewForum');
-            $viewForum->description = 'View forum';
-            $this->authManager->add($viewForum);
-
-            $createThread = $this->authManager->createPermission('createThread');
-            $createThread->description = 'Create thread';
-            $this->authManager->add($createThread);
-
-            $createPost = $this->authManager->createPermission('createPost');
-            $createPost->description = 'Create post';
-            $this->authManager->add($createPost);
-
-            $moderatorRule = new ModeratorRule;
-            $this->authManager->add($moderatorRule);
-
-            $updatePost = $this->authManager->createPermission('updatePost');
-            $updatePost->description = 'Update post';
-            $updatePost->ruleName    = $moderatorRule->name;
-            $this->authManager->add($updatePost);
-
-            $authorRule = new AuthorRule;
-            $this->authManager->add($authorRule);
-
-            $updateOwnPost = $this->authManager->createPermission('updateOwnPost');
-            $updateOwnPost->description = 'Update own post';
-            $updateOwnPost->ruleName    = $authorRule->name;
-            $this->authManager->add($updateOwnPost);
-            $this->authManager->addChild($updateOwnPost, $updatePost);
-
-            $deletePost = $this->authManager->createPermission('deletePost');
-            $deletePost->description = 'Delete post';
-            $deletePost->ruleName    = $moderatorRule->name;
-            $this->authManager->add($deletePost);
-
-            $deleteOwnPost = $this->authManager->createPermission('deleteOwnPost');
-            $deleteOwnPost->description = 'Delete own post';
-            $deleteOwnPost->ruleName    = $authorRule->name;
-            $this->authManager->add($deleteOwnPost);
-            $this->authManager->addChild($deleteOwnPost, $deletePost);
-            
-            $user = $this->authManager->createRole('user');
-            $this->authManager->add($user);
-            $this->authManager->addChild($user, $viewThread);
-            $this->authManager->addChild($user, $viewForum);
-            $this->authManager->addChild($user, $createThread);
-            $this->authManager->addChild($user, $createPost);
-            $this->authManager->addChild($user, $updateOwnPost);
-            $this->authManager->addChild($user, $deleteOwnPost);
-
-            $updateThread = $this->authManager->createPermission('updateThread');
-            $updateThread->description = 'Update thread';
-            $updateThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($updateThread);
-            
-            $deleteThread = $this->authManager->createPermission('deleteThread');
-            $deleteThread->description = 'Delete thread';
-            $deleteThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($deleteThread);
-            
-            $pinThread = $this->authManager->createPermission('pinThread');
-            $pinThread->description = 'Pin thread';
-            $pinThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($pinThread);
-            
-            $lockThread = $this->authManager->createPermission('lockThread');
-            $lockThread->description = 'Lock thread';
-            $lockThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($lockThread);
-
-            $moveThread = $this->authManager->createPermission('moveThread');
-            $moveThread->description = 'Move thread';
-            $moveThread->ruleName    = $moderatorRule->name;
-            $this->authManager->add($moveThread);
-
-            $movePost = $this->authManager->createPermission('movePost');
-            $movePost->description = 'Move post';
-            $movePost->ruleName    = $moderatorRule->name;
-            $this->authManager->add($movePost);
-
-            $banUser = $this->authManager->createPermission('banUser');
-            $banUser->description = 'Ban user';
-            $this->authManager->add($banUser);
-
-            $moderator = $this->authManager->createRole('moderator');
-            $this->authManager->add($moderator);
-            $this->authManager->addChild($moderator, $updatePost);
-            $this->authManager->addChild($moderator, $updateThread);
-            $this->authManager->addChild($moderator, $deletePost);
-            $this->authManager->addChild($moderator, $deleteThread);
-            $this->authManager->addChild($moderator, $pinThread);
-            $this->authManager->addChild($moderator, $lockThread);
-            $this->authManager->addChild($moderator, $moveThread);
-            $this->authManager->addChild($moderator, $movePost);
-            $this->authManager->addChild($moderator, $banUser);
-            $this->authManager->addChild($moderator, $user);
-
-            $createForum = $this->authManager->createPermission('createForum');
-            $createForum->description = 'Create forum';
-            $this->authManager->add($createForum);
-
-            $updateForum = $this->authManager->createPermission('updateForum');
-            $updateForum->description = 'Update forum';
-            $this->authManager->add($updateForum);
-
-            $deleteForum = $this->authManager->createPermission('deleteForum');
-            $deleteForum->description = 'Delete forum';
-            $this->authManager->add($deleteForum);
-            
-            $createCategory = $this->authManager->createPermission('createCategory');
-            $createCategory->description = 'Create category';
-            $this->authManager->add($createCategory);
-
-            $updateCategory = $this->authManager->createPermission('updateCategory');
-            $updateCategory->description = 'Update category';
-            $this->authManager->add($updateCategory);
-
-            $deleteCategory = $this->authManager->createPermission('deleteCategory');
-            $deleteCategory->description = 'Delete category';
-            $this->authManager->add($deleteCategory);
-
-            $settings = $this->authManager->createPermission('settings');
-            $settings->description = 'Settings';
-            $this->authManager->add($settings);
-
-            $admin = $this->authManager->createRole('admin');
-            $this->authManager->add($admin);
-            $this->authManager->addChild($admin, $createForum);
-            $this->authManager->addChild($admin, $updateForum);
-            $this->authManager->addChild($admin, $deleteForum);
-            $this->authManager->addChild($admin, $createCategory);
-            $this->authManager->addChild($admin, $updateCategory);
-            $this->authManager->addChild($admin, $deleteCategory);
-            $this->authManager->addChild($admin, $settings);
-            $this->authManager->addChild($admin, $moderator);
-
-            return $this->outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
-        }
-        catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
-        }
-    }
 
     public function getInstallationSteps()
     {
@@ -293,6 +73,9 @@ class Installation extends Maintenance
                     case 'create':
                         $result = call_user_func([$this, '_create'], $data);
                         break;
+                    case 'drop':
+                        $result = call_user_func([$this, '_drop'], $data);
+                        break;
                     case 'index':
                         $result = call_user_func([$this, '_index'], $data);
                         break;
@@ -311,28 +94,6 @@ class Installation extends Maintenance
         }
     }
     
-    protected function _proceedDrops()
-    {
-        $drops   = array_reverse($this->steps());
-        $results = '';
-        $this->setError(false);
-        foreach ($drops as $drop) {
-            if (isset($drop['call']) && $drop['call'] == 'create') {
-                $result = '';
-                $result .= call_user_func([$this, '_drop'], $drop['table']);
-                if ($result != '') {
-                    $result .= '<br>';
-                }
-                $results .= $result;
-                $this->setResult($results);
-                if ($this->getError()) {
-                    $this->setPercent(100);
-                    break;
-                }
-            }
-        }
-    }
-
     /**
      * Starts next step of installation.
      * @param integer $step step number.

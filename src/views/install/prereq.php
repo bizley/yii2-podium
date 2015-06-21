@@ -6,7 +6,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="col-sm-12">
         <div class="alert alert-danger">
-            <span class="glyphicon glyphicon-exclamation-sign"></span> <?= Yii::t('podium/view', 'Before you install this module please make sure you have added {MODE} parameter with {INSTALL} value for Podium in your configuration.', ['MODE' => '<code>mode</code>', 'INSTALL' => '<code>INSTALL</code>']) ?>
+            <span class="glyphicon glyphicon-exclamation-sign"></span> <?= Yii::t('podium/view', 'Before you install/upgrade this module please make sure you have added {MODE} parameter with {INSTALL} value for Podium in your configuration.', ['MODE' => '<code>mode</code>', 'INSTALL' => '<code>INSTALL</code>']) ?>
         </div>
         <pre>
 'modules' => [
