@@ -28,20 +28,13 @@ class Installation extends Maintenance
 {
 
     /**
-     * @var number of all steps
-     */
-    protected $_installationSteps;
-    
-    protected $_percent;
-
-    /**
      * Adds Administrator account.
      * @return string result message.
      */
     protected function _addAdmin()
     {
         try {
-            $admin           = new User();
+            $admin = new User();
             $admin->setScenario('installation');
             $admin->username = 'admin';
             $admin->email    = 'podium_admin@podium.net';
@@ -254,29 +247,37 @@ class Installation extends Maintenance
         }
     }
 
-    public function getInstallationSteps()
+    /**
+     * Proceeds multiple installation drops.
+     */
+    protected function _proceedDrops()
     {
-        if ($this->_installationSteps === null) {
-            $this->_installationSteps = count(static::steps());
+        $drops   = array_reverse($this->steps());
+        $results = '';
+        $this->setError(false);
+        foreach ($drops as $drop) {
+            if (isset($drop['call']) && $drop['call'] == 'create') {
+                $result = '';
+                $this->setTable($drop['table']);
+                $result .= call_user_func([$this, '_drop']);
+                if ($result != '') {
+                    $result .= '<br>';
+                }
+                $results .= $result;
+                $this->setResult($results);
+                if ($this->getError()) {
+                    $this->setPercent(100);
+                    break;
+                }
+            }
         }
-        return $this->_installationSteps;
     }
     
-    public function setInstallationSteps()
-    {
-        throw new Exception('Don\'t set installation steps counter directly!');
-    }
-    
-    public function getPercent()
-    {
-        return $this->_percent;
-    }
-    
-    public function setPercent($value)
-    {
-        $this->_percent = (int)$value;
-    }
-    
+    /**
+     * Proceeds next installation step.
+     * @param array $data step data.
+     * @throws Exception
+     */
     protected function _proceedStep($data)
     {
         if (empty($data['table'])) {
@@ -306,28 +307,6 @@ class Installation extends Maintenance
                 $this->setResult($result);
                 if ($this->getError()) {
                     $this->setPercent(100);
-                }
-            }
-        }
-    }
-    
-    protected function _proceedDrops()
-    {
-        $drops   = array_reverse($this->steps());
-        $results = '';
-        $this->setError(false);
-        foreach ($drops as $drop) {
-            if (isset($drop['call']) && $drop['call'] == 'create') {
-                $result = '';
-                $result .= call_user_func([$this, '_drop'], $drop['table']);
-                if ($result != '') {
-                    $result .= '<br>';
-                }
-                $results .= $result;
-                $this->setResult($results);
-                if ($this->getError()) {
-                    $this->setPercent(100);
-                    break;
                 }
             }
         }

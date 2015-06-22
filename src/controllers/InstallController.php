@@ -92,10 +92,11 @@ class InstallController extends Controller
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
-            $step = Yii::$app->request->post('step');
+            $step    = Yii::$app->request->post('step');
+            $version = Yii::$app->request->post('version');
             
             if (is_numeric($step)) {
-                $result = (new Update)->step($step);
+                $result = (new Update)->step($step, $version);
             }
         }
 
