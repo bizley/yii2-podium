@@ -51,6 +51,21 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
+                        <?= $form->field($model, 'password_reset_token_expire')->textInput()->label(Yii::t('podium/view', 'Number of seconds for the Password Reset Token to expire')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'email_token_expire')->textInput()->label(Yii::t('podium/view', 'Number of seconds for the Email Change Token to expire')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'activation_token_expire')->textInput()->label(Yii::t('podium/view', 'Number of seconds for the Account Activation Token to expire')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
                         <?= $form->field($model, 'version')->textInput(['readonly' => true])->label(Yii::t('podium/view', 'Database version')) ?>
                     </div>
                 </div>

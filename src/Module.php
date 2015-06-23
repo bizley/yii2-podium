@@ -8,11 +8,9 @@
  * grupy userow
  * subskrypcje watkow
  * regulamin
- * upgrade bazy
  * box latest topics
  * rss
  * zapamietanie pozycji zwinietych boxow
- * czas tokenow usera do configa przeniesc
  * -----------------------------------------------------------------------------
  * 
  * Podium Module

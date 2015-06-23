@@ -46,7 +46,7 @@ class Maintenance extends Component
     /**
      * @var int number of all steps.
      */
-    protected $_installationSteps;
+    protected $_numberOfSteps;
     
     /**
      * @var int current percent.
@@ -389,12 +389,12 @@ class Maintenance extends Component
      * Counts number of installation steps.
      * @return int
      */
-    public function getInstallationSteps()
+    public function getNumberOfSteps()
     {
-        if ($this->_installationSteps === null) {
-            $this->_installationSteps = count(static::steps());
+        if ($this->_numberOfSteps === null) {
+            $this->_numberOfSteps = count(static::steps());
         }
-        return $this->_installationSteps;
+        return $this->_numberOfSteps;
     }
     
     /**
@@ -494,7 +494,7 @@ class Maintenance extends Component
     /**
      * @throws Exception
      */
-    public function setInstallationSteps()
+    public function setNumberOfSteps()
     {
         throw new Exception('Don\'t set installation steps counter directly!');
     }

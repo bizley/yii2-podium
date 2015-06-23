@@ -327,13 +327,13 @@ class Installation extends Maintenance
                 $this->setError(true);
                 $this->setPercent(100);
             }
-            elseif ($this->getInstallationSteps() == 0) {
+            elseif ($this->getNumberOfSteps() == 0) {
                 $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
                 $this->setError(true);
                 $this->setPercent(100);
             }
             else {
-                $this->setPercent($this->getInstallationSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getInstallationSteps()));
+                $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
                 if ($drop) {
                     $this->_proceedDrops();    
                 }

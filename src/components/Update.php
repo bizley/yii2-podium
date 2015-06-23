@@ -8,7 +8,6 @@ namespace bizley\podium\components;
 
 use Exception;
 use Yii;
-use yii\db\Schema;
 
 /**
  * Podium Update
@@ -22,6 +21,11 @@ use yii\db\Schema;
 class Update extends Maintenance
 {
 
+    /**
+     * @var array list of steps for update.
+     */
+    protected $_partSteps;
+    
     /**
      * @var string starting version.
      */
@@ -101,19 +105,19 @@ class Update extends Maintenance
         $this->setTable('...');
         $this->setVersion($version);
         try {
-            if (!isset(static::steps()[(int)$step])) {
+            if (!isset($this->getPartSteps()[(int)$step])) {
                 $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
                 $this->setError(true);
                 $this->setPercent(100);
             }
-            elseif ($this->getInstallationSteps() == 0) {
+            elseif ($this->getNumberOfSteps() == 0) {
                 $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
                 $this->setError(true);
                 $this->setPercent(100);
             }
             else {
-                $this->setPercent($this->getInstallationSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getInstallationSteps()));
-                $this->_proceedStep(static::steps()[(int)$step]);
+                $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
+                $this->_proceedStep($this->getPartSteps()[(int)$step]);
             }
         }
         catch (Exception $e) {
@@ -134,14 +138,26 @@ class Update extends Maintenance
      * Counts number of installation steps.
      * @return int
      */
-    public function getInstallationSteps()
+    public function getNumberOfSteps()
     {
-        if ($this->_installationSteps === null) {
+        if ($this->_numberOfSteps === null) {
+            $this->_numberOfSteps = count($this->getPartSteps());
+        }
+        return $this->_numberOfSteps;
+    }
+    
+    /**
+     * Counts number of installation steps.
+     * @return int
+     */
+    public function getPartSteps()
+    {
+        if ($this->_partSteps === null) {
             $v = $this->getVersion();
             if ($v === null) {
-                $all = [];
+                $this->_partSteps = [];
                 foreach (static::steps() as $version => $data) {
-                    $all = array_merge($all, $data);
+                    $this->_partSteps = array_merge($this->_partSteps, $data);
                 }
             }
             else {
@@ -157,14 +173,13 @@ class Update extends Maintenance
                     }
                 }
                 $part = array_slice(static::steps(), $index);
-                $all  = [];
+                $this->_partSteps  = [];
                 foreach ($part as $version => $data) {
-                    $all = array_merge($all, $data);
+                    $this->_partSteps = array_merge($this->_partSteps, $data);
                 }
             }
-            $this->_installationSteps = count($all);
         }
-        return $this->_installationSteps;
+        return $this->_partSteps;
     }
     
     /**
@@ -174,6 +189,14 @@ class Update extends Maintenance
     public function getVersion()
     {
         return $this->_version;
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public function setPartSteps()
+    {
+        throw new Exception('Don\'t set update steps array directly!');
     }
     
     /**
