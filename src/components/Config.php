@@ -39,9 +39,9 @@ class Config
         'from_email'                  => 'no-reply@change.me',
         'from_name'                   => 'Podium',
         'max_attempts'                => 5,
-        'password_reset_token_expire' => 24 * 60 * 60,
-        'email_token_expire'          => 24 * 60 * 60,
-        'activation_token_expire'     => 3 * 24 * 60 * 60,
+        'password_reset_token_expire' => 86400,
+        'email_token_expire'          => 86400,
+        'activation_token_expire'     => 259200,
     ];
     
     /**

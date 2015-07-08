@@ -18,13 +18,17 @@ use bizley\podium\models\PostThumb;
 use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
+use DateTime;
 use Exception;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\helpers\StringHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
+use Zelenin\yii\extensions\Rss\RssView;
 
 /**
  * Podium Default controller
@@ -1390,6 +1394,76 @@ class DefaultController extends Controller
             $this->warning('Please sign in to report the post.');
             return $this->redirect(['account/login']);
         }
+    }
+    
+    /**
+     * Main RSS channel.
+     * @return string
+     */
+    public function actionRss()
+    {
+        $response = Yii::$app->getResponse();
+        $headers = $response->getHeaders();
+
+        $headers->set('Content-Type', 'application/rss+xml; charset=utf-8');
+
+        $response->content = RssView::widget([
+            'dataProvider' => (new Forum())->search(),
+            'channel'      => [
+                'title'       => Yii::$app->name, // TODO: Podium title
+                'link'        => Url::to(['default/index'], true),
+                'description' => 'Podium Main Categories', // TODO: Podium description
+                'language'    => Yii::$app->language
+            ],
+            'items' => [
+                'title' => function ($model, $widget) {
+                        if (!empty($model->latest)) {
+                            $title = Html::encode($model->latest->thread->name);
+                        }
+                        else {
+                            $title = Html::encode($model->name);
+                        }
+                        return $title;
+                    },
+                'description' => function ($model, $widget) {
+                        $description = '';
+                        if (!empty($model->latest)) {
+                            $description = StringHelper::truncateWords($model->latest->content, 50);
+                        }
+                        return $description;
+                    },
+                'link' => function ($model, $widget) {
+                        $link = Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true);
+                        if (!empty($model->latest)) {
+                            $link = Url::to(['default/show', 'id' => $model->latest->id], true);
+                        }
+                        return $link;
+                    },
+                'author' => function ($model, $widget) {
+                        $author = '';
+                        if (!empty($model->latest)) {
+                            $author = $model->latest->user->getPodiumName();
+                        }
+                        return $author;
+                    },
+                'guid' => function ($model, $widget) {
+                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->updated_at);
+                        $guid = Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true) . ' ' . $date->format(DATE_RSS);
+                        if (!empty($model->latest)) {
+                            $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->latest->updated_at);
+                            $guid = Url::to(['default/show', 'id' => $model->latest->id], true) . ' ' . $date->format(DATE_RSS);
+                        }
+                        return $guid;
+                    },
+                'pubDate' => function ($model, $widget) {
+                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->updated_at);
+                        if (!empty($model->latest)) {
+                            $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->latest->updated_at);
+                        }
+                        return $date->format(DATE_RSS);
+                    }
+            ]
+        ]);
     }
     
     /**

@@ -7,7 +7,7 @@
  * seo
  * grupy userow
  * subskrypcje watkow
- * regulamin
+ * tresci maili konfigurowalne + regulamin
  * box latest topics
  * rss
  * zapamietanie pozycji zwinietych boxow
@@ -155,6 +155,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'register'                                                      => 'account/register',
                         'report/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>/<slug:[\w\-]+>' => 'default/report',
                         'reset'                                                         => 'account/reset',
+                        'rss'                                                           => 'default/rss',
                         'search'                                                        => 'default/search',
                         'show/<id:\d+>'                                                 => 'default/show',
                         'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',

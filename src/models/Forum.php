@@ -82,6 +82,11 @@ class Forum extends ActiveRecord
         return $this->hasOne(Post::className(), ['forum_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
     
+    public function getCategory()
+    {
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+    
     public function search($category_id = null)
     {
         $query = self::find();
