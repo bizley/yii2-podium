@@ -21,6 +21,8 @@ use yii\db\Query;
  * @property string $name
  * @property string $sub
  * @property string $slug
+ * @property string $keywords
+ * @property string $description
  * @property integer $visible
  * @property integer $sort
  * @property integer $updated_at
@@ -60,6 +62,7 @@ class Forum extends ActiveRecord
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
             [['name', 'sub'], 'validateName'],
+            [['keywords', 'description'], 'string'],
         ];
     }
     

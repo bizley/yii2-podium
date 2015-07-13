@@ -36,17 +36,41 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'categories']);
                     <div class="col-sm-12">
                         <?= $form->field($model, 'name')->textInput([
                             'data-container' => 'body',
-                            'data-toggle' => 'popover',
+                            'data-toggle'    => 'popover',
                             'data-placement' => 'right',
-                            'data-content' => Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'),
-                            'data-trigger' => 'focus'
+                            'data-content'   => Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'),
+                            'data-trigger'   => 'focus'
                         ])->label(Yii::t('podium/view', 'Category\'s Name')) ?>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0])->label(Yii::t('podium/view', 'Category visible for anonymous guests')) ?>
-                        <small class="text-muted"><?= Yii::t('podium/view', 'You can turn off visibility for each individual forum in the category as well.') ?></small>
+                        <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0, 'aria-describedby' => 'help-visible'])->label(Yii::t('podium/view', 'Category visible for anonymous guests')) ?>
+                        <small id="help-visible" class="help-block"><?= Yii::t('podium/view', 'You can turn off visibility for each individual forum in the category as well.') ?></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'keywords')->textInput([
+                            'placeholder'    => Yii::t('podium/view', 'Optional keywords'),
+                            'data-container' => 'body',
+                            'data-toggle'    => 'popover',
+                            'data-placement' => 'right',
+                            'data-content'   => Yii::t('podium/view', 'Meta keywords tag (leave empty to get global value).'),
+                            'data-trigger'   => 'focus'
+                        ])->label(Yii::t('podium/view', 'Category\'s Meta Keywords')) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'description')->textInput([
+                            'placeholder'    => Yii::t('podium/view', 'Optional description'),
+                            'data-container' => 'body',
+                            'data-toggle'    => 'popover',
+                            'data-placement' => 'right',
+                            'data-content'   => Yii::t('podium/view', 'Meta description tag (leave empty to get global value).'),
+                            'data-trigger'   => 'focus'
+                        ])->label(Yii::t('podium/view', 'Category\'s Meta Description')) ?>
                     </div>
                 </div>
             </div>

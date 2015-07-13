@@ -17,6 +17,8 @@ use yii\db\ActiveRecord;
  * @property integer $id
  * @property string $name
  * @property string $slug
+ * @property string $keywords
+ * @property string $description
  * @property integer $visible
  * @property integer $sort
  * @property integer $updated_at
@@ -56,6 +58,7 @@ class Category extends ActiveRecord
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
             ['name', 'validateName'],
+            [['keywords', 'description'], 'string'],
         ];
     }
     

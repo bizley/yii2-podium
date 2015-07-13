@@ -4,7 +4,6 @@
  * TODO:
  * -----------------------------------------------------------------------------
  * panel glowny admina
- * seo
  * grupy userow
  * subskrypcje watkow
  * tresci maili konfigurowalne + regulamin

@@ -45,10 +45,10 @@ class AdminController extends Controller
                 'rules' => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function () {
+                        'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function () {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
                         }
                     ],
@@ -107,7 +107,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->redirect(['members']);
+        return $this->redirect(['admin/members']);
     }
     
     /**
@@ -117,6 +117,22 @@ class AdminController extends Controller
     public function actionCategories()
     {
         return $this->render('categories', ['dataProvider' => (new Category())->show()]);
+    }
+    
+    /**
+     * Clearing all cache.
+     * @return string
+     */
+    public function actionClear()
+    {
+        if (Cache::getInstance()->flush()) {
+            $this->success('Cache has been cleared.');
+        }
+        else {
+            $this->error('Sorry! There was some error while clearing the cache.');
+        }
+        
+        return $this->redirect(['admin/settings']);
     }
     
     /**
@@ -147,7 +163,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->redirect(['members']);
+        return $this->redirect(['admin/members']);
     }
     
     /**
@@ -175,7 +191,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->redirect(['categories']);
+        return $this->redirect(['admin/categories']);
     }
     
     /**
@@ -190,7 +206,7 @@ class AdminController extends Controller
 
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
 
         $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
@@ -211,7 +227,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->redirect(['forums', 'cid' => $category->id]);
+        return $this->redirect(['admin/forums', 'cid' => $category->id]);
     }
     
     /**
@@ -244,7 +260,7 @@ class AdminController extends Controller
                             $transaction->commit();
                             Log::info('User demoted', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->success('User has been demoted.');
-                            return $this->redirect(['members']);
+                            return $this->redirect(['admin/members']);
                         }
                     }
                     Log::error('Error while demoting user', !empty($model->id) ? $model->id : '', __METHOD__);
@@ -258,7 +274,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->redirect(['members']);
+        return $this->redirect(['admin/members']);
     }
     
     /**
@@ -272,13 +288,13 @@ class AdminController extends Controller
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
         else {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Log::info('Category updated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Category has been updated.');
-                return $this->redirect(['categories']);
+                return $this->redirect(['admin/categories']);
             }
             else {
                 return $this->render('category', [
@@ -301,20 +317,20 @@ class AdminController extends Controller
 
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
 
         $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Forum with this ID.');
-            return $this->redirect(['forums', 'cid' => $category->id]);
+            return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
         else {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Log::info('Forum updated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Forum has been updated.');
-                return $this->redirect(['forums']);
+                return $this->redirect(['admin/forums']);
             }
             else {
                 return $this->render('forum', [
@@ -337,7 +353,7 @@ class AdminController extends Controller
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
 
         return $this->render('forums', [
@@ -403,13 +419,13 @@ class AdminController extends Controller
     {
         if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
             $this->error('Sorry! We can not find the moderator or forum with this ID.');
-            return $this->redirect(['mods']);
+            return $this->redirect(['admin/mods']);
         }
         else {
             $mod = User::findOne(['id' => $uid, 'role' => User::ROLE_MODERATOR]);
             if (!$mod) {
                 $this->error('Sorry! We can not find the moderator with this ID.');
-                return $this->redirect(['mods']);
+                return $this->redirect(['admin/mods']);
             }
             else {
                 $forum = Forum::findOne(['id' => $fid]);
@@ -434,7 +450,7 @@ class AdminController extends Controller
                     }
                 }
                 
-                return $this->redirect(['mods', 'id' => $uid]);
+                return $this->redirect(['admin/mods', 'id' => $uid]);
             }
         }
     }
@@ -531,7 +547,7 @@ class AdminController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Log::info('Category added', !empty($model->id) ? $model->id : '', __METHOD__);
             $this->success('New category has been created.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
         else {
             return $this->render('category', [
@@ -552,7 +568,7 @@ class AdminController extends Controller
 
         if (empty($category)) {
             $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
 
         $model              = new Forum();
@@ -563,7 +579,7 @@ class AdminController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Log::info('Forum added', !empty($model->id) ? $model->id : '', __METHOD__);
             $this->success('New forum has been created.');
-            return $this->redirect(['forums', 'cid' => $category->id]);
+            return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
         else {
             return $this->render('forum', [
@@ -603,7 +619,7 @@ class AdminController extends Controller
                             $transaction->commit();
                             Log::info('User promoted', !empty($model->id) ? $model->id : '', __METHOD__);
                             $this->success('User has been promoted.');
-                            return $this->redirect(['mods', 'id' => $model->id]);
+                            return $this->redirect(['admin/mods', 'id' => $model->id]);
                         }
                     }
                     $this->error('Sorry! There was an error while promoting the user.');
@@ -693,7 +709,7 @@ class AdminController extends Controller
             }
         }
         else {
-            return $this->redirect(['categories']);
+            return $this->redirect(['admin/categories']);
         }
     }
     
@@ -751,7 +767,7 @@ class AdminController extends Controller
             }
         }
         else {
-            return $this->redirect(['forums']);
+            return $this->redirect(['admin/forums']);
         }
     }
 
@@ -766,7 +782,7 @@ class AdminController extends Controller
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
-            return $this->redirect(['members']);
+            return $this->redirect(['admin/members']);
         }
 
         return $this->render('view', ['model' => $model]);

@@ -122,6 +122,14 @@ class Cache
     }
     
     /**
+     * Flushes all cache.
+     */
+    public function flush()
+    {
+        return $this->cache->flush();
+    }
+    
+    /**
      * Retrieves the value from cache with the specified key.
      * @param string $key the key identifying the cached value.
      * @return mixed the value stored in cache, false if the value is not in the cache, expired,
@@ -161,7 +169,7 @@ class Cache
     }
 
     /**
-     * Initialise component.
+     * Initialises component.
      * If cache is not set in configuration [[DummyCache]] is used instead.
      */
     public function init()

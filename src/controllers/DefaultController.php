@@ -8,6 +8,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
+use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\components\Log;
 use bizley\podium\models\Category;
@@ -18,7 +19,6 @@ use bizley\podium\models\PostThumb;
 use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
-use DateTime;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -136,6 +136,8 @@ class DefaultController extends Controller
             $this->error('Sorry! We can not find the category you are looking for.');
             return $this->redirect(['index']);
         }
+        
+        $this->setMetaTags($model->keywords, $model->description);
 
         return $this->render('category', [
                     'model' => $model
@@ -602,6 +604,16 @@ class DefaultController extends Controller
             $model = Forum::findOne($conditions);
         }
 
+        $keywords = $model->keywords;
+        if (!$keywords) {
+            $keywords = $category->keywords;
+        }
+        $description = $model->description;
+        if (!$description) {
+            $description = $category->description;
+        }
+        $this->setMetaTags($keywords, $description);
+        
         return $this->render('forum', [
                     'model'    => $model,
                     'category' => $category,
@@ -614,9 +626,9 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index', [
-                    'dataProvider' => (new Category())->search()
-        ]);
+        $this->setMetaTags();
+        
+        return $this->render('index', ['dataProvider' => (new Category())->search()]);
     }
     
     /**
@@ -1418,49 +1430,45 @@ class DefaultController extends Controller
             'items' => [
                 'title' => function ($model, $widget) {
                         if (!empty($model->latest)) {
-                            $title = Html::encode($model->latest->thread->name);
+                            return Html::encode($model->latest->thread->name);
                         }
                         else {
-                            $title = Html::encode($model->name);
+                            return Html::encode($model->name);
                         }
-                        return $title;
                     },
                 'description' => function ($model, $widget) {
-                        $description = '';
                         if (!empty($model->latest)) {
-                            $description = StringHelper::truncateWords($model->latest->content, 50);
+                            return StringHelper::truncateWords($model->latest->content, 50);
                         }
-                        return $description;
+                        return '';
                     },
                 'link' => function ($model, $widget) {
-                        $link = Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true);
                         if (!empty($model->latest)) {
-                            $link = Url::to(['default/show', 'id' => $model->latest->id], true);
+                            return Url::to(['default/show', 'id' => $model->latest->id], true);
                         }
-                        return $link;
+                        return Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true);
                     },
                 'author' => function ($model, $widget) {
-                        $author = '';
                         if (!empty($model->latest)) {
-                            $author = $model->latest->user->getPodiumName();
+                            return $model->latest->user->getPodiumName();
                         }
-                        return $author;
+                        return '';
                     },
                 'guid' => function ($model, $widget) {
-                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->updated_at);
-                        $guid = Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true) . ' ' . $date->format(DATE_RSS);
                         if (!empty($model->latest)) {
-                            $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->latest->updated_at);
-                            $guid = Url::to(['default/show', 'id' => $model->latest->id], true) . ' ' . $date->format(DATE_RSS);
+                            return Url::to(['default/show', 'id' => $model->latest->id], true) . ' ' . Yii::$app->formatter->asDatetime($model->latest->updated_at, 'php:' . DATE_RSS);
                         }
-                        return $guid;
+                        else {
+                            return Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug], true) . ' ' . Yii::$app->formatter->asDatetime($model->updated_at, 'php:' . DATE_RSS);
+                        }
                     },
                 'pubDate' => function ($model, $widget) {
-                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->updated_at);
                         if (!empty($model->latest)) {
-                            $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->latest->updated_at);
+                            return Yii::$app->formatter->asDatetime($model->latest->updated_at, 'php:' . DATE_RSS);
                         }
-                        return $date->format(DATE_RSS);
+                        else {
+                            return Yii::$app->formatter->asDatetime($model->updated_at, 'php:' . DATE_RSS);
+                        }
                     }
             ]
         ]);
@@ -1607,6 +1615,16 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
+        $keywords = $forum->keywords;
+        if (!$keywords) {
+            $keywords = $category->keywords;
+        }
+        $description = $forum->description;
+        if (!$description) {
+            $description = $category->description;
+        }
+        $this->setMetaTags($keywords, $description);
+        
         $dataProvider = (new Post)->search($forum->id, $thread->id);
         $model = new Post;
 
@@ -1729,6 +1747,29 @@ class DefaultController extends Controller
         }
         else {
             return $this->redirect(['index']);
+        }
+    }
+    
+    public function setMetaTags($keywords = '', $description = '')
+    {
+        if ($keywords == '') {
+            $keywords = Config::getInstance()->get('meta_keywords');
+        }
+        if ($keywords) {
+            $this->getView()->registerMetaTag([
+                'name'    => 'keywords',
+                'content' => $keywords
+            ]);
+        }
+        
+        if ($description == '') {
+            $description = Config::getInstance()->get('meta_description');
+        }
+        if ($description) {
+            $this->getView()->registerMetaTag([
+                'name'    => 'description',
+                'content' => $description
+            ]);
         }
     }
 }

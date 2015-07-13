@@ -42,6 +42,8 @@ class Config
         'password_reset_token_expire' => 86400,
         'email_token_expire'          => 86400,
         'activation_token_expire'     => 259200,
+        'meta_keywords'               => 'yii2, forum, podium',
+        'meta_description'            => 'Podium - Yii 2 Forum Module',
     ];
     
     /**
