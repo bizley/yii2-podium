@@ -136,6 +136,23 @@ class AdminController extends Controller
     }
     
     /**
+     * Listing the contents.
+     * @return string
+     */
+    public function actionContents()
+    {
+        //$model = Category::findOne((int) $cid);
+
+        
+
+        return $this->render('contents', [
+//                    'model'      => $model,
+//                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+//                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+        ]);
+    }
+    
+    /**
      * Deleting the user of given ID.
      * @param integer $id
      * @return \yii\web\Response

@@ -1117,6 +1117,15 @@ class Installation extends Maintenance
                 'update' => 'CASCADE',
             ],
             [
+                'table'  => 'content',
+                'call'   => 'create',
+                'schema' => [
+                    'id'      => Schema::TYPE_PK,
+                    'name'    => Schema::TYPE_STRING . ' NOT NULL',
+                    'content' => Schema::TYPE_TEXT . ' NOT NULL',
+                ],
+            ],
+            [
                 'table' => 'user',
                 'call'  => 'addAdmin',
             ],
