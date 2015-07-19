@@ -137,15 +137,9 @@ class MessagesController extends Controller
     public function actionNew($user = null)
     {
         $model = new Message();
-        $data = [];
         
         if (!empty($user) && (int)$user > 0 && (int)$user != Yii::$app->user->id) {
             $model->receiver_id = (int)$user;
-            $data[] = [
-                'id' => (int)$user,
-                'mark' => 0,
-                'value' => User::findOne((int)$user)->getPodiumTag(true),
-            ];
         }
         
         if ($model->load(Yii::$app->request->post())) {
@@ -162,24 +156,9 @@ class MessagesController extends Controller
                     $this->error('Sorry! This member ignores you so you can not send the message.');
                 }
             }
-            else {
-                if ($model->receiver_id) {
-                    $receiver = User::findOne(['id' => $model->receiver_id]);
-                    if ($receiver) {
-                        $data[] = [
-                            'id' => $receiver->id,
-                            'mark' => 0,
-                            'value' => $receiver->getPodiumTag(true),
-                        ];
-                    }
-                }
-            }
         }
         
-        return $this->render('new', [
-                'model' => $model,
-                'data' => $data
-        ]);
+        return $this->render('new', ['model' => $model]);
     }
     
     /**

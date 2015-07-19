@@ -11,6 +11,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\components\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
+use bizley\podium\models\Content;
 use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
 use bizley\podium\models\LogSearch;
@@ -137,18 +138,31 @@ class AdminController extends Controller
     
     /**
      * Listing the contents.
-     * @return string
+     * @param string $name content name
+     * @return string|\yii\web\Response
      */
-    public function actionContents()
+    public function actionContents($name = '')
     {
-        //$model = Category::findOne((int) $cid);
-
+        $allowed = ['terms', 'email-reg', 'email-new', 'email-react', 'email-pass'];
         
+        if ($name == '' || !in_array($name, $allowed)) {
+            $name = 'terms';
+        }        
+        
+        $model = Content::find()->where(['name' => $name])->one();
+        if (!$model) {
+            $model = new Content();
+            $model->name = $name;
+        }        
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            
+            $this->success('Content has been saved.');
+            return $this->refresh();
+        }
 
         return $this->render('contents', [
-//                    'model'      => $model,
-//                    'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-//                    'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                    'model'      => $model,
         ]);
     }
     

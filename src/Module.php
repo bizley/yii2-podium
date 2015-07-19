@@ -6,10 +6,9 @@
  * panel glowny admina
  * grupy userow
  * subskrypcje watkow
- * tresci maili konfigurowalne + regulamin
  * box latest topics
  * rss
- * zapamietanie pozycji zwinietych boxow
+ * podswietlenie menu we wszystkich podkategoriach
  * -----------------------------------------------------------------------------
  * 
  * Podium Module
@@ -107,6 +106,7 @@ class Module extends BaseModule implements BootstrapInterface
                     'rules'  => [
                         'activate/<token:[\w\-]+>'                                      => 'account/activate',
                         'admin/ban/<id:\d+>'                                            => 'admin/ban',
+                        'admin/contents/<name:[\w\-]+>'                                 => 'admin/contents',
                         'admin/delete/<id:\d+>'                                         => 'admin/delete',
                         'admin/delete-category/<id:\d+>'                                => 'admin/delete-category',
                         'admin/delete-forum/<cid:\d+>/<id:\d+>'                         => 'admin/delete-forum',
@@ -309,7 +309,6 @@ class Module extends BaseModule implements BootstrapInterface
             'sourceLanguage' => 'en-US',
             'basePath'       => '@podium/messages',
             'fileMap'        => [
-                'podium/mail'   => 'mail.php',
                 'podium/flash'  => 'flash.php',
                 'podium/layout' => 'layout.php',
                 'podium/view'   => 'view.php',

@@ -10,11 +10,11 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
-use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -176,12 +176,23 @@ class AccountController extends Controller
 
             if ($model->reactivate()) {
                 
+                $email = Content::find()->where(['name' => 'email-react'])->one();
+                if ($email) {
+                    $topic   = $email->topic;
+                    $content = $email->content;
+                }
+                else {
+                    $topic   = '{forum} account reactivation';
+                    $content = '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br />If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br />{forum}</p>';
+                }
+                
+                $forum = Config::getInstance()->get('name');
                 if (Email::queue($model->getUser()->email, 
-                        Yii::t('podium/mail', '{name} password reset link', ['name' => Config::getInstance()->get('name')]),
-                        $this->renderPartial('/mail/reactivate', [
-                                'forum' => Config::getInstance()->get('name'),
-                                'link'  => Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
-                            ]),
+                        str_replace('{forum}', $forum, $topic),
+                        str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true),
+                                Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
+                            ), $content)),
                         !empty($model->getUser()->id) ? $model->getUser()->id : null
                     )) {
                     Log::info('Reactivation link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
@@ -210,15 +221,26 @@ class AccountController extends Controller
     {
         $model = new User();
         $model->setScenario('register');
-
+        
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
             
+            $email = Content::find()->where(['name' => 'email-reg'])->one();
+            if ($email) {
+                $topic   = $email->topic;
+                $content = $email->content;
+            }
+            else {
+                $topic   = 'Welcome to {forum}! This is your activation link';
+                $content = '<p>Thank you for registering at {forum}!</p><p>To activate you account open the following link in your Internet browser:<br />{link}<br /></p><p>See you soon!<br />{forum}</p>';
+            }
+
+            $forum = Config::getInstance()->get('name');
             if (Email::queue($model->email, 
-                    Yii::t('podium/mail', 'Welcome to {name}! This is your activation link', ['name' => Config::getInstance()->get('name')]),
-                    $this->renderPartial('/mail/register', [
-                            'forum' => Config::getInstance()->get('name'),
-                            'link'  => Url::to(['account/activate', 'token' => $model->activation_token], true)
-                        ]),
+                    str_replace('{forum}', $forum, $topic),
+                    str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                            Url::to(['account/activate', 'token' => $model->activation_token], true),
+                            Url::to(['account/activate', 'token' => $model->activation_token], true)
+                        ), $content)),
                     !empty($model->id) ? $model->id : null
                 )) {
                 Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
@@ -236,9 +258,8 @@ class AccountController extends Controller
             
             return $this->module->goPodium();
         }
-        else {
-            return $this->render('register', ['model' => $model]);
-        }
+        
+        return $this->render('register', ['model' => $model, 'terms' => Content::find()->where(['name' => 'terms'])->one()]);
     }
 
     /**
@@ -252,13 +273,24 @@ class AccountController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             if ($model->reset()) {
-                
+
+                $email = Content::find()->where(['name' => 'email-pass'])->one();
+                if ($email) {
+                    $topic   = $email->topic;
+                    $content = $email->content;
+                }
+                else {
+                    $topic   = '{forum} password reset link';
+                    $content = '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br />If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br />{forum}</p>';
+                }
+
+                $forum = Config::getInstance()->get('name');
                 if (Email::queue($model->getUser()->email, 
-                        Yii::t('podium/mail', '{name} password reset link', ['name' => Config::getInstance()->get('name')]),
-                        $this->renderPartial('/mail/reset', [
-                                'forum' => Config::getInstance()->get('name'),
-                                'link'  => Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true)
-                            ]),
+                        str_replace('{forum}', $forum, $topic),
+                        str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true),
+                                Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true)
+                            ), $content)),
                         !empty($model->getUser()->id) ? $model->getUser()->id : null
                     )) {
                     Log::info('Password reset link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);

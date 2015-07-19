@@ -42,7 +42,11 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 </h4>
             </div>
             <div class="panel-body">
-                <textarea class="form-control" rows="6"><?= Yii::t('podium/view', 'TBD') ?></textarea>
+<?php if ($terms): ?>
+                <?= $terms->content ?>
+<?php else: ?>
+                TO BE ANNOUNCED
+<?php endif; ?>
             </div>
         </div>
     </div>

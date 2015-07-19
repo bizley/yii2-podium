@@ -9,6 +9,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
 use bizley\podium\models\User;
@@ -79,13 +80,23 @@ class ProfileController extends Controller
                 if ($model->saveChanges()) {
                     if ($model->new_email) {
                         
+                        $email = Content::find()->where(['name' => 'email-new'])->one();
+                        if ($email) {
+                            $topic   = $email->topic;
+                            $content = $email->content;
+                        }
+                        else {
+                            $topic   = 'New e-mail activation link at {forum}';
+                            $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
+                        }
+
+                        $forum = Config::getInstance()->get('name');
                         if (Email::queue($model->getUser()->email, 
-                                Yii::t('podium/mail', 'New e-mail activation link at {name}', ['name' => Config::getInstance()->get('name')]),
-                                $this->renderPartial('/mail/new_email', [
-                                        'forum' => Config::getInstance()->get('name'),
-                                        'link'  => Url::to(['account/new-email',
-                                        'token' => $model->email_token], true)
-                                    ]),
+                                str_replace('{forum}', $forum, $topic),
+                                str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                        Url::to(['account/new-email', 'token' => $model->email_token], true),
+                                        Url::to(['account/new-email', 'token' => $model->email_token], true)
+                                    ), $content)),
                                 !empty($model->id) ? $model->id : null
                             )) {
                             Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);

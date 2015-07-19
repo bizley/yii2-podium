@@ -17,6 +17,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @property integer $id
  * @property string $name
+ * @property string $topic
  * @property string $content
  */
 class Content extends ActiveRecord
@@ -36,8 +37,9 @@ class Content extends ActiveRecord
     public function rules()
     {
         return [
-            ['content', 'required'],
-            ['content', 'string', 'min' => 1],
+            [['content', 'topic'], 'required'],
+            [['content', 'topic'], 'string', 'min' => 1],
+            ['topic', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value); }],
             ['content', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full')); }],
         ];
     }
