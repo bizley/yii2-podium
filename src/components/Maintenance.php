@@ -135,7 +135,7 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->createTable($this->getTable(), $data['schema'], $this->getTableOptions())->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been created', ['name' => $this->getTable()]));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been created', ['name' => $this->db->getSchema()->getRawTableName($this->getTable())]));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);

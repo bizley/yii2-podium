@@ -1,6 +1,6 @@
 <?php
 $this->title                   = Yii::t('podium/view', 'Podium Installation Prerequirements');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => 'run'];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">

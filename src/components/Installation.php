@@ -283,14 +283,12 @@ class Installation extends Maintenance
         $drops   = array_reverse($this->steps());
         $results = '';
         $this->setError(false);
+        $results .= $this->outputSuccess(Yii::t('podium/flash', 'Please wait... Dropping tables.'));
         foreach ($drops as $drop) {
             if (isset($drop['call']) && $drop['call'] == 'create') {
                 $result = '';
                 $this->setTable($drop['table']);
-                $result .= call_user_func([$this, '_drop']);
-                if ($result != '') {
-                    $result .= '<br>';
-                }
+                $result .= '<br>' . call_user_func([$this, '_drop']);
                 $results .= $result;
                 $this->setResult($results);
                 if ($this->getError()) {

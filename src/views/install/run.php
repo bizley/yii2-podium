@@ -35,7 +35,7 @@ jQuery('#installPodium').click(function(e){
 $this->registerJs($js, View::POS_READY, 'podium-install');
 
 $this->title                   = Yii::t('podium/view', 'New Installation');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => 'run'];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 ?>
@@ -43,7 +43,13 @@ $this->params['no-search']     = true;
     <div class="text-center col-sm-12">
         <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br>
         <em><?= Yii::t('podium/view', '<strong>Back up your existing database</strong> and then click the button below.') ?></em><br><br>
-        <label class="text-danger large"><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br><br>
+        <div class="alert alert-danger">
+            <label><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br>
+            <?= Yii::t('podium/view', '(all existing Podium data will be deleted)') ?>
+        </div>
+        
+        
+        
         <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Start Podium Installation') ?></button><br><br>
         <?= Yii::t('podium/view', 'Version to install') ?> <kbd><?= $version ?></kbd>
     </div>

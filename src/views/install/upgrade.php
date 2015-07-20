@@ -34,7 +34,7 @@ jQuery('#installPodium').click(function(e){
 $this->registerJs($js, View::POS_READY, 'podium-update');
 
 $this->title                   = Yii::t('podium/view', 'Podium Upgrade');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => 'run'];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 ?>
