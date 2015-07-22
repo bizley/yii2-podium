@@ -321,6 +321,15 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Newest registered members.
+     * @return array
+     */
+    public function getNewest($limit = 10)
+    {
+        return self::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
+    }
+    
+    /**
      * Returns number of new messages.
      * @return int
      */

@@ -6,9 +6,10 @@
  * panel glowny admina
  * grupy userow
  * subskrypcje watkow
- * box latest topics
+ * captcha
+ * logowanie przez oauth
+ * maintance mode
  * rss
- * podswietlenie menu we wszystkich podkategoriach
  * -----------------------------------------------------------------------------
  * 
  * Podium Module
@@ -18,9 +19,9 @@
  * @version 0.1 (beta)
  * @license TBA
  * 
- * https://github.com/bizley-code/Yii2-Podium
+ * https://github.com/bizley-code/yii2-podium
  * Please report all issues at GitHub
- * https://github.com/bizley-code/Yii2-Podium/issues
+ * https://github.com/bizley-code/yii2-podium/issues
  * 
  * Podium requires Yii 2.0.4 or newer
  * http://www.yiiframework.com

@@ -628,7 +628,10 @@ class DefaultController extends Controller
     {
         $this->setMetaTags();
         
-        return $this->render('index', ['dataProvider' => (new Category())->search()]);
+        return $this->render('index', [
+            'dataProvider' => (new Category())->search(),
+            'latest'       => (new Post())->getLatest()
+        ]);
     }
     
     /**
@@ -902,6 +905,7 @@ class DefaultController extends Controller
                                             Cache::getInstance()->delete('forum.threadscount');
                                             Cache::getInstance()->delete('forum.postscount');
                                             Cache::getInstance()->delete('user.postscount');
+                                            Cache::getInstance()->delete('forum.latestposts');
 
                                             Log::info('Posts moved', null, __METHOD__);
                                             $this->success('Posts have been moved.');
@@ -1060,6 +1064,7 @@ class DefaultController extends Controller
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
                                     Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                    Cache::getInstance()->delete('forum.latestposts');
                                     
                                     Log::info('Thread added', !empty($model->id) ? $model->id : '', __METHOD__);
                                     $this->success('New thread has been created.');
@@ -1254,6 +1259,7 @@ class DefaultController extends Controller
 
                                             Cache::getInstance()->delete('forum.postscount');
                                             Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                            Cache::getInstance()->delete('forum.latestposts');
                                             
                                             Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
                                             $this->success('New reply has been added.');

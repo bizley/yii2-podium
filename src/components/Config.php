@@ -129,7 +129,7 @@ class Config
     public static function getInstance()
     {
         if (self::$_instance === false) {
-            self::$_instance = new Config();
+            self::$_instance = new self;
         }
         return self::$_instance;
     }

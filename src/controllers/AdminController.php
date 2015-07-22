@@ -406,8 +406,10 @@ class AdminController extends Controller
                 'install' => '<code>INSTALL</code>'
             ]);
         }
-
-        return $this->render('index');
+        
+        return $this->render('index', [
+            'members' => (new User)->getNewest()
+        ]);
     }
 
     /**

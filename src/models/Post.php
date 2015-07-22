@@ -2,6 +2,7 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\components\Log;
 use Exception;
@@ -94,6 +95,20 @@ class Post extends ActiveRecord
     public function getThumb()
     {
         return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+    }
+    
+    public function getLatestPostsForMembers($limit = 5)
+    {
+        return self::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
+    }
+    
+    public function getLatestPostsForGuests($limit = 5)
+    {
+        return self::find()->joinWith(['forum' => function ($query) {
+            $query->andWhere([Forum::tableName() . '.visible' => 1])->joinWith(['category' => function ($query) {
+                $query->andWhere([Category::tableName() . '.visible' => 1]);
+            }]);
+        }])->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
     
     public function afterSave($insert, $changedAttributes)
@@ -288,5 +303,43 @@ class Post extends ActiveRecord
                 }
             }
         }
+    }
+    
+    public function getLatest()
+    {
+        $latest = [];
+        
+        if (Yii::$app->user->isGuest) {
+            $latest = Cache::getInstance()->getElement('forum.latestposts', 'guest');
+            if ($latest === false) {
+                $posts = $this->getLatestPostsForGuests(5);
+                foreach ($posts as $post) {
+                    $latest[] = [
+                        'id'      => $post->id,
+                        'title'   => $post->thread->name,
+                        'created' => $post->created_at,
+                        'author'  => $post->user->getPodiumTag()
+                    ];
+                }
+                Cache::getInstance()->setElement('forum.latestposts', 'guest', $latest);
+            }
+        }
+        else {
+            $latest = Cache::getInstance()->getElement('forum.latestposts', 'member');
+            if ($latest === false) {
+                $posts = $this->getLatestPostsForMembers(5);
+                foreach ($posts as $post) {
+                    $latest[] = [
+                        'id'      => $post->id,
+                        'title'   => $post->thread->name,
+                        'created' => $post->created_at,
+                        'author'  => $post->user->getPodiumTag()
+                    ];
+                }
+                Cache::getInstance()->setElement('forum.latestposts', 'member', $latest);
+            }
+        }
+        
+        return $latest;
     }
 }

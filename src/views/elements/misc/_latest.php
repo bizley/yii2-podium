@@ -1,17 +1,24 @@
 <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-        Latest topics
+    <div class="panel-heading">
+        <?= Yii::t('podium/view', 'Latest posts') ?>
     </div>
+<?php if ($latest): ?>
     <table class="table table-hover">
+<?php foreach ($latest as $post): ?>
         <tr>
             <td>
-                <a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
+                <a href="<?= \yii\helpers\Url::to(['default/show', 'id' => $post['id']]) ?>" class="center-block"><?= $post['title'] ?></a>
+                <small>
+                    <?= Yii::$app->formatter->asRelativeTime($post['created']) ?> 
+                    <?= $post['author'] ?>
+                </small>
             </td>
         </tr>
-        <tr>
-            <td>
-                <a href="" class="center-block">Tytuł najnowszego posta</a><small>Apr 14, 2015 <a href="" class="btn btn-default btn-xs">Bizley</a></small>
-            </td>
-        </tr>
+<?php endforeach; ?>
     </table>
 </div>
+<?php else: ?>
+    <div class="panel-body">
+        <small><?= Yii::t('podium/view', 'No posts have been added yet') ?></small>
+    </div>
+<?php endif;

@@ -5,12 +5,15 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 
-$items = [
-    ['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']],
-];
+$items = [['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']]];
+
 if (Yii::$app->user->isGuest) {
     if (Config::getInstance()->get('members_visible')) {
-        $items[] = ['label' => Yii::t('podium/layout', 'Members'), 'url' => ['members/index']];
+        $items[] = [
+            'label'  => Yii::t('podium/layout', 'Members'), 
+            'url'    => ['members/index'],
+            'active' => $this->context->id == 'members'
+        ];
     }
     $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => ['account/login']];
     $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => ['account/register']];
@@ -20,12 +23,20 @@ else {
     $messageCount = Yii::$app->user->getIdentity()->getNewMessagesCount();
     
     if (Yii::$app->user->can('settings')) {
-        $items[] = ['label' => Yii::t('podium/layout', 'Administration'), 'url' => ['admin/index']];
+        $items[] = [
+            'label'  => Yii::t('podium/layout', 'Administration'), 
+            'url'    => ['admin/index'],
+            'active' => $this->context->id == 'admin'
+        ];
     }
-    $items[] = ['label' => Yii::t('podium/layout', 'Members'), 'url' => ['members/index']];
+    $items[] = [
+        'label'  => Yii::t('podium/layout', 'Members'), 
+        'url'    => ['members/index'],
+        'active' => $this->context->id == 'members'
+    ];
     $items[] = [
         'label' => Yii::t('podium/layout', 'Profile'), 
-        'url' => ['profile/index'],
+        'url'   => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
             ['label' => Yii::t('podium/view', 'Account Details'), 'url' => ['profile/details']],
@@ -35,7 +46,7 @@ else {
     ];
     $items[] = [
         'label' => Yii::t('podium/layout', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
-        'url' => ['messages/inbox'],
+        'url'   => ['messages/inbox'],
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],
             ['label' => Yii::t('podium/view', 'Sent'), 'url' => ['messages/sent']],
@@ -53,9 +64,9 @@ NavBar::begin([
     'innerContainerOptions' => ['class' => 'container-fluid',]
 ]);
 echo Nav::widget([
-    'options' => ['class' => 'navbar-nav navbar-right'],
-    'encodeLabels' => false,
+    'options'         => ['class' => 'navbar-nav navbar-right'],
+    'encodeLabels'    => false,
     'activateParents' => true,
-    'items'   => $items,
+    'items'           => $items,
 ]);
 NavBar::end();

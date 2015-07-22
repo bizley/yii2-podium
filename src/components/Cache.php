@@ -22,6 +22,7 @@ use yii\widgets\FragmentCache;
  * List of keys:
  * config             => Podium configuration
  * forum.lastactive   => number of last active users
+ * forum.latestposts  => 5 latest forum posts
  * forum.memberscount => number of activated and banned users
  * forum.moderators   => moderators for each forum
  * forum.threadscount => number of forum threads
@@ -163,7 +164,7 @@ class Cache
     public static function getInstance()
     {
         if (self::$_instance === false) {
-            self::$_instance = new Cache();
+            self::$_instance = new self;
         }
         return self::$_instance;
     }
