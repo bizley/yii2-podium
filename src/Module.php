@@ -5,7 +5,7 @@
  * -----------------------------------------------------------------------------
  * panel glowny admina
  * grupy userow
- * subskrypcje watkow
+ * subskrypcje watkow - lista
  * captcha
  * logowanie przez oauth
  * maintance mode

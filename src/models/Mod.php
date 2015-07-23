@@ -5,12 +5,7 @@
  */
 namespace bizley\podium\models;
 
-use Yii;
-use yii\helpers\HtmlPurifier;
 use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
-use bizley\podium\models\User;
-use bizley\podium\components\Helper;
 
 /**
  * Mod model

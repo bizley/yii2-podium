@@ -30,6 +30,7 @@ use yii\widgets\FragmentCache;
  * members.fieldlist  => list of active users w/pages
  * user.newmessages   => list of users' new messages count
  * user.postscount    => list of users' posts count
+ * user.subscriptions => list of users' subscribed threads with new posts count
  * user.votes.ID      => user's votes per hour
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>

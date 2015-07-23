@@ -50,7 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="row">
     <div class="col-sm-12">
-        <h4><?= Html::encode($thread->name) ?></h4>
+        <h4>
+<?php if ($thread->subscription): ?>
+            <small><a href="<?= Url::to(['profile/subscriptions']) ?>"><span class="label label-info pull-right"><span class="glyphicon glyphicon-star"></span> <?= Yii::t('podium/view', 'You subscribe this thread') ?></span></a></small>
+<?php endif; ?>
+            <?= Html::encode($thread->name) ?>
+        </h4>
     </div>
 </div><br>
 
@@ -100,6 +105,15 @@ Pjax::end();
                         ]) ?>
                     </div>
                 </div>
+<?php if (!$thread->subscription): ?>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'subscribe')->checkbox()->label(Yii::t('podium/view', 'Subscribe to this thread')) ?>
+                    </div>
+                </div>
+<?php else: ?>
+                <?= Html::activeHiddenInput($model, 'subscribe') ?>
+<?php endif; ?>
                 <div class="row">
                     <div class="col-sm-8">
                         <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Post Quick Reply'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>

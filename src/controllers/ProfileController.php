@@ -210,4 +210,15 @@ class ProfileController extends Controller
 
         return $this->module->goPodium();
     }
+    
+    /**
+     * Showing the subscriptions.
+     * @return string|\yii\web\Response
+     */
+    public function actionSubscriptions()
+    {
+        
+
+        return $this->render('subscriptions');
+    }
 }                

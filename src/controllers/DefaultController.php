@@ -17,6 +17,7 @@ use bizley\podium\models\Message;
 use bizley\podium\models\Post;
 use bizley\podium\models\PostThumb;
 use bizley\podium\models\SearchForm;
+use bizley\podium\models\Subscription;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
 use Exception;
@@ -1021,6 +1022,7 @@ class DefaultController extends Controller
                     $postData = Yii::$app->request->post();
                     
                     $preview = '';
+                    $model->subscribe = 1;
                     
                     if ($model->load($postData)) {
 
@@ -1050,12 +1052,23 @@ class DefaultController extends Controller
                                         $post->author_id = Yii::$app->user->id;
                                         $post->likes     = 0;
                                         $post->dislikes  = 0;
+                                        
                                         if ($post->save()) {
+                                            
                                             $post->markSeen();
                                             $forum->updateCounters(['posts' => 1]);
                                             $model->updateCounters(['posts' => 1]);
+                                            
                                             $model->touch('new_post_at');
                                             $model->touch('edited_post_at');
+                                            
+                                            if ($model->subscribe) {
+                                                $subscription = new Subscription();
+                                                $subscription->user_id   = Yii::$app->user->id;
+                                                $subscription->thread_id = $model->id;
+                                                $subscription->post_seen = Subscription::POST_SEEN;
+                                                $subscription->save();
+                                            }
                                         }
                                     }
 
@@ -1196,7 +1209,9 @@ class DefaultController extends Controller
                     }
                     else {
                         if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
+                            
                             $model = new Post;
+                            $model->subscribe = 1;
 
                             $postData = Yii::$app->request->post();
 
@@ -1253,6 +1268,14 @@ class DefaultController extends Controller
                                                     $thread->touch('edited_post_at');
                                                     $id = $model->id;
                                                 }
+                                            }
+                                            
+                                            if ($model->subscribe && !$model->thread->subscription) {
+                                                $subscription = new Subscription();
+                                                $subscription->user_id   = Yii::$app->user->id;
+                                                $subscription->thread_id = $model->thread->id;
+                                                $subscription->post_seen = Subscription::POST_SEEN;
+                                                $subscription->save();
                                             }
 
                                             $transaction->commit();
@@ -1633,6 +1656,7 @@ class DefaultController extends Controller
         
         $dataProvider = (new Post)->search($forum->id, $thread->id);
         $model = new Post;
+        $model->subscribe = 1;
 
         return $this->render('thread', [
                     'model'        => $model,

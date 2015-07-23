@@ -43,6 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]) ?>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'subscribe')->checkbox()->label(Yii::t('podium/view', 'Subscribe to this thread')) ?>
+                    </div>
+                </div>
             </div>
             <div class="panel-footer">
                 <div class="row">

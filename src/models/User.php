@@ -406,6 +406,22 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Returns number of subscibed threads with new posts.
+     * @return int
+     */
+    public function getSubscriptionsCount()
+    {
+        $cache = Cache::getInstance()->getElement('user.subscriptions', $this->id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Subscription::tableName())->where(['user_id' => $this->id,
+                        'post_seen' => Subscription::POST_NEW])->count();
+            Cache::getInstance()->setElement('user.subscriptions', $this->id, $cache);
+        }
+
+        return $cache;
+    }
+    
+    /**
      * Returns number of added threads.
      * @return int
      */

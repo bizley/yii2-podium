@@ -45,6 +45,7 @@ class Thread extends ActiveRecord
     const ICON_PINNED   = 'pushpin';
 
     public $post;
+    public $subscribe;
 
     /**
      * @inheritdoc
@@ -81,6 +82,7 @@ class Thread extends ActiveRecord
                     return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
                 }, 'on' => ['new']],
             ['pinned', 'boolean'],
+            ['subscribe', 'boolean'],
             ['name', 'validateName'],
         ];
     }
@@ -107,6 +109,11 @@ class Thread extends ActiveRecord
     public function getView()
     {
         return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+    }
+    
+    public function getSubscription()
+    {
+        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
     }
     
     public function getLatest()

@@ -1111,6 +1111,34 @@ class Installation extends Maintenance
                 'update' => 'CASCADE',
             ],
             [
+                'table'  => 'subscription',
+                'call'   => 'create',
+                'schema' => [
+                    'id'        => Schema::TYPE_PK,
+                    'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'thread_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'post_seen' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
+                ],
+            ],
+            [
+                'table'  => 'subscription',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'subscription',
+                'call'   => 'foreign',
+                'key'    => 'thread_id',
+                'ref'    => 'thread',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
                 'table'   => 'moderator',
                 'call'    => 'create',
                 'schema' => [

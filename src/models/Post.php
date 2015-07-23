@@ -29,6 +29,7 @@ use yii\helpers\HtmlPurifier;
 class Post extends ActiveRecord
 {
 
+    public $subscribe;
     public $topic;
     
     /**
@@ -57,6 +58,7 @@ class Post extends ActiveRecord
         return [
             ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
             ['topic', 'validateTopic', 'on' => ['firstPost']],
+            ['subscribe', 'boolean'],
             ['content', 'required'],
             ['content', 'string', 'min' => 10],
             ['content', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full')); }],
@@ -300,6 +302,13 @@ class Post extends ActiveRecord
                         $threadView->save();
                         $this->thread->updateCounters(['views' => 1]);
                     }
+                }
+            }
+            
+            if ($this->thread->subscription) {
+                if ($this->thread->subscription->post_seen == Subscription::POST_NEW) {
+                    $this->thread->subscription->post_seen = Subscription::POST_SEEN;
+                    $this->thread->subscription->save();
                 }
             }
         }
