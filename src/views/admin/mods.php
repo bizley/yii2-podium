@@ -56,7 +56,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                     'class'              => CheckboxColumn::className(),
                     'headerOptions'      => ['class' => 'col-sm-1 text-center'],
                     'contentOptions'     => ['class' => 'col-sm-1 text-center'],
-                    'checkboxOptions' => function($model) use($mod) {
+                    'checkboxOptions' => function($model) use ($mod) {
                         return ['value' => $model->id, 'checked' => $model->isMod($mod->id)];
                     }
                 ],
@@ -72,7 +72,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                     'label'              => Yii::t('podium/view', 'Name') . Helper::sortOrder('name'),
                     'encodeLabel'        => false,
                     'format'             => 'raw',
-                    'value'              => function ($model) use($mod) {
+                    'value'              => function ($model) use ($mod) {
                         return Html::encode($model->name) . ($model->isMod($mod->id) ? Html::hiddenInput('pre[]', $model->id) : '');
                     },
                 ],
@@ -82,11 +82,11 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                     'contentOptions' => ['class' => 'text-right'],
                     'headerOptions'  => ['class' => 'text-right'],
                     'template'       => '{mod}',
-                    'urlCreator'     => function ($action, $model) use($mod) {
+                    'urlCreator'     => function ($action, $model) use ($mod) {
                         return Url::toRoute([$action, 'fid' => $model->id, 'uid' => $mod->id]);
                     },
                     'buttons'        => [
-                        'mod' => function($url, $model) use($mod) {
+                        'mod' => function($url, $model) use ($mod) {
                             if ($model->isMod($mod->id)) {
                                 return Html::a('<span class="glyphicon glyphicon-remove"></span> ' . Yii::t('podium/view', 'Remove'), $url, ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Remove from moderation list')]);
                             }
@@ -103,7 +103,9 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
         <?= Html::hiddenInput('mod_id', $mod->id) ?>
         
         <div class="row">
-            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary', 'name' => 'save-button']) ?>
+            <div class="col-sm-12">
+                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary', 'name' => 'save-button']) ?>
+            </div>
         </div>
         
         <?= Html::endForm(); ?>

@@ -12,10 +12,12 @@ use bizley\podium\components\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
+use bizley\podium\models\Subscription;
 use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\UploadedFile;
@@ -217,8 +219,6 @@ class ProfileController extends Controller
      */
     public function actionSubscriptions()
     {
-        
-
-        return $this->render('subscriptions');
+        return $this->render('subscriptions', ['dataProvider' => (new Subscription)->search(Yii::$app->request->get())]);
     }
 }                

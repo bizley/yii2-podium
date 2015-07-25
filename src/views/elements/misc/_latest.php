@@ -16,9 +16,9 @@
         </tr>
 <?php endforeach; ?>
     </table>
-</div>
 <?php else: ?>
     <div class="panel-body">
         <small><?= Yii::t('podium/view', 'No posts have been added yet') ?></small>
     </div>
-<?php endif;
+<?php endif; ?>
+</div>

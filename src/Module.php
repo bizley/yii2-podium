@@ -150,6 +150,8 @@ class Module extends BaseModule implements BootstrapInterface
                         'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/post',
                         'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                            => 'default/post',
                         'profile'                                                       => 'profile/index',
+                        'profile/delete/<id:\d+>'                                       => 'profile/delete',
+                        'profile/mark/<id:\d+>'                                         => 'profile/mark',
                         'promote/<id:\d+>'                                              => 'admin/promote',
                         'reactivate'                                                    => 'account/reactivate',
                         'register'                                                      => 'account/register',
