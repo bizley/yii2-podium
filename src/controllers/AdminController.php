@@ -143,7 +143,7 @@ class AdminController extends Controller
      */
     public function actionContents($name = '')
     {
-        $allowed = ['terms', 'email-reg', 'email-new', 'email-react', 'email-pass'];
+        $allowed = ['terms', 'email-reg', 'email-new', 'email-react', 'email-pass', 'email-sub'];
         
         if ($name == '' || !in_array($name, $allowed)) {
             $name = 'terms';
@@ -161,9 +161,7 @@ class AdminController extends Controller
             return $this->refresh();
         }
 
-        return $this->render('contents', [
-                    'model'      => $model,
-        ]);
+        return $this->render('contents', ['model' => $model]);
     }
     
     /**
@@ -503,11 +501,9 @@ class AdminController extends Controller
                 $mod = $moderators[$id];
             }
         }
-        if ($id == null) {
-            foreach ($moderators as $moderator) {
-                $mod = $moderator;
-                break;
-            }
+        else {
+            reset($moderators);
+            $mod = current($moderators);
         }
 
         $searchModel  = new ForumSearch();

@@ -61,4 +61,56 @@ class Subscription extends ActiveRecord
 
         return $dataProvider;
     }
+    
+    public function seen()
+    {
+        $this->post_seen = self::POST_SEEN;
+        return $this->save();
+    }
+    
+    public function unseen()
+    {
+        $this->post_seen = self::POST_NEW;
+        return $this->save();
+    }
+    
+    public static function notify($thread)
+    {
+        if (is_numeric($thread) && $thread > 0) {
+            
+            $email = Content::find()->where(['name' => 'email-sub'])->one();
+            if ($email) {
+                $topic   = $email->topic;
+                $content = $email->content;
+            }
+            else {
+                $topic   = 'New post in subscribed thread at {forum}';
+                $content = '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br />{forum}</p>';
+            }
+
+            $forum = Config::getInstance()->get('name');
+            
+            $subs = static::find()->where(['thread_id' => (int)$thread, 'post_seen' => static::POST_SEEN]);
+            foreach ($subs->each() as $sub) {
+
+                $sub->post_seen = static::POST_NEW;
+                if ($sub->save()) {
+                    
+                    if (Email::queue($sub->user->email, 
+                            str_replace('{forum}', $forum, $topic),
+                            str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                    Url::to(['default/last', 'id' => $sub->thread_id], true),
+                                    Url::to(['default/last', 'id' => $sub->thread_id], true)
+                                ), $content)),
+                            !empty($sub->user_id) ? $sub->user_id : null
+                        )) {
+                        Log::info('Subscription notice link queued', !empty($sub->user_id) ? $sub->user_id : '', __METHOD__);
+                    }
+                    else {
+                        Log::error('Error while queuing subscription notice link', !empty($sub->user_id) ? $sub->user_id : '', __METHOD__);
+                    }
+                }
+            }
+        }
+    }
 }

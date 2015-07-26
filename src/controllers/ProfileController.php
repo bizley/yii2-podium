@@ -7,17 +7,20 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
+use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
 use bizley\podium\models\Subscription;
+use bizley\podium\models\Thread;
 use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\UploadedFile;
@@ -93,7 +96,7 @@ class ProfileController extends Controller
                         }
 
                         $forum = Config::getInstance()->get('name');
-                        if (Email::queue($model->getUser()->email, 
+                        if (Email::queue($model->new_email, 
                                 str_replace('{forum}', $forum, $topic),
                                 str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                         Url::to(['account/new-email', 'token' => $model->email_token], true),
@@ -219,6 +222,152 @@ class ProfileController extends Controller
      */
     public function actionSubscriptions()
     {
+        $postData = Yii::$app->request->post();
+        if ($postData) {
+            $selection = !empty($postData['selection']) ? $postData['selection'] : [];
+            try {
+                if (!empty($selection)) {
+                    Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $selection, 'user_id' => Yii::$app->user->id])->execute();
+                    $this->success('Subscription list has been updated.');
+                }
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage(), null, __METHOD__);
+                $this->error('Sorry! There was an error while unsubscribing the thread list.');
+            }
+
+            return $this->refresh();
+        }
+        
         return $this->render('subscriptions', ['dataProvider' => (new Subscription)->search(Yii::$app->request->get())]);
+    }
+    
+    /**
+     * Marking the subscription of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionMark($id = null)
+    {
+        $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Subscription with this ID.');
+        }
+        else {
+
+            if ($model->post_seen == Subscription::POST_SEEN) {
+                if ($model->unseen()) {
+                    Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                    $this->success('Thread has been marked unseen.');
+                }
+                else {
+                    Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->error('Sorry! There was some error while marking the thread.');
+                }
+            }
+            elseif ($model->post_seen == Subscription::POST_NEW) {
+                if ($model->seen()) {
+                    Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                    $this->success('Thread has been marked seen.');
+                }
+                else {
+                    Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->error('Sorry! There was some error while marking the thread.');
+                }
+            }
+            else {
+                $this->error('Sorry! Subscription has got the wrong status.');
+            }
+        }
+
+        return $this->redirect(['profile/subscriptions']);
+    }
+    
+    /**
+     * Deleting the subscription of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionDelete($id = null)
+    {
+        $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
+
+        if (empty($model)) {
+            $this->error('Sorry! We can not find Subscription with this ID.');
+        }
+        else {
+
+            if ($model->delete()) {
+                Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                $this->success('Thread has been unsubscribed.');
+            }
+            else {
+                Log::error('Error while deleting subscription', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->error('Sorry! There was some error while deleting the subscription.');
+            }
+        }
+
+        return $this->redirect(['profile/subscriptions']);
+    }
+    
+    /**
+     * Subscribing the thread of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionAdd($id = null)
+    {
+        if (Yii::$app->request->isAjax) {
+            
+            $data = [
+                'error' => 1,
+                'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Error while adding this subscription!'), ['class' => 'text-danger']),
+            ];
+            
+            if (!Yii::$app->user->isGuest) {
+                
+                if (is_numeric($id) && $id > 0) {
+                    
+                    $thread = Thread::findOne((int)$id);
+                    if ($thread) {
+                        
+                        $subscription = Subscription::findOne(['thread_id' => $thread->id, 'user_id' => Yii::$app->user->id]);
+                        
+                        if ($subscription) {
+                            $data = [
+                                'error' => 1,
+                                'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'You are already subscribed to this thread.'), ['class' => 'text-info']),
+                            ];
+                        }
+                        else {
+                        
+                            $sub = new Subscription;
+                            $sub->thread_id = $thread->id;
+                            $sub->user_id   = Yii::$app->user->id;
+                            $sub->post_seen = Subscription::POST_SEEN;
+                            
+                            if ($sub->save()) {
+                                $data = [
+                                    'error' => 0,
+                                    'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'You have subscribed to this thread!'), ['class' => 'text-success']),
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                $data = [
+                    'error' => 1,
+                    'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'), ['class' => 'text-info']),
+                ];
+            }
+            
+            return Json::encode($data);
+        }
+        else {
+            return $this->redirect(['default/index']);
+        }
     }
 }                

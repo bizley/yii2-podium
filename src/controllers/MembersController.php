@@ -140,7 +140,7 @@ class MembersController extends Controller
             }
         }
         
-        return $this->redirect(['index']);
+        return $this->redirect(['members/index']);
     }
 
     /**
@@ -181,13 +181,13 @@ class MembersController extends Controller
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the user you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['members/index']);
         }
 
         $user = User::findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
             $this->error('Sorry! We can not find the user you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['members/index']);
         }
         else {
             return $this->render('posts', ['user' => $user]);
@@ -202,13 +202,13 @@ class MembersController extends Controller
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the user you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['members/index']);
         }
 
         $user = User::findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
             $this->error('Sorry! We can not find the user you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['members/index']);
         }
         else {
             return $this->render('threads', ['user' => $user]);
@@ -225,7 +225,7 @@ class MembersController extends Controller
         
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
-            return $this->redirect(['index']);
+            return $this->redirect(['members/index']);
         }
         
         return $this->render('view', ['model' => $model]);

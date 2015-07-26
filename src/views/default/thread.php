@@ -10,6 +10,12 @@ use yii\widgets\ListView;
 use yii\widgets\Pjax;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
+$this->registerJs('jQuery(\'.add-subscription\').click(function(e){
+    e.preventDefault();
+    jQuery.post(\'' . Url::to(['profile/add', 'id' => $thread->id]) . '\', {}, null, \'json\').
+        fail(function(){ console.log(\'Subscription Add Error!\'); }).
+        done(function(data){ jQuery(\'#subsription-status\').html(data.msg); });
+})', View::POS_READY, 'add-subscription');
 $this->registerJs('var anchor=window.location.hash; if (anchor.match(/^#post[0-9]+$/)) jQuery(anchor).find(\'.podium-content\').addClass(\'podium-gradient\');', View::POS_READY, 'anchor-marked');
 
 $this->title                   = Html::encode($thread->name);
@@ -53,6 +59,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <h4>
 <?php if ($thread->subscription): ?>
             <small><a href="<?= Url::to(['profile/subscriptions']) ?>"><span class="label label-info pull-right"><span class="glyphicon glyphicon-star"></span> <?= Yii::t('podium/view', 'You subscribe this thread') ?></span></a></small>
+<?php elseif (!Yii::$app->user->isGuest): ?>
+            <small id="subsription-status" class="pull-right"><button class="add-subscription btn btn-success btn-xs"><span class="glyphicon glyphicon-star-empty"></span> <?= Yii::t('podium/view', 'Subscribe to this thread') ?></button></small>
 <?php endif; ?>
             <?= Html::encode($thread->name) ?>
         </h4>

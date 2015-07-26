@@ -124,7 +124,7 @@ class DefaultController extends Controller
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the category you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         $conditions = ['id' => (int) $id, 'slug' => $slug];
@@ -135,7 +135,7 @@ class DefaultController extends Controller
 
         if (!$model) {
             $this->error('Sorry! We can not find the category you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         
         $this->setMetaTags($model->keywords, $model->description);
@@ -159,7 +159,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list($category, $forum, $thread) = $verify;
@@ -227,28 +227,28 @@ class DefaultController extends Controller
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         $category = Category::findOne(['id' => (int) $cid]);
 
         if (!$category) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         else {
             $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
             if (!$forum) {
                 $this->error('Sorry! We can not find the post you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
             else {
                 $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
 
                 if (!$thread) {
                     $this->error('Sorry! We can not find the post you are looking for.');
-                    return $this->redirect(['index']);
+                    return $this->redirect(['default/index']);
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
@@ -256,7 +256,7 @@ class DefaultController extends Controller
                         
                         if (!$model) {
                             $this->error('Sorry! We can not find the post you are looking for.');
-                            return $this->redirect(['index']);
+                            return $this->redirect(['default/index']);
                         }
                         else {
                             if (Yii::$app->user->can('deleteOwnPost', ['post' => $model]) || Yii::$app->user->can('deletePost', ['item' => $model])) {
@@ -350,7 +350,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list($category, $forum, $thread) = $verify;
@@ -455,28 +455,28 @@ class DefaultController extends Controller
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         $category = Category::findOne(['id' => (int) $cid]);
 
         if (!$category) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         else {
             $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
             if (!$forum) {
                 $this->error('Sorry! We can not find the post you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
             else {
                 $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
 
                 if (!$thread) {
                     $this->error('Sorry! We can not find the post you are looking for.');
-                    return $this->redirect(['index']);
+                    return $this->redirect(['default/index']);
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {                 
@@ -484,7 +484,7 @@ class DefaultController extends Controller
 
                         if (!$model) {
                             $this->error('Sorry! We can not find the post you are looking for.');
-                            return $this->redirect(['index']);
+                            return $this->redirect(['default/index']);
                         }
                         else {
                             if (Yii::$app->user->can('updateOwnPost', ['post' => $model]) || Yii::$app->user->can('updatePost', ['item' => $model])) {
@@ -584,7 +584,7 @@ class DefaultController extends Controller
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error('Sorry! We can not find the forum you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         $conditions = ['id' => (int) $cid];
@@ -595,7 +595,7 @@ class DefaultController extends Controller
 
         if (!$category) {
             $this->error('Sorry! We can not find the forum you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         else {
             $conditions = ['id' => (int) $id, 'category_id' => $category->id, 'slug' => $slug];
@@ -636,6 +636,48 @@ class DefaultController extends Controller
     }
     
     /**
+     * Direct link for the last post in thread of given ID.
+     * @param integer $id
+     * @return \yii\web\Response
+     */
+    public function actionLast($id = null)
+    {
+        if (!is_numeric($id) || $id < 1) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['default/index']);
+        }
+        
+        $thread = Thread::findOne((int)$id);
+        if (!$thread) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['default/index']);
+        }
+        
+        $url = [
+            'thread', 
+            'cid'  => $thread->category_id,
+            'fid'  => $thread->forum_id, 
+            'id'   => $thread->id, 
+            'slug' => $thread->slug
+        ];
+
+        try {
+            $count = (new Query)->from(Post::tableName())->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_ASC])->count();
+            $page = floor($count / 10) + 1;
+
+            if ($page > 1) {
+                $url['page'] = $page;
+            }
+
+            return $this->redirect($url);
+        }
+        catch (Exception $e) {
+            $this->error('Sorry! We can not find the thread you are looking for.');
+            return $this->redirect(['default/index']);
+        }
+    }
+    
+    /**
      * Locking the thread of given category ID, forum ID, own ID and slug.
      * @param integer $cid
      * @param integer $fid
@@ -649,7 +691,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list(,, $thread) = $verify;
@@ -702,7 +744,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list($category, $forum, $thread) = $verify;
@@ -809,7 +851,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list($category, $forum, $thread) = $verify;
@@ -1000,20 +1042,20 @@ class DefaultController extends Controller
         else {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1) {
                 $this->error('Sorry! We can not find the forum you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne((int) $cid);
 
             if (!$category) {
                 $this->error('Sorry! We can not find the forum you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
                 if (!$forum) {
                     $this->error('Sorry! We can not find the forum you are looking for.');
-                    return $this->redirect(['index']);
+                    return $this->redirect(['default/index']);
                 }
                 else {
                     $model = new Thread;
@@ -1120,7 +1162,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list(,, $thread) = $verify;
@@ -1183,21 +1225,21 @@ class DefaultController extends Controller
         else {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
                 $this->error('Sorry! We can not find the thread you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne(['id' => (int) $cid]);
 
             if (!$category) {
                 $this->error('Sorry! We can not find the thread you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
                 if (!$forum) {
                     $this->error('Sorry! We can not find the thread you are looking for.');
-                    return $this->redirect(['index']);
+                    return $this->redirect(['default/index']);
                 }
                 else {
                     $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
@@ -1205,7 +1247,7 @@ class DefaultController extends Controller
 
                     if (!$thread) {
                         $this->error('Sorry! We can not find the thread you are looking for.');
-                        return $this->redirect(['index']);
+                        return $this->redirect(['default/index']);
                     }
                     else {
                         if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
@@ -1248,6 +1290,8 @@ class DefaultController extends Controller
                                         $transaction = Post::getDb()->beginTransaction();
                                         try {
 
+                                            $id = null;
+                                            
                                             if ($previous->author_id == Yii::$app->user->id) {
                                                 $previous->content .= '<hr>' . $model->content;
                                                 $previous->edited = 1;
@@ -1270,24 +1314,32 @@ class DefaultController extends Controller
                                                 }
                                             }
                                             
-                                            if ($model->subscribe && !$model->thread->subscription) {
-                                                $subscription = new Subscription();
-                                                $subscription->user_id   = Yii::$app->user->id;
-                                                $subscription->thread_id = $model->thread->id;
-                                                $subscription->post_seen = Subscription::POST_SEEN;
-                                                $subscription->save();
+                                            if ($id !== null) {
+                                                
+                                                Subscription::notify($thread->id);
+                                                
+                                                if ($model->subscribe && !$model->thread->subscription) {
+                                                    $subscription = new Subscription();
+                                                    $subscription->user_id   = Yii::$app->user->id;
+                                                    $subscription->thread_id = $model->thread->id;
+                                                    $subscription->post_seen = Subscription::POST_SEEN;
+                                                    $subscription->save();
+                                                }
+                                                
+                                                $transaction->commit();
+
+                                                Cache::getInstance()->delete('forum.postscount');
+                                                Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                                Cache::getInstance()->delete('forum.latestposts');
+
+                                                Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
+                                                $this->success('New reply has been added.');
+
+                                                return $this->redirect(['default/show', 'id' => $id]);
                                             }
-
-                                            $transaction->commit();
-
-                                            Cache::getInstance()->delete('forum.postscount');
-                                            Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
-                                            Cache::getInstance()->delete('forum.latestposts');
-                                            
-                                            Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
-                                            $this->success('New reply has been added.');
-
-                                            return $this->redirect(['show', 'id' => $id]);
+                                            else {
+                                                throw new Exception('Saved Post ID missing.');
+                                            }
                                         }
                                         catch (Exception $e) {
                                             $transaction->rollBack();
@@ -1310,7 +1362,7 @@ class DefaultController extends Controller
                         }
                         else {
                             $this->info('This thread is locked.');
-                            return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
+                            return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
                         }
                     }
                 }
@@ -1332,40 +1384,40 @@ class DefaultController extends Controller
         if (!Yii::$app->user->isGuest) {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1 || empty($slug)) {
                 $this->error('Sorry! We can not find the post you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne(['id' => (int) $cid]);
 
             if (!$category) {
                 $this->error('Sorry! We can not find the post you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
                 if (!$forum) {
                     $this->error('Sorry! We can not find the post you are looking for.');
-                    return $this->redirect(['index']);
+                    return $this->redirect(['default/index']);
                 }
                 else {
                     $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug]);
 
                     if (!$thread) {
                         $this->error('Sorry! We can not find the post you are looking for.');
-                        return $this->redirect(['index']);
+                        return $this->redirect(['default/index']);
                     }
                     else {
                         $post = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
 
                         if (!$post) {
                             $this->error('Sorry! We can not find the post you are looking for.');
-                            return $this->redirect(['index']);
+                            return $this->redirect(['default/index']);
                         }
                         else {
                             if ($post->author_id == Yii::$app->user->id) {
                                 $this->info('You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.');
-                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
                             else {
 
@@ -1584,13 +1636,13 @@ class DefaultController extends Controller
     {
         if (!is_numeric($id) || $id < 1) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         
         $post = Post::findOne((int)$id);
         if (!$post) {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
         
         if ($post->thread) {
@@ -1616,12 +1668,12 @@ class DefaultController extends Controller
             }
             catch (Exception $e) {
                 $this->error('Sorry! We can not find the post you are looking for.');
-                return $this->redirect(['index']);
+                return $this->redirect(['default/index']);
             }
         }
         else {
             $this->error('Sorry! We can not find the post you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }        
     }
 
@@ -1639,7 +1691,7 @@ class DefaultController extends Controller
         
         if ($verify === false) {
             $this->error('Sorry! We can not find the thread you are looking for.');
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
 
         list($category, $forum, $thread) = $verify;
@@ -1776,7 +1828,7 @@ class DefaultController extends Controller
             return Json::encode($data);
         }
         else {
-            return $this->redirect(['index']);
+            return $this->redirect(['default/index']);
         }
     }
     

@@ -104,7 +104,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
         
         <div class="row">
             <div class="col-sm-12">
-                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary', 'name' => 'save-button']) ?>
+                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary btn-sm', 'name' => 'save-button']) ?>
             </div>
         </div>
         

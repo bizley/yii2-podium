@@ -23,6 +23,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
         <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'New address activation e-mail'), ['admin/contents/email-new']), ['role' => 'presentation', 'class' => $model->name == 'email-new' ? 'active' : null]); ?>
         <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Account reactivation e-mail'), ['admin/contents/email-react']), ['role' => 'presentation', 'class' => $model->name == 'email-react' ? 'active' : null]); ?>
         <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Password reset e-mail'), ['admin/contents/email-pass']), ['role' => 'presentation', 'class' => $model->name == 'email-pass' ? 'active' : null]); ?>
+        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'New post in subscribed thread'), ['admin/contents/email-sub']), ['role' => 'presentation', 'class' => $model->name == 'email-sub' ? 'active' : null]); ?>
         <?= Html::endTag('ul'); ?>
 <?php if (substr($model->name, 0, 6) == 'email-'): ?>
         <br>

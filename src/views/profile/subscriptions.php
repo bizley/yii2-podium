@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'headerOptions'  => ['class' => 'text-center'],
                     'contentOptions' => ['class' => 'text-center'],
                     'label'          => Yii::t('podium/view', 'New Posts'),
+                    'format'         => 'raw',
                     'value'          => function ($model) {
                         return $model->post_seen ? '' : '<span class="glyphicon glyphicon-ok-sign"></span>';
                     },
@@ -79,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
         
         <div class="row">
             <div class="col-sm-12">
-                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary', 'name' => 'save-button']) ?>
+                <?= Html::submitButton('<span class="glyphicon glyphicon-trash"></span> ' . Yii::t('podium/view', 'Unsubscribe Selected Threads'), ['class' => 'btn btn-danger btn-sm', 'name' => 'delete-button']) ?>
             </div>
         </div>
         

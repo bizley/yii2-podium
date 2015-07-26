@@ -5,7 +5,6 @@
  * -----------------------------------------------------------------------------
  * panel glowny admina
  * grupy userow
- * subskrypcje watkow - lista
  * captcha
  * logowanie przez oauth
  * maintance mode
@@ -130,6 +129,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>'                       => 'default/forum',
                         'home'                                                          => 'default/index',
                         'install'                                                       => 'install/run',
+                        'last/<id:\d+>'                                                 => 'default/last',
                         'lock/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'              => 'default/lock',
                         'login'                                                         => 'account/login',
                         'logout'                                                        => 'profile/logout',
@@ -150,6 +150,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/post',
                         'post/<cid:\d+>/<fid:\d+>/<tid:\d+>'                            => 'default/post',
                         'profile'                                                       => 'profile/index',
+                        'profile/add/<id:\d+>'                                          => 'profile/add',
                         'profile/delete/<id:\d+>'                                       => 'profile/delete',
                         'profile/mark/<id:\d+>'                                         => 'profile/mark',
                         'promote/<id:\d+>'                                              => 'admin/promote',
