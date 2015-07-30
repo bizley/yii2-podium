@@ -14,6 +14,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\web\IdentityInterface;
+use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
 /**
  * User model
@@ -55,6 +56,11 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_MODERATOR    = 9;
     const ROLE_ADMIN        = 10;
 
+    /**
+     * @var string captcha.
+     */
+    public $captcha;
+    
     /**
      * @var string current password for profile update.
      */
@@ -567,7 +573,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function rules()
     {
-        return [
+        $rules = [
             [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
             ['current_password', 'required'],
             ['current_password', 'validateCurrentPassword'],
@@ -583,8 +589,17 @@ class User extends ActiveRecord implements IdentityInterface
             ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
-            ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')]
+            ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
         ];
+        
+        if (Config::getInstance()->get('recaptcha_sitekey') !== '' && Config::getInstance()->get('recaptcha_secretkey') !== '') {
+            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Config::getInstance()->get('recaptcha_secretkey')];
+        }
+        else {
+            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
+        }
+        
+        return $rules;
     }
 
     /**
@@ -607,7 +622,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function scenarios()
     {
-        return [
+        $scenarios = [
             'installation'   => [],
             'token'          => [],
             'ban'            => [],
@@ -616,6 +631,12 @@ class User extends ActiveRecord implements IdentityInterface
             'register'       => ['email', 'password', 'password_repeat'],
             'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
         ];
+        
+        if (Config::getInstance()->get('use_captcha')) {
+            $scenarios['register'][] = 'captcha';
+        }
+        
+        return $scenarios;
     }
     
     /**

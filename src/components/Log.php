@@ -11,7 +11,6 @@ use Yii;
 /**
  * Log helper
  * .
- * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  */

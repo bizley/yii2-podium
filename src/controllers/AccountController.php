@@ -31,6 +31,16 @@ use yii\web\Controller;
 class AccountController extends Controller
 {
 
+    public function actions()
+    {
+        return [
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                'testLimit' => 1
+            ],
+        ];
+    }
+    
     /**
      * @inheritdoc
      */
