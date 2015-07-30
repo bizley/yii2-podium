@@ -2,17 +2,16 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUserInterface;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\db\Query;
 use yii\web\IdentityInterface;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
@@ -39,7 +38,7 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
  * @property integer $tos write-only terms of service agreement
  * @property string $timezone
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends ActiveRecord implements IdentityInterface, PodiumUserInterface
 {
 
     /**
@@ -55,7 +54,7 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_MEMBER       = 1;
     const ROLE_MODERATOR    = 9;
     const ROLE_ADMIN        = 10;
-
+    
     /**
      * @var string captcha.
      */
@@ -80,7 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @var int terms of service agreement flag.
      */
     public $tos;
-
+    
     /**
      * Activates account.
      * @return boolean
@@ -238,17 +237,17 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-    }
-
-    /**
-     * @inheritdoc
-     */
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
     
     /**
@@ -268,6 +267,14 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * @inheritdoc
+     */
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+    
+    /**
      * Generates new email token.
      */
     public function generateEmailToken()
@@ -284,23 +291,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Relation with Activity.
-     * @return \yii\db\ActiveQuery
-     */
-    public function getActivity()
-    {
-        return $this->hasOne(Activity::className(), ['user_id' => 'id']);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-    
-    /**
      * @inheritdoc
      */
     public function getId()
@@ -309,46 +299,12 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Relation with Meta.
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMeta()
-    {
-        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
-    }
-
-    /**
-     * Relation with Mod.
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMods()
-    {
-        return $this->hasMany(Mod::className(), ['user_id' => 'id']);
-    }
-    
-    /**
      * Newest registered members.
-     * @return array
+     * @return \yii\db\ActiveQuery
      */
     public function getNewest($limit = 10)
     {
-        return self::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
-    }
-    
-    /**
-     * Returns number of new messages.
-     * @return int
-     */
-    public function getNewMessagesCount()
-    {
-        $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
-        if ($cache === false) {
-            $cache = (new Query)->from(Message::tableName())->where(['receiver_id' => $this->id,
-                        'receiver_status' => Message::STATUS_NEW])->count();
-            Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
-        }
-
-        return $cache;
+        return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
     
     /**
@@ -368,21 +324,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function getPodiumTag($simple = false)
     {
         return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $this->slug, $simple);
-    }
-    
-    /**
-     * Returns number of added posts.
-     * @return int
-     */
-    public function getPostsCount()
-    {
-        $cache = Cache::getInstance()->getElement('user.postscount', $this->id);
-        if ($cache === false) {
-            $cache = (new Query)->from(Post::tableName())->where(['author_id' => $this->id])->count();
-            Cache::getInstance()->setElement('user.postscount', $this->id, $cache);
-        }
-
-        return $cache;
     }
     
     /**
@@ -412,31 +353,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Returns number of subscibed threads with new posts.
-     * @return int
-     */
-    public function getSubscriptionsCount()
-    {
-        $cache = Cache::getInstance()->getElement('user.subscriptions', $this->id);
-        if ($cache === false) {
-            $cache = (new Query)->from(Subscription::tableName())->where(['user_id' => $this->id,
-                        'post_seen' => Subscription::POST_NEW])->count();
-            Cache::getInstance()->setElement('user.subscriptions', $this->id, $cache);
-        }
-
-        return $cache;
-    }
-    
-    /**
-     * Returns number of added threads.
-     * @return int
-     */
-    public function getThreadsCount()
-    {
-        return (new Query)->from(Thread::tableName())->where(['author_id' => $this->id])->count();
-    }
-    
-    /**
      * Returns chosen time zone.
      * @return string
      */
@@ -458,7 +374,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
         return self::isTokenValid($token, $expire);
     }
-
+    
     /**
      * Finds out if email token is valid.
      * @param string $token activation token
@@ -473,20 +389,6 @@ class User extends ActiveRecord implements IdentityInterface
         return self::isTokenValid($token, $expire);
     }
     
-    /**
-     * Finds out if user is ignored by another.
-     * @param int $user_id user ID
-     * @return boolean
-     */
-    public function isIgnoredBy($user_id)
-    {
-        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id,
-                    'ignored_id' => $this->id])->exists()) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Finds out if password reset token is valid.
      * @param string $token password reset token
@@ -515,7 +417,7 @@ class User extends ActiveRecord implements IdentityInterface
         $timestamp = (int) end($parts);
         return $timestamp + $expire >= time();
     }
-
+    
     /**
      * Finds out if unencrypted password fulfill requirements.
      */
@@ -601,7 +503,7 @@ class User extends ActiveRecord implements IdentityInterface
         
         return $rules;
     }
-
+    
     /**
      * Saves password and/or email changes.
      * @return boolean

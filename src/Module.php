@@ -33,7 +33,10 @@ use bizley\podium\components\Installation;
 use bizley\podium\models\Activity;
 use Yii;
 use yii\base\BootstrapInterface;
+use yii\base\InvalidConfigException;
 use yii\base\Module as BaseModule;
+use yii\console\Application as ConsoleApplication;
+use yii\web\Application as WebApplication;
 use yii\web\GroupUrlRule;
 
 /**
@@ -45,20 +48,29 @@ use yii\web\GroupUrlRule;
 class Module extends BaseModule implements BootstrapInterface
 {
 
+    const MODE_BAU     = 'BAU';
+    const MODE_INSTALL = 'INSTALL';    
+    
+    const USER_INHERIT = 'inherit';
+    const USER_OWN     = 'own';
+    
+    const DEFAULT_ROUTE = ['podium/default/index'];
+    const MAIN_LAYOUT   = 'main';
+    
     /**
      * @var string Controller namespace
      */
     public $controllerNamespace = 'bizley\podium\controllers';
 
     /**
-     * @var array Module parameters
+     * @var string Module mode
      */
-    public $params;
-
+    public $mode = self::MODE_BAU;
+    
     /**
-     * @var string Module version
+     * @var string Module user component
      */
-    public $version = '0.1';
+    public $user = self::USER_OWN;
 
     /**
      * @var Config Module configuration instance
@@ -69,6 +81,16 @@ class Module extends BaseModule implements BootstrapInterface
      * @var boolean Installation flag
      */
     protected $_installed = false;
+    
+    /**
+     * @var PodiumUser Module user component
+     */
+    protected $_user;
+    
+    /**
+     * @var string Module version
+     */
+    protected $_version = '0.1';
 
     /**
      * Registers user activity after every action.
@@ -82,7 +104,7 @@ class Module extends BaseModule implements BootstrapInterface
     {
         $parentResult = parent::afterAction($action, $result);
 
-        if (Yii::$app instanceof \yii\web\Application && !in_array($action->id, ['import', 'run'])) {
+        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run'])) {
             Activity::add();
         }
 
@@ -97,7 +119,7 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function bootstrap($app)
     {
-        if ($app instanceof \yii\web\Application) {
+        if ($app instanceof WebApplication) {
             $app->getUrlManager()->addRules([
                 new GroupUrlRule([
                     'prefix' => 'podium',
@@ -170,7 +192,7 @@ class Module extends BaseModule implements BootstrapInterface
 
             $app->getLog()->targets['podium'] = $dbTarget;
         }
-        elseif ($app instanceof \yii\console\Application) {
+        elseif ($app instanceof ConsoleApplication) {
             $app->getModule('podium')->controllerNamespace = 'bizley\podium\console';
         }
     }
@@ -200,31 +222,13 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
-     * Gets parameter by its name.
-     * If not set returns $default.
-     *
-     * @param string $name Parameter name
-     * @param mixed $default Default value if parameter not found
-     * @return mixed Parameter value or $default
-     */
-    public function getParam($name, $default = null)
-    {
-        $params = $this->params;
-        if (!isset($params[$name])) {
-            return $default;
-        }
-
-        return $params[$name];
-    }
-
-    /**
      * Redirects to Podium main controller's action.
      * 
      * @return \yii\web\Response
      */
     public function goPodium()
     {
-        return Yii::$app->getResponse()->redirect(['podium/default/index']);
+        return Yii::$app->getResponse()->redirect(self::DEFAULT_ROUTE);
     }
 
     /**
@@ -236,17 +240,31 @@ class Module extends BaseModule implements BootstrapInterface
     public function init()
     {
         parent::init();
-
-        $this->setAliases(['@podium' => '@vendor/bizley/podium']);
         
-        if (Yii::$app instanceof \yii\web\Application) {
-            $this->registerIdentity();
-            $this->registerAuthorization();
-            $this->registerTranslations();
-            $this->registerFormatter();
+        if (in_array($this->mode, [self::MODE_BAU, self::MODE_INSTALL])) {
+            if (in_array($this->user, [self::USER_INHERIT, self::USER_OWN])) {
 
-            $this->layout     = 'main';
-            $this->_installed = Installation::check();
+                $this->setAliases(['@podium' => '@vendor/bizley/podium']);
+        
+                if (Yii::$app instanceof WebApplication) {
+
+                    if ($this->user == self::USER_OWN) {
+                        $this->registerIdentity();
+                    }
+                    $this->registerAuthorization();
+                    $this->registerTranslations();
+                    $this->registerFormatter();
+
+                    $this->layout     = self::MAIN_LAYOUT;
+                    $this->_installed = Installation::check();
+                }
+            }
+            else {
+                throw InvalidConfigException('Invalid value for the user parameter.');
+            }
+        }
+        else {
+            throw InvalidConfigException('Invalid value for the mode parameter.');
         }
     }
 
@@ -294,7 +312,7 @@ class Module extends BaseModule implements BootstrapInterface
                 'class'           => 'yii\web\User',
                 'identityClass'   => 'bizley\podium\models\User',
                 'enableAutoLogin' => true,
-                'loginUrl'        => ['login'],
+                'loginUrl'        => ['podium/account/login'],
                 'identityCookie'  => ['name' => 'podium', 'httpOnly' => true],
                 'idParam'         => '__id_podium',
             ],
