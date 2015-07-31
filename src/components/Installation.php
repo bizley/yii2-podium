@@ -3,6 +3,7 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * TODO: dodawanie admina przy dziedziczonym userze
  */
 namespace bizley\podium\components;
 
@@ -21,7 +22,7 @@ use yii\helpers\VarDumper;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\DbManager $authManager Authorization Manager
+ * @property \yii\rbac\BaseManager $authManager Authorization Manager
  * @property \yii\db\Connection $db Database connection
  */
 class Installation extends Maintenance
@@ -34,7 +35,7 @@ class Installation extends Maintenance
     protected function _addAdmin()
     {
         try {
-            $admin = new User();
+            $admin = new User;
             $admin->setScenario('installation');
             $admin->username = 'admin';
             $admin->email    = 'podium_admin@podium.net';

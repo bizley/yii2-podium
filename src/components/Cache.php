@@ -76,8 +76,8 @@ class Cache
      */
     public function beginCache($key, $view, $duration = 60)
     {
-        $properties['id'] = $this->_cachePrefix . $key;
-        $properties['view'] = $view;
+        $properties['id']       = $this->_cachePrefix . $key;
+        $properties['view']     = $view;
         $properties['duration'] = $duration;
 
         $cache = FragmentCache::begin($properties);

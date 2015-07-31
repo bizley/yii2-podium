@@ -30,6 +30,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\DbTarget;
 use bizley\podium\components\Installation;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\Activity;
 use Yii;
 use yii\base\BootstrapInterface;
@@ -54,6 +55,9 @@ class Module extends BaseModule implements BootstrapInterface
     const USER_INHERIT = 'inherit';
     const USER_OWN     = 'own';
     
+    const RBAC_INHERIT = 'inherit';
+    const RBAC_OWN     = 'own';
+    
     const DEFAULT_ROUTE = ['podium/default/index'];
     const MAIN_LAYOUT   = 'main';
     
@@ -66,6 +70,11 @@ class Module extends BaseModule implements BootstrapInterface
      * @var string Module mode
      */
     public $mode = self::MODE_BAU;
+    
+    /**
+     * @var string Module user component
+     */
+    public $rbac = self::RBAC_OWN;
     
     /**
      * @var string Module user component
@@ -243,20 +252,29 @@ class Module extends BaseModule implements BootstrapInterface
         
         if (in_array($this->mode, [self::MODE_BAU, self::MODE_INSTALL])) {
             if (in_array($this->user, [self::USER_INHERIT, self::USER_OWN])) {
+                if (in_array($this->rbac, [self::RBAC_INHERIT, self::RBAC_OWN])) {
 
-                $this->setAliases(['@podium' => '@vendor/bizley/podium']);
-        
-                if (Yii::$app instanceof WebApplication) {
+                    $this->setAliases(['@podium' => '@vendor/bizley/podium']);
 
-                    if ($this->user == self::USER_OWN) {
-                        $this->registerIdentity();
+                    $this->setUser();
+                    
+                    if (Yii::$app instanceof WebApplication) {
+
+                        if ($this->user == self::USER_OWN) {
+                            $this->registerIdentity();
+                        }
+                        if ($this->rbac == self::RBAC_OWN) {
+                            $this->registerAuthorization();
+                        }
+                        $this->registerTranslations();
+                        $this->registerFormatter();
+
+                        $this->layout     = self::MAIN_LAYOUT;
+                        $this->_installed = Installation::check();
                     }
-                    $this->registerAuthorization();
-                    $this->registerTranslations();
-                    $this->registerFormatter();
-
-                    $this->layout     = self::MAIN_LAYOUT;
-                    $this->_installed = Installation::check();
+                }
+                else {
+                    throw InvalidConfigException('Invalid value for the rbac parameter.');
                 }
             }
             else {
@@ -291,14 +309,12 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function registerFormatter()
     {
-        if (!Yii::$app->user->isGuest) {
-            Yii::$app->setComponents([
-                'formatter' => [
-                    'class'    => 'yii\i18n\Formatter',
-                    'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
-                ],
-            ]);
-        }
+        Yii::$app->setComponents([
+            'formatter' => [
+                'class'    => 'yii\i18n\Formatter',
+                'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
+            ],
+        ]);
     }
 
     /**
@@ -334,5 +350,13 @@ class Module extends BaseModule implements BootstrapInterface
                 'podium/view'   => 'view.php',
             ],
         ];
+    }
+    
+    public function getUser()
+    {
+        if ($this->_user === null) {
+            $this->_user = new PodiumUser;
+        }
+        return $this->_user;
     }
 }

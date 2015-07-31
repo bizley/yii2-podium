@@ -15,7 +15,7 @@ use Yii;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\DbManager $authManager Authorization Manager
+ * @property \yii\rbac\BaseManager $authManager Authorization Manager
  * @property \yii\db\Connection $db Database connection
  */
 class Update extends Maintenance

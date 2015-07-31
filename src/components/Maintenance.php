@@ -6,14 +6,14 @@
  */
 namespace bizley\podium\components;
 
-use bizley\podium\models\User;
+use bizley\podium\models\Post;
 use Exception;
 use Yii;
 use yii\base\Component;
 use yii\db\Connection;
 use yii\di\Instance;
 use yii\helpers\Html;
-use yii\rbac\DbManager;
+use yii\rbac\BaseManager;
 
 /**
  * Podium Maintenance module
@@ -22,14 +22,14 @@ use yii\rbac\DbManager;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\DbManager $authManager Authorization Manager
+ * @property \yii\rbac\BaseManager $authManager Authorization Manager
  * @property \yii\db\Connection $db Database connection
  */
 class Maintenance extends Component
 {
 
     /**
-     * @var DbManager authorization manager.
+     * @var BaseManager authorization manager.
      */
     public $authManager = 'authManager';
     
@@ -346,11 +346,11 @@ class Maintenance extends Component
     public static function check()
     {
         try {
-            (new User())->getTableSchema();
+            (new Post)->getTableSchema();
             return true;
         }
         catch (Exception $e) {
-            Yii::warning('Podium user database table not found - preparing for installation', __METHOD__);
+            Yii::warning('Podium post database table not found - preparing for installation', __METHOD__);
         }
 
         return false;
@@ -455,7 +455,7 @@ class Maintenance extends Component
             if ($this->db->driverName === 'mysql') {
                 $this->setTableOptions('CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
             }
-            $this->authManager = Instance::ensure($this->authManager, DbManager::className());
+            $this->authManager = Instance::ensure($this->authManager, BaseManager::className());
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
