@@ -49,16 +49,16 @@ class AccountController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'denyCallback' => function () {
+                'denyCallback' => function ($rule, $action) {
                     return $this->module->goPodium();
                 },
                 'rules' => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function () {
+                        'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function () {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
                         }
                     ],
@@ -88,8 +88,7 @@ class AccountController extends Controller
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
-                Cache::getInstance()->delete('members.fieldlist');
-                Cache::getInstance()->delete('forum.memberscount');
+                Cache::clearAfterActivate();
                 Log::info('Account activated', !empty($model->id) ? $model->id : '', __METHOD__);
                 $this->success('Your account has been activated. You can sign in now.');
             }

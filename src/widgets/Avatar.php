@@ -7,7 +7,7 @@
 namespace bizley\podium\widgets;
 
 use bizley\podium\components\Helper;
-use bizley\podium\models\User;
+use bizley\podium\components\PodiumUser;
 use cebe\gravatar\Gravatar;
 use Yii;
 use yii\base\Widget;
@@ -24,12 +24,12 @@ class Avatar extends Widget
 {
 
     /**
-     * @var User|null Post author
+     * @var PodiumUser|null Avatar owner.
      */
     public $author;
     
     /**
-     * @var boolean Wheter user name should appear underneath the image
+     * @var boolean Wheter user name should appear underneath the image.
      */
     public $showName = true;
 
@@ -40,14 +40,14 @@ class Avatar extends Widget
      */
     public function run()
     {
-        if ($this->author instanceof User) {
+        if ($this->author instanceof PodiumUser) {
             
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
             $meta = $this->author->meta;
             if ($meta) {
                 if (!empty($meta->gravatar)) {
                     $avatar = Gravatar::widget([
-                        'email' => $this->author->email,
+                        'email' => $this->author->getEmail(),
                         'defaultImage' => 'identicon',
                         'rating' => 'r',
                         'options' => [

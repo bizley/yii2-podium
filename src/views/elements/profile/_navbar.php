@@ -1,8 +1,11 @@
 <?php
+
+use bizley\podium\components\PodiumUser;
 use yii\helpers\Html;
 
-$messageCount      = Yii::$app->user->getIdentity()->getNewMessagesCount();
-$subscriptionCount = Yii::$app->user->getIdentity()->getSubscriptionsCount();
+$podiumUser        = new PodiumUser;
+$messageCount      = $podiumUser->getNewMessagesCount();
+$subscriptionCount = $podiumUser->getSubscriptionsCount();
 
 echo Html::beginTag('ul', ['class' => 'nav nav-pills nav-stacked']);
 echo Html::tag('li', Html::a(Yii::t('podium/view', 'My Profile'), ['profile/index']), ['role' => 'presentation', 'class' => $active == 'profile' ? 'active' : null]);

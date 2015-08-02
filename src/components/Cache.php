@@ -89,6 +89,13 @@ class Cache
         }
     }
     
+    public static function clearAfterActivate()
+    {
+        $cache = static::getInstance();
+        $cache->delete('members.fieldlist');
+        $cache->delete('forum.memberscount');
+    }
+    
     /**
      * Deletes the value with the specified key from cache
      * @param string $key the key identifying the value to be deleted from cache.

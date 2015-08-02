@@ -9,6 +9,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Content;
@@ -18,6 +19,7 @@ use bizley\podium\models\LogSearch;
 use bizley\podium\models\Mod;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
+use bizley\podium\Module as PodiumModule;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -70,36 +72,35 @@ class AdminController extends Controller
      */
     public function actionBan($id = null)
     {
-        $model = User::findOne((int) $id);
+        $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
-        elseif ($model->id == Yii::$app->user->id) {
+        elseif ($model->getId() == Yii::$app->user->id) {
             $this->error('Sorry! You can not ban or unban your own account.');
         }
         else {
-            $model->setScenario('ban');
 
-            if ($model->status == User::STATUS_ACTIVE) {
+            if ($model->getStatus() == User::STATUS_ACTIVE) {
                 if ($model->ban()) {
                     Cache::getInstance()->delete('members.fieldlist');
-                    Log::info('User banned', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::info('User banned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                     $this->success('User has been banned.');
                 }
                 else {
-                    Log::error('Error while banning user', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while banning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                     $this->error('Sorry! There was some error while banning the user.');
                 }
             }
-            elseif ($model->status == User::STATUS_BANNED) {
+            elseif ($model->getStatus() == User::STATUS_BANNED) {
                 if ($model->unban()) {
                     Cache::getInstance()->delete('members.fieldlist');
-                    Log::info('User unbanned', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::info('User unbanned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                     $this->success('User has been unbanned.');
                 }
                 else {
-                    Log::error('Error while unbanning user', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while unbanning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                     $this->error('Sorry! There was some error while unbanning the user.');
                 }
             }
@@ -171,23 +172,23 @@ class AdminController extends Controller
      */
     public function actionDelete($id = null)
     {
-        $model = User::findOne((int) $id);
+        $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
-        elseif ($model->id == Yii::$app->user->id) {
+        elseif ($model->getId() == Yii::$app->user->id) {
             $this->error('Sorry! You can not delete your own account.');
         }
         else {
             if ($model->delete()) {
                 Cache::getInstance()->delete('members.fieldlist');
                 Cache::getInstance()->delete('forum.memberscount');
-                Log::info('User deleted', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('User deleted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                 $this->success('User has been deleted.');
             }
             else {
-                Log::error('Error while deleting user', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::error('Error while deleting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                 $this->error('Sorry! There was some error while deleting the user.');
             }
         }
@@ -266,33 +267,32 @@ class AdminController extends Controller
      */
     public function actionDemote($id = null)
     {
-        $model = User::findOne((int) $id);
+        $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find User with this ID.');
         }
         else {
-            $model->setScenario('role');
-            if ($model->role != User::ROLE_MODERATOR) {
+            
+            if ($model->getRole() != User::ROLE_MODERATOR) {
                 $this->error('You can only demote Moderators to Members.');
             }
             else {
                 $transaction = User::getDb()->beginTransaction();
                 try {
-                    $model->role = User::ROLE_MEMBER;
-                    if ($model->save()) {
-                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
-                            Yii::$app->authManager->revokeAll($model->id);
+                    if ($model->demoteTo(User::ROLE_MEMBER)) {
+                        if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                            Yii::$app->authManager->revoke(Yii::$app->authManager->getRole('podiumModerator'), $model->getId());
                         }
-                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $model->id)) {
-                            Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->id])->execute();
+                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('podiumUser'), $model->getId())) {
+                            Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->getId()])->execute();
                             $transaction->commit();
-                            Log::info('User demoted', !empty($model->id) ? $model->id : '', __METHOD__);
+                            Log::info('User demoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                             $this->success('User has been demoted.');
                             return $this->redirect(['admin/members']);
                         }
                     }
-                    Log::error('Error while demoting user', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while demoting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                     $this->error('Sorry! There was an error while demoting the user.');
                 }
                 catch (Exception $e) {
@@ -398,7 +398,7 @@ class AdminController extends Controller
      */
     public function actionIndex()
     {
-        if ($this->module->getParam('mode') == 'INSTALL') {
+        if ($this->module->mode == PodiumModule::MODE_INSTALL) {
             $this->warning('Parameter {mode} with {install} value found in configuration! Make sure you remove this parameter in production environment.', [
                 'mode'    => '<code>mode</code>',
                 'install' => '<code>INSTALL</code>'
@@ -406,7 +406,7 @@ class AdminController extends Controller
         }
         
         return $this->render('index', [
-            'members' => (new User)->getNewest()
+            'members' => (new PodiumUser)->getNewest()
         ]);
     }
 

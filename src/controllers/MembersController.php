@@ -36,16 +36,16 @@ class MembersController extends Controller
         return [
             'access' => [
                 'class'        => AccessControl::className(),
-                'denyCallback' => function () {
+                'denyCallback' => function ($rule, $action) {
                     return $this->redirect(['account/login']);
                 },
                 'rules'  => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function () {
+                        'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function () {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
                         }
                     ],

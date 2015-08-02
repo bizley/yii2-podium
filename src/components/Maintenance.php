@@ -481,6 +481,16 @@ class Maintenance extends Component
     {
         return Html::tag('span', $content, ['class' => 'text-success']);
     }
+    
+    /**
+     * Prepares warning message.
+     * @param string $content message content.
+     * @return string prepared message.
+     */
+    public function outputWarning($content)
+    {
+        return Html::tag('span', $content, ['class' => 'text-warning']);
+    }
 
     /**
      * Sets error flag.

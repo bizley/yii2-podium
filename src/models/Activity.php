@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -77,18 +78,20 @@ class Activity extends ActiveRecord
      */
     protected static function _addUser($ip, $url)
     {
-        $activity = self::findOne(['user_id' => Yii::$app->user->id]);
+        $user = new PodiumUser;
+        
+        $activity = self::findOne(['user_id' => $user->getId()]);
         if (!$activity) {
             $activity          = new Activity();
-            $activity->user_id = Yii::$app->user->id;
+            $activity->user_id = $user->getId();
         }
-        $user                = Yii::$app->user->getIdentity();
+        
         $activity->username  = $user->getPodiumName();
-        $activity->user_role = $user->role;
-        $activity->user_slug = $user->slug;
+        $activity->user_role = $user->getRole();
+        $activity->user_slug = $user->getSlug();
         $activity->url       = $url;
         $activity->ip        = $ip;
-        $activity->anonymous = $user->anonymous;
+        $activity->anonymous = $user->getAnonymous();
 
         return $activity->save();
     }

@@ -1,11 +1,16 @@
 <?php
 
 use bizley\podium\components\Config;
+use bizley\podium\components\PodiumUser;
+use bizley\podium\Module as PodiumModule;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 
 $items = [['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']]];
+
+$podiumUser   = new PodiumUser;
+$podiumModule = PodiumModule::getInstance();
 
 if (Yii::$app->user->isGuest) {
     if (Config::getInstance()->get('members_visible')) {
@@ -15,13 +20,17 @@ if (Yii::$app->user->isGuest) {
             'active' => $this->context->id == 'members'
         ];
     }
-    $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => ['account/login']];
-    $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => ['account/register']];
+    if (!empty($podiumModule->loginUrl)) {
+        $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => $podiumModule->loginUrl];
+    }
+    if (!empty($podiumModule->registerUrl)) {
+        $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => $podiumModule->registerUrl];
+    }
 }
 else {
     
-    $messageCount      = Yii::$app->user->getIdentity()->getNewMessagesCount();
-    $subscriptionCount = Yii::$app->user->getIdentity()->getSubscriptionsCount();
+    $messageCount      = $podiumUser->getNewMessagesCount();
+    $subscriptionCount = $podiumUser->getSubscriptionsCount();
     
     if (Yii::$app->user->can('settings')) {
         $items[] = [

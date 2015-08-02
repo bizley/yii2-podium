@@ -8,6 +8,7 @@
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
+use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\AuthorRule;
 use bizley\podium\rbac\ModeratorRule;
 use Exception;
@@ -35,28 +36,43 @@ class Installation extends Maintenance
     protected function _addAdmin()
     {
         try {
-            $admin = new User;
-            $admin->setScenario('installation');
-            $admin->username = 'admin';
-            $admin->email    = 'podium_admin@podium.net';
-            $admin->status   = User::STATUS_ACTIVE;
-            $admin->role     = User::ROLE_ADMIN;
-            $admin->generateAuthKey();
-            $admin->setPassword('admin');
-            if ($admin->save()) {
-
-                $this->authManager->assign($this->authManager->getRole('admin'), $admin->getId());
-
-                return $this->outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
-                                ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
-                                ' ' . Html::tag('kbd', 'admin') .
-                                ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
-                                ' ' . Html::tag('kbd', 'admin'));
+            
+            $podium = PodiumModule::getInstance();
+            if ($podium->userComponent == PodiumModule::USER_INHERIT) {
+                
+                if (!empty($podium->adminId)) {
+                    $this->authManager->assign($this->authManager->getRole('podiumAdmin'), $podium->adminId);
+                    return $this->outputSuccess(Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', ['id' => $podium->adminId]));
+                }
+                else {
+                    return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set.'));
+                }
             }
             else {
-                $this->setError(true);
-                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
+            
+                $admin = new User;
+                $admin->setScenario('installation');
+                $admin->username = 'admin';
+                $admin->email    = 'podium_admin@podium.net';
+                $admin->status   = User::STATUS_ACTIVE;
+                $admin->role     = User::ROLE_ADMIN;
+                $admin->generateAuthKey();
+                $admin->setPassword('admin');
+                if ($admin->save()) {
+
+                    $this->authManager->assign($this->authManager->getRole('podiumAdmin'), $admin->getId());
+
+                    return $this->outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
+                                    ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
+                                    ' ' . Html::tag('kbd', 'admin') .
+                                    ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
+                                    ' ' . Html::tag('kbd', 'admin'));
+                }
+                else {
+                    $this->setError(true);
+                    return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
+                                    Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
+                }
             }
         }
         catch (Exception $e) {
@@ -131,51 +147,51 @@ class Installation extends Maintenance
     protected function _addRules()
     {
         try {
-            $viewThread = $this->authManager->createPermission('viewThread');
-            $viewThread->description = 'View thread';
+            $viewThread = $this->authManager->createPermission('viewPodiumThread');
+            $viewThread->description = 'View Podium thread';
             $this->authManager->add($viewThread);
 
-            $viewForum = $this->authManager->createPermission('viewForum');
-            $viewForum->description = 'View forum';
+            $viewForum = $this->authManager->createPermission('viewPodiumForum');
+            $viewForum->description = 'View Podium forum';
             $this->authManager->add($viewForum);
 
-            $createThread = $this->authManager->createPermission('createThread');
-            $createThread->description = 'Create thread';
+            $createThread = $this->authManager->createPermission('createPodiumThread');
+            $createThread->description = 'Create Podium thread';
             $this->authManager->add($createThread);
 
-            $createPost = $this->authManager->createPermission('createPost');
-            $createPost->description = 'Create post';
+            $createPost = $this->authManager->createPermission('createPodiumPost');
+            $createPost->description = 'Create Podium post';
             $this->authManager->add($createPost);
 
             $moderatorRule = new ModeratorRule;
             $this->authManager->add($moderatorRule);
 
-            $updatePost = $this->authManager->createPermission('updatePost');
-            $updatePost->description = 'Update post';
+            $updatePost = $this->authManager->createPermission('updatePodiumPost');
+            $updatePost->description = 'Update Podium post';
             $updatePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($updatePost);
 
             $authorRule = new AuthorRule;
             $this->authManager->add($authorRule);
 
-            $updateOwnPost = $this->authManager->createPermission('updateOwnPost');
-            $updateOwnPost->description = 'Update own post';
+            $updateOwnPost = $this->authManager->createPermission('updateOwnPodiumPost');
+            $updateOwnPost->description = 'Update own Podium post';
             $updateOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($updateOwnPost);
             $this->authManager->addChild($updateOwnPost, $updatePost);
 
-            $deletePost = $this->authManager->createPermission('deletePost');
-            $deletePost->description = 'Delete post';
+            $deletePost = $this->authManager->createPermission('deletePodiumPost');
+            $deletePost->description = 'Delete Podium post';
             $deletePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($deletePost);
 
-            $deleteOwnPost = $this->authManager->createPermission('deleteOwnPost');
-            $deleteOwnPost->description = 'Delete own post';
+            $deleteOwnPost = $this->authManager->createPermission('deleteOwnPodiumPost');
+            $deleteOwnPost->description = 'Delete own Podium post';
             $deleteOwnPost->ruleName    = $authorRule->name;
             $this->authManager->add($deleteOwnPost);
             $this->authManager->addChild($deleteOwnPost, $deletePost);
             
-            $user = $this->authManager->createRole('user');
+            $user = $this->authManager->createRole('podiumUser');
             $this->authManager->add($user);
             $this->authManager->addChild($user, $viewThread);
             $this->authManager->addChild($user, $viewForum);
@@ -184,41 +200,41 @@ class Installation extends Maintenance
             $this->authManager->addChild($user, $updateOwnPost);
             $this->authManager->addChild($user, $deleteOwnPost);
 
-            $updateThread = $this->authManager->createPermission('updateThread');
-            $updateThread->description = 'Update thread';
+            $updateThread = $this->authManager->createPermission('updatePodiumThread');
+            $updateThread->description = 'Update Podium thread';
             $updateThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($updateThread);
             
-            $deleteThread = $this->authManager->createPermission('deleteThread');
-            $deleteThread->description = 'Delete thread';
+            $deleteThread = $this->authManager->createPermission('deletePodiumThread');
+            $deleteThread->description = 'Delete Podium thread';
             $deleteThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($deleteThread);
             
-            $pinThread = $this->authManager->createPermission('pinThread');
-            $pinThread->description = 'Pin thread';
+            $pinThread = $this->authManager->createPermission('pinPodiumThread');
+            $pinThread->description = 'Pin Podium thread';
             $pinThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($pinThread);
             
-            $lockThread = $this->authManager->createPermission('lockThread');
-            $lockThread->description = 'Lock thread';
+            $lockThread = $this->authManager->createPermission('lockPodiumThread');
+            $lockThread->description = 'Lock Podium thread';
             $lockThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($lockThread);
 
-            $moveThread = $this->authManager->createPermission('moveThread');
-            $moveThread->description = 'Move thread';
+            $moveThread = $this->authManager->createPermission('movePodiumThread');
+            $moveThread->description = 'Move Podium thread';
             $moveThread->ruleName    = $moderatorRule->name;
             $this->authManager->add($moveThread);
 
-            $movePost = $this->authManager->createPermission('movePost');
-            $movePost->description = 'Move post';
+            $movePost = $this->authManager->createPermission('movePodiumPost');
+            $movePost->description = 'Move Podium post';
             $movePost->ruleName    = $moderatorRule->name;
             $this->authManager->add($movePost);
 
-            $banUser = $this->authManager->createPermission('banUser');
-            $banUser->description = 'Ban user';
+            $banUser = $this->authManager->createPermission('banPodiumUser');
+            $banUser->description = 'Ban Podium user';
             $this->authManager->add($banUser);
 
-            $moderator = $this->authManager->createRole('moderator');
+            $moderator = $this->authManager->createRole('podiumModerator');
             $this->authManager->add($moderator);
             $this->authManager->addChild($moderator, $updatePost);
             $this->authManager->addChild($moderator, $updateThread);
@@ -231,35 +247,35 @@ class Installation extends Maintenance
             $this->authManager->addChild($moderator, $banUser);
             $this->authManager->addChild($moderator, $user);
 
-            $createForum = $this->authManager->createPermission('createForum');
-            $createForum->description = 'Create forum';
+            $createForum = $this->authManager->createPermission('createPodiumForum');
+            $createForum->description = 'Create Podium forum';
             $this->authManager->add($createForum);
 
-            $updateForum = $this->authManager->createPermission('updateForum');
-            $updateForum->description = 'Update forum';
+            $updateForum = $this->authManager->createPermission('updatePodiumForum');
+            $updateForum->description = 'Update Podium forum';
             $this->authManager->add($updateForum);
 
-            $deleteForum = $this->authManager->createPermission('deleteForum');
-            $deleteForum->description = 'Delete forum';
+            $deleteForum = $this->authManager->createPermission('deletePodiumForum');
+            $deleteForum->description = 'Delete Podium forum';
             $this->authManager->add($deleteForum);
             
-            $createCategory = $this->authManager->createPermission('createCategory');
-            $createCategory->description = 'Create category';
+            $createCategory = $this->authManager->createPermission('createPodiumCategory');
+            $createCategory->description = 'Create Podium category';
             $this->authManager->add($createCategory);
 
-            $updateCategory = $this->authManager->createPermission('updateCategory');
-            $updateCategory->description = 'Update category';
+            $updateCategory = $this->authManager->createPermission('updatePodiumCategory');
+            $updateCategory->description = 'Update Podium category';
             $this->authManager->add($updateCategory);
 
-            $deleteCategory = $this->authManager->createPermission('deleteCategory');
-            $deleteCategory->description = 'Delete category';
+            $deleteCategory = $this->authManager->createPermission('deletePodiumCategory');
+            $deleteCategory->description = 'Delete Podium category';
             $this->authManager->add($deleteCategory);
 
-            $settings = $this->authManager->createPermission('settings');
-            $settings->description = 'Settings';
+            $settings = $this->authManager->createPermission('changePodiumSettings');
+            $settings->description = 'Change Podium settings';
             $this->authManager->add($settings);
 
-            $admin = $this->authManager->createRole('admin');
+            $admin = $this->authManager->createRole('podiumAdmin');
             $this->authManager->add($admin);
             $this->authManager->addChild($admin, $createForum);
             $this->authManager->addChild($admin, $updateForum);

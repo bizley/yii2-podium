@@ -114,8 +114,9 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
      * Bans account.
      * @return boolean
      */
-    public function ban()
+    public function podiumBan()
     {
+        $this->setScenario('ban');
         $this->status = self::STATUS_BANNED;
         return $this->save();
     }
@@ -250,6 +251,11 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
     
+    public function findPodiumOne($id)
+    {
+        return static::findOne($id);
+    }
+    
     /**
      * Generates new activation token.
      */
@@ -298,11 +304,21 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
         return $this->getPrimaryKey();
     }
     
+    public function getPodiumAnonymous()
+    {
+        return $this->anonymous;
+    }
+    
+    public function getPodiumEmail()
+    {
+        return $this->email;
+    }
+    
     /**
      * Newest registered members.
      * @return \yii\db\ActiveQuery
      */
-    public function getNewest($limit = 10)
+    public function getPodiumNewest($limit = 10)
     {
         return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
@@ -314,6 +330,21 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
     public function getPodiumName()
     {
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
+    }
+    
+    public function getPodiumRole()
+    {
+        return $this->role;
+    }
+    
+    public function getPodiumSlug()
+    {
+        return $this->slug;
+    }
+    
+    public function getPodiumStatus()
+    {
+        return $this->status;
     }
     
     /**
@@ -356,7 +387,7 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
      * Returns chosen time zone.
      * @return string
      */
-    public function getTimeZone()
+    public function getPodiumTimeZone()
     {
         return !empty($this->timezone) ? $this->timezone : 'UTC';
     }
@@ -430,6 +461,25 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
                 mb_strlen($this->password, 'UTF-8') > 100) {
             $this->addError('password', Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
+    }
+    
+    public function podiumDelete()
+    {
+        return $this->delete();
+    }
+    
+    public function podiumDemoteTo($role)
+    {
+        $this->setScenario('role');
+        $this->role = $role;
+        return $this->save();
+    }
+    
+    public function podiumPromoteTo($role)
+    {
+        $this->setScenario('role');
+        $this->role = $role;
+        return $this->save();
     }
     
     /**
@@ -562,8 +612,9 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
      * Unbans account.
      * @return boolean
      */
-    public function unban()
+    public function podiumUnban()
     {
+        $this->setScenario('ban');
         $this->status = self::STATUS_ACTIVE;
         return $this->save();
     }

@@ -52,10 +52,10 @@ class DefaultController extends Controller
                 'rules' => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function () {
+                        'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function () {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
                         }
                     ],

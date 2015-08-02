@@ -9,9 +9,9 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
-use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -34,16 +34,16 @@ class MessagesController extends Controller
         return [
             'access' => [
                 'class'        => AccessControl::className(),
-                'denyCallback' => function () {
+                'denyCallback' => function ($rule, $action) {
                     return $this->redirect(['account/login']);
                 },
                 'rules'  => [
                     [
                         'allow'         => false,
-                        'matchCallback' => function () {
+                        'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
-                        'denyCallback' => function () {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
                         }
                     ],
@@ -138,14 +138,16 @@ class MessagesController extends Controller
     {
         $model = new Message();
         
-        if (!empty($user) && (int)$user > 0 && (int)$user != Yii::$app->user->id) {
+        $podiumUser = new PodiumUser;
+        
+        if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->getId()) {
             $model->receiver_id = (int)$user;
         }
         
         if ($model->load(Yii::$app->request->post())) {
             
             if ($model->validate()) {
-                if (!Yii::$app->user->getIdentity()->isIgnoredBy($model->receiver_id)) {
+                if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
 
                     if ($model->send()) {
                         $this->success('Message has been sent.');
@@ -168,9 +170,10 @@ class MessagesController extends Controller
      */
     public function actionReply($id = null)
     {
-        $model = new Message();
+        $model      = new Message;
+        $podiumUser = new PodiumUser;
         
-        $reply = Message::findOne(['id' => $id, 'receiver_id' => Yii::$app->user->id]);
+        $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->getId()]);
         
         if ($reply) {
             
@@ -179,7 +182,7 @@ class MessagesController extends Controller
             if ($model->load(Yii::$app->request->post())) {
             
                 if ($model->validate()) {
-                    if (!Yii::$app->user->getIdentity()->isIgnoredBy($model->receiver_id)) {
+                    if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
 
                         $model->replyto = $reply->id;
 

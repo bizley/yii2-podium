@@ -1,6 +1,7 @@
 <?php
 
 use bizley\podium\components\Helper;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -23,6 +24,8 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum')
 $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['category', 'id' => $category->id, 'slug' => $category->slug]];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' => ['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
 $this->params['breadcrumbs'][] = $this->title;
+
+$podiumUser = new PodiumUser;
 ?>
 
 <?php if (Yii::$app->user->can('updateThread', ['item' => $thread])): ?>
@@ -90,14 +93,14 @@ Pjax::end();
 <br>
 <div class="row">
     <div class="col-sm-2 text-center">
-        <?= Avatar::widget(['author' => Yii::$app->user->getIdentity(), 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => $podiumUser, 'showName' => false]) ?>
     </div>
     <div class="col-sm-10">
         <div class="popover right podium">
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right"><?= Html::tag('span', Yii::t('podium/view', 'In a while'), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'As soon as you click Post Reply')]); ?></small>
-                <strong><?= Yii::t('podium/view', 'Post Quick Reply') ?></strong> <?= Yii::$app->user->getIdentity()->getPodiumTag() ?>
+                <strong><?= Yii::t('podium/view', 'Post Quick Reply') ?></strong> <?= $podiumUser->getPodiumTag() ?>
             </div>
             <div class="popover-content podium-content">
 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]]); ?>

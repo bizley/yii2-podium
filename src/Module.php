@@ -58,8 +58,15 @@ class Module extends BaseModule implements BootstrapInterface
     const RBAC_INHERIT = 'inherit';
     const RBAC_OWN     = 'own';
     
-    const DEFAULT_ROUTE = ['podium/default/index'];
-    const MAIN_LAYOUT   = 'main';
+    const ROUTE_DEFAULT  = '/podium/default/index';
+    const ROUTE_LOGIN    = '/podium/account/login';
+    const ROUTE_REGISTER = '/podium/account/register';
+    const MAIN_LAYOUT    = 'main';
+    
+    /**
+     * @var null|integer Admin account ID if $user is set to 'inherit'.
+     */
+    public $adminId;
     
     /**
      * @var string Controller namespace
@@ -67,19 +74,31 @@ class Module extends BaseModule implements BootstrapInterface
     public $controllerNamespace = 'bizley\podium\controllers';
 
     /**
+     * @var string|array the URL for user login.
+     * If this property is null login link is not provided in menu.
+     */
+    public $loginUrl = [self::ROUTE_LOGIN];
+    
+    /**
      * @var string Module mode
      */
     public $mode = self::MODE_BAU;
     
     /**
-     * @var string Module user component
+     * @var string Module RBAC component
      */
-    public $rbac = self::RBAC_OWN;
+    public $rbacComponent = self::RBAC_OWN;
+    
+    /**
+     * @var string|array the URL for new user registering.
+     * If this property is null registration link is not provided in menu.
+     */
+    public $registerUrl = [self::ROUTE_REGISTER];
     
     /**
      * @var string Module user component
      */
-    public $user = self::USER_OWN;
+    public $userComponent = self::USER_OWN;
 
     /**
      * @var Config Module configuration instance
@@ -90,11 +109,6 @@ class Module extends BaseModule implements BootstrapInterface
      * @var boolean Installation flag
      */
     protected $_installed = false;
-    
-    /**
-     * @var PodiumUser Module user component
-     */
-    protected $_user;
     
     /**
      * @var string Module version
@@ -202,7 +216,7 @@ class Module extends BaseModule implements BootstrapInterface
             $app->getLog()->targets['podium'] = $dbTarget;
         }
         elseif ($app instanceof ConsoleApplication) {
-            $app->getModule('podium')->controllerNamespace = 'bizley\podium\console';
+            $this->controllerNamespace = 'bizley\podium\console';
         }
     }
 
@@ -237,7 +251,7 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function goPodium()
     {
-        return Yii::$app->getResponse()->redirect(self::DEFAULT_ROUTE);
+        return Yii::$app->getResponse()->redirect([self::ROUTE_DEFAULT]);
     }
 
     /**
@@ -251,19 +265,17 @@ class Module extends BaseModule implements BootstrapInterface
         parent::init();
         
         if (in_array($this->mode, [self::MODE_BAU, self::MODE_INSTALL])) {
-            if (in_array($this->user, [self::USER_INHERIT, self::USER_OWN])) {
-                if (in_array($this->rbac, [self::RBAC_INHERIT, self::RBAC_OWN])) {
+            if (in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
+                if (in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
 
                     $this->setAliases(['@podium' => '@vendor/bizley/podium']);
 
-                    $this->setUser();
-                    
                     if (Yii::$app instanceof WebApplication) {
 
-                        if ($this->user == self::USER_OWN) {
+                        if ($this->userComponent == self::USER_OWN) {
                             $this->registerIdentity();
                         }
-                        if ($this->rbac == self::RBAC_OWN) {
+                        if ($this->rbacComponent == self::RBAC_OWN) {
                             $this->registerAuthorization();
                         }
                         $this->registerTranslations();
@@ -312,7 +324,7 @@ class Module extends BaseModule implements BootstrapInterface
         Yii::$app->setComponents([
             'formatter' => [
                 'class'    => 'yii\i18n\Formatter',
-                'timeZone' => Yii::$app->user->getIdentity()->getTimeZone(),
+                'timeZone' => Yii::$app->user->isGuest ? 'UTC' : (new PodiumUser)->getTimeZone(),
             ],
         ]);
     }
@@ -328,7 +340,7 @@ class Module extends BaseModule implements BootstrapInterface
                 'class'           => 'yii\web\User',
                 'identityClass'   => 'bizley\podium\models\User',
                 'enableAutoLogin' => true,
-                'loginUrl'        => ['podium/account/login'],
+                'loginUrl'        => ['/podium/account/login'],
                 'identityCookie'  => ['name' => 'podium', 'httpOnly' => true],
                 'idParam'         => '__id_podium',
             ],
@@ -350,13 +362,5 @@ class Module extends BaseModule implements BootstrapInterface
                 'podium/view'   => 'view.php',
             ],
         ];
-    }
-    
-    public function getUser()
-    {
-        if ($this->_user === null) {
-            $this->_user = new PodiumUser;
-        }
-        return $this->_user;
     }
 }
