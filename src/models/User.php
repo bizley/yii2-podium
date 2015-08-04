@@ -251,7 +251,12 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
     
-    public function findPodiumOne($id)
+    public function podiumFindModerator($id)
+    {
+        return static::findOne(['id' => $id, 'role' => self::ROLE_MODERATOR]);
+    }
+    
+    public function podiumFindOne($id)
     {
         return static::findOne($id);
     }
@@ -321,6 +326,11 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
     public function getPodiumNewest($limit = 10)
     {
         return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
+    }
+    
+    public function getPodiumModerators()
+    {
+        return static::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
     }
     
     /**
@@ -480,6 +490,14 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
         $this->setScenario('role');
         $this->role = $role;
         return $this->save();
+    }
+    
+    public function podiumUserSearch($params, $active = false, $mods = false)
+    {
+        $searchModel  = new UserSearch();
+        $dataProvider = $searchModel->search($params, $active, $mods);
+        
+        return [$searchModel, $dataProvider];
     }
     
     /**

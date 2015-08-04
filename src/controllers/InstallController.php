@@ -8,6 +8,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Installation;
 use bizley\podium\components\Update;
+use bizley\podium\Module as PodiumModule;
 use Yii;
 use yii\db\Query;
 use yii\helpers\Json;
@@ -35,7 +36,7 @@ class InstallController extends Controller
      */
     protected function _passCheck()
     {
-        if ($this->module->getParam('mode') !== 'INSTALL') {
+        if ($this->module->mode !== PodiumModule::MODE_INSTALL) {
             return $this->redirect(['prereq']);
         }
     }

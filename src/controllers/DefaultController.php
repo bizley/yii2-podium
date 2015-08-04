@@ -164,7 +164,7 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('deleteThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('deletePodiumThread', ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -251,7 +251,7 @@ class DefaultController extends Controller
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
+                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {
                         $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
                         
                         if (!$model) {
@@ -259,7 +259,7 @@ class DefaultController extends Controller
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can('deleteOwnPost', ['post' => $model]) || Yii::$app->user->can('deletePost', ['item' => $model])) {
+                            if (Yii::$app->user->can('deleteOwnPodiumPost', ['post' => $model]) || Yii::$app->user->can('deletePodiumPost', ['item' => $model])) {
 
                                 $postData = Yii::$app->request->post();
                                 if ($postData) {
@@ -355,7 +355,7 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('deletePost', ['item' => $thread])) {
+        if (Yii::$app->user->can('deletePodiumPost', ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -479,7 +479,7 @@ class DefaultController extends Controller
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {                 
+                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {                 
                         $model = Post::findOne(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
 
                         if (!$model) {
@@ -487,7 +487,7 @@ class DefaultController extends Controller
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can('updateOwnPost', ['post' => $model]) || Yii::$app->user->can('updatePost', ['item' => $model])) {
+                            if (Yii::$app->user->can('updateOwnPodiumPost', ['post' => $model]) || Yii::$app->user->can('updatePodiumPost', ['item' => $model])) {
 
                                 $isFirstPost = false;
                                 $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->one();
@@ -696,7 +696,7 @@ class DefaultController extends Controller
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('lockThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('lockPodiumThread', ['item' => $thread])) {
             if ($thread->locked) {
                 $thread->locked = 0;
             }
@@ -749,7 +749,7 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('moveThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('movePodiumThread', ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -808,7 +808,7 @@ class DefaultController extends Controller
                 $catlist = [];
                 foreach ($forums as $for) {
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can('updateThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         if ($for->id == $forum->id) {
                             $options[$for->id] = ['disabled' => true];
                         }
@@ -856,7 +856,7 @@ class DefaultController extends Controller
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('movePost', ['item' => $thread])) {
+        if (Yii::$app->user->can('movePodiumPost', ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -984,10 +984,10 @@ class DefaultController extends Controller
                 foreach ($forums as $for) {
                     $forlist = [];
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can('updateThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         foreach ($threads as $thr) {
                             if ($thr->category_id == $cat->id && $thr->forum_id == $for->id) {
-                                $forlist[$thr->id] = (Yii::$app->user->can('updateThread', ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
+                                $forlist[$thr->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
                                 if ($thr->id == $thread->id) {
                                     $options[$thr->id] = ['disabled' => true];
                                 }
@@ -1029,7 +1029,7 @@ class DefaultController extends Controller
      */
     public function actionNewThread($cid = null, $fid = null)
     {
-        if (!Yii::$app->user->can('createThread')) {
+        if (!Yii::$app->user->can('createPodiumThread')) {
             if (Yii::$app->user->isGuest) {
                 $this->warning('Please sign in to create a new thread.');
                 return $this->redirect(['account/login']);
@@ -1167,7 +1167,7 @@ class DefaultController extends Controller
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('pinThread', ['item' => $thread])) {
+        if (Yii::$app->user->can('pinPodiumThread', ['item' => $thread])) {
             if ($thread->pinned) {
                 $thread->pinned = 0;
             }
@@ -1212,7 +1212,7 @@ class DefaultController extends Controller
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (!Yii::$app->user->can('createPost')) {
+        if (!Yii::$app->user->can('createPodiumPost')) {
             if (Yii::$app->user->isGuest) {
                 $this->warning('Please sign in to post a reply.');
                 return $this->redirect(['account/login']);
@@ -1250,7 +1250,7 @@ class DefaultController extends Controller
                         return $this->redirect(['default/index']);
                     }
                     else {
-                        if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))) {
+                        if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {
                             
                             $model = new Post;
                             $model->subscribe = 1;

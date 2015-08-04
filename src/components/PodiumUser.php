@@ -47,6 +47,11 @@ class PodiumUser extends Component
         return $this->identity->podiumDemoteTo($role);
     }
     
+    public function findModerator($id)
+    {
+        return $this->identity->podiumFindModerator($id);
+    }
+    
     public function findOne($id)
     {
         return $this->identity->podiumFindOne($id);
@@ -90,6 +95,11 @@ class PodiumUser extends Component
         return $this->identity->hasOne(Meta::className(), ['user_id' => $this->identity->primaryKey]);
     }
 
+    public function getModerators()
+    {
+        return $this->identity->getPodiumModerators();
+    }
+    
     /**
      * Relation with Mod.
      * @return \yii\db\ActiveQuery
@@ -254,5 +264,10 @@ class PodiumUser extends Component
     public function unban()
     {
         return $this->identity->podiumUnban();
+    }
+    
+    public function userSearch($params, $active = false, $mods = false)
+    {
+        return $this->identity->podiumUserSearch($params, $active, $mods);
     }
 }

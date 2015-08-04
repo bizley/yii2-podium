@@ -5,11 +5,11 @@ namespace bizley\podium\components;
 interface PodiumUserInterface
 {
     
-    public function findPodiumOne($id);
-    
     public function getPodiumAnonymous();
     
     public function getPodiumEmail();
+    
+    public function getPodiumModerators();
     
     public function getPodiumName();
     
@@ -34,7 +34,13 @@ interface PodiumUserInterface
     
     public function podiumDemoteTo($role);
     
+    public function podiumFindModerator($id);
+    
+    public function podiumFindOne($id);
+    
     public function podiumPromoteTo($role);
     
     public function podiumUnban();
+    
+    public function podiumUserSearch($params, $active = false, $mods = false);
 }

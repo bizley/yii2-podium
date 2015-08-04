@@ -431,9 +431,8 @@ class AdminController extends Controller
      */
     public function actionMembers()
     {
-        $searchModel  = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->get());
-
+        list($searchModel, $dataProvider) = (new PodiumUser)->userSearch(Yii::$app->request->get());
+        
         return $this->render('members', [
                     'dataProvider' => $dataProvider,
                     'searchModel'  => $searchModel,
@@ -453,7 +452,7 @@ class AdminController extends Controller
             return $this->redirect(['admin/mods']);
         }
         else {
-            $mod = User::findOne(['id' => $uid, 'role' => User::ROLE_MODERATOR]);
+            $mod = (new PodiumUser)->findModerator((int)$uid);
             if (!$mod) {
                 $this->error('Sorry! We can not find the moderator with this ID.');
                 return $this->redirect(['admin/mods']);
@@ -465,14 +464,14 @@ class AdminController extends Controller
                 }
                 else {
                     try {
-                        if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum->id, 'user_id' => $mod->id])->exists()) {
-                            Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                        if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum->id, 'user_id' => $mod->getId()])->exists()) {
+                            Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->getId()])->execute();
                         }
                         else {
-                            Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->id])->execute();
+                            Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum->id, 'user_id' => $mod->getId()])->execute();
                         }
                         Cache::getInstance()->deleteElement('forum.moderators', $forum->id);
-                        Log::info('Moderator updated', $mod->id, __METHOD__);
+                        Log::info('Moderator updated', $mod->getId(), __METHOD__);
                         $this->success('Moderation list has been updated.');
                     }
                     catch (Exception $e) {
@@ -494,7 +493,7 @@ class AdminController extends Controller
     public function actionMods($id = null)
     {
         $mod        = null;
-        $moderators = User::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
+        $moderators = (new PodiumUser)->getModerators();
 
         if (is_numeric($id) && $id > 0) {
             if (isset($moderators[$id])) {
@@ -515,7 +514,7 @@ class AdminController extends Controller
             $selection = !empty($postData['selection']) ? $postData['selection'] : [];
             $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
             
-            if ($mod_id != $mod->id) {
+            if ($mod_id != $mod->getId()) {
                 $this->error('Sorry! There was an error while selecting the moderator ID.');
             }
             else {
@@ -523,7 +522,7 @@ class AdminController extends Controller
                     $add = [];
                     foreach ($selection as $select) {
                         if (!in_array($select, $pre)) {
-                            if ((new Query)->from(Forum::tableName())->where(['id' => $select])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $select, 'user_id' => $mod->id])->exists() === false) {
+                            if ((new Query)->from(Forum::tableName())->where(['id' => $select])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $select, 'user_id' => $mod->getId()])->exists() === false) {
                                 $add[] = [$select, $mod->id];
                             }
                         }
@@ -531,7 +530,7 @@ class AdminController extends Controller
                     $remove = [];
                     foreach ($pre as $p) {
                         if (!in_array($p, $selection)) {
-                            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $p, 'user_id' => $mod->id])->exists()) {
+                            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $p, 'user_id' => $mod->getId()])->exists()) {
                                 $remove[] = $p;
                             }
                         }
@@ -540,7 +539,7 @@ class AdminController extends Controller
                         Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
                     }
                     if (!empty($remove)) {
-                        Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->id])->execute();
+                        Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->getId()])->execute();
                     }
                     Cache::getInstance()->delete('forum.moderators');
                     Log::info('Moderators updated', null, __METHOD__);
@@ -626,29 +625,28 @@ class AdminController extends Controller
      */
     public function actionPromote($id = null)
     {
-        $model = User::findOne((int) $id);
+        $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find User with this ID.');
         }
         else {
-            $model->setScenario('role');
-            if ($model->role != User::ROLE_MEMBER) {
+
+            if ($model->getRole() != User::ROLE_MEMBER) {
                 $this->error('You can only promote Members to Moderators.');
             }
             else {
                 $transaction = User::getDb()->beginTransaction();
                 try {
-                    $model->role = User::ROLE_MODERATOR;
-                    if ($model->save()) {
-                        if (!empty(Yii::$app->authManager->getRolesByUser($model->id))) {
-                            Yii::$app->authManager->revokeAll($model->id);
+                    if ($model->promoteTo(User::ROLE_MODERATOR)) {
+                        if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                            Yii::$app->authManager->revoke(Yii::$app->authManager->getRole('podiumUser'), $model->getId());
                         }
-                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('moderator'), $model->id)) {
+                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('podiumModerator'), $model->getId())) {
                             $transaction->commit();
-                            Log::info('User promoted', !empty($model->id) ? $model->id : '', __METHOD__);
+                            Log::info('User promoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
                             $this->success('User has been promoted.');
-                            return $this->redirect(['admin/mods', 'id' => $model->id]);
+                            return $this->redirect(['admin/mods', 'id' => $model->getId()]);
                         }
                     }
                     $this->error('Sorry! There was an error while promoting the user.');
@@ -807,7 +805,7 @@ class AdminController extends Controller
      */
     public function actionView($id = null)
     {
-        $model = User::findOne((int) $id);
+        $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model)) {
             $this->error('Sorry! We can not find Member with this ID.');
