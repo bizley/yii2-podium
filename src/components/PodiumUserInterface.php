@@ -2,12 +2,18 @@
 
 namespace bizley\podium\components;
 
-interface PodiumUserInterface
+use yii\web\IdentityInterface;
+
+interface PodiumUserInterface extends IdentityInterface
 {
     
     public function getPodiumAnonymous();
     
+    public function getPodiumCreatedAt();
+    
     public function getPodiumEmail();
+    
+    public function getPodiumId();
     
     public function getPodiumModerators();
     
@@ -27,6 +33,34 @@ interface PodiumUserInterface
     public function getPodiumTag($simple = false);
     
     public function getPodiumTimeZone();
+    
+    /**
+     * Declares a `has-many` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     * @see [[BaseActiveRecord::hasManu()]]
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQueryInterface the relational query object.
+     */
+    public function hasMany($class, $link);
+    
+    /**
+     * Declares a `has-one` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     * @see [[BaseActiveRecord::hasOne()]]
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQueryInterface the relational query object.
+     */
+    public function hasOne($class, $link);
     
     public function podiumBan();
     

@@ -1,6 +1,7 @@
 <?php
 
 use bizley\podium\components\Helper;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
@@ -54,6 +55,22 @@ echo Html::endTag('ul'); ?>
             'encodeLabel'        => false,
             'value'              => function ($model) {
                 return Yii::$app->formatter->asDatetime($model->created_at);
+            },
+        ],
+        [
+            'attribute'          => 'threads_count',
+            'label'              => Yii::t('podium/view', 'Threads'),
+            'encodeLabel'        => false,
+            'value'              => function ($model) {
+                return (new PodiumUser)->getThreadsCount($model->getPodiumId());
+            },
+        ],
+        [
+            'attribute'          => 'posts_count',
+            'label'              => Yii::t('podium/view', 'Posts'),
+            'encodeLabel'        => false,
+            'value'              => function ($model) {
+                return (new PodiumUser)->getPostsCount($model->getPodiumId());
             },
         ],
         [

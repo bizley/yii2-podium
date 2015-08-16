@@ -179,6 +179,7 @@ class DefaultController extends Controller
 
                             Cache::getInstance()->delete('forum.threadscount');
                             Cache::getInstance()->delete('forum.postscount');
+                            Cache::getInstance()->delete('user.threadscount');
                             Cache::getInstance()->delete('user.postscount');
 
                             Log::info('Thread deleted', !empty($thread->id) ? $thread->id : '', __METHOD__);
@@ -403,6 +404,7 @@ class DefaultController extends Controller
 
                             Cache::getInstance()->delete('forum.threadscount');
                             Cache::getInstance()->delete('forum.postscount');
+                            Cache::getInstance()->delete('user.threadscount');
                             Cache::getInstance()->delete('user.postscount');
 
                             Log::info('Posts deleted', null, __METHOD__);
@@ -1118,6 +1120,7 @@ class DefaultController extends Controller
                                     
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
+                                    Cache::getInstance()->deleteElement('user.threadscount', Yii::$app->user->id);
                                     Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
                                     Cache::getInstance()->delete('forum.latestposts');
                                     

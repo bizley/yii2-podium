@@ -3,7 +3,6 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
- * TODO: dodawanie admina przy dziedziczonym userze
  */
 namespace bizley\podium\components;
 

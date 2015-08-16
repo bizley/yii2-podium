@@ -10,6 +10,7 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
@@ -108,7 +109,7 @@ class MembersController extends Controller
     {
         if (!Yii::$app->user->isGuest) {
             try {
-                $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
+                $model = (new PodiumUser)->findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
 
                 if (empty($model)) {
                     $this->error('Sorry! We can not find Member with this ID.');
@@ -149,9 +150,8 @@ class MembersController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel  = new UserSearch;
-        $dataProvider = $searchModel->search(Yii::$app->request->get(), true);
-
+        list($searchModel, $dataProvider) = (new PodiumUser)->userSearch(Yii::$app->request->get(), true);
+        
         return $this->render('index', [
                     'dataProvider' => $dataProvider,
                     'searchModel'  => $searchModel
@@ -164,8 +164,7 @@ class MembersController extends Controller
      */    
     public function actionMods()
     {
-        $searchModel  = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->get(), true, true);
+        list($searchModel, $dataProvider) = (new PodiumUser)->userSearch(Yii::$app->request->get(), true, true);
 
         return $this->render('mods', [
                     'dataProvider' => $dataProvider,
@@ -184,7 +183,7 @@ class MembersController extends Controller
             return $this->redirect(['members/index']);
         }
 
-        $user = User::findOne(['id' => (int)$id, 'slug' => $slug]);
+        $user = (new PodiumUser)->findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
             $this->error('Sorry! We can not find the user you are looking for.');
             return $this->redirect(['members/index']);
@@ -205,7 +204,7 @@ class MembersController extends Controller
             return $this->redirect(['members/index']);
         }
 
-        $user = User::findOne(['id' => (int)$id, 'slug' => $slug]);
+        $user = (new PodiumUser)->findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
             $this->error('Sorry! We can not find the user you are looking for.');
             return $this->redirect(['members/index']);
@@ -221,9 +220,9 @@ class MembersController extends Controller
      */
     public function actionView($id = null)
     {
-        $model = User::findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
+        $model = (new PodiumUser)->findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
         
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find Member with this ID.');
             return $this->redirect(['members/index']);
         }

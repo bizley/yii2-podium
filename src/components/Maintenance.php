@@ -340,8 +340,8 @@ class Maintenance extends Component
     }
     
     /**
-     * Checks if User database table exists.
-     * @return boolean wheter User database exists.
+     * Checks if Post database table exists.
+     * @return boolean wheter Post database table exists.
      */
     public static function check()
     {
@@ -547,6 +547,7 @@ class Maintenance extends Component
     
     /**
      * Installation steps to be set.
+     * Overridden by [[Installation]] and [[Update]].
      */
     public static function steps()
     {

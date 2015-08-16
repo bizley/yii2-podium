@@ -36,16 +36,16 @@ echo Html::endTag('ul'); ?>
             <div class="panel-body">
 <?php if (!Yii::$app->user->isGuest): ?>
                 <div class="pull-right">
-<?php if ($model->id !== Yii::$app->user->id): ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]); ?>
+<?php if ($model->getId() !== Yii::$app->user->id): ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->getId()], ['class' => 'btn btn-default btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]); ?>
 <?php else: ?>
                     <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-lg disabled text-muted']); ?>
 <?php endif; ?>
-<?php if ($model->id !== Yii::$app->user->id && $model->role !== User::ROLE_ADMIN): ?>
+<?php if ($model->getId() !== Yii::$app->user->id && $model->getRole() !== User::ROLE_ADMIN): ?>
 <?php if (!$model->isIgnoredBy(Yii::$app->user->id)): ?>
-                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->id])]); ?>
+                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->getId()])]); ?>
 <?php else: ?>
-                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ok-circle"></span>', ['class' => 'btn btn-success btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Unignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalUnIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->id])]); ?>
+                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ok-circle"></span>', ['class' => 'btn btn-success btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Unignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalUnIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->getId()])]); ?>
 <?php endif; ?>
 <?php else: ?>
                     <?= Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', '#', ['class' => 'btn btn-lg disabled text-muted']); ?>
@@ -56,19 +56,19 @@ echo Html::endTag('ul'); ?>
 <?php endif; ?>
 <?php endif; ?>
                 <h2>
-                    <?= Html::encode($model->getPodiumName()) ?> 
+                    <?= Html::encode($model->getName()) ?> 
                     <small>
-                        <?= Helper::roleLabel($model->role) ?>
+                        <?= Helper::roleLabel($model->getRole()) ?>
                     </small>
                 </h2>
                 
                 <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
                 
-                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
-<?php if ($model->status != User::STATUS_REGISTERED): ?>
+                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->getCreatedAt(), 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->getCreatedAt()) ?>)</p>
+<?php if ($model->getStatus() != User::STATUS_REGISTERED): ?>
                 <p>
-                    <a href="<?= Url::to(['threads', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a> 
-                    <a href="<?= Url::to(['posts', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getPodiumName())]) ?></a>
+                    <a href="<?= Url::to(['threads', 'id' => $model->getId(), 'slug' => $model->getSlug()]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getName())]) ?></a> 
+                    <a href="<?= Url::to(['posts', 'id' => $model->getId(), 'slug' => $model->getSlug()]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getName())]) ?></a>
                 </p>
 <?php endif; ?>
             </div>
@@ -83,14 +83,14 @@ echo Html::endTag('ul'); ?>
     <div class="col-sm-3">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
-            'email' => $model->email,
+            'email' => $model->getEmail(),
             'defaultImage' => 'identicon',
             'rating' => 'r',
             'options' => [
                 'alt' => Yii::t('podium/view', 'Your Gravatar image'),
                 'class' => 'img-circle img-responsive',
             ]]); ?>
-<?php elseif (!empty($model->avatar)): ?>
+<?php elseif (!empty($model->meta->avatar)): ?>
         <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
 <?php else: ?>
         <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">

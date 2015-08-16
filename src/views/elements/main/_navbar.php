@@ -32,7 +32,7 @@ else {
     $messageCount      = $podiumUser->getNewMessagesCount();
     $subscriptionCount = $podiumUser->getSubscriptionsCount();
     
-    if (Yii::$app->user->can('settings')) {
+    if (Yii::$app->user->can('changePodiumSettings')) {
         $items[] = [
             'label'  => Yii::t('podium/layout', 'Administration'), 
             'url'    => ['admin/index'],

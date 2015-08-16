@@ -86,7 +86,7 @@ class Activity extends ActiveRecord
             $activity->user_id = $user->getId();
         }
         
-        $activity->username  = $user->getPodiumName();
+        $activity->username  = $user->getName();
         $activity->user_role = $user->getRole();
         $activity->user_slug = $user->getSlug();
         $activity->url       = $url;

@@ -12,115 +12,173 @@ use bizley\podium\models\Thread;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidValueException;
-use yii\db\ActiveRecord;
 use yii\db\Query;
-use yii\web\IdentityInterface;
 
 /**
  * PodiumUser component
  *
  * Base User object for Podium.
- * User Identity is provided with Yii::$app->user->identity component.
- * By default User Identity is the instance of \bizley\podium\models\User but 
- * it can be changed by setting \bizley\podium\Module::userComponent to 
- * 'inherit'. Podium then takes whatever is set to be User Identity as long as 
- * it implements IdentityInterface, PodiumUserInterface and extends 
- * ActiveRecord class.
+ * User Identity class is provided with Yii::$app->user->identityClass component.
+ * By default User Identity class is the instance of 
+ * [[\bizley\podium\models\User]] but it can be changed by setting 
+ * [[\bizley\podium\Module::$userComponent]] to 'inherit'. Podium then takes 
+ * whatever is set to be User Identity class as long as it implements 
+ * [[\bizley\podium\components\PodiumUserInterface]].
  */
 class PodiumUser extends Component
 {
 
-    private $_identity;
+    /**
+     * @var \bizley\podium\models\User|mixed User object.
+     */
+    private $_user;
     
+    /**
+     * @var string User Identity class.
+     */
+    private $_userClass;
+    
+    /**
+     * Bans user.
+     * @return boolean
+     */
     public function ban()
     {
-        return $this->identity->podiumBan();
-    }
-    
-    public function delete()
-    {
-        return $this->identity->podiumDelete();
-    }
-    
-    public function demoteTo($role)
-    {
-        return $this->identity->podiumDemoteTo($role);
-    }
-    
-    public function findModerator($id)
-    {
-        return $this->identity->podiumFindModerator($id);
-    }
-    
-    public function findOne($id)
-    {
-        return $this->identity->podiumFindOne($id);
+        return $this->user->podiumBan();
     }
     
     /**
-     * Relation with Activity.
+     * Delets user.
+     * @return boolean
+     */
+    public function delete()
+    {
+        return $this->user->podiumDelete();
+    }
+    
+    /**
+     * Demotes user to given role.
+     * @see [[\bizley\podium\models\User::getRoles()]]
+     * @param integer $role role ID
+     * @return boolean
+     */
+    public function demoteTo($role)
+    {
+        return $this->user->podiumDemoteTo($role);
+    }
+    
+    /**
+     * Finds Podium moderator.
+     * @param integer|array $id user ID or array of conditions
+     * @return \bizley\podium\components\PodiumUser
+     */
+    public function findModerator($id)
+    {
+        $find = $this->user->podiumFindModerator($id);
+        if ($find instanceof $this->_userClass) {
+            $this->user = $find;
+        }
+        return $this;
+    }
+    
+    /**
+     * Finds Podium user.
+     * @param integer|array $id user ID or array of conditions
+     * @return \bizley\podium\components\PodiumUser
+     */
+    public function findOne($id)
+    {
+        $find = $this->user->podiumFindOne($id);
+        if ($find instanceof $this->_userClass) {
+            $this->user = $find;
+        }
+        return $this;
+    }
+    
+    /**
+     * Sets relation with Activity.
      * @return \yii\db\ActiveQuery
      */
     public function getActivity()
     {
-        return $this->identity->hasOne(Activity::className(), ['user_id' => $this->identity->primaryKey]);
-    }
-    
-    public function getAnonymous()
-    {
-        return $this->identity->getPodiumAnonymous();
-    }
-    
-    public function getEmail()
-    {
-        return $this->identity->getPodiumEmail();
-    }
-    
-    public function getId()
-    {
-        return $this->identity->getId();
-    }
-    
-    public function getIdentity()
-    {
-        return $this->identity;
+        return $this->user->hasOne(Activity::className(), ['user_id' => $this->getId()]);
     }
     
     /**
-     * Relation with Meta.
+     * Gets user anonymous attribute.
+     * @return integer
+     */
+    public function getAnonymous()
+    {
+        return $this->user->getPodiumAnonymous();
+    }
+    
+    /**
+     * Gets user created_at attribute.
+     * @return integer
+     */
+    public function getCreatedAt()
+    {
+        return $this->user->getPodiumCreatedAt();
+    }
+    
+    /**
+     * Gets user email attribute.
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->user->getPodiumEmail();
+    }
+    
+    /**
+     * Gets user ID attribute.
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->user->getPodiumId();
+    }
+    
+    /**
+     * Sets relation with Meta.
      * @return \yii\db\ActiveQuery
      */
     public function getMeta()
     {
-        return $this->identity->hasOne(Meta::className(), ['user_id' => $this->identity->primaryKey]);
-    }
-
-    public function getModerators()
-    {
-        return $this->identity->getPodiumModerators();
+        return $this->user->hasOne(Meta::className(), ['user_id' => $this->getId()]);
     }
     
     /**
-     * Relation with Mod.
+     * Gets all Podium moderators.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getModerators()
+    {
+        return $this->user->getPodiumModerators();
+    }
+    
+    /**
+     * Sets relation with Mod.
      * @return \yii\db\ActiveQuery
      */
     public function getMods()
     {
-        return $this->identity->hasMany(Mod::className(), ['user_id' => $this->identity->primaryKey]);
+        return $this->user->hasMany(Mod::className(), ['user_id' => $this->getId()]);
     }
     
     /**
-     * Newest registered members.
-     * @return \yii\db\ActiveQuery
+     * Gets Podium name.
+     * @return string
      */
-    public function getNewest($limit = 10)
+    public function getName()
     {
-        return $this->identity->getPodiumNewest($limit);
+        return $this->user->getPodiumName();
     }
     
     /**
-     * Returns number of new messages.
-     * @return int
+     * Returns number of new user messages.
+     * @return integer
      */
     public function getNewMessagesCount()
     {
@@ -135,56 +193,61 @@ class PodiumUser extends Component
     }
     
     /**
-     * Returns Podium name.
-     * @return string
+     * Gets newest registered members.
+     * @param integer $limit number of members to fetch
+     * @return \yii\db\ActiveQuery
      */
-    public function getPodiumName()
+    public function getNewest($limit = 10)
     {
-        return $this->identity->getPodiumName();
+        // return $this; ?????
+        return $this->user->getPodiumNewest($limit);
     }
     
     /**
-     * Returns Podium tag.
-     * @return string
+     * Gets number of active posts added by user.
+     * @return integer
      */
-    public function getPodiumTag($simple = false)
+    public function getPostsCount($id = null)
     {
-        return $this->identity->getPodiumTag($simple);
-    }
-    
-    /**
-     * Returns number of added posts.
-     * @return int
-     */
-    public function getPostsCount()
-    {
-        $cache = Cache::getInstance()->getElement('user.postscount', $this->getId());
+        $cache = Cache::getInstance()->getElement('user.postscount', empty($id) ? $this->getId() : $id);
         if ($cache === false) {
-            $cache = (new Query)->from(Post::tableName())->where(['author_id' => $this->getId()])->count();
-            Cache::getInstance()->setElement('user.postscount', $this->getId(), $cache);
+            $cache = (new Query)->from(Post::tableName())->where(['author_id' => empty($id) ? $this->getId() : $id])->count();
+            Cache::getInstance()->setElement('user.postscount', empty($id) ? $this->getId() : $id, $cache);
         }
 
         return $cache;
     }
     
+    /**
+     * Gets user role attribute.
+     * @return integer
+     */
     public function getRole()
     {
-        return $this->identity->getPodiumRole();
-    }
-    
-    public function getSlug()
-    {
-        return $this->identity->getPodiumSlug();
-    }
-    
-    public function getStatus()
-    {
-        return $this->identity->getPodiumStatus();
+        return $this->user->getPodiumRole();
     }
     
     /**
-     * Returns number of subscibed threads with new posts.
-     * @return int
+     * Gets user slug attribute.
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->user->getPodiumSlug();
+    }
+    
+    /**
+     * Gets user status attribute.
+     * @return integer
+     */
+    public function getStatus()
+    {
+        return $this->user->getPodiumStatus();
+    }
+    
+    /**
+     * Gets number of user subscribed threads with new posts.
+     * @return integer
      */
     public function getSubscriptionsCount()
     {
@@ -199,29 +262,69 @@ class PodiumUser extends Component
     }
     
     /**
-     * Returns number of added threads.
-     * @return int
+     * Gets Podium tag.
+     * @param boolean $simple whether prepare simple tag
+     * @return string
      */
-    public function getThreadsCount()
+    public function getTag($simple = false)
     {
-        return (new Query)->from(Thread::tableName())->where(['author_id' => $this->getId()])->count();
+        return $this->user->getPodiumTag($simple);
     }
     
+    /**
+     * Gets number of active threads added by user.
+     * @return integer
+     */
+    public function getThreadsCount($id = null)
+    {
+        $cache = Cache::getInstance()->getElement('user.threadscount', empty($id) ? $this->getId() : $id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Thread::tableName())->where(['author_id' => empty($id) ? $this->getId() : $id])->count();
+            Cache::getInstance()->setElement('user.threadscount', empty($id) ? $this->getId() : $id, $cache);
+        }
+
+        return $cache;
+    }
+    
+    /**
+     * Gets user timezone attribute.
+     * @return string
+     */
     public function getTimeZone()
     {
-        return $this->identity->getPodiumTimeZone();
+        return $this->user->getPodiumTimeZone();
     }
     
+    /**
+     * Gets user object.
+     * @return \bizley\podium\models\User|mixed
+     */
+    public function getUser()
+    {
+        return $this->_user;
+    }
+    
+    /**
+     * Gets user class.
+     * @return string
+     */
+    public function getUserClass()
+    {
+        return $this->_userClass;
+    }
+    
+    /**
+     * Initiates component and gets user class set as global component.
+     */
     public function init()
     {
         parent::init();
-        $this->setIdentity(Yii::$app->user->identity);
+        $this->setUserComponent();
     }
-
-
+    
     /**
      * Finds out if user is ignored by another.
-     * @param int $user_id user ID
+     * @param integer $user_id user ID
      * @return boolean
      */
     public function isIgnoredBy($user_id)
@@ -232,42 +335,60 @@ class PodiumUser extends Component
         }
         return false;
     }
-
+    
+    /**
+     * Promotes user to given role.
+     * @see [[\bizley\podium\models\User::getRoles()]]
+     * @param integer $role role ID
+     * @return boolean
+     */
     public function promoteTo($role)
     {
-        return $this->identity->podiumPromoteTo($role);
+        return $this->user->podiumPromoteTo($role);
     }
     
-    public function setIdentity($identity)
+    /**
+     * Sets user object.
+     * @param \bizley\podium\models\User|mixed $user
+     */
+    public function setUser($user)
     {
-        if ($identity instanceof IdentityInterface) {
-            if ($identity instanceof PodiumUserInterface) {
-                if ($identity instanceof ActiveRecord) {
-                    $this->_identity = $identity;
-                }
-                else {
-                    throw new InvalidValueException('The identity object must be instance of ActiveRecord.');
-                }
-            }
-            else {
-                throw new InvalidValueException('The identity object must implement PodiumUserInterface.');
-            }
-        }
-        elseif ($identity === null) {
-            $this->_identity = null;
+        $this->_user = $user;
+    }
+    
+    /**
+     * Sets user component.
+     * @throws InvalidValueException
+     */
+    public function setUserComponent()
+    {
+        if (new Yii::$app->user->identityClass instanceof PodiumUserInterface) {
+            $this->_userClass = Yii::$app->user->identityClass;
+            $this->setUser(new $this->_userClass);
         }
         else {
-            throw new InvalidValueException('The identity object must implement IdentityInterface.');
+            throw new InvalidValueException('The identityClass must implement PodiumUserInterface.');
         }
     }
     
+    /**
+     * Unbans user.
+     * @return boolean
+     */
     public function unban()
     {
-        return $this->identity->podiumUnban();
+        return $this->user->podiumUnban();
     }
     
+    /**
+     * Prepares user search objects.
+     * @param array $params search parameters
+     * @param boolean $active whether look only for active users
+     * @param boolean $mods whether look only for moderators
+     * @return array
+     */
     public function userSearch($params, $active = false, $mods = false)
     {
-        return $this->identity->podiumUserSearch($params, $active, $mods);
+        return $this->user->podiumUserSearch($params, $active, $mods);
     }
 }

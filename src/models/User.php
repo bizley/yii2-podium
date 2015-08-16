@@ -12,7 +12,6 @@ use yii\base\NotSupportedException;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
 /**
@@ -38,7 +37,7 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
  * @property integer $tos write-only terms of service agreement
  * @property string $timezone
  */
-class User extends ActiveRecord implements IdentityInterface, PodiumUserInterface
+class User extends ActiveRecord implements PodiumUserInterface
 {
 
     /**
@@ -319,6 +318,11 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
         return $this->email;
     }
     
+    public function getPodiumId()
+    {
+        return $this->getId();
+    }
+    
     /**
      * Newest registered members.
      * @return \yii\db\ActiveQuery
@@ -339,7 +343,7 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
+        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->getPodiumId()]);
     }
     
     public function getPodiumRole()
@@ -364,7 +368,7 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
      */
     public function getPodiumTag($simple = false)
     {
-        return Helper::podiumUserTag($this->getPodiumName(), $this->role, $this->id, $this->slug, $simple);
+        return Helper::podiumUserTag($this->getPodiumName(), $this->getPodiumRole(), $this->getPodiumId(), $this->getPodiumSlug(), $simple);
     }
     
     /**
@@ -391,6 +395,11 @@ class User extends ActiveRecord implements IdentityInterface, PodiumUserInterfac
             self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
             self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
         ];
+    }
+    
+    public function getPodiumCreatedAt()
+    {
+        return $this->created_at;
     }
     
     /**
