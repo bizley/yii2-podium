@@ -285,6 +285,15 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
+     * Sets relation with Meta.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMeta()
+    {
+        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
+    }
+    
+    /**
      * Generates new email token.
      */
     public function generateEmailToken()
@@ -320,7 +329,7 @@ class User extends ActiveRecord implements PodiumUserInterface
     
     public function getPodiumId()
     {
-        return $this->getId();
+        return $this->getPrimaryKey();
     }
     
     /**

@@ -17,26 +17,26 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel-body">
 <?php if (!empty($model->meta->gravatar)): ?>
                 <?= Gravatar::widget([
-                    'email' => $model->email,
+                    'email' => $model->getEmail(),
                     'defaultImage' => 'identicon',
                     'rating' => 'r',
                     'options' => [
-                        'alt' => Html::encode($model->getPodiumName()),
+                        'alt' => Html::encode($model->getName()),
                         'class' => 'podium-avatar img-circle img-responsive pull-right',
                 ]]); ?>
 <?php elseif (!empty($model->meta->avatar)): ?>
-                <img class="podium-avatar img-circle img-responsive pull-right" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Html::encode($model->getPodiumName()) ?>">
+                <img class="podium-avatar img-circle img-responsive pull-right" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Html::encode($model->getName()) ?>">
 <?php else: ?>
-                <img class="podium-avatar img-circle img-responsive pull-right" src="<?= Helper::defaultAvatar() ?>" alt="<?= Html::encode($model->getPodiumName()) ?>">
+                <img class="podium-avatar img-circle img-responsive pull-right" src="<?= Helper::defaultAvatar() ?>" alt="<?= Html::encode($model->getName()) ?>">
 <?php endif; ?>
                 <h2>
-                    <?= Html::encode($model->getPodiumName()) ?> 
+                    <?= Html::encode($model->getName()) ?> 
                     <small>
-                        <?= Html::encode($model->email) ?> 
-                        <?= Helper::roleLabel($model->role) ?>
+                        <?= Html::encode($model->getEmail()) ?> 
+                        <?= Helper::roleLabel($model->getRole()) ?>
                     </small>
                 </h2>
-                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
+                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->getCreatedAt(), 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->getCreatedAt()) ?>)</p>
                 <p>
                     <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all threads started by me') ?></a> 
                     <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all posts created by me') ?></a>

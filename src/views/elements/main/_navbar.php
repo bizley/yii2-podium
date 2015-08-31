@@ -20,11 +20,13 @@ if (Yii::$app->user->isGuest) {
             'active' => $this->context->id == 'members'
         ];
     }
-    if (!empty($podiumModule->loginUrl)) {
-        $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => $podiumModule->loginUrl];
-    }
-    if (!empty($podiumModule->registerUrl)) {
-        $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => $podiumModule->registerUrl];
+    if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
+        if (!empty($podiumModule->loginUrl)) {
+            $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => $podiumModule->loginUrl];
+        }
+        if (!empty($podiumModule->registerUrl)) {
+            $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => $podiumModule->registerUrl];
+        }
     }
 }
 else {
@@ -64,7 +66,9 @@ else {
             ['label' => Yii::t('podium/view', 'New Message'), 'url' => ['messages/new']],
         ]
     ];
-    $items[] = ['label' => Yii::t('podium/layout', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
+    if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
+        $items[] = ['label' => Yii::t('podium/layout', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
+    }
 }
 
 NavBar::begin([

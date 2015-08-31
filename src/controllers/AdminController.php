@@ -74,7 +74,7 @@ class AdminController extends Controller
     {
         $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
         elseif ($model->getId() == Yii::$app->user->id) {
@@ -174,7 +174,7 @@ class AdminController extends Controller
     {
         $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find Member with this ID.');
         }
         elseif ($model->getId() == Yii::$app->user->id) {
@@ -269,7 +269,7 @@ class AdminController extends Controller
     {
         $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find User with this ID.');
         }
         else {
@@ -406,7 +406,7 @@ class AdminController extends Controller
         }
         
         return $this->render('index', [
-            'members' => (new PodiumUser)->getNewest()
+            'members' => (new PodiumUser)->getNewest(10)
         ]);
     }
 
@@ -453,7 +453,7 @@ class AdminController extends Controller
         }
         else {
             $mod = (new PodiumUser)->findModerator((int)$uid);
-            if (!$mod) {
+            if (empty($mod->user)) {
                 $this->error('Sorry! We can not find the moderator with this ID.');
                 return $this->redirect(['admin/mods']);
             }
@@ -627,7 +627,7 @@ class AdminController extends Controller
     {
         $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find User with this ID.');
         }
         else {
@@ -807,7 +807,7 @@ class AdminController extends Controller
     {
         $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model)) {
+        if (empty($model->user)) {
             $this->error('Sorry! We can not find Member with this ID.');
             return $this->redirect(['admin/members']);
         }

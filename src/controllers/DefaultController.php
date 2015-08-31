@@ -633,7 +633,7 @@ class DefaultController extends Controller
         
         return $this->render('index', [
             'dataProvider' => (new Category())->search(),
-            'latest'       => (new Post())->getLatest()
+            'latest'       => (new Post())->getLatest(),
         ]);
     }
     

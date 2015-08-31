@@ -2,6 +2,7 @@
 
 $this->title                   = Yii::t('podium/view', 'Main Forum');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="row">
     <div class="col-sm-9">

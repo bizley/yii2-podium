@@ -1,6 +1,7 @@
 <?php
 
 use bizley\podium\components\Helper;
+use bizley\podium\Module as PodiumModule;
 use cebe\gravatar\Gravatar;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
@@ -19,6 +20,7 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
     </div>
     <div class="col-sm-6">
         <div class="panel panel-default">
+<?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
 <?php $form = ActiveForm::begin(['id' => 'details-form']); ?>
             <div class="panel-body">
                 <div class="row">
@@ -94,19 +96,40 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 </div>
             </div>
 <?php ActiveForm::end(); ?>
+<?php else: ?>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong><?= Yii::t('podium/view', 'Username') ?></strong><br>
+                        <?= Html::encode($model->user->getName()) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong><?= Yii::t('podium/view', 'Time Zone') ?></strong><br>
+                        <?= Html::encode($model->user->getTimeZone()) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong><?= Yii::t('podium/view', $model->user->getAnonymous() ? 'Anonymous Forum Viewing' : 'Public Forum Viewing') ?></strong>
+                    </div>
+                </div>
+            </div>
+<?php endif; ?>
         </div>
     </div>
     <div class="col-sm-3">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
-            'email' => $model->email,
+            'email' => PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN ? $model->email : $model->getEmail(),
             'defaultImage' => 'identicon',
             'rating' => 'r',
             'options' => [
                 'alt' => Yii::t('podium/view', 'Your Gravatar image'),
                 'class' => 'img-circle img-responsive',
             ]]); ?>
-<?php elseif (!empty($model->avatar)): ?>
+<?php elseif (!empty($model->meta->avatar)): ?>
         <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
 <?php else: ?>
         <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">

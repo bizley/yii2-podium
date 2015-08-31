@@ -10,12 +10,15 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
 use bizley\podium\models\Subscription;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
+use bizley\podium\Module as PodiumModule;
+use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
@@ -72,59 +75,66 @@ class ProfileController extends Controller
      */
     public function actionDetails()
     {
-        $model = User::findOne(Yii::$app->user->id);
+        if ($this->module->userComponent == PodiumModule::USER_OWN) {
+            $model = User::findOne(Yii::$app->user->id);
+            if (empty($model)) {
+                return $this->redirect(['account/login']);
+            }
+            
+            $model->setScenario('account');
 
-        if (empty($model)) {
-            return $this->redirect(['account/login']);
-        }
+            if ($model->load(Yii::$app->request->post())) {
+                if ($model->validate()) {
+                    if ($model->saveChanges()) {
+                        if ($model->new_email) {
 
-        $model->setScenario('account');
+                            $email = Content::find()->where(['name' => 'email-new'])->one();
+                            if ($email) {
+                                $topic   = $email->topic;
+                                $content = $email->content;
+                            }
+                            else {
+                                $topic   = 'New e-mail activation link at {forum}';
+                                $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
+                            }
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate()) {
-                if ($model->saveChanges()) {
-                    if ($model->new_email) {
-                        
-                        $email = Content::find()->where(['name' => 'email-new'])->one();
-                        if ($email) {
-                            $topic   = $email->topic;
-                            $content = $email->content;
+                            $forum = Config::getInstance()->get('name');
+                            if (Email::queue($model->new_email, 
+                                    str_replace('{forum}', $forum, $topic),
+                                    str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                            Url::to(['account/new-email', 'token' => $model->email_token], true),
+                                            Url::to(['account/new-email', 'token' => $model->email_token], true)
+                                        ), $content)),
+                                    !empty($model->id) ? $model->id : null
+                                )) {
+                                Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                                $this->success('Your account has been updated but your new e-mail address is not active yet. '
+                                        . 'Click the activation link that has been sent to your new e-mail address.');
+                            }
+                            else {
+                                Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                                $this->warning('Your account has been updated but your new e-mail address is not active yet. '
+                                        . 'Unfortunately there was some error while sending you the activation link. '
+                                        . 'Contact administrator about this problem.');
+                            }
                         }
                         else {
-                            $topic   = 'New e-mail activation link at {forum}';
-                            $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
+                            Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                            $this->success('Your account has been updated.');
                         }
 
-                        $forum = Config::getInstance()->get('name');
-                        if (Email::queue($model->new_email, 
-                                str_replace('{forum}', $forum, $topic),
-                                str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                        Url::to(['account/new-email', 'token' => $model->email_token], true),
-                                        Url::to(['account/new-email', 'token' => $model->email_token], true)
-                                    ), $content)),
-                                !empty($model->id) ? $model->id : null
-                            )) {
-                            Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->success('Your account has been updated but your new e-mail address is not active yet. '
-                                    . 'Click the activation link that has been sent to your new e-mail address.');
-                        }
-                        else {
-                            Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->warning('Your account has been updated but your new e-mail address is not active yet. '
-                                    . 'Unfortunately there was some error while sending you the activation link. '
-                                    . 'Contact administrator about this problem.');
-                        }
+                        return $this->refresh();
                     }
-                    else {
-                        Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('Your account has been updated.');
-                    }
-
-                    return $this->refresh();
+                }
+                else {
+                    $model->current_password = null;
                 }
             }
-            else {
-                $model->current_password = null;
+        }
+        else {
+            $model = (new PodiumUser)->findOne(Yii::$app->user->id);
+            if (empty($model)) {
+                return $this->module->goPodium();
             }
         }
 
@@ -196,10 +206,15 @@ class ProfileController extends Controller
      */
     public function actionIndex()
     {
-        $model = User::findOne(Yii::$app->user->id);
+        $model = (new PodiumUser)->findOne(Yii::$app->user->id);
 
         if (empty($model)) {
-            return $this->redirect(['account/login']);
+            if ($this->module->userComponent == PodiumModule::USER_OWN) {
+                return $this->redirect(['account/login']);
+            }
+            else {
+                return $this->module->goPodium();
+            }
         }
 
         return $this->render('profile', ['model' => $model]);
