@@ -21,6 +21,21 @@ use yii\db\Query;
  */
 class Config
 {
+    
+    const CURRENT_VERSION                     = '0.1';
+    const DEFAULT_FROM_EMAIL                  = 'no-reply@change.me';
+    const DEFAULT_FROM_NAME                   = 'Podium';
+    const FLAG_USE_CAPTCHA                    = 1;
+    const FLAG_MEMBERS_VISIBLE                = 1;
+    const HOT_MINIMUM                         = 20;
+    const MAX_SEND_ATTEMPTS                   = 5;
+    const META_DESCRIPTION                    = 'Podium - Yii 2 Forum Module';
+    const META_KEYWORDS                       = 'yii2, forum, podium';
+    const PODIUM_NAME                         = 'Podium';
+    const SECONDS_ACTIVATION_TOKEN_EXPIRE     = 259200;
+    const SECONDS_EMAIL_TOKEN_EXPIRE          = 86400;
+    const SECONDS_PASSWORD_RESET_TOKEN_EXPIRE = 86400;
+    
     /**
      * @var Cache cache object instance
      */
@@ -28,26 +43,10 @@ class Config
     
     /**
      * @var array configuration defaults.
-     * Those values are stored in cached configuration but saved only when 
+     * These values are stored in cached configuration but saved only when 
      * administrator saves Podium settings.
      */
-    protected $_defaults = [
-        'name'                        => 'Podium',
-        'version'                     => '0.1',
-        'hot_minimum'                 => 20,
-        'members_visible'             => 1,
-        'from_email'                  => 'no-reply@change.me',
-        'from_name'                   => 'Podium',
-        'max_attempts'                => 5,
-        'use_captcha'                 => 1,
-        'recaptcha_sitekey'           => '',
-        'recaptcha_secretkey'         => '',
-        'password_reset_token_expire' => 86400,
-        'email_token_expire'          => 86400,
-        'activation_token_expire'     => 259200,
-        'meta_keywords'               => 'yii2, forum, podium',
-        'meta_description'            => 'Podium - Yii 2 Forum Module',
-    ];
+    protected $_defaults = [];
     
     /**
      * @var boolean|Config configuration object instance
@@ -59,7 +58,24 @@ class Config
      */
     protected function __construct()
     {
-        $this->cache = Cache::getInstance();
+        $this->cache     = Cache::getInstance();
+        $this->_defaults = [
+            'name'                        => self::PODIUM_NAME,
+            'version'                     => self::CURRENT_VERSION,
+            'hot_minimum'                 => self::HOT_MINIMUM,
+            'members_visible'             => self::FLAG_MEMBERS_VISIBLE,
+            'from_email'                  => self::DEFAULT_FROM_EMAIL,
+            'from_name'                   => self::DEFAULT_FROM_NAME,
+            'max_attempts'                => self::MAX_SEND_ATTEMPTS,
+            'use_captcha'                 => self::FLAG_USE_CAPTCHA,
+            'recaptcha_sitekey'           => '',
+            'recaptcha_secretkey'         => '',
+            'password_reset_token_expire' => self::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE,
+            'email_token_expire'          => self::SECONDS_EMAIL_TOKEN_EXPIRE,
+            'activation_token_expire'     => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
+            'meta_keywords'               => self::META_KEYWORDS,
+            'meta_description'            => self::META_DESCRIPTION,
+        ];
     }
     
     /**

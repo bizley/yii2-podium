@@ -130,7 +130,17 @@ class User extends ActiveRecord implements PodiumUserInterface
             [
                 'class'     => SluggableBehavior::className(),
                 'attribute' => 'username'
-            ]
+            ],
+            [
+                'class' => \bizley\partialpassword\behaviors\PartialPasswordBehavior::className(),
+                'bitsRange' => 20,
+                'passwordsMin' => 8,
+                'passwordsMax' => 10,
+                'charactersMin' => 4,
+                'charactersMax' => 6,
+                'repeatDropRate' => 1,
+                'tableName' => '{{%password}}',
+            ],
         ];
     }
     
@@ -524,12 +534,17 @@ class User extends ActiveRecord implements PodiumUserInterface
      */
     public function register()
     {
-        $this->setPassword($this->password);
+        //$this->setPassword($this->password);
+        
         $this->generateActivationToken();
         $this->generateAuthKey();
         $this->status = self::STATUS_REGISTERED;
 
-        return $this->save();
+        //return $this->save();
+        
+        if ($this->save()) {
+            $this->savePartialHashes($this->password);
+        }
     }
     
     /**

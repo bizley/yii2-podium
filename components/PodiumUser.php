@@ -199,7 +199,6 @@ class PodiumUser extends Component
      */
     public function getNewest($limit = 10)
     {
-        // return $this; ?????
         return $this->user->getPodiumNewest($limit);
     }
     

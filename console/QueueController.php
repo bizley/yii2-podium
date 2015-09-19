@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\console;
 
 use bizley\podium\components\Config;
@@ -16,7 +20,9 @@ use yii\mail\BaseMailer;
 
 /**
  * Podium command line tool to send emails.
- *
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
 class QueueController extends Controller
 {
@@ -80,6 +86,11 @@ class QueueController extends Controller
         return false;
     }
 
+    /**
+     * Returns new batch of emails.
+     * @param integer $limit maximum number of rows in batch
+     * @return array
+     */
     public function getNewBatch($limit = 0)
     {
         try {
@@ -93,6 +104,13 @@ class QueueController extends Controller
         }
     }
 
+    /**
+     * Sends email using mailer component.
+     * @param string $email
+     * @param string $fromName
+     * @param string $fromEmail
+     * @return boolean
+     */
     public function send($email, $fromName, $fromEmail)
     {
         try {
@@ -110,6 +128,14 @@ class QueueController extends Controller
         }
     }
 
+    /**
+     * Tries to send email from queue and updates its status.
+     * @param string $email
+     * @param string $fromName
+     * @param string $fromEmail
+     * @param integer $maxAttempts
+     * @return boolean
+     */
     public function process($email, $fromName, $fromEmail, $maxAttempts)
     {
         try {
@@ -134,7 +160,9 @@ class QueueController extends Controller
     }
 
     /**
-     * Sends the batch of emails from the queue.
+     * Runs the queue.
+     * @param integer $limit
+     * @return integer|void
      */
     public function actionRun($limit = 0)
     {
@@ -167,6 +195,9 @@ class QueueController extends Controller
         }
     }
     
+    /**
+     * Default action.
+     */
     public function actionIndex()
     {
         $this->run('/help', ['podium']);

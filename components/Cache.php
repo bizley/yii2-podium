@@ -14,6 +14,7 @@ use yii\widgets\FragmentCache;
 
 /**
  * Cache helper
+ * 
  * Handles the cache component. If cache component is not set in configuration 
  * [[\yii\caching\DummyCache|DummyCache]] is used instead.
  * Every Podium cache element is prefixed with 'podium.' automatically.

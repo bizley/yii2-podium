@@ -36,10 +36,7 @@ interface PodiumUserInterface extends IdentityInterface
     
     /**
      * Declares a `has-many` relation.
-     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
-     * through which the related record can be queried and retrieved back.
-     * @see [[BaseActiveRecord::hasManu()]]
-     *
+     * @see [[BaseActiveRecord::hasMany()]]
      * @param string $class the class name of the related record
      * @param array $link the primary-foreign key constraint. The keys of the array refer to
      * the attributes of the record associated with the `$class` model, while the values of the
@@ -50,10 +47,7 @@ interface PodiumUserInterface extends IdentityInterface
     
     /**
      * Declares a `has-one` relation.
-     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
-     * through which the related record can be queried and retrieved back.
      * @see [[BaseActiveRecord::hasOne()]]
-     *
      * @param string $class the class name of the related record
      * @param array $link the primary-foreign key constraint. The keys of the array refer to
      * the attributes of the record associated with the `$class` model, while the values of the

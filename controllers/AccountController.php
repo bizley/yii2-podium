@@ -115,9 +115,8 @@ class AccountController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->module->goPodium();
         }
-        else {
-            return $this->render('login', ['model' => $model]);
-        }
+
+        return $this->render('login', ['model' => $model]);
     }
     
     /**
@@ -268,7 +267,7 @@ class AccountController extends Controller
             return $this->module->goPodium();
         }
         
-        return $this->render('register', ['model' => $model, 'terms' => Content::find()->where(['name' => 'terms'])->one()]);
+        return $this->render('register', ['model' => $model, 'terms' => Content::findOne(['name' => 'terms'])]);
     }
 
     /**

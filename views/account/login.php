@@ -9,10 +9,12 @@ $this->title                   = Yii::t('podium/view', 'Sign in');
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+
 ?>
 <div class="row">
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+        
             <div class="form-group">
                 <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'Username or E-mail')])->label(false) ?>
             </div>

@@ -75,7 +75,7 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
 <?php if ($terms): ?>
                 <?= $terms->content ?>
 <?php else: ?>
-                TO BE ANNOUNCED
+                <?= Yii::t('podium/view', 'TO BE ANNOUNCED') ?>
 <?php endif; ?>
             </div>
         </div>
