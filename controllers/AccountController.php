@@ -190,8 +190,8 @@ class AccountController extends Controller
                     $content = $email->content;
                 }
                 else {
-                    $topic   = '{forum} account reactivation';
-                    $content = '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br />If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br />{forum}</p>';
+                    $topic   = Content::REACT_TITLE;
+                    $content = Content::REACT_BODY;
                 }
                 
                 $forum = Config::getInstance()->get('name');
@@ -238,8 +238,8 @@ class AccountController extends Controller
                 $content = $email->content;
             }
             else {
-                $topic   = 'Welcome to {forum}! This is your activation link';
-                $content = '<p>Thank you for registering at {forum}!</p><p>To activate you account open the following link in your Internet browser:<br />{link}<br /></p><p>See you soon!<br />{forum}</p>';
+                $topic   = Content::REG_TITLE;
+                $content = Content::REG_BODY;
             }
 
             $forum = Config::getInstance()->get('name');
@@ -288,8 +288,8 @@ class AccountController extends Controller
                     $content = $email->content;
                 }
                 else {
-                    $topic   = '{forum} password reset link';
-                    $content = '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br />If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br />{forum}</p>';
+                    $topic   = Content::PASS_TITLE;
+                    $content = Content::PASS_BODY;
                 }
 
                 $forum = Config::getInstance()->get('name');

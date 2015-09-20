@@ -299,7 +299,7 @@ class Thread extends ActiveRecord
     
     public function isMod($user_id = null)
     {
-        if (Yii::$app->user->can('admin')) {
+        if (Yii::$app->user->can('podiumAdmin')) {
             return true;
         }
         else {

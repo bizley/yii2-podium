@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $podiumUser = new PodiumUser;
 ?>
 
-<?php if (Yii::$app->user->can('updateThread', ['item' => $thread])): ?>
+<?php if (Yii::$app->user->can('updatePodiumThread', ['item' => $thread])): ?>
 <div class="row">
     <div class="col-sm-12">
         <div class="panel panel-warning">
@@ -82,7 +82,7 @@ echo ListView::widget([
 Pjax::end();
 ?>
 
-<?php if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updateThread', ['item' => $thread]))): ?>
+<?php if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))): ?>
 <?php if (!Yii::$app->user->isGuest): ?>
 <br>
 <div class="row">

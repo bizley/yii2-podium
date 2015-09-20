@@ -57,7 +57,7 @@ class AdminController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['admin']
+                        'roles' => ['podiumAdmin']
                     ],
                 ],
             ],
