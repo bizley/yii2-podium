@@ -38,7 +38,7 @@ class Helper
      */
     public static function deletedUserTag($simple = false)
     {
-        return self::podiumUserTag('', 0, null, null, $simple);
+        return static::podiumUserTag('', 0, null, null, $simple);
     }
     
     /**

@@ -41,7 +41,7 @@ class Avatar extends Widget
     public function run()
     {
         if ($this->author instanceof PodiumUser) {
-            
+
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
             $meta = $this->author->meta;
             if ($meta) {

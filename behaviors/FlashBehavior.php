@@ -29,7 +29,7 @@ class FlashBehavior extends Behavior
      */
     public function alert($message, $params = [], $category = 'podium/flash', $language = null)
     {
-        $this->warning($message, $params, $category, $language);
+        $this->goFlash('warning', $category, $message, $params, $language);
     }
     
     /**
@@ -55,7 +55,7 @@ class FlashBehavior extends Behavior
      */
     public function error($message, $params = [], $category = 'podium/flash', $language = null)
     {
-        $this->danger($message, $params, $category, $language);
+        $this->goFlash('danger', $category, $message, $params, $language);
     }
     
     /**
@@ -95,7 +95,7 @@ class FlashBehavior extends Behavior
      */
     public function ok($message, $params = [], $category = 'podium/flash', $language = null)
     {
-        $this->success($message, $params, $category, $language);
+        $this->goFlash('success', $category, $message, $params, $language);
     }
     
     /**

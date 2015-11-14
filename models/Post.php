@@ -5,6 +5,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\components\Log;
+use bizley\podium\components\PodiumUser;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -81,7 +82,7 @@ class Post extends ActiveRecord
     
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'author_id']);
+        return (new PodiumUser)->findOne($this->author_id);
     }
     
     public function getThread()
