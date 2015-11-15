@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
 use yii\grid\CheckboxColumn;

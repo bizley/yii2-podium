@@ -4,7 +4,7 @@
  * Podium Module
  * Yii 2 Forum Module
  */
-namespace bizley\podium\components;
+namespace bizley\podium\maintenance;
 
 use bizley\podium\models\Post;
 use Exception;

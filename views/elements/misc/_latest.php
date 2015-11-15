@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
+?>
 <div class="panel panel-default">
     <div class="panel-heading">
         <?= Yii::t('podium/view', 'Latest posts') ?>

@@ -7,8 +7,8 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
-use bizley\podium\components\Log;
 use bizley\podium\components\PodiumUser;
+use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -45,9 +45,7 @@ class Activity extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
     
     /**

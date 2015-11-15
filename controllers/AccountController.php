@@ -9,7 +9,8 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\Log;
+use bizley\podium\components\Messages;
+use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\LoginForm;
@@ -31,6 +32,9 @@ use yii\web\Controller;
 class AccountController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
@@ -190,8 +194,8 @@ class AccountController extends Controller
                     $content = $email->content;
                 }
                 else {
-                    $topic   = Content::REACT_TITLE;
-                    $content = Content::REACT_BODY;
+                    $topic   = Messages::EMAIL_REACT_TITLE;
+                    $content = Messages::EMAIL_REACT_BODY;
                 }
                 
                 $forum = Config::getInstance()->get('name');
@@ -238,8 +242,8 @@ class AccountController extends Controller
                 $content = $email->content;
             }
             else {
-                $topic   = Content::REG_TITLE;
-                $content = Content::REG_BODY;
+                $topic   = Messages::EMAIL_REG_TITLE;
+                $content = Messages::EMAIL_REG_BODY;
             }
 
             $forum = Config::getInstance()->get('name');
@@ -288,8 +292,8 @@ class AccountController extends Controller
                     $content = $email->content;
                 }
                 else {
-                    $topic   = Content::PASS_TITLE;
-                    $content = Content::PASS_BODY;
+                    $topic   = Messages::EMAIL_PASS_TITLE;
+                    $content = Messages::EMAIL_PASS_BODY;
                 }
 
                 $forum = Config::getInstance()->get('name');

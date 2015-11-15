@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Html;
 
 echo Html::beginTag('ul', ['class' => 'nav nav-tabs']);

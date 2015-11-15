@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -24,7 +28,7 @@ else {
 
 ?><div class="row" id="post<?= $model->postData->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->postData->id ?>">
-        <?= Avatar::widget(['author' => $model->postData->user, 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => $model->postData->podiumUser->user, 'showName' => false]) ?>
     </div>
     <div class="col-sm-10" id="postContent<?= $model->postData->id ?>">
         <div class="popover right podium">
@@ -36,9 +40,9 @@ else {
                     <em>(<?= Yii::t('podium/view', 'Edited') ?> <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->postData->edited_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->postData->edited_at, 'long')]); ?>)</em>
 <?php endif; ?>
                 </small>
-                <?= $model->postData->user->getPodiumTag() ?>
+                <?= $model->postData->podiumUser->user->getPodiumTag() ?>
                 <small>
-                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->postData->user->getPostsCount() ?></span>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->postData->podiumUser->getPostsCount() ?></span>
                 </small>
             </div>
             <div class="popover-content podium-content">

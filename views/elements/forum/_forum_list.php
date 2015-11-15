@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\models\Forum;
 use yii\widgets\ListView;
 

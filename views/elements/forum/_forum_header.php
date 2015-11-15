@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
+?>
 <tr>
     <th class="col-sm-5"><small><?= Yii::t('podium/view', 'Forum') ?></small></th>
     <th class="col-sm-1 text-right"><small><?= Yii::t('podium/view', 'Threads') ?></small></th>

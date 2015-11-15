@@ -4,7 +4,7 @@
  * Podium Module
  * Yii 2 Forum Module
  */
-namespace bizley\podium\components;
+namespace bizley\podium\log;
 
 use yii\log\DbTarget as YiiDbTarget;
 use yii\helpers\VarDumper;

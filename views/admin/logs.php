@@ -1,14 +1,15 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\components\Helper;
-use bizley\podium\components\Log;
-use bizley\podium\models\User;
+use bizley\podium\log\Log;
 use bizley\podium\widgets\PageSizer;
-use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\web\View;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Logs');

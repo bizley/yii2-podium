@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 $this->title                   = Yii::t('podium/view', 'Main Forum');
 $this->params['breadcrumbs'][] = $this->title;
 

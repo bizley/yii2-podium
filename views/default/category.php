@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Html;
 
 $this->title                   = Html::encode($model->name);

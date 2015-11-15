@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\assets\PodiumAsset;
 use bizley\podium\widgets\Alert;
 use yii\helpers\Html;

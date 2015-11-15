@@ -1,9 +1,11 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\components\Helper;
-use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
-use yii\bootstrap\Alert;
 use yii\helpers\Html;
 use Zelenin\yii\widgets\Summernote\Summernote;
 

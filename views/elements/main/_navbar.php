@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\components\Config;
 use bizley\podium\components\PodiumUser;
 use bizley\podium\Module as PodiumModule;

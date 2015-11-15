@@ -1,7 +1,10 @@
 <?php
-use yii\helpers\Html;
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Url;
-use yii\bootstrap\ActiveForm;
 
 $this->title                   = Yii::t('podium/view', 'Administration Dashboard');
 $this->params['breadcrumbs'][] = $this->title;

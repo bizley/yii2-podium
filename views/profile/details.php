@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\components\Helper;
 use bizley\podium\Module as PodiumModule;
 use cebe\gravatar\Gravatar;
@@ -101,18 +105,18 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 <div class="row">
                     <div class="col-sm-12">
                         <strong><?= Yii::t('podium/view', 'Username') ?></strong><br>
-                        <?= Html::encode($model->user->getName()) ?>
+                        <?= Html::encode($model->podiumUser->user->getName()) ?>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
                         <strong><?= Yii::t('podium/view', 'Time Zone') ?></strong><br>
-                        <?= Html::encode($model->user->getTimeZone()) ?>
+                        <?= Html::encode($model->podiumUser->user->getTimeZone()) ?>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <strong><?= Yii::t('podium/view', $model->user->getAnonymous() ? 'Anonymous Forum Viewing' : 'Public Forum Viewing') ?></strong>
+                        <strong><?= Yii::t('podium/view', $model->podiumUser->user->getAnonymous() ? 'Anonymous Forum Viewing' : 'Public Forum Viewing') ?></strong>
                     </div>
                 </div>
             </div>

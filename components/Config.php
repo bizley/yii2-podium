@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\components;
 
+use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\db\Query;

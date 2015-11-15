@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
@@ -16,6 +17,8 @@ use yii\db\Query;
 /**
  * Forum model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $category_id
  * @property string $name
@@ -67,45 +70,27 @@ class Forum extends ActiveRecord
     }
     
     /**
-     * Validates name
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
+     * Category relation.
+     * @return \yii\db\ActiveQuery
      */
-    public function validateName($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\s\p{L}]{1,255}$/u', $this->$attribute)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
-            }
-        }
-    }
-    
-    public function getLatest()
-    {
-        return $this->hasOne(Post::className(), ['forum_id' => 'id'])->orderBy(['id' => SORT_DESC]);
-    }
-    
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
     
-    public function search($category_id = null)
+    /**
+     * Post relation. One latest post.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLatest()
     {
-        $query = self::find();
-        if ($category_id) {
-            $query->where(['category_id' => $category_id]);
-        }
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
-
-        return $dataProvider;
+        return $this->hasOne(Post::className(), ['forum_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
     
+    /**
+     * Returns list of moderators for this forum.
+     * @return integer[]
+     */
     public function getMods()
     {
         $mods = Cache::getInstance()->getElement('forum.moderators', $this->id);
@@ -129,16 +114,51 @@ class Forum extends ActiveRecord
         return $mods;        
     }
     
+    /**
+     * Checks if user is moderator for this forum.
+     * @param integer|null $user_id User's ID or null for current signed in.
+     * @return boolean
+     */
     public function isMod($user_id = null)
     {
-        if (Yii::$app->user->can('podiumAdmin')) {
+        if (in_array($user_id ?: Yii::$app->user->id, $this->getMods())) {
             return true;
         }
-        else {
-            if (in_array($user_id, $this->getMods())) {
-                return true;
+        return false;
+    }
+    
+    /**
+     * Searches forums.
+     * @param integer|null $category_id
+     * @return ActiveDataProvider
+     */
+    public function search($category_id = null)
+    {
+        $query = static::find();
+        if ($category_id) {
+            $query->where(['category_id' => $category_id]);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
+
+        return $dataProvider;
+    }
+    
+    /**
+     * Validates name
+     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
+     * @param string $attribute
+     */
+    public function validateName($attribute)
+    {
+        if (!$this->hasErrors()) {
+            if (!preg_match('/^[\w\s\p{L}]{1,255}$/u', $this->$attribute)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
             }
-            return false;
         }
     }
 }

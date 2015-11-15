@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
+?>
 <ul class="list-inline">
     <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-comment"></span></button> <?= Yii::t('podium/view', 'No New Posts') ?></li>
     <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-leaf"></span></button> <?= Yii::t('podium/view', 'New Posts') ?></li>

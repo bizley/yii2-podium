@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 

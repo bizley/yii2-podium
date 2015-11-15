@@ -4,8 +4,10 @@
  * Podium Module
  * Yii 2 Forum Module
  */
-namespace bizley\podium\components;
+namespace bizley\podium\maintenance;
 
+use bizley\podium\components\Config;
+use bizley\podium\components\Messages;
 use bizley\podium\models\Content;
 use bizley\podium\models\User;
 use bizley\podium\Module as PodiumModule;
@@ -127,12 +129,12 @@ class Installation extends Maintenance
     {
         try {
             $this->db->createCommand()->batchInsert('{{%podium_content}}', ['name', 'topic', 'content'], [
-                    ['terms', Content::TERMS_TITLE, Content::TERMS_BODY],
-                    ['email-reg', Content::REG_TITLE, Content::REG_BODY],
-                    ['email-pass', Content::PASS_TITLE, Content::PASS_BODY],
-                    ['email-react', Content::REACT_TITLE, Content::REACT_BODY],
-                    ['email-new', Content::NEW_TITLE, Content::NEW_BODY],
-                    ['email-sub', Content::SUB_TITLE, Content::SUB_BODY],
+                    ['terms', Messages::TERMS_TITLE, Messages::TERMS_BODY],
+                    ['email-reg', Messages::EMAIL_REG_TITLE, Messages::EMAIL_REG_BODY],
+                    ['email-pass', Messages::EMAIL_PASS_TITLE, Messages::EMAIL_PASS_BODY],
+                    ['email-react', Messages::EMAIL_REACT_TITLE, Messages::EMAIL_REACT_BODY],
+                    ['email-new', Messages::EMAIL_NEW_TITLE, Messages::EMAIL_NEW_BODY],
+                    ['email-sub', Messages::EMAIL_SUB_TITLE, Messages::EMAIL_SUB_BODY],
                 ])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', Messages::CONTENT_ADDED));
         }

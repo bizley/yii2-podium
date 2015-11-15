@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\components;
 
 use bizley\podium\models\Activity;

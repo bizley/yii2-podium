@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -14,6 +18,6 @@ use yii\helpers\Url;
 <td>
 <?php if (!empty($model->latest) && !empty($model->latest->thread)): ?>
     <a href="<?= Url::to(['show', 'id' => $model->latest->id]) ?>" class="center-block"><?= Html::encode($model->latest->thread->name) ?></a>
-    <small><?= $model->latest->user->user->getPodiumTag() ?> <?= Yii::$app->formatter->asDatetime($model->latest->created_at) ?></small>
+    <small><?= $model->latest->podiumUser->user->getPodiumTag() ?> <?= Yii::$app->formatter->asDatetime($model->latest->created_at) ?></small>
 <?php endif; ?>
 </td>

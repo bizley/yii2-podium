@@ -7,6 +7,7 @@
  * grupy userow
  * maintance mode
  * rss
+ * Slug od Zelenina dac
  * -----------------------------------------------------------------------------
  * 
  * Podium Module
@@ -20,7 +21,7 @@
  * Please report all issues at GitHub
  * https://github.com/bizley-code/yii2-podium/issues
  * 
- * Podium requires Yii 2.0.4 or newer
+ * Podium requires Yii 2.0.6 or newer
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
  */
@@ -28,9 +29,9 @@ namespace bizley\podium;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\DbTarget;
-use bizley\podium\components\Installation;
 use bizley\podium\components\PodiumUser;
+use bizley\podium\log\DbTarget;
+use bizley\podium\maintenance\Installation;
 use bizley\podium\models\Activity;
 use Yii;
 use yii\base\BootstrapInterface;
@@ -300,7 +301,7 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Registers user authorization.
-     * @see \bizley\podium\components\Installation
+     * @see \bizley\podium\maintenance\Installation
      */
     public function registerAuthorization()
     {

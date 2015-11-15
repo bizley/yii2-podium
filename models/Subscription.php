@@ -1,13 +1,19 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Config;
+use bizley\podium\components\PodiumUser;
+use bizley\podium\log\Log;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * Subscription model
@@ -31,9 +37,9 @@ class Subscription extends ActiveRecord
         return '{{%podium_subscription}}';
     }
 
-    public function getUser()
+    public function getPodiumUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return (new PodiumUser)->findOne($this->user_id);
     }
     
     public function getThread()
@@ -96,7 +102,7 @@ class Subscription extends ActiveRecord
                 $sub->post_seen = static::POST_NEW;
                 if ($sub->save()) {
                     
-                    if (Email::queue($sub->user->email, 
+                    if (Email::queue($sub->podiumUser->user->email, 
                             str_replace('{forum}', $forum, $topic),
                             str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                     Url::to(['default/last', 'id' => $sub->thread_id], true),

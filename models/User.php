@@ -1,11 +1,15 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
-use bizley\podium\components\Log;
 use bizley\podium\components\PodiumUserInterface;
+use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;

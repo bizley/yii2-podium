@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -65,7 +69,7 @@ elseif ($rating < 0) {
 
 ?><div class="row" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">
-        <?= Avatar::widget(['author' => $model->user->user, 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => $model->podiumUser->user, 'showName' => false]) ?>
     </div>
     <div class="col-sm-10" id="postContent<?= $model->id ?>">
         <div class="popover right podium">
@@ -80,9 +84,9 @@ elseif ($rating < 0) {
                     <span class="podium-rating label label-<?= $ratingClass ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Rating') ?>"><?= $rating ?></span>
                     <span class="podium-rating-details hidden label label-default">+<?= $model->likes ?> / -<?= $model->dislikes ?></span>
                 </small>
-                <?= $model->user->user->getPodiumTag() ?>
+                <?= $model->podiumUser->user->getPodiumTag() ?>
                 <small>
-                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->user->getPostsCount() ?></span>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->podiumUser->getPostsCount() ?></span>
                 </small>
             </div>
             <div class="popover-content podium-content">

@@ -8,8 +8,8 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
-use bizley\podium\components\Log;
 use bizley\podium\components\PodiumUser;
+use bizley\podium\log\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
 use Yii;

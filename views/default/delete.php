@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Html;
 
 $this->title                   = Yii::t('podium/view', 'Delete Thread');

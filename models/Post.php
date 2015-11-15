@@ -1,11 +1,15 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
-use bizley\podium\components\Log;
 use bizley\podium\components\PodiumUser;
+use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -80,7 +84,7 @@ class Post extends ActiveRecord
         }
     }
     
-    public function getUser()
+    public function getPodiumUser()
     {
         return (new PodiumUser)->findOne($this->author_id);
     }

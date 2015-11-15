@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -19,9 +23,9 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_RE
                     <em>(<?= Yii::t('podium/view', 'Edited') ?> <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->edited_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->edited_at, 'long')]); ?>)</em>
 <?php endif; ?>
                 </small>
-                <?= $model->user->getPodiumTag() ?>
+                <?= $model->podiumUser->user->getPodiumTag() ?>
                 <small>
-                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->user->getPostsCount() ?></span>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->podiumUser->getPostsCount() ?></span>
                 </small>
             </div>
             <div class="popover-content podium-content">

@@ -1,8 +1,13 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use kartik\date\DatePicker;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+
 ?>
 <?php $form = ActiveForm::begin(['id' => 'search-form']); ?>
     <div class="row">

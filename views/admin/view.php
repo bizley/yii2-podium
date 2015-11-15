@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use cebe\gravatar\Gravatar;

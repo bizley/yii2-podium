@@ -6,8 +6,8 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Installation;
-use bizley\podium\components\Update;
+use bizley\podium\maintenance\Installation;
+use bizley\podium\maintenance\Update;
 use bizley\podium\Module as PodiumModule;
 use Yii;
 use yii\db\Query;

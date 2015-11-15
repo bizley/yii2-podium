@@ -1,7 +1,13 @@
 <?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 $this->title                   = Yii::t('podium/view', 'Podium Installation Prerequirements');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="row">
     <div class="col-sm-12">

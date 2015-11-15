@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use kartik\sortable\Sortable;
 use yii\helpers\Html;
 use yii\helpers\Url;

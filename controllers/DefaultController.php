@@ -10,7 +10,7 @@ use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
-use bizley\podium\components\Log;
+use bizley\podium\log\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;

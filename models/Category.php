@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
@@ -14,6 +15,8 @@ use yii\db\ActiveRecord;
 /**
  * Category model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property string $name
  * @property string $slug
@@ -76,19 +79,10 @@ class Category extends ActiveRecord
         }
     }
     
-    public function show()
-    {
-        $query = self::find();
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
-
-        return $dataProvider->getModels();
-    }
-    
+    /**
+     * Searches users.
+     * @return ActiveDataProvider
+     */
     public function search()
     {
         $query = self::find();
@@ -103,5 +97,22 @@ class Category extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider;
+    }
+    
+    /**
+     * Returns categories.
+     * @return Category[]
+     */
+    public function show()
+    {
+        $query = self::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
+
+        return $dataProvider->getModels();
     }
 }

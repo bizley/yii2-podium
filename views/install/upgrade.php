@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\helpers\Url;
 use yii\web\View;
 use yii\bootstrap\Progress;

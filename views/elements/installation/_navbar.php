@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 use yii\bootstrap\NavBar;
 
 NavBar::begin([

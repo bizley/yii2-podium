@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Podium Module
+ * Yii 2 Forum Module
+ */
 namespace bizley\podium\rbac;
 
 use yii\rbac\Rule;

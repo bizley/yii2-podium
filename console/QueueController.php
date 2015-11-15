@@ -7,7 +7,7 @@
 namespace bizley\podium\console;
 
 use bizley\podium\components\Config;
-use bizley\podium\components\Log;
+use bizley\podium\log\Log;
 use bizley\podium\models\Email;
 use Exception;
 use Yii;

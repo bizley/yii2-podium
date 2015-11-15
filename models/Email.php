@@ -1,11 +1,12 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Log;
+use bizley\podium\log\Log;
 use Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -13,6 +14,8 @@ use yii\db\ActiveRecord;
 /**
  * Email model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property string $email
@@ -63,6 +66,14 @@ class Email extends ActiveRecord
         ];
     }
     
+    /**
+     * Adds email to queue.
+     * @param string $address
+     * @param string $subject
+     * @param string $content
+     * @param integer|null $user_id
+     * @return boolean
+     */
     public static function queue($address, $subject, $content, $user_id = null)
     {
         try {
