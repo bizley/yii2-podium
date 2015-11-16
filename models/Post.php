@@ -332,7 +332,7 @@ class Post extends ActiveRecord
                         'id'      => $post->id,
                         'title'   => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->user->getPodiumTag()
+                        'author'  => $post->podiumUser->user->getPodiumTag()
                     ];
                 }
                 Cache::getInstance()->setElement('forum.latestposts', 'guest', $latest);
@@ -347,7 +347,7 @@ class Post extends ActiveRecord
                         'id'      => $post->id,
                         'title'   => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->user->getPodiumTag()
+                        'author'  => $post->podiumUser->user->getPodiumTag()
                     ];
                 }
                 Cache::getInstance()->setElement('forum.latestposts', 'member', $latest);

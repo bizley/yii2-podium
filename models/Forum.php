@@ -8,11 +8,11 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use Yii;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use Zelenin\yii\behaviors\Slug;
 
 /**
  * Forum model
@@ -50,7 +50,7 @@ class Forum extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class' => Slug::className(),
                 'attribute' => 'name'
             ]
         ];

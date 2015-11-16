@@ -1,0 +1,32 @@
+{
+    "name": "bizley/podium",
+    "type": "yii2-extension",
+    "description": "Yii 2 Forum Module.",
+    "keywords": ["forum", "yii2", "extension", "podium"],
+    "license": "",
+    "support": {
+        "source": "https://github.com/bizley-code/yii2-podium"
+    },
+    "authors": [
+        {
+            "name": "Pawel Bizley Brzozowski",
+            "email": "pb@human-device.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "cebe/yii2-gravatar": "*",
+        "kartik-v/yii2-widget-fileinput": "*",
+        "kartik-v/yii2-sortable": "*",
+        "kartik-v/yii2-widget-select2": "*",
+        "kartik-v/yii2-widget-datepicker": "*",
+        "zelenin/yii2-rss": "dev-master",
+        "zelenin/yii2-summernote-widget": "dev-master",
+        "zelenin/yii2-slug-behavior": "~1.0@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "bizley\\podium\\": ""
+        }
+    }
+}

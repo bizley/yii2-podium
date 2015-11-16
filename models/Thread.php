@@ -9,11 +9,11 @@ namespace bizley\podium\models;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use Yii;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
+use Zelenin\yii\behaviors\Slug;
 
 /**
  * Thread model
@@ -67,7 +67,7 @@ class Thread extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class'     => SluggableBehavior::className(),
+                'class'     => Slug::className(),
                 'attribute' => 'name'
             ]
         ];

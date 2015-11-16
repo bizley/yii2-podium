@@ -6,7 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Messages;
@@ -20,7 +19,6 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\Controller;
 
 /**
  * Podium Account controller
@@ -29,7 +27,7 @@ use yii\web\Controller;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  */
-class AccountController extends Controller
+class AccountController extends BaseController
 {
 
     /**
@@ -50,34 +48,36 @@ class AccountController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'denyCallback' => function ($rule, $action) {
-                    return $this->module->goPodium();
-                },
-                'rules' => [
-                    [
-                        'allow'         => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['new-email']
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['?']
+        return array_merge(
+            parent::behaviors(),
+            [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'denyCallback' => function ($rule, $action) {
+                        return $this->module->goPodium();
+                    },
+                    'rules' => [
+                        [
+                            'allow'         => false,
+                            'matchCallback' => function ($rule, $action) {
+                                return !$this->module->getInstalled();
+                            },
+                            'denyCallback' => function ($rule, $action) {
+                                return $this->redirect(['install/run']);
+                            }
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['new-email']
+                        ],
+                        [
+                            'allow' => true,
+                            'roles' => ['?']
+                        ],
                     ],
                 ],
-            ],
-            'flash' => FlashBehavior::className(),
-        ];
+            ]
+        );
     }
     
     /**

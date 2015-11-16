@@ -8,7 +8,6 @@ namespace bizley\podium\maintenance;
 
 use bizley\podium\components\Config;
 use bizley\podium\components\Messages;
-use bizley\podium\models\Content;
 use bizley\podium\models\User;
 use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\AuthorRule;
@@ -102,6 +101,7 @@ class Installation extends Maintenance
                     ['members_visible', Config::FLAG_MEMBERS_VISIBLE],
                     ['from_email', Config::DEFAULT_FROM_EMAIL],
                     ['from_name', Config::DEFAULT_FROM_NAME],
+                    ['maintenance_mode', Config::MAINTENANCE_MODE],
                     ['max_attempts', Config::MAX_SEND_ATTEMPTS],
                     ['use_captcha', Config::FLAG_USE_CAPTCHA],
                     ['recaptcha_sitekey', ''],

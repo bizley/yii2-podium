@@ -22,6 +22,7 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
                 <h3 class="panel-title"><?= Yii::t('podium/view', 'Settings Index') ?></h3>
             </div>
             <div class="list-group">
+                <?= Html::a(Yii::t('podium/view', 'Maintenance mode'), '#maintenance', ['class' => 'list-group-item']) ?>
                 <?= Html::a(Yii::t('podium/view', 'Meta data'), '#meta', ['class' => 'list-group-item']) ?>
                 <?= Html::a(Yii::t('podium/view', 'Registration'), '#register', ['class' => 'list-group-item']) ?>
                 <?= Html::a(Yii::t('podium/view', 'Posts'), '#posts', ['class' => 'list-group-item']) ?>
@@ -40,6 +41,13 @@ echo  $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
             </div>
             <div class="panel-body">
                 <p><?= Yii::t('podium/view', 'Leave setting empty if you want to restore the default Podium value.') ?></p>
+                <h3 id="maintenance"><span class="label label-primary"><?= Yii::t('podium/view', 'Maintenance mode') ?></span></h3>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <?= $form->field($model, 'maintenance_mode')->checkBox()->label(Yii::t('podium/view', 'Set forum to Maintenance mode'))
+                            ->hint(Yii::t('podium/view', 'All users without Administrator privileges will be redirected to {maintenancePage}.', ['maintenancePage' => Html::a(Yii::t('podium/view', 'Maintenance page'), ['default/maintenance'])])) ?>
+                    </div>
+                </div>
                 <h3 id="meta"><span class="label label-primary"><?= Yii::t('podium/view', 'Meta data') ?></span></h3>
                 <div class="row">
                     <div class="col-sm-12">

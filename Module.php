@@ -5,9 +5,7 @@
  * -----------------------------------------------------------------------------
  * panel glowny admina
  * grupy userow
- * maintance mode
  * rss
- * Slug od Zelenina dac
  * -----------------------------------------------------------------------------
  * 
  * Podium Module
@@ -21,7 +19,7 @@
  * Please report all issues at GitHub
  * https://github.com/bizley-code/yii2-podium/issues
  * 
- * Podium requires Yii 2.0.6 or newer
+ * Podium requires Yii 2
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
  */
@@ -50,9 +48,6 @@ use yii\web\GroupUrlRule;
 class Module extends BaseModule implements BootstrapInterface
 {
 
-    const MODE_BAU     = 'BAU';
-    const MODE_INSTALL = 'INSTALL';    
-    
     const USER_INHERIT = 'inherit';
     const USER_OWN     = 'own';
     
@@ -70,6 +65,17 @@ class Module extends BaseModule implements BootstrapInterface
     public $adminId;
     
     /**
+     * @var array the list of IPs that are allowed to access installation mode 
+     * of this module.
+     * Each array element represents a single IP filter which can be either an 
+     * IP address or an address with wildcard (e.g. 192.168.0.*) to represent a 
+     * network segment.
+     * The default value is `['127.0.0.1', '::1']`, which means the module can 
+     * only be accessed by localhost.
+     */
+    public $allowedIPs = ['127.0.0.1', '::1'];
+    
+    /**
      * @var string Controller namespace
      */
     public $controllerNamespace = 'bizley\podium\controllers';
@@ -79,11 +85,6 @@ class Module extends BaseModule implements BootstrapInterface
      * If this property is null login link is not provided in menu.
      */
     public $loginUrl = [self::ROUTE_LOGIN];
-    
-    /**
-     * @var string Module mode
-     */
-    public $mode = self::MODE_BAU;
     
     /**
      * @var string Module RBAC component
@@ -128,7 +129,7 @@ class Module extends BaseModule implements BootstrapInterface
     {
         $parentResult = parent::afterAction($action, $result);
 
-        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run'])) {
+        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'upgrade'])) {
             Activity::add();
         }
 
@@ -177,6 +178,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'lock/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'              => 'default/lock',
                         'login'                                                         => 'account/login',
                         'logout'                                                        => 'profile/logout',
+                        'maintenance'                                                   => 'default/maintenance',
                         'members/posts/<id:\d+>/<slug:[\w\-]+>'                         => 'members/posts',
                         'members/threads/<id:\d+>/<slug:[\w\-]+>'                       => 'members/threads',
                         'members/view/<id:\d+>/<slug:[\w\-]+>'                          => 'members/view',
@@ -206,6 +208,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'search'                                                        => 'default/search',
                         'show/<id:\d+>'                                                 => 'default/show',
                         'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
+                        'upgrade'                                                       => 'install/upgrade',
                     ],
                 ])], false);
 
@@ -222,7 +225,7 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
-     * Gets Podium configuration instance.
+     * Returns Podium configuration instance.
      * 
      * @return Config configuration instance
      */
@@ -236,13 +239,23 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
-     * Checks wheter Podium has been already installed.
+     * Returns Podium installation flag.
      * 
      * @return boolean
      */
     public function getInstalled()
     {
         return $this->_installed;
+    }
+    
+    /**
+     * Returns Podium version.
+     * 
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->_version;
     }
 
     /**
@@ -265,37 +278,32 @@ class Module extends BaseModule implements BootstrapInterface
     {
         parent::init();
         
-        if (in_array($this->mode, [self::MODE_BAU, self::MODE_INSTALL])) {
-            if (in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
-                if (in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
+        if (in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
+            if (in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
 
-                    $this->setAliases(['@podium' => '@vendor/bizley/podium']);
+                $this->setAliases(['@podium' => '@vendor/bizley/podium']);
 
-                    if (Yii::$app instanceof WebApplication) {
+                if (Yii::$app instanceof WebApplication) {
 
-                        if ($this->userComponent == self::USER_OWN) {
-                            $this->registerIdentity();
-                        }
-                        if ($this->rbacComponent == self::RBAC_OWN) {
-                            $this->registerAuthorization();
-                        }
-                        $this->registerTranslations();
-                        $this->registerFormatter();
-
-                        $this->layout     = self::MAIN_LAYOUT;
-                        $this->_installed = Installation::check();
+                    if ($this->userComponent == self::USER_OWN) {
+                        $this->registerIdentity();
                     }
-                }
-                else {
-                    throw InvalidConfigException('Invalid value for the rbac parameter.');
+                    if ($this->rbacComponent == self::RBAC_OWN) {
+                        $this->registerAuthorization();
+                    }
+                    $this->registerTranslations();
+                    $this->registerFormatter();
+
+                    $this->layout     = self::MAIN_LAYOUT;
+                    $this->_installed = Installation::check();
                 }
             }
             else {
-                throw InvalidConfigException('Invalid value for the user parameter.');
+                throw InvalidConfigException('Invalid value for the rbac parameter.');
             }
         }
         else {
-            throw InvalidConfigException('Invalid value for the mode parameter.');
+            throw InvalidConfigException('Invalid value for the user parameter.');
         }
     }
 

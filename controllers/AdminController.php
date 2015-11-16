@@ -6,7 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
@@ -18,13 +17,11 @@ use bizley\podium\models\ForumSearch;
 use bizley\podium\models\LogSearch;
 use bizley\podium\models\Mod;
 use bizley\podium\models\User;
-use bizley\podium\Module as PodiumModule;
 use Exception;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
-use yii\web\Controller;
 
 /**
  * Podium Admin controller
@@ -33,7 +30,7 @@ use yii\web\Controller;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  */
-class AdminController extends Controller
+class AdminController extends BaseController
 {
 
     /**
@@ -41,27 +38,29 @@ class AdminController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow'         => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['podiumAdmin']
+        return array_merge(
+            parent::behaviors(),
+            [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow'         => false,
+                            'matchCallback' => function ($rule, $action) {
+                                return !$this->module->getInstalled();
+                            },
+                            'denyCallback' => function ($rule, $action) {
+                                return $this->redirect(['install/run']);
+                            }
+                        ],
+                        [
+                            'allow' => true,
+                            'roles' => ['podiumAdmin']
+                        ],
                     ],
                 ],
-            ],
-            'flash' => FlashBehavior::className(),
-        ];
+            ]
+        );
     }
 
     /**
@@ -397,13 +396,6 @@ class AdminController extends Controller
      */
     public function actionIndex()
     {
-        if ($this->module->mode == PodiumModule::MODE_INSTALL) {
-            $this->warning('Parameter {mode} with {install} value found in configuration! Make sure you remove this parameter in production environment.', [
-                'mode'    => '<code>mode</code>',
-                'install' => '<code>INSTALL</code>'
-            ]);
-        }
-        
         return $this->render('index', [
             'members' => (new PodiumUser)->getNewest(10)
         ]);

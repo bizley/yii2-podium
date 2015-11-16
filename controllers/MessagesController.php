@@ -6,7 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
@@ -14,7 +13,6 @@ use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 
 /**
  * Podium Messages controller
@@ -23,7 +21,7 @@ use yii\web\Controller;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  */
-class MessagesController extends Controller
+class MessagesController extends BaseController
 {
 
     /**
@@ -31,30 +29,32 @@ class MessagesController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class'        => AccessControl::className(),
-                'denyCallback' => function ($rule, $action) {
-                    return $this->redirect(['account/login']);
-                },
-                'rules'  => [
-                    [
-                        'allow'         => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['@'],
+        return array_merge(
+            parent::behaviors(),
+            [
+                'access' => [
+                    'class'        => AccessControl::className(),
+                    'denyCallback' => function ($rule, $action) {
+                        return $this->redirect(['account/login']);
+                    },
+                    'rules'  => [
+                        [
+                            'allow'         => false,
+                            'matchCallback' => function ($rule, $action) {
+                                return !$this->module->getInstalled();
+                            },
+                            'denyCallback' => function ($rule, $action) {
+                                return $this->redirect(['install/run']);
+                            }
+                        ],
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
                     ],
                 ],
-            ],
-            'flash' => FlashBehavior::className(),
-        ];
+            ]
+        );
     }
 
     /**

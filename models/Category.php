@@ -7,10 +7,10 @@
 namespace bizley\podium\models;
 
 use Yii;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use Zelenin\yii\behaviors\Slug;
 
 /**
  * Category model
@@ -46,7 +46,7 @@ class Category extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class' => Slug::className(),
                 'attribute' => 'name'
             ]
         ];

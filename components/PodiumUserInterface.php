@@ -26,7 +26,7 @@ interface PodiumUserInterface extends IdentityInterface
     public function getPodiumAnonymous();
     
     /**
-     * @return integer Account created date.
+     * @return integer Account create date.
      */
     public function getPodiumCreatedAt();
     
@@ -125,14 +125,14 @@ interface PodiumUserInterface extends IdentityInterface
     /**
      * Finds Podium moderator of given ID.
      * @param integer ID.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveRecord
      */
     public function podiumFindModerator($id);
     
     /**
      * Finds Podium User of given ID.
      * @param integer ID.
-     * @return \yii\db\ActiveQuery
+     * @return PodiumUserInterface
      */
     public function podiumFindOne($id);
     

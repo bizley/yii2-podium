@@ -13,14 +13,16 @@ use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use Zelenin\yii\behaviors\Slug;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
 /**
  * User model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property string $username
  * @property string $slug
@@ -33,13 +35,13 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
  * @property integer $status
  * @property integer $role
  * @property integer $anonymous
+ * @property string $timezone
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $current_password write-only password
  * @property string $password write-only password
  * @property string $password_repeat write-only password repeated
  * @property integer $tos write-only terms of service agreement
- * @property string $timezone
  */
 class User extends ActiveRecord implements PodiumUserInterface
 {
@@ -59,29 +61,107 @@ class User extends ActiveRecord implements PodiumUserInterface
     const ROLE_ADMIN        = 10;
     
     /**
-     * @var string captcha.
+     * @var string Captcha.
      */
     public $captcha;
     
     /**
-     * @var string current password for profile update.
+     * @var string Current password for profile update (write-only).
      */
     public $current_password;
     
     /**
-     * @var string unencrypted password.
+     * @var string Unencrypted password (write-only).
      */
     public $password;
     
     /**
-     * @var string unencrypted password repeated.
+     * @var string Unencrypted password repeated (write-only).
      */
     public $password_repeat;
     
     /**
-     * @var int terms of service agreement flag.
+     * @var int Terms of service agreement flag (write-only).
      */
     public $tos;
+    
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return '{{%podium_user}}';
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+            [
+                'class'     => Slug::className(),
+                'attribute' => 'username'
+            ],
+        ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        $scenarios = [
+            'installation'   => [],
+            'token'          => [],
+            'ban'            => [],
+            'role'           => [],
+            'passwordChange' => ['password', 'password_repeat'],
+            'register'       => ['email', 'password', 'password_repeat'],
+            'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
+        ];
+        
+        if (Config::getInstance()->get('use_captcha')) {
+            $scenarios['register'][] = 'captcha';
+        }
+        
+        return $scenarios;
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        $rules = [
+            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
+            ['current_password', 'required'],
+            ['current_password', 'validateCurrentPassword'],
+            [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
+            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
+            ['email', 'unique'],
+            ['new_email', 'unique', 'targetAttribute' => 'email'],
+            ['password', 'passwordRequirements'],
+            ['password', 'compare'],
+            ['username', 'unique'],
+            ['username', 'validateUsername'],
+            ['anonymous', 'boolean'],
+            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
+            ['status', 'default', 'value' => self::STATUS_REGISTERED],
+            ['role', 'default', 'value' => self::ROLE_MEMBER],
+            ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
+        ];
+        
+        if (Config::getInstance()->get('recaptcha_sitekey') !== '' && Config::getInstance()->get('recaptcha_secretkey') !== '') {
+            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Config::getInstance()->get('recaptcha_secretkey')];
+        }
+        else {
+            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
+        }
+        
+        return $rules;
+    }
     
     /**
      * Activates account.
@@ -96,9 +176,7 @@ class User extends ActiveRecord implements PodiumUserInterface
             $transaction = self::getDb()->beginTransaction();
             try {
                 if ($this->save()) {
-                    
                     if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $this->id)) {
-                    
                         $transaction->commit();
                         return true;
                     }
@@ -111,41 +189,6 @@ class User extends ActiveRecord implements PodiumUserInterface
         }
 
         return false;
-    }
-    
-    /**
-     * Bans account.
-     * @return boolean
-     */
-    public function podiumBan()
-    {
-        $this->setScenario('ban');
-        $this->status = self::STATUS_BANNED;
-        return $this->save();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-            [
-                'class'     => SluggableBehavior::className(),
-                'attribute' => 'username'
-            ],
-            [
-                'class' => \bizley\partialpassword\behaviors\PartialPasswordBehavior::className(),
-                'bitsRange' => 20,
-                'passwordsMin' => 8,
-                'passwordsMax' => 10,
-                'charactersMin' => 4,
-                'charactersMax' => 6,
-                'repeatDropRate' => 1,
-                'tableName' => '{{%password}}',
-            ],
-        ];
     }
     
     /**
@@ -173,7 +216,7 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Finds user by activation token.
+     * Finds registered user by activation token.
      * @param string $token activation token
      * @return static|null
      */
@@ -186,7 +229,7 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Finds user by email.
+     * Finds active user by email.
      * @param string $email
      * @return static|null
      */
@@ -196,7 +239,7 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Finds user by email token.
+     * Finds active user by email token.
      * @param string $token activation token
      * @return static|null
      */
@@ -209,20 +252,21 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Finds user by username or email.
+     * Finds user of given status by username or email.
      * @param string $keyfield value to compare
+     * @param integer $status
      * @return static|null
      */
     public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
     {
         if ($status === null) {
-            return static::find()->where(['or', ['email' => $keyfield], ['username' => $keyfield]])->one();
+            return static::findOne(['or', ['email' => $keyfield], ['username' => $keyfield]]);
         }
-        return static::find()->where(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]])->one();
+        return static::findOne(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]]);
     }
     
     /**
-     * Finds user by password reset token
+     * Finds user of given status by password reset token
      * @param string $token password reset token
      * @param string|null $status user status or null
      * @return static|null
@@ -239,7 +283,7 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Finds user by username.
+     * Finds active user by username.
      * @param string $username
      * @return static|null
      */
@@ -264,16 +308,6 @@ class User extends ActiveRecord implements PodiumUserInterface
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
     
-    public function podiumFindModerator($id)
-    {
-        return static::findOne(['id' => $id, 'role' => self::ROLE_MODERATOR]);
-    }
-    
-    public function podiumFindOne($id)
-    {
-        return static::findOne($id);
-    }
-    
     /**
      * Generates new activation token.
      */
@@ -288,23 +322,6 @@ class User extends ActiveRecord implements PodiumUserInterface
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-    
-    /**
-     * Sets relation with Meta.
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMeta()
-    {
-        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
     }
     
     /**
@@ -326,35 +343,68 @@ class User extends ActiveRecord implements PodiumUserInterface
     /**
      * @inheritdoc
      */
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function getId()
     {
         return $this->getPrimaryKey();
     }
     
+    /**
+     * Meta relation.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMeta()
+    {
+        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
+    }
+    
+    /**
+     * Returns anonymous flag.
+     * @return integer
+     */
     public function getPodiumAnonymous()
     {
         return $this->anonymous;
     }
     
+    /**
+     * Returns account create date.
+     * @return integer 
+     */
+    public function getPodiumCreatedAt()
+    {
+        return $this->created_at;
+    }
+    
+    /**
+     * Returns user's email address.
+     * @return string
+     */
     public function getPodiumEmail()
     {
         return $this->email;
     }
     
+    /**
+     * Returns user's ID.
+     * @return integer
+     */
     public function getPodiumId()
     {
         return $this->getPrimaryKey();
     }
     
     /**
-     * Newest registered members.
+     * Returns Podium's moderators.
      * @return \yii\db\ActiveQuery
      */
-    public function getPodiumNewest($limit = 10)
-    {
-        return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
-    }
-    
     public function getPodiumModerators()
     {
         return static::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
@@ -369,16 +419,38 @@ class User extends ActiveRecord implements PodiumUserInterface
         return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->getPodiumId()]);
     }
     
+    /**
+     * Newest registered members.
+     * @param integer $limit
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPodiumNewest($limit = 10)
+    {
+        return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
+    }
+    
+    /**
+     * Returns user's role.
+     * @return integer
+     */
     public function getPodiumRole()
     {
         return $this->role;
     }
     
+    /**
+     * Returns user's slug.
+     * @return string
+     */
     public function getPodiumSlug()
     {
         return $this->slug;
     }
     
+    /**
+     * Returns user's status.
+     * @return integer
+     */
     public function getPodiumStatus()
     {
         return $this->status;
@@ -392,6 +464,15 @@ class User extends ActiveRecord implements PodiumUserInterface
     public function getPodiumTag($simple = false)
     {
         return Helper::podiumUserTag($this->getPodiumName(), $this->getPodiumRole(), $this->getPodiumId(), $this->getPodiumSlug(), $simple);
+    }
+    
+    /**
+     * Returns chosen time zone.
+     * @return string
+     */
+    public function getPodiumTimeZone()
+    {
+        return !empty($this->timezone) ? $this->timezone : 'UTC';
     }
     
     /**
@@ -418,20 +499,6 @@ class User extends ActiveRecord implements PodiumUserInterface
             self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
             self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
         ];
-    }
-    
-    public function getPodiumCreatedAt()
-    {
-        return $this->created_at;
-    }
-    
-    /**
-     * Returns chosen time zone.
-     * @return string
-     */
-    public function getPodiumTimeZone()
-    {
-        return !empty($this->timezone) ? $this->timezone : 'UTC';
     }
     
     /**
@@ -479,16 +546,17 @@ class User extends ActiveRecord implements PodiumUserInterface
     /**
      * Finds out if given token type is valid.
      * @param string $token activation token
+     * @param integer $expire expire time
      * @return boolean
      */
     public static function isTokenValid($token, $expire)
     {
-        if (empty($token)) {
+        if (empty($token) || empty($expire)) {
             return false;
         }
         $parts     = explode('_', $token);
-        $timestamp = (int) end($parts);
-        return $timestamp + $expire >= time();
+        $timestamp = (int)end($parts);
+        return $timestamp + (int)$expire >= time();
     }
     
     /**
@@ -505,11 +573,31 @@ class User extends ActiveRecord implements PodiumUserInterface
         }
     }
     
+    /**
+     * Bans account.
+     * @return boolean
+     */
+    public function podiumBan()
+    {
+        $this->setScenario('ban');
+        $this->status = self::STATUS_BANNED;
+        return $this->save();
+    }
+    
+    /**
+     * Deletes account.
+     * @return boolean
+     */
     public function podiumDelete()
     {
         return $this->delete();
     }
     
+    /**
+     * Demotes user to given role.
+     * @param integer $role
+     * @return boolean
+     */
     public function podiumDemoteTo($role)
     {
         $this->setScenario('role');
@@ -517,6 +605,31 @@ class User extends ActiveRecord implements PodiumUserInterface
         return $this->save();
     }
     
+    /**
+     * Returns moderator of given ID.
+     * @param integer $id
+     * @return User
+     */
+    public function podiumFindModerator($id)
+    {
+        return static::findOne(['id' => $id, 'role' => self::ROLE_MODERATOR]);
+    }
+    
+    /**
+     * Returns user of given ID.
+     * @param integer $id
+     * @return User
+     */
+    public function podiumFindOne($id)
+    {
+        return static::findOne($id);
+    }
+    
+    /**
+     * Promotes user to given role.
+     * @param integer $role
+     * @return boolean
+     */
     public function podiumPromoteTo($role)
     {
         $this->setScenario('role');
@@ -524,6 +637,24 @@ class User extends ActiveRecord implements PodiumUserInterface
         return $this->save();
     }
     
+    /**
+     * Unbans account.
+     * @return boolean
+     */
+    public function podiumUnban()
+    {
+        $this->setScenario('ban');
+        $this->status = self::STATUS_ACTIVE;
+        return $this->save();
+    }
+    
+    /**
+     * Provides data for user search.
+     * @param array $params
+     * @param boolean $active
+     * @param boolean $mods
+     * @return array
+     */
     public function podiumUserSearch($params, $active = false, $mods = false)
     {
         $searchModel  = new UserSearch();
@@ -538,17 +669,11 @@ class User extends ActiveRecord implements PodiumUserInterface
      */
     public function register()
     {
-        //$this->setPassword($this->password);
-        
+        $this->setPassword($this->password);
         $this->generateActivationToken();
         $this->generateAuthKey();
         $this->status = self::STATUS_REGISTERED;
-
-        //return $this->save();
-        
-        if ($this->save()) {
-            $this->savePartialHashes($this->password);
-        }
+        return $this->save();
     }
     
     /**
@@ -576,40 +701,6 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        $rules = [
-            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
-            ['current_password', 'required'],
-            ['current_password', 'validateCurrentPassword'],
-            [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
-            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
-            ['email', 'unique'],
-            ['new_email', 'unique', 'targetAttribute' => 'email'],
-            ['password', 'passwordRequirements'],
-            ['password', 'compare'],
-            ['username', 'unique'],
-            ['username', 'validateUsername'],
-            ['anonymous', 'boolean'],
-            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
-            ['status', 'default', 'value' => self::STATUS_REGISTERED],
-            ['role', 'default', 'value' => self::ROLE_MEMBER],
-            ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
-        ];
-        
-        if (Config::getInstance()->get('recaptcha_sitekey') !== '' && Config::getInstance()->get('recaptcha_secretkey') !== '') {
-            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Config::getInstance()->get('recaptcha_secretkey')];
-        }
-        else {
-            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
-        }
-        
-        return $rules;
-    }
-    
-    /**
      * Saves password and/or email changes.
      * @return boolean
      */
@@ -625,53 +716,12 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        $scenarios = [
-            'installation'   => [],
-            'token'          => [],
-            'ban'            => [],
-            'role'           => [],
-            'passwordChange' => ['password', 'password_repeat'],
-            'register'       => ['email', 'password', 'password_repeat'],
-            'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
-        ];
-        
-        if (Config::getInstance()->get('use_captcha')) {
-            $scenarios['register'][] = 'captcha';
-        }
-        
-        return $scenarios;
-    }
-    
-    /**
      * Generates password hash from unencrypted password.
      * @param string $password
      */
     public function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_user}}';
-    }
-    
-    /**
-     * Unbans account.
-     * @return boolean
-     */
-    public function podiumUnban()
-    {
-        $this->setScenario('ban');
-        $this->status = self::STATUS_ACTIVE;
-        return $this->save();
     }
     
     /**

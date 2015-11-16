@@ -46,9 +46,13 @@ class Messages
     const FOREIGN_KEY_REFERENCE_MISSING = 'Installation aborted! Foreign key reference missing.';
     const INDEX_COLUMNS_MISSING = 'Installation aborted! Index columns missing.';
     const INDEX_NAME_MISSING = 'Installation aborted! Index name missing.';
+    const MAINTENANCE_WARNING = 'Podium is currently in the Maintenance mode. All users without Administrator privileges are redirected to {maintenancePage}. You can switch the mode off at {settingsPage}.';
     const NEW_COLUMN_NAME_MISSING = 'Installation aborted! New column name missing.';
     const NEW_TABLE_NAME_MISSING = 'Installation aborted! New table name missing.';
+    const NO_ADMIN_ID_SET = '{userComponent} is set to \'{inheritParam}\' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.';
     const NO_ADMINISTRATOR_PRIVILEGES_SET = 'No administrator privileges have been set.';
+    const PAGE_MAINTENANCE = 'Maintenance page';
+    const PAGE_SETTINGS = 'Settings page';
     const PREPARING_FOR_INSTALLATION = 'Podium post database table not found - preparing for installation';
     const REFERENCED_COLUMNS_MISSING = 'Installation aborted! Referenced columns missing.';
     const SETTINGS_ADDING_ERROR = 'Error during settings adding';

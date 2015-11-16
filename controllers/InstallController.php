@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\controllers;
 
+use bizley\podium\components\Messages;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
 use bizley\podium\Module as PodiumModule;
@@ -30,25 +31,46 @@ class InstallController extends Controller
     public $layout = 'installation';
     
     /**
-     * Checking for the required configuration parameter.
-     * For installation set 'mode' parameter with 'INSTALL' value in module's configuration.
-     * @return \yii\web\Response
+     * @inheritdoc
      */
-    protected function _passCheck()
+    public function beforeAction($action)
     {
-        if ($this->module->mode !== PodiumModule::MODE_INSTALL) {
-            return $this->redirect(['prereq']);
+        if (parent::beforeAction($action)) {
+            if (!empty(Yii::$app->getLog()->targets['podium'])) {
+                Yii::$app->getLog()->targets['podium']->enabled = false;
+            }
+            return $this->checkAccess();
         }
+
+        return false;
     }
     
+    /**
+     * Checks if user's IP is on the allowed list.
+     * @see \bizley\podium\Module::$allowedIPs
+     * This method is copied from yii2-gii module.
+     * @author Qiang Xue <qiang.xue@gmail.com>
+     * @return boolean
+     */
+    public function checkAccess()
+    {
+        $ip = Yii::$app->getRequest()->getUserIP();
+        foreach ($this->module->allowedIPs as $filter) {
+            if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip, $filter, $pos))) {
+                return true;
+            }
+        }
+        
+        Yii::warning('Access to Podium installation is denied due to IP address restriction. The requested IP is ' . $ip, __METHOD__);
+        return false;
+    }
+
     /**
      * Importing the databases structures.
      * @return string
      */
     public function actionImport()
     {
-        $this->_passCheck();
-        
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
@@ -63,21 +85,22 @@ class InstallController extends Controller
     }
     
     /**
-     * Displaying the prerequirements.
-     * @return \yii\web\Response
-     */
-    public function actionPrereq()
-    {
-        return $this->render('prereq');
-    }
-    
-    /**
      * Running the installation.
      * @return string
      */
     public function actionRun()
     {
-        $this->_passCheck();
+        if ($this->module->userComponent == PodiumModule::USER_INHERIT && empty($this->module->adminId)) {
+            Yii::$app->session->addFlash('warning', Yii::t(
+                    'podium/flash', 
+                    Messages::NO_ADMIN_ID_SET, 
+                    [
+                        'userComponent' => '$userComponent',
+                        'inheritParam'  => PodiumModule::USER_INHERIT,
+                        'adminId'       => '$adminId'
+                    ]
+                ));
+        }
         
         return $this->render('run', ['version' => $this->module->version]);
     }
@@ -88,8 +111,6 @@ class InstallController extends Controller
      */
     public function actionUpdate()
     {
-        $this->_passCheck();
-        
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
@@ -110,8 +131,6 @@ class InstallController extends Controller
      */
     public function actionUpgrade()
     {
-        $this->_passCheck();
-        
         $error = '';
         $info  = '';
         
@@ -134,24 +153,6 @@ class InstallController extends Controller
         }
         
         return $this->render('upgrade', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function beforeAction($action)
-    {
-        if (in_array($action->id, ['import', 'run'])) {
-            if (!empty(Yii::$app->getLog()->targets['podium'])) {
-                Yii::$app->getLog()->targets['podium']->enabled = false;
-            }
-        }
-        
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-
-        return true;
     }
     
     public function compareVersions($a, $b)

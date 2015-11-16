@@ -29,6 +29,7 @@ class Config
     const FLAG_USE_CAPTCHA                    = 1;
     const FLAG_MEMBERS_VISIBLE                = 1;
     const HOT_MINIMUM                         = 20;
+    const MAINTENANCE_MODE                    = 0;
     const MAX_SEND_ATTEMPTS                   = 5;
     const META_DESCRIPTION                    = 'Podium - Yii 2 Forum Module';
     const META_KEYWORDS                       = 'yii2, forum, podium';
@@ -67,6 +68,7 @@ class Config
             'members_visible'             => self::FLAG_MEMBERS_VISIBLE,
             'from_email'                  => self::DEFAULT_FROM_EMAIL,
             'from_name'                   => self::DEFAULT_FROM_NAME,
+            'maintenance_mode'            => self::MAINTENANCE_MODE,
             'max_attempts'                => self::MAX_SEND_ATTEMPTS,
             'use_captcha'                 => self::FLAG_USE_CAPTCHA,
             'recaptcha_sitekey'           => '',
