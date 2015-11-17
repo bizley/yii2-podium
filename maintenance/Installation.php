@@ -44,7 +44,7 @@ class Installation extends Maintenance
             if ($podium->userComponent == PodiumModule::USER_INHERIT) {
                 
                 if (!empty($podium->adminId)) {
-                    $this->authManager->assign($this->authManager->getRole('podiumAdmin'), $podium->adminId);
+                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
                     return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_PRIVILEGES_SET, ['id' => $podium->adminId]));
                 }
                 else {
@@ -63,7 +63,7 @@ class Installation extends Maintenance
                 $admin->setPassword(self::DEFAULT_USERNAME);
                 if ($admin->save()) {
 
-                    $this->authManager->assign($this->authManager->getRole('podiumAdmin'), $admin->getId());
+                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $admin->getId());
 
                     return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_ACCOUNT_CREATED) .
                                     ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .

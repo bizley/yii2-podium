@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
+use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
@@ -303,7 +304,7 @@ class Thread extends ActiveRecord
     
     public function isMod($user_id = null)
     {
-        if (Yii::$app->user->can('podiumAdmin')) {
+        if (Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
             return true;
         }
         else {

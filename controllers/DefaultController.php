@@ -19,6 +19,7 @@ use bizley\podium\models\SearchForm;
 use bizley\podium\models\Subscription;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
+use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -164,7 +165,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('deletePodiumThread', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -252,7 +253,7 @@ class DefaultController extends BaseController
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {
+                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
                         $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
                         
                         if (!$model) {
@@ -260,7 +261,7 @@ class DefaultController extends BaseController
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can('deleteOwnPodiumPost', ['post' => $model]) || Yii::$app->user->can('deletePodiumPost', ['item' => $model])) {
+                            if (Yii::$app->user->can(Rbac::PERM_DELETE_OWN_POST, ['post' => $model]) || Yii::$app->user->can(Rbac::PERM_DELETE_POST, ['item' => $model])) {
 
                                 $postData = Yii::$app->request->post();
                                 if ($postData) {
@@ -356,7 +357,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('deletePodiumPost', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_DELETE_POST, ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -481,7 +482,7 @@ class DefaultController extends BaseController
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {                 
+                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {                 
                         $model = Post::findOne(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
 
                         if (!$model) {
@@ -489,7 +490,7 @@ class DefaultController extends BaseController
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can('updateOwnPodiumPost', ['post' => $model]) || Yii::$app->user->can('updatePodiumPost', ['item' => $model])) {
+                            if (Yii::$app->user->can(Rbac::PERM_UPDATE_OWN_POST, ['post' => $model]) || Yii::$app->user->can(Rbac::PERM_UPDATE_POST, ['item' => $model])) {
 
                                 $isFirstPost = false;
                                 $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->one();
@@ -698,7 +699,7 @@ class DefaultController extends BaseController
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('lockPodiumThread', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])) {
             if ($thread->locked) {
                 $thread->locked = 0;
             }
@@ -760,7 +761,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('movePodiumThread', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -819,7 +820,7 @@ class DefaultController extends BaseController
                 $catlist = [];
                 foreach ($forums as $for) {
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         if ($for->id == $forum->id) {
                             $options[$for->id] = ['disabled' => true];
                         }
@@ -867,7 +868,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can('movePodiumPost', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_MOVE_POST, ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -995,10 +996,10 @@ class DefaultController extends BaseController
                 foreach ($forums as $for) {
                     $forlist = [];
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         foreach ($threads as $thr) {
                             if ($thr->category_id == $cat->id && $thr->forum_id == $for->id) {
-                                $forlist[$thr->id] = (Yii::$app->user->can('updatePodiumThread', ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
+                                $forlist[$thr->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
                                 if ($thr->id == $thread->id) {
                                     $options[$thr->id] = ['disabled' => true];
                                 }
@@ -1040,7 +1041,7 @@ class DefaultController extends BaseController
      */
     public function actionNewThread($cid = null, $fid = null)
     {
-        if (!Yii::$app->user->can('createPodiumThread')) {
+        if (!Yii::$app->user->can(Rbac::PERM_CREATE_THREAD)) {
             if (Yii::$app->user->isGuest) {
                 $this->warning('Please sign in to create a new thread.');
                 return $this->redirect(['account/login']);
@@ -1179,7 +1180,7 @@ class DefaultController extends BaseController
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can('pinPodiumThread', ['item' => $thread])) {
+        if (Yii::$app->user->can(Rbac::PERM_PIN_THREAD, ['item' => $thread])) {
             if ($thread->pinned) {
                 $thread->pinned = 0;
             }
@@ -1224,7 +1225,7 @@ class DefaultController extends BaseController
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (!Yii::$app->user->can('createPodiumPost')) {
+        if (!Yii::$app->user->can(Rbac::PERM_CREATE_POST)) {
             if (Yii::$app->user->isGuest) {
                 $this->warning('Please sign in to post a reply.');
                 return $this->redirect(['account/login']);
@@ -1262,7 +1263,7 @@ class DefaultController extends BaseController
                         return $this->redirect(['default/index']);
                     }
                     else {
-                        if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can('updatePodiumThread', ['item' => $thread]))) {
+                        if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
                             
                             $model = new Post;
                             $model->subscribe = 1;

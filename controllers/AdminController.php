@@ -17,6 +17,7 @@ use bizley\podium\models\ForumSearch;
 use bizley\podium\models\LogSearch;
 use bizley\podium\models\Mod;
 use bizley\podium\models\User;
+use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -55,7 +56,7 @@ class AdminController extends BaseController
                         ],
                         [
                             'allow' => true,
-                            'roles' => ['podiumAdmin']
+                            'roles' => [Rbac::ROLE_ADMIN]
                         ],
                     ],
                 ],
@@ -70,41 +71,46 @@ class AdminController extends BaseController
      */
     public function actionBan($id = null)
     {
-        $model = (new PodiumUser)->findOne((int)$id);
+        if (Yii::$app->user->can(Rbac::PERM_BAN_USER)) {
+            $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model->user)) {
-            $this->error('Sorry! We can not find Member with this ID.');
-        }
-        elseif ($model->getId() == Yii::$app->user->id) {
-            $this->error('Sorry! You can not ban or unban your own account.');
-        }
-        else {
-
-            if ($model->getStatus() == User::STATUS_ACTIVE) {
-                if ($model->ban()) {
-                    Cache::getInstance()->delete('members.fieldlist');
-                    Log::info('User banned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                    $this->success('User has been banned.');
-                }
-                else {
-                    Log::error('Error while banning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                    $this->error('Sorry! There was some error while banning the user.');
-                }
+            if (empty($model->user)) {
+                $this->error('Sorry! We can not find Member with this ID.');
             }
-            elseif ($model->getStatus() == User::STATUS_BANNED) {
-                if ($model->unban()) {
-                    Cache::getInstance()->delete('members.fieldlist');
-                    Log::info('User unbanned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                    $this->success('User has been unbanned.');
-                }
-                else {
-                    Log::error('Error while unbanning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                    $this->error('Sorry! There was some error while unbanning the user.');
-                }
+            elseif ($model->getId() == Yii::$app->user->id) {
+                $this->error('Sorry! You can not ban or unban your own account.');
             }
             else {
-                $this->error('Sorry! User has got the wrong status.');
+
+                if ($model->getStatus() == User::STATUS_ACTIVE) {
+                    if ($model->ban()) {
+                        Cache::getInstance()->delete('members.fieldlist');
+                        Log::info('User banned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        $this->success('User has been banned.');
+                    }
+                    else {
+                        Log::error('Error while banning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        $this->error('Sorry! There was some error while banning the user.');
+                    }
+                }
+                elseif ($model->getStatus() == User::STATUS_BANNED) {
+                    if ($model->unban()) {
+                        Cache::getInstance()->delete('members.fieldlist');
+                        Log::info('User unbanned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        $this->success('User has been unbanned.');
+                    }
+                    else {
+                        Log::error('Error while unbanning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        $this->error('Sorry! There was some error while unbanning the user.');
+                    }
+                }
+                else {
+                    $this->error('Sorry! User has got the wrong status.');
+                }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['admin/members']);
@@ -154,9 +160,19 @@ class AdminController extends BaseController
             $model->name = $name;
         }        
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
             
-            $this->success('Content has been saved.');
+            if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
+                if ($model->save()) {
+                    $this->success('Content has been saved.');
+                }
+                else {
+                    $this->error('Sorry! There was some error while saving the content.');
+                }
+            }
+            else {
+                $this->error('You are not allowed to perform this action.');
+            }
             return $this->refresh();
         }
 
@@ -170,25 +186,30 @@ class AdminController extends BaseController
      */
     public function actionDelete($id = null)
     {
-        $model = (new PodiumUser)->findOne((int)$id);
+        if (Yii::$app->user->can(Rbac::PERM_DELETE_USER)) {
+            $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model->user)) {
-            $this->error('Sorry! We can not find Member with this ID.');
-        }
-        elseif ($model->getId() == Yii::$app->user->id) {
-            $this->error('Sorry! You can not delete your own account.');
-        }
-        else {
-            if ($model->delete()) {
-                Cache::getInstance()->delete('members.fieldlist');
-                Cache::getInstance()->delete('forum.memberscount');
-                Log::info('User deleted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                $this->success('User has been deleted.');
+            if (empty($model->user)) {
+                $this->error('Sorry! We can not find Member with this ID.');
+            }
+            elseif ($model->getId() == Yii::$app->user->id) {
+                $this->error('Sorry! You can not delete your own account.');
             }
             else {
-                Log::error('Error while deleting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                $this->error('Sorry! There was some error while deleting the user.');
+                if ($model->delete()) {
+                    Cache::getInstance()->delete('members.fieldlist');
+                    Cache::getInstance()->delete('forum.memberscount');
+                    Log::info('User deleted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                    $this->success('User has been deleted.');
+                }
+                else {
+                    Log::error('Error while deleting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                    $this->error('Sorry! There was some error while deleting the user.');
+                }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['admin/members']);
@@ -201,22 +222,27 @@ class AdminController extends BaseController
      */
     public function actionDeleteCategory($id = null)
     {
-        $model = Category::findOne((int) $id);
+        if (Yii::$app->user->can(Rbac::PERM_DELETE_CATEGORY)) {
+            $model = Category::findOne((int) $id);
 
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-        }
-        else {
-            if ($model->delete()) {
-                Cache::getInstance()->delete('forum.threadscount');
-                Cache::getInstance()->delete('forum.postscount');
-                Log::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Category has been deleted.');
+            if (empty($model)) {
+                $this->error('Sorry! We can not find Category with this ID.');
             }
             else {
-                Log::error('Error while deleting category', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->error('Sorry! There was some error while deleting the category.');
+                if ($model->delete()) {
+                    Cache::getInstance()->delete('forum.threadscount');
+                    Cache::getInstance()->delete('forum.postscount');
+                    Log::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->success('Category has been deleted.');
+                }
+                else {
+                    Log::error('Error while deleting category', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->error('Sorry! There was some error while deleting the category.');
+                }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['admin/categories']);
@@ -230,29 +256,34 @@ class AdminController extends BaseController
      */
     public function actionDeleteForum($cid = null, $id = null)
     {
-        $category = Category::findOne((int) $cid);
+        if (Yii::$app->user->can(Rbac::PERM_DELETE_FORUM)) {
+            $category = Category::findOne((int) $cid);
 
-        if (empty($category)) {
-            $this->error('Sorry! We can not find Category with this ID.');
-            return $this->redirect(['admin/categories']);
-        }
+            if (empty($category)) {
+                $this->error('Sorry! We can not find Category with this ID.');
+                return $this->redirect(['admin/categories']);
+            }
 
-        $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
+            $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
-        if (empty($model)) {
-            $this->error('Sorry! We can not find Forum with this ID.');
-        }
-        else {
-            if ($model->delete()) {
-                Cache::getInstance()->delete('forum.threadscount');
-                Cache::getInstance()->delete('forum.postscount');
-                Log::info('Forum deleted', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Forum has been deleted.');
+            if (empty($model)) {
+                $this->error('Sorry! We can not find Forum with this ID.');
             }
             else {
-                Log::error('Error while deleting forum', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->error('Sorry! There was some error while deleting the forum.');
+                if ($model->delete()) {
+                    Cache::getInstance()->delete('forum.threadscount');
+                    Cache::getInstance()->delete('forum.postscount');
+                    Log::info('Forum deleted', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->success('Forum has been deleted.');
+                }
+                else {
+                    Log::error('Error while deleting forum', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->error('Sorry! There was some error while deleting the forum.');
+                }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['admin/forums', 'cid' => $category->id]);
@@ -265,40 +296,45 @@ class AdminController extends BaseController
      */
     public function actionDemote($id = null)
     {
-        $model = (new PodiumUser)->findOne((int)$id);
+        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+            $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model->user)) {
-            $this->error('Sorry! We can not find User with this ID.');
-        }
-        else {
-            
-            if ($model->getRole() != User::ROLE_MODERATOR) {
-                $this->error('You can only demote Moderators to Members.');
+            if (empty($model->user)) {
+                $this->error('Sorry! We can not find User with this ID.');
             }
             else {
-                $transaction = User::getDb()->beginTransaction();
-                try {
-                    if ($model->demoteTo(User::ROLE_MEMBER)) {
-                        if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
-                            Yii::$app->authManager->revoke(Yii::$app->authManager->getRole('podiumModerator'), $model->getId());
-                        }
-                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('podiumUser'), $model->getId())) {
-                            Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->getId()])->execute();
-                            $transaction->commit();
-                            Log::info('User demoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                            $this->success('User has been demoted.');
-                            return $this->redirect(['admin/members']);
-                        }
-                    }
-                    Log::error('Error while demoting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                    $this->error('Sorry! There was an error while demoting the user.');
+
+                if ($model->getRole() != User::ROLE_MODERATOR) {
+                    $this->error('You can only demote Moderators to Members.');
                 }
-                catch (Exception $e) {
-                    $transaction->rollBack();
-                    Log::error($e->getMessage(), null, __METHOD__);
-                    $this->error('Sorry! There was an error while demoting the user.');
+                else {
+                    $transaction = User::getDb()->beginTransaction();
+                    try {
+                        if ($model->demoteTo(User::ROLE_MEMBER)) {
+                            if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                                Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->getId());
+                            }
+                            if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->getId())) {
+                                Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->getId()])->execute();
+                                $transaction->commit();
+                                Log::info('User demoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                                $this->success('User has been demoted.');
+                                return $this->redirect(['admin/members']);
+                            }
+                        }
+                        Log::error('Error while demoting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        $this->error('Sorry! There was an error while demoting the user.');
+                    }
+                    catch (Exception $e) {
+                        $transaction->rollBack();
+                        Log::error($e->getMessage(), null, __METHOD__);
+                        $this->error('Sorry! There was an error while demoting the user.');
+                    }
                 }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['admin/members']);
@@ -318,17 +354,26 @@ class AdminController extends BaseController
             return $this->redirect(['admin/categories']);
         }
         else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                Log::info('Category updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Category has been updated.');
+            if ($model->load(Yii::$app->request->post())) {
+                if (Yii::$app->user->can(Rbac::PERM_UPDATE_CATEGORY)) {
+                    if ($model->save()) {
+                        Log::info('Category updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                        $this->success('Category has been updated.');
+                    }
+                    else {
+                        $this->error('Sorry! There was an error while updating the category.');
+                    }
+                }
+                else {
+                    $this->error('You are not allowed to perform this action.');
+                }
                 return $this->redirect(['admin/categories']);
             }
-            else {
-                return $this->render('category', [
-                            'model'      => $model,
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
-                ]);
-            }
+            
+            return $this->render('category', [
+                        'model'      => $model,
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+            ]);
         }
     }
     
@@ -354,18 +399,27 @@ class AdminController extends BaseController
             return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
         else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                Log::info('Forum updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Forum has been updated.');
+            if ($model->load(Yii::$app->request->post())) {
+                if (Yii::$app->user->can(Rbac::PERM_UPDATE_FORUM)) {
+                    if ($model->save()) {
+                        Log::info('Forum updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                        $this->success('Forum has been updated.');
+                    }
+                    else {
+                        $this->error('Sorry! There was an error while updating the forum.');
+                    }
+                }
+                else {
+                    $this->error('You are not allowed to perform this action.');
+                }
                 return $this->redirect(['admin/forums']);
             }
-            else {
-                return $this->render('forum', [
-                            'model'      => $model,
-                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
-                ]);
-            }
+
+            return $this->render('forum', [
+                        'model'      => $model,
+                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+            ]);
         }
     }
     
@@ -438,17 +492,17 @@ class AdminController extends BaseController
      */
     public function actionMod($uid = null, $fid = null)
     {
-        if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
-            $this->error('Sorry! We can not find the moderator or forum with this ID.');
-            return $this->redirect(['admin/mods']);
-        }
-        else {
-            $mod = (new PodiumUser)->findModerator((int)$uid);
-            if (empty($mod->user)) {
-                $this->error('Sorry! We can not find the moderator with this ID.');
-                return $this->redirect(['admin/mods']);
+        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+            if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
+                $this->error('Sorry! We can not find the moderator or forum with this ID.');
             }
             else {
+                $mod = (new PodiumUser)->findModerator((int)$uid);
+                if (empty($mod->user)) {
+                    $this->error('Sorry! We can not find the moderator with this ID.');
+                    return $this->redirect(['admin/mods']);
+                }
+
                 $forum = Forum::findOne(['id' => $fid]);
                 if (!$forum) {
                     $this->error('Sorry! We can not find the forum with this ID.');
@@ -470,10 +524,14 @@ class AdminController extends BaseController
                         $this->error('Sorry! There was an error while updating the moderatoration list.');
                     }
                 }
-                
+
                 return $this->redirect(['admin/mods', 'id' => $uid]);
             }
         }
+        else {
+            $this->error('You are not allowed to perform this action.');
+        }
+        return $this->redirect(['admin/mods']);
     }
     
     /**
@@ -501,47 +559,52 @@ class AdminController extends BaseController
 
         $postData = Yii::$app->request->post();
         if ($postData) {
-            $mod_id    = !empty($postData['mod_id']) && is_numeric($postData['mod_id']) && $postData['mod_id'] > 0 ? $postData['mod_id'] : 0;
-            $selection = !empty($postData['selection']) ? $postData['selection'] : [];
-            $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
-            
-            if ($mod_id != $mod->getId()) {
-                $this->error('Sorry! There was an error while selecting the moderator ID.');
+            if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+                $mod_id    = !empty($postData['mod_id']) && is_numeric($postData['mod_id']) && $postData['mod_id'] > 0 ? $postData['mod_id'] : 0;
+                $selection = !empty($postData['selection']) ? $postData['selection'] : [];
+                $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
+
+                if ($mod_id != $mod->getId()) {
+                    $this->error('Sorry! There was an error while selecting the moderator ID.');
+                }
+                else {
+                    try {
+                        $add = [];
+                        foreach ($selection as $select) {
+                            if (!in_array($select, $pre)) {
+                                if ((new Query)->from(Forum::tableName())->where(['id' => $select])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $select, 'user_id' => $mod->getId()])->exists() === false) {
+                                    $add[] = [$select, $mod->id];
+                                }
+                            }
+                        }
+                        $remove = [];
+                        foreach ($pre as $p) {
+                            if (!in_array($p, $selection)) {
+                                if ((new Query)->from(Mod::tableName())->where(['forum_id' => $p, 'user_id' => $mod->getId()])->exists()) {
+                                    $remove[] = $p;
+                                }
+                            }
+                        }
+                        if (!empty($add)) {
+                            Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
+                        }
+                        if (!empty($remove)) {
+                            Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->getId()])->execute();
+                        }
+                        Cache::getInstance()->delete('forum.moderators');
+                        Log::info('Moderators updated', null, __METHOD__);
+                        $this->success('Moderation list has been saved.');
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage(), null, __METHOD__);
+                        $this->error('Sorry! There was an error while saving the moderatoration list.');
+                    }
+
+                    return $this->refresh();
+                }
             }
             else {
-                try {
-                    $add = [];
-                    foreach ($selection as $select) {
-                        if (!in_array($select, $pre)) {
-                            if ((new Query)->from(Forum::tableName())->where(['id' => $select])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $select, 'user_id' => $mod->getId()])->exists() === false) {
-                                $add[] = [$select, $mod->id];
-                            }
-                        }
-                    }
-                    $remove = [];
-                    foreach ($pre as $p) {
-                        if (!in_array($p, $selection)) {
-                            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $p, 'user_id' => $mod->getId()])->exists()) {
-                                $remove[] = $p;
-                            }
-                        }
-                    }
-                    if (!empty($add)) {
-                        Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
-                    }
-                    if (!empty($remove)) {
-                        Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $mod->getId()])->execute();
-                    }
-                    Cache::getInstance()->delete('forum.moderators');
-                    Log::info('Moderators updated', null, __METHOD__);
-                    $this->success('Moderation list has been saved.');
-                }
-                catch (Exception $e) {
-                    Log::error($e->getMessage(), null, __METHOD__);
-                    $this->error('Sorry! There was an error while saving the moderatoration list.');
-                }
-                
-                return $this->refresh();
+                $this->error('You are not allowed to perform this action.');
             }
         }
         
@@ -559,20 +622,25 @@ class AdminController extends BaseController
      */
     public function actionNewCategory()
     {
-        $model          = new Category();
-        $model->visible = 1;
-        $model->sort    = 0;
+        if (Yii::$app->user->can(Rbac::PERM_CREATE_CATEGORY)) {
+            $model          = new Category();
+            $model->visible = 1;
+            $model->sort    = 0;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Log::info('Category added', !empty($model->id) ? $model->id : '', __METHOD__);
-            $this->success('New category has been created.');
-            return $this->redirect(['admin/categories']);
-        }
-        else {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Log::info('Category added', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->success('New category has been created.');
+                return $this->redirect(['admin/categories']);
+            }
+
             return $this->render('category', [
                         'model'      => $model,
                         'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
             ]);
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
+            return $this->redirect(['admin/categories']);
         }
     }
     
@@ -590,22 +658,28 @@ class AdminController extends BaseController
             return $this->redirect(['admin/categories']);
         }
 
-        $model              = new Forum();
-        $model->category_id = $category->id;
-        $model->visible     = 1;
-        $model->sort        = 0;
+        if (Yii::$app->user->can(Rbac::PERM_CREATE_FORUM)) {
+            $model              = new Forum();
+            $model->category_id = $category->id;
+            $model->visible     = 1;
+            $model->sort        = 0;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Log::info('Forum added', !empty($model->id) ? $model->id : '', __METHOD__);
-            $this->success('New forum has been created.');
-            return $this->redirect(['admin/forums', 'cid' => $category->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Log::info('Forum added', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->success('New forum has been created.');
+                return $this->redirect(['admin/forums', 'cid' => $category->id]);
+            }
+            else {
+                return $this->render('forum', [
+                            'model'      => $model,
+                            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+                            'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+                ]);
+            }
         }
         else {
-            return $this->render('forum', [
-                        'model'      => $model,
-                        'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-                        'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
-            ]);
+            $this->error('You are not allowed to perform this action.');
+            return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
     }
     
@@ -616,38 +690,43 @@ class AdminController extends BaseController
      */
     public function actionPromote($id = null)
     {
-        $model = (new PodiumUser)->findOne((int)$id);
+        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+            $model = (new PodiumUser)->findOne((int)$id);
 
-        if (empty($model->user)) {
-            $this->error('Sorry! We can not find User with this ID.');
-        }
-        else {
-
-            if ($model->getRole() != User::ROLE_MEMBER) {
-                $this->error('You can only promote Members to Moderators.');
+            if (empty($model->user)) {
+                $this->error('Sorry! We can not find User with this ID.');
             }
             else {
-                $transaction = User::getDb()->beginTransaction();
-                try {
-                    if ($model->promoteTo(User::ROLE_MODERATOR)) {
-                        if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
-                            Yii::$app->authManager->revoke(Yii::$app->authManager->getRole('podiumUser'), $model->getId());
-                        }
-                        if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('podiumModerator'), $model->getId())) {
-                            $transaction->commit();
-                            Log::info('User promoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
-                            $this->success('User has been promoted.');
-                            return $this->redirect(['admin/mods', 'id' => $model->getId()]);
-                        }
-                    }
-                    $this->error('Sorry! There was an error while promoting the user.');
+
+                if ($model->getRole() != User::ROLE_MEMBER) {
+                    $this->error('You can only promote Members to Moderators.');
                 }
-                catch (Exception $e) {
-                    $transaction->rollBack();
-                    Log::error($e->getMessage(), null, __METHOD__);
-                    $this->error('Sorry! There was an error while promoting the user.');
+                else {
+                    $transaction = User::getDb()->beginTransaction();
+                    try {
+                        if ($model->promoteTo(User::ROLE_MODERATOR)) {
+                            if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                                Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->getId());
+                            }
+                            if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->getId())) {
+                                $transaction->commit();
+                                Log::info('User promoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                                $this->success('User has been promoted.');
+                                return $this->redirect(['admin/mods', 'id' => $model->getId()]);
+                            }
+                        }
+                        $this->error('Sorry! There was an error while promoting the user.');
+                    }
+                    catch (Exception $e) {
+                        $transaction->rollBack();
+                        Log::error($e->getMessage(), null, __METHOD__);
+                        $this->error('Sorry! There was an error while promoting the user.');
+                    }
                 }
             }
+        }
+        else {
+            $this->error('You are not allowed to perform this action.');
         }
 
         return $this->redirect(['members']);
@@ -662,13 +741,18 @@ class AdminController extends BaseController
         $model = new ConfigForm();
 
         if ($data = Yii::$app->request->post('ConfigForm')) {
-            if ($model->update($data)) {
-                Log::info('Settings updated', null, __METHOD__);
-                $this->success('Settings have been updated.');
-                return $this->refresh();
+            if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
+                if ($model->update($data)) {
+                    Log::info('Settings updated', null, __METHOD__);
+                    $this->success('Settings have been updated.');
+                    return $this->refresh();
+                }
+                else {
+                    $this->error('One of the setting\'s value is too long (255 characters max).');
+                }
             }
             else {
-                $this->error('One of the setting\'s value is too long (255 characters max).');
+                $this->error('You are not allowed to perform this action.');
             }
         }
 
@@ -682,48 +766,53 @@ class AdminController extends BaseController
     public function actionSortCategory()
     {
         if (Yii::$app->request->isAjax) {
-            $modelId = Yii::$app->request->post('id');
-            $new     = Yii::$app->request->post('new');
+            if (Yii::$app->user->can(Rbac::PERM_UPDATE_CATEGORY)) {
+                $modelId = Yii::$app->request->post('id');
+                $new     = Yii::$app->request->post('new');
 
-            if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
-                $moved = Category::findOne((int) $modelId);
-                if ($moved) {
-                    $query = (new Query)->from(Category::tableName())->where('id != :id')->
-                            params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
-                    $next    = 0;
-                    $newSort = -1;
-                    try {
-                        foreach ($query->each() as $id => $forum) {
-                            if ($next == (int) $new) {
-                                $newSort = $next;
+                if (is_numeric($modelId) && is_numeric($new) && $modelId > 0 && $new >= 0) {
+                    $moved = Category::findOne((int) $modelId);
+                    if ($moved) {
+                        $query = (new Query)->from(Category::tableName())->where('id != :id')->
+                                params([':id' => $moved->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+                        $next    = 0;
+                        $newSort = -1;
+                        try {
+                            foreach ($query->each() as $id => $forum) {
+                                if ($next == (int) $new) {
+                                    $newSort = $next;
+                                    $next++;
+                                }
+                                Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
                                 $next++;
                             }
-                            Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
-                            $next++;
+                            if ($newSort == -1) {
+                                $newSort = $next;
+                            }
+                            $moved->sort = $newSort;
+                            if (!$moved->save()) {
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                            }
+                            else {
+                                Log::info('Categories orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
+                            }
                         }
-                        if ($newSort == -1) {
-                            $newSort = $next;
-                        }
-                        $moved->sort = $newSort;
-                        if (!$moved->save()) {
+                        catch (Exception $e) {
+                            Log::error($e->getMessage(), null, __METHOD__);
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
                         }
-                        else {
-                            Log::info('Categories orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
-                        }
                     }
-                    catch (Exception $e) {
-                        Log::error($e->getMessage(), null, __METHOD__);
-                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                    else {
+                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'), ['class' => 'text-danger']);
                     }
                 }
                 else {
-                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'), ['class' => 'text-danger']);
+                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
                 }
             }
             else {
-                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
+                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'), ['class' => 'text-danger']);
             }
         }
         else {
@@ -738,50 +827,55 @@ class AdminController extends BaseController
     public function actionSortForum()
     {
         if (Yii::$app->request->isAjax) {
-            $modelId       = Yii::$app->request->post('id');
-            $modelCategory = Yii::$app->request->post('category');
-            $new           = Yii::$app->request->post('new');
+            if (Yii::$app->user->can(Rbac::PERM_UPDATE_FORUM)) {
+                $modelId       = Yii::$app->request->post('id');
+                $modelCategory = Yii::$app->request->post('category');
+                $new           = Yii::$app->request->post('new');
 
-            if (is_numeric($modelId) && is_numeric($modelCategory) && is_numeric($new) && $modelId > 0 && $modelCategory > 0 && $new >= 0) {
-                $moved         = Forum::findOne((int) $modelId);
-                $movedCategory = Category::findOne((int) $modelCategory);
-                if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
-                    $query = (new Query)->from(Forum::tableName())->where('id != :id AND category_id = :cid')->
-                            params([':id' => $moved->id, ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
-                    $next    = 0;
-                    $newSort = -1;
-                    try {
-                        foreach ($query->each() as $id => $forum) {
-                            if ($next == (int) $new) {
-                                $newSort = $next;
+                if (is_numeric($modelId) && is_numeric($modelCategory) && is_numeric($new) && $modelId > 0 && $modelCategory > 0 && $new >= 0) {
+                    $moved         = Forum::findOne((int) $modelId);
+                    $movedCategory = Category::findOne((int) $modelCategory);
+                    if ($moved && $modelCategory && $moved->category_id == $movedCategory->id) {
+                        $query = (new Query)->from(Forum::tableName())->where('id != :id AND category_id = :cid')->
+                                params([':id' => $moved->id, ':cid' => $movedCategory->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+                        $next    = 0;
+                        $newSort = -1;
+                        try {
+                            foreach ($query->each() as $id => $forum) {
+                                if ($next == (int) $new) {
+                                    $newSort = $next;
+                                    $next++;
+                                }
+                                Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
                                 $next++;
                             }
-                            Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
-                            $next++;
+                            if ($newSort == -1) {
+                                $newSort = $next;
+                            }
+                            $moved->sort = $newSort;
+                            if (!$moved->save()) {
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                            }
+                            else {
+                                Log::info('Forums orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
+                            }
                         }
-                        if ($newSort == -1) {
-                            $newSort = $next;
-                        }
-                        $moved->sort = $newSort;
-                        if (!$moved->save()) {
+                        catch (Exception $e) {
+                            Log::error($e->getMessage(), null, __METHOD__);
                             return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
                         }
-                        else {
-                            Log::info('Forums orded updated', !empty($moved->id) ? $moved->id : '', __METHOD__);
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
-                        }
                     }
-                    catch (Exception $e) {
-                        Log::error($e->getMessage(), null, __METHOD__);
-                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                    else {
+                        return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), ['class' => 'text-danger']);
                     }
                 }
                 else {
-                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), ['class' => 'text-danger']);
+                    return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
                 }
             }
             else {
-                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), ['class' => 'text-danger']);
+                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'), ['class' => 'text-danger']);
             }
         }
         else {

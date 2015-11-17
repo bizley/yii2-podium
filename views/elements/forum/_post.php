@@ -4,6 +4,8 @@
  * Podium Module
  * Yii 2 Forum Module
  */
+
+use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -102,7 +104,7 @@ elseif ($rating < 0) {
 <?php if (!Yii::$app->user->isGuest && $model->author_id != Yii::$app->user->id): ?>
                     <button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button>
 <?php endif; ?>
-<?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can('updatePodiumPost', ['item' => $model->thread])): ?>
+<?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can(Rbac::PERM_UPDATE_POST, ['item' => $model->thread])): ?>
                     <a href="<?= Url::to(['default/edit', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit post') ?>"><span class="glyphicon glyphicon-edit"></span></a>
 <?php endif; ?>
                     <a href="<?= Url::to(['default/show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
@@ -119,7 +121,7 @@ elseif ($rating < 0) {
 <?php endif; ?>
                     <a href="<?= Url::to(['default/report', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id, 'slug' => $model->thread->slug]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
 <?php endif; ?>
-<?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can('deletePodiumPost', ['item' => $model->thread])): ?>
+<?php if ($model->author_id == Yii::$app->user->id || Yii::$app->user->can(Rbac::PERM_DELETE_POST, ['item' => $model->thread])): ?>
                     <a href="<?= Url::to(['default/deletepost', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete post') ?>"><span class="glyphicon glyphicon-trash"></span></a>
 <?php endif; ?>
                 </div>

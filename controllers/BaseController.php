@@ -9,6 +9,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Config;
 use bizley\podium\components\Messages;
+use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\helpers\Html;
 use yii\web\Controller as YiiController;
@@ -44,7 +45,7 @@ class BaseController extends YiiController
                         'maintenancePage' => Html::a(Yii::t('podium/view', Messages::PAGE_MAINTENANCE), ['default/maintenance']),
                         'settingsPage' => Html::a(Yii::t('podium/view', Messages::PAGE_SETTINGS), ['admin/settings']),
                     ]);
-                    if (!Yii::$app->user->can('podiumAdmin')) {
+                    if (!Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
                         return $this->redirect(['default/maintenance']);
                     }
                 }

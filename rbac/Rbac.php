@@ -19,17 +19,34 @@ use yii\rbac\Role;
 class Rbac
 {
     
-    const PERM_VIEW_THREAD = 'viewPodiumThread';
-    const PERM_VIEW_FORUM = 'viewPodiumForum';
-    const PERM_CREATE_THREAD = 'createPodiumThread';
-    const PERM_CREATE_POST = 'createPodiumPost';
-    const PERM_UPDATE_POST = 'updatePodiumPost';
+    const PERM_VIEW_THREAD     = 'viewPodiumThread';
+    const PERM_VIEW_FORUM      = 'viewPodiumForum';
+    const PERM_CREATE_THREAD   = 'createPodiumThread';
+    const PERM_CREATE_POST     = 'createPodiumPost';
+    const PERM_UPDATE_POST     = 'updatePodiumPost';
     const PERM_UPDATE_OWN_POST = 'updateOwnPodiumPost';
-    const PERM_DELETE_POST = 'deletePodiumPost';
+    const PERM_DELETE_POST     = 'deletePodiumPost';
     const PERM_DELETE_OWN_POST = 'deleteOwnPodiumPost';
-    const PERM_UPDATE_THREAD = 'updatePodiumThread';
+    const PERM_UPDATE_THREAD   = 'updatePodiumThread';
+    const PERM_DELETE_THREAD   = 'deletePodiumThread';
+    const PERM_PIN_THREAD      = 'pinPodiumThread';
+    const PERM_LOCK_THREAD     = 'lockPodiumThread';
+    const PERM_MOVE_THREAD     = 'movePodiumThread';
+    const PERM_MOVE_POST       = 'movePodiumPost';
+    const PERM_BAN_USER        = 'banPodiumUser';
+    const PERM_DELETE_USER     = 'deletePodiumUser';
+    const PERM_PROMOTE_USER    = 'promotePodiumUser';
+    const PERM_CREATE_FORUM    = 'createPodiumForum';
+    const PERM_UPDATE_FORUM    = 'updatePodiumForum';
+    const PERM_DELETE_FORUM    = 'deletePodiumForum';
+    const PERM_CREATE_CATEGORY = 'createPodiumCategory';
+    const PERM_UPDATE_CATEGORY = 'updatePodiumCategory';
+    const PERM_DELETE_CATEGORY = 'deletePodiumCategory';
+    const PERM_CHANGE_SETTINGS = 'changePodiumSettings';
     
-    const ROLE_USER = 'podiumUser';
+    const ROLE_USER      = 'podiumUser';
+    const ROLE_MODERATOR = 'podiumModerator';
+    const ROLE_ADMIN     = 'podiumAdmin';
     
     /**
      * Adds RBAC rules.
@@ -130,56 +147,56 @@ class Rbac
             $authManager->add($updateThread);
         }
         
-        $deleteThread = $authManager->getPermission('deletePodiumThread');
+        $deleteThread = $authManager->getPermission(self::PERM_DELETE_THREAD);
         if (!($deleteThread instanceof Permission)) {
-            $deleteThread = $authManager->createPermission('deletePodiumThread');
+            $deleteThread = $authManager->createPermission(self::PERM_DELETE_THREAD);
             $deleteThread->description = 'Delete Podium thread';
             $deleteThread->ruleName    = $moderatorRule->name;
             $authManager->add($deleteThread);
         }
         
-        $pinThread = $authManager->getPermission('pinPodiumThread');
+        $pinThread = $authManager->getPermission(self::PERM_PIN_THREAD);
         if (!($pinThread instanceof Permission)) {
-            $pinThread = $authManager->createPermission('pinPodiumThread');
+            $pinThread = $authManager->createPermission(self::PERM_PIN_THREAD);
             $pinThread->description = 'Pin Podium thread';
             $pinThread->ruleName    = $moderatorRule->name;
             $authManager->add($pinThread);
         }
         
-        $lockThread = $authManager->getPermission('lockPodiumThread');
+        $lockThread = $authManager->getPermission(self::PERM_LOCK_THREAD);
         if (!($lockThread instanceof Permission)) {
-            $lockThread = $authManager->createPermission('lockPodiumThread');
+            $lockThread = $authManager->createPermission(self::PERM_LOCK_THREAD);
             $lockThread->description = 'Lock Podium thread';
             $lockThread->ruleName    = $moderatorRule->name;
             $authManager->add($lockThread);
         }
         
-        $moveThread = $authManager->getPermission('movePodiumThread');
+        $moveThread = $authManager->getPermission(self::PERM_MOVE_THREAD);
         if (!($moveThread instanceof Permission)) {
-            $moveThread = $authManager->createPermission('movePodiumThread');
+            $moveThread = $authManager->createPermission(self::PERM_MOVE_THREAD);
             $moveThread->description = 'Move Podium thread';
             $moveThread->ruleName    = $moderatorRule->name;
             $authManager->add($moveThread);
         }
         
-        $movePost = $authManager->getPermission('movePodiumPost');
+        $movePost = $authManager->getPermission(self::PERM_MOVE_POST);
         if (!($movePost instanceof Permission)) {
-            $movePost = $authManager->createPermission('movePodiumPost');
+            $movePost = $authManager->createPermission(self::PERM_MOVE_POST);
             $movePost->description = 'Move Podium post';
             $movePost->ruleName    = $moderatorRule->name;
             $authManager->add($movePost);
         }
         
-        $banUser = $authManager->getPermission('banPodiumUser');
+        $banUser = $authManager->getPermission(self::PERM_BAN_USER);
         if (!($banUser instanceof Permission)) {
-            $banUser = $authManager->createPermission('banPodiumUser');
+            $banUser = $authManager->createPermission(self::PERM_BAN_USER);
             $banUser->description = 'Ban Podium user';
             $authManager->add($banUser);
         }
         
-        $moderator = $authManager->getRole('podiumModerator');
+        $moderator = $authManager->getRole(self::ROLE_MODERATOR);
         if (!($moderator instanceof Role)) {
-            $moderator = $authManager->createRole('podiumModerator');
+            $moderator = $authManager->createRole(self::ROLE_MODERATOR);
             $authManager->add($moderator);
             $authManager->addChild($moderator, $updatePost);
             $authManager->addChild($moderator, $updateThread);
@@ -193,59 +210,75 @@ class Rbac
             $authManager->addChild($moderator, $user);
         }
         
-        $createForum = $authManager->getPermission('createPodiumForum');
+        $deleteUser = $authManager->getPermission(self::PERM_DELETE_USER);
+        if (!($deleteUser instanceof Permission)) {
+            $deleteUser = $authManager->createPermission(self::PERM_DELETE_USER);
+            $deleteUser->description = 'Delete Podium user';
+            $authManager->add($deleteUser);
+        }
+        
+        $promoteUser = $authManager->getPermission(self::PERM_PROMOTE_USER);
+        if (!($promoteUser instanceof Permission)) {
+            $promoteUser = $authManager->createPermission(self::PERM_PROMOTE_USER);
+            $promoteUser->description = 'Promote Podium user';
+            $authManager->add($promoteUser);
+        }
+        
+        $createForum = $authManager->getPermission(self::PERM_CREATE_FORUM);
         if (!($createForum instanceof Permission)) {
-            $createForum = $authManager->createPermission('createPodiumForum');
+            $createForum = $authManager->createPermission(self::PERM_CREATE_FORUM);
             $createForum->description = 'Create Podium forum';
             $authManager->add($createForum);
         }
         
-        $updateForum = $authManager->getPermission('updatePodiumForum');
+        $updateForum = $authManager->getPermission(self::PERM_UPDATE_FORUM);
         if (!($updateForum instanceof Permission)) {
-            $updateForum = $authManager->createPermission('updatePodiumForum');
+            $updateForum = $authManager->createPermission(self::PERM_UPDATE_FORUM);
             $updateForum->description = 'Update Podium forum';
             $authManager->add($updateForum);
         }
         
-        $deleteForum = $authManager->getPermission('deletePodiumForum');
+        $deleteForum = $authManager->getPermission(self::PERM_DELETE_FORUM);
         if (!($deleteForum instanceof Permission)) {
-            $deleteForum = $authManager->createPermission('deletePodiumForum');
+            $deleteForum = $authManager->createPermission(self::PERM_DELETE_FORUM);
             $deleteForum->description = 'Delete Podium forum';
             $authManager->add($deleteForum);
         }
         
-        $createCategory = $authManager->getPermission('createPodiumCategory');
+        $createCategory = $authManager->getPermission(self::PERM_CREATE_CATEGORY);
         if (!($createCategory instanceof Permission)) {
-            $createCategory = $authManager->createPermission('createPodiumCategory');
+            $createCategory = $authManager->createPermission(self::PERM_CREATE_CATEGORY);
             $createCategory->description = 'Create Podium category';
             $authManager->add($createCategory);
         }
         
-        $updateCategory = $authManager->getPermission('updatePodiumCategory');
+        $updateCategory = $authManager->getPermission(self::PERM_UPDATE_CATEGORY);
         if (!($updateCategory instanceof Permission)) {
-            $updateCategory = $authManager->createPermission('updatePodiumCategory');
+            $updateCategory = $authManager->createPermission(self::PERM_UPDATE_CATEGORY);
             $updateCategory->description = 'Update Podium category';
             $authManager->add($updateCategory);
         }
         
-        $deleteCategory = $authManager->getPermission('deletePodiumCategory');
+        $deleteCategory = $authManager->getPermission(self::PERM_DELETE_CATEGORY);
         if (!($deleteCategory instanceof Permission)) {
-            $deleteCategory = $authManager->createPermission('deletePodiumCategory');
+            $deleteCategory = $authManager->createPermission(self::PERM_DELETE_CATEGORY);
             $deleteCategory->description = 'Delete Podium category';
             $authManager->add($deleteCategory);
         }
         
-        $settings = $authManager->getPermission('changePodiumSettings');
+        $settings = $authManager->getPermission(self::PERM_CHANGE_SETTINGS);
         if (!($settings instanceof Permission)) {
-            $settings = $authManager->createPermission('changePodiumSettings');
+            $settings = $authManager->createPermission(self::PERM_CHANGE_SETTINGS);
             $settings->description = 'Change Podium settings';
             $authManager->add($settings);
         }
         
-        $admin = $authManager->getRole('podiumAdmin');
+        $admin = $authManager->getRole(self::ROLE_ADMIN);
         if (!($admin instanceof Role)) {
-            $admin = $authManager->createRole('podiumAdmin');
+            $admin = $authManager->createRole(self::ROLE_ADMIN);
             $authManager->add($admin);
+            $authManager->addChild($admin, $deleteUser);
+            $authManager->addChild($admin, $promoteUser);
             $authManager->addChild($admin, $createForum);
             $authManager->addChild($admin, $updateForum);
             $authManager->addChild($admin, $deleteForum);

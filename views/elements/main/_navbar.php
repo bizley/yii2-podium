@@ -4,9 +4,11 @@
  * Podium Module
  * Yii 2 Forum Module
  */
+
 use bizley\podium\components\Config;
 use bizley\podium\components\PodiumUser;
 use bizley\podium\Module as PodiumModule;
+use bizley\podium\rbac\Rbac;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
@@ -38,7 +40,7 @@ else {
     $messageCount      = $podiumUser->getNewMessagesCount();
     $subscriptionCount = $podiumUser->getSubscriptionsCount();
     
-    if (Yii::$app->user->can('changePodiumSettings')) {
+    if (Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
         $items[] = [
             'label'  => Yii::t('podium/layout', 'Administration'), 
             'url'    => ['admin/index'],
