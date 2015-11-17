@@ -35,6 +35,11 @@ class QueueController extends Controller
      * for creating the object.
      */
     public $db = 'db';
+    
+    /**
+     * @var string controller default action ID.
+     */
+    public $defaultAction = 'run';
 
     /**
      * @var integer the limit of emails sent in one batch (default 100).
@@ -80,7 +85,7 @@ class QueueController extends Controller
             }
         }
         catch (Exception $e) {
-            Log::error($e->getMessage(), null, __METHOD__);
+            $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
         
         return false;
@@ -167,7 +172,7 @@ class QueueController extends Controller
     public function actionRun($limit = 0)
     {
         $version = $this->module->version;
-        $this->stdout("\nPodium queue runner v{$version}\n");
+        $this->stdout("\nPodium mail queue v{$version}\n");
         $this->stdout("------------------------------\n");
         
         $emails = $this->getNewBatch($limit);
@@ -196,20 +201,12 @@ class QueueController extends Controller
     }
     
     /**
-     * Default action.
-     */
-    public function actionIndex()
-    {
-        $this->run('/help', ['podium']);
-    }
-    
-    /**
      * Checks the current status for the mail queue.
      */
     public function actionCheck()
     {
         $version = $this->module->version;
-        $this->stdout("\nPodium queue check v{$version}\n");
+        $this->stdout("\nPodium mail queue check v{$version}\n");
         $this->stdout("------------------------------\n");
         $this->stdout(" EMAILS  | COUNT\n");
         $this->stdout("------------------------------\n");

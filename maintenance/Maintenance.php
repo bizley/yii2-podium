@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\maintenance;
 
+use bizley\podium\components\Messages;
 use bizley\podium\models\Post;
 use Exception;
 use Yii;
@@ -13,7 +14,7 @@ use yii\base\Component;
 use yii\db\Connection;
 use yii\di\Instance;
 use yii\helpers\Html;
-use yii\rbac\BaseManager;
+use yii\rbac\DbManager;
 
 /**
  * Podium Maintenance module
@@ -22,14 +23,14 @@ use yii\rbac\BaseManager;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\BaseManager $authManager Authorization Manager
- * @property \yii\db\Connection $db Database connection
+ * @property DbManager $authManager Authorization Manager
+ * @property Connection $db Database connection
  */
 class Maintenance extends Component
 {
 
     /**
-     * @var BaseManager authorization manager.
+     * @var DbManager authorization manager.
      */
     public $authManager = 'authManager';
     
@@ -455,7 +456,7 @@ class Maintenance extends Component
             if ($this->db->driverName === 'mysql') {
                 $this->setTableOptions('CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
             }
-            $this->authManager = Instance::ensure($this->authManager, BaseManager::className());
+            $this->authManager = Instance::ensure($this->authManager, DbManager::className());
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);

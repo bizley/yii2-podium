@@ -297,6 +297,11 @@ class Module extends BaseModule implements BootstrapInterface
                     $this->layout     = self::MAIN_LAYOUT;
                     $this->_installed = Installation::check();
                 }
+                elseif (Yii::$app instanceof ConsoleApplication) {
+                    if ($this->rbacComponent == self::RBAC_OWN) {
+                        $this->registerAuthorization();
+                    }
+                }
             }
             else {
                 throw InvalidConfigException('Invalid value for the rbac parameter.');
