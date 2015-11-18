@@ -3,18 +3,21 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Config;
 use yii\bootstrap\ActiveForm;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
-use yii\web\View;
 use Zelenin\yii\widgets\Recaptcha\widgets\Recaptcha;
 
-$this->title                   = Yii::t('podium/view', 'Registration');
+$this->title = Yii::t('podium/view', 'Registration');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_READY, 'bootstrap-popover');
+$this->registerJs("$('[data-toggle=\"popover\"]').popover()");
+
 ?>
 <div class="row">
     <div class="col-sm-4">
@@ -76,11 +79,7 @@ $this->registerJs('jQuery(\'[data-toggle="popover"]\').popover()', View::POS_REA
                 </h4>
             </div>
             <div class="panel-body">
-<?php if ($terms): ?>
-                <?= $terms->content ?>
-<?php else: ?>
-                <?= Yii::t('podium/view', 'TO BE ANNOUNCED') ?>
-<?php endif; ?>
+                <?= $terms ? $terms->content : Yii::t('podium/view', 'TO BE ANNOUNCED') ?>
             </div>
         </div>
     </div>

@@ -105,7 +105,7 @@ class PodiumUser extends Component
      */
     public function getActivity()
     {
-        return $this->user->hasOne(Activity::className(), ['user_id' => $this->getId()]);
+        return $this->user->hasOne(Activity::className(), ['user_id' => $this->getIdAttribute()])->limit(1)->one();
     }
     
     /**
@@ -145,12 +145,21 @@ class PodiumUser extends Component
     }
     
     /**
+     * Gets user ID attribute's name.
+     * @return string
+     */
+    public function getIdAttribute()
+    {
+        return $this->user->getPodiumIdAttribute();
+    }
+    
+    /**
      * Sets relation with Meta.
      * @return \yii\db\ActiveQuery
      */
     public function getMeta()
     {
-        return $this->user->hasOne(Meta::className(), ['user_id' => $this->getId()]);
+        return $this->user->hasOne(Meta::className(), ['user_id' => $this->getIdAttribute()])->limit(1)->one();
     }
     
     /**
@@ -168,7 +177,7 @@ class PodiumUser extends Component
      */
     public function getMods()
     {
-        return $this->user->hasMany(Mod::className(), ['user_id' => $this->getId()]);
+        return $this->user->hasMany(Mod::className(), ['user_id' => $this->getIdAttribute()])->all();
     }
     
     /**

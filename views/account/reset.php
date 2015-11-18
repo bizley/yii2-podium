@@ -3,12 +3,16 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title                   = Yii::t('podium/view', 'Password Reset');
+$this->title = Yii::t('podium/view', 'Password Reset');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="row">
     <div class="col-sm-12">

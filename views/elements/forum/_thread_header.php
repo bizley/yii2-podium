@@ -4,6 +4,7 @@
  * Podium Module
  * Yii 2 Forum Module
  */
+
 ?>
 <tr>
     <th class="col-sm-7"><small><?= Yii::t('podium/view', 'Thread') ?></small></th>

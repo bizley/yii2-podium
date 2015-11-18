@@ -11,6 +11,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
+use yii\helpers\Url;
 
 /**
  * Podium Helper
@@ -23,7 +24,39 @@ class Helper
 {
     
     /**
-     * Gets image source for default avatar image in base64.
+     * Prepares content for admin categories.
+     * @param mixed $category
+     * @return string
+     */
+    public static function adminCategoriesPrepareContent($category)
+    {
+        $actions = [];
+        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($category->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', $category->visible ? 'Category visible for guests' : 'Category hidden for guests')]);
+        $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-list']), ['admin/forums', 'cid' => $category->id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'List Forums')]);
+        $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-plus-sign']), ['admin/new-forum', 'cid' => $category->id], ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Create new forum in this category')]);
+        $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-cog']), ['admin/edit-category', 'id' => $category->id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Edit Category')]);
+        $actions[] = Html::tag('span', Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-trash']), ['class' => 'btn btn-danger btn-xs', 'data-url' => Url::to(['admin/delete-category', 'id' => $category->id]), 'data-toggle' => 'modal', 'data-target' => '#podiumModalDelete']), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Category')]);
+
+        return Html::tag('p', implode(' ', $actions), ['class' => 'pull-right']) . Html::tag('span', Html::encode($category->name), ['class' => 'podium-forum', 'data-id' => $category->id]);
+    }
+    
+    /**
+     * Prepares content for admin forums.
+     * @param mixed $forum
+     * @return string
+     */
+    public static function adminForumsPrepareContent($forum)
+    {
+        $actions = [];
+        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($forum->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', $forum->visible ? 'Forum visible for guests (if category is visible)' : 'Forum hidden for guests')]);
+        $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-cog']), ['admin/edit-forum', 'id' => $forum->id, 'cid' => $forum->category_id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Edit Forum')]);
+        $actions[] = Html::tag('span', Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-trash']), ['class' => 'btn btn-danger btn-xs', 'data-url' => Url::to(['admin/delete-forum', 'id' => $forum->id, 'cid' => $forum->category_id]), 'data-toggle' => 'modal', 'data-target' => '#podiumModalDelete']), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Forum')]);
+
+        return Html::tag('p', implode(' ', $actions), ['class' => 'pull-right']) . Html::tag('span', Html::encode($forum->name), ['class' => 'podium-forum', 'data-id' => $forum->id, 'data-category' => $forum->category_id]);
+    }
+    
+    /**
+     * Returns image source for default avatar image in base64.
      * @return string image source
      */
     public static function defaultAvatar()
@@ -32,7 +65,7 @@ class Helper
     }
     
     /**
-     * Gets user tag for deleted user.
+     * Returns user tag for deleted user.
      * @param boolean $simple wheter to return simple tag instead of full
      * @return string tag
      */
@@ -42,7 +75,7 @@ class Helper
     }
     
     /**
-     * Gets HTMLPurifier configuration set.
+     * Returns HTMLPurifier configuration set.
      * @param string $type set name
      * @return array configuration
      */
@@ -69,7 +102,7 @@ class Helper
     }
     
     /**
-     * Gets user tag.
+     * Returns user tag.
      * @param string $name user name
      * @param integer $role user role
      * @param integer|null $id user ID
@@ -104,7 +137,7 @@ class Helper
     }
     
     /**
-     * Gets quote html.
+     * Returns quote html.
      * @param \bizley\podium\models\Post $post post model to be quoted
      * @param string $quote partial text to be quoted
      * @return string quote html
@@ -116,7 +149,7 @@ class Helper
     }
     
     /**
-     * Gets background image style base64 encoded.
+     * Returns background image style base64 encoded.
      * @return string style
      */
     public static function replyBgd()
@@ -125,7 +158,7 @@ class Helper
     }
     
     /**
-     * Gets role label html.
+     * Returns role label html.
      * @param integer|null $role role ID
      * @return string label html
      */
@@ -149,7 +182,7 @@ class Helper
     }
     
     /**
-     * Gets sorting icon.
+     * Returns sorting icon.
      * @param string|null $attribute sorting attribute name
      * @return string|null icon html or null if empty attribute
      */
@@ -169,7 +202,7 @@ class Helper
     }
     
     /**
-     * Gets User status label.
+     * Returns User status label.
      * @param integer|null $status status ID
      * @return string label html
      */
@@ -193,7 +226,7 @@ class Helper
     }
     
     /**
-     * Gets SummerNote toolbars.
+     * Returns SummerNote toolbars.
      * @param string $type name of the set
      * @return array toolbars configuration
      */
@@ -224,7 +257,7 @@ class Helper
     }
 
     /**
-     * Gets timezones array.
+     * Returns timezones array.
      * http://php.net/manual/en/timezones.php
      * @return array timezones
      */

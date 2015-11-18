@@ -41,6 +41,11 @@ interface PodiumUserInterface extends IdentityInterface
     public function getPodiumId();
     
     /**
+     * @return string User's ID attribute.
+     */
+    public function getPodiumIdAttribute();
+    
+    /**
      * @return \yii\db\ActiveQuery Podium's moderators.
      */
     public function getPodiumModerators();

@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
@@ -11,21 +14,17 @@ use yii\grid\CheckboxColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Moderators');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-echo $this->render('/elements/admin/_navbar', ['active' => 'mods']);
-
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
 ?>
-
+<?= $this->render('/elements/admin/_navbar', ['active' => 'mods']); ?>
 <br>
-
 <?php if (empty($moderators)): ?>
 <div class="row">
     <div class="col-sm-12">
@@ -33,50 +32,47 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
     </div>
 </div>
 <?php else: ?>
-
 <div class="row">
     <br>
     <div class="col-sm-3">
-        <?= Html::beginTag('ul', ['class' => 'nav nav-pills nav-stacked']); ?>
+        <ul class="nav nav-pills nav-stacked">
 <?php foreach ($moderators as $moderator): ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Html::encode($moderator->getPodiumName()), ['mods', 'id' => $moderator->id]), ['role' => 'presentation', 'class' => $moderator->id == $mod->id ? 'active' : null]); ?>
+            <li role="presentation" class="<?= $moderator->id == $mod->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/mods', 'id' => $moderator->id]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Html::encode($moderator->getPodiumName()) ?></a></li>
 <?php endforeach; ?>
-        <?= Html::endTag('ul'); ?>
+        </ul>
     </div>
     <div class="col-sm-9">
         <h4><?= Yii::t('podium/view', 'List of Forums') ?></h4>
-        
         <?= Html::beginForm(); ?>
-        
         <?php Pjax::begin(); ?>
         <?= PageSizer::widget() ?>
         <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel'  => $searchModel,
+            'dataProvider'   => $dataProvider,
+            'filterModel'    => $searchModel,
             'filterSelector' => 'select#per-page',
-            'tableOptions' => ['class' => 'table table-striped table-hover'],
-            'columns'      => [
+            'tableOptions'   => ['class' => 'table table-striped table-hover'],
+            'columns'        => [
                 [
-                    'class'              => CheckboxColumn::className(),
-                    'headerOptions'      => ['class' => 'col-sm-1 text-center'],
-                    'contentOptions'     => ['class' => 'col-sm-1 text-center'],
+                    'class'           => CheckboxColumn::className(),
+                    'headerOptions'   => ['class' => 'col-sm-1 text-center'],
+                    'contentOptions'  => ['class' => 'col-sm-1 text-center'],
                     'checkboxOptions' => function($model) use ($mod) {
                         return ['value' => $model->id, 'checked' => $model->isMod($mod->id)];
                     }
                 ],
                 [
-                    'attribute'          => 'id',
-                    'label'              => Yii::t('podium/view', 'ID') . Helper::sortOrder('id'),
-                    'encodeLabel'        => false,
-                    'contentOptions'     => ['class' => 'col-sm-1 text-center'],
-                    'headerOptions'      => ['class' => 'col-sm-1 text-center'],
+                    'attribute'      => 'id',
+                    'label'          => Yii::t('podium/view', 'ID') . Helper::sortOrder('id'),
+                    'encodeLabel'    => false,
+                    'contentOptions' => ['class' => 'col-sm-1 text-center'],
+                    'headerOptions'  => ['class' => 'col-sm-1 text-center'],
                 ],
                 [
-                    'attribute'          => 'name',
-                    'label'              => Yii::t('podium/view', 'Name') . Helper::sortOrder('name'),
-                    'encodeLabel'        => false,
-                    'format'             => 'raw',
-                    'value'              => function ($model) use ($mod) {
+                    'attribute'      => 'name',
+                    'label'          => Yii::t('podium/view', 'Name') . Helper::sortOrder('name'),
+                    'encodeLabel'    => false,
+                    'format'         => 'raw',
+                    'value'          => function ($model) use ($mod) {
                         return Html::encode($model->name) . ($model->isMod($mod->id) ? Html::hiddenInput('pre[]', $model->id) : '');
                     },
                 ],
@@ -102,19 +98,14 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                 ]
             ],
         ]); ?>
-        <?php Pjax::end(); ?>
-        
-        <?= Html::hiddenInput('mod_id', $mod->id) ?>
-        
+        <?php Pjax::end(); ?>        
+        <?= Html::hiddenInput('mod_id', $mod->id) ?>        
         <div class="row">
             <div class="col-sm-12">
                 <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), ['class' => 'btn btn-primary btn-sm', 'name' => 'save-button']) ?>
             </div>
-        </div>
-        
+        </div>        
         <?= Html::endForm(); ?>
-
     </div>
 </div><br>
-
-<?php endif; ?>
+<?php endif;

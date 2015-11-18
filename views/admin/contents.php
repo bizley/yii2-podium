@@ -3,9 +3,13 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
@@ -16,19 +20,17 @@ $this->params['breadcrumbs'][] = $this->title;
 echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
 
 ?>
-
 <br>
-
 <div class="row">
     <div class="col-sm-3">
-        <?= Html::beginTag('ul', ['class' => 'nav nav-pills nav-stacked']); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Forum Terms and Conditions'), ['admin/contents/terms']), ['role' => 'presentation', 'class' => $model->name == 'terms' ? 'active' : null]); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Registration e-mail'), ['admin/contents/email-reg']), ['role' => 'presentation', 'class' => $model->name == 'email-reg' ? 'active' : null]); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'New address activation e-mail'), ['admin/contents/email-new']), ['role' => 'presentation', 'class' => $model->name == 'email-new' ? 'active' : null]); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Account reactivation e-mail'), ['admin/contents/email-react']), ['role' => 'presentation', 'class' => $model->name == 'email-react' ? 'active' : null]); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'Password reset e-mail'), ['admin/contents/email-pass']), ['role' => 'presentation', 'class' => $model->name == 'email-pass' ? 'active' : null]); ?>
-        <?= Html::tag('li', Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']) . ' ' . Yii::t('podium/view', 'New post in subscribed thread'), ['admin/contents/email-sub']), ['role' => 'presentation', 'class' => $model->name == 'email-sub' ? 'active' : null]); ?>
-        <?= Html::endTag('ul'); ?>
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" class="<?= $model->name == 'terms' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'terms']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Forum Terms and Conditions') ?></a></li>
+            <li role="presentation" class="<?= $model->name == 'email-reg' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-reg']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Registration e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == 'email-new' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-new']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New address activation e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == 'email-react' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-react']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Account reactivation e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == 'email-pass' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-pass']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Password reset e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == 'email-sub' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-sub']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New post in subscribed thread') ?></a></li>
+        </ul>
 <?php if (substr($model->name, 0, 6) == 'email-'): ?>
         <br>
         <div class="panel panel-default">

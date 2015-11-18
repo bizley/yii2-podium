@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
@@ -11,76 +14,64 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\web\View;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Forum Members');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('jQuery(\'#podiumModalDelete\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    jQuery(\'#deleteUrl\').attr(\'href\', button.data(\'url\'));
-});', View::POS_READY, 'bootstrap-modal-delete');
-$this->registerJs('jQuery(\'#podiumModalBan\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    jQuery(\'#banUrl\').attr(\'href\', button.data(\'url\'));
-});', View::POS_READY, 'bootstrap-modal-ban');
-$this->registerJs('jQuery(\'#podiumModalUnBan\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    jQuery(\'#unbanUrl\').attr(\'href\', button.data(\'url\'));
-});', View::POS_READY, 'bootstrap-modal-unban');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#deleteUrl').attr('href', button.data('url')); });");
+$this->registerJs("$('#podiumModalBan').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#banUrl').attr('href', button.data('url')); });");
+$this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#unbanUrl').attr('href', button.data('url')); });");
 
-echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
 ?>
-
+<?= $this->render('/elements/admin/_navbar', ['active' => 'members']); ?>
 <br>
-
 <?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
-    'dataProvider' => $dataProvider,
-    'filterModel'  => $searchModel,
+    'dataProvider'   => $dataProvider,
+    'filterModel'    => $searchModel,
     'filterSelector' => 'select#per-page',
-    'tableOptions' => ['class' => 'table table-striped table-hover'],
-    'columns'      => [
+    'tableOptions'   => ['class' => 'table table-striped table-hover'],
+    'columns'        => [
         [
-            'attribute'          => 'id',
-            'label'              => Yii::t('podium/view', 'ID') . Helper::sortOrder('id'),
-            'encodeLabel'        => false,
-            'contentOptions'     => ['class' => 'col-sm-1 text-right'],
-            'headerOptions'      => ['class' => 'col-sm-1 text-right'],
+            'attribute'      => 'id',
+            'label'          => Yii::t('podium/view', 'ID') . Helper::sortOrder('id'),
+            'encodeLabel'    => false,
+            'contentOptions' => ['class' => 'col-sm-1 text-right'],
+            'headerOptions'  => ['class' => 'col-sm-1 text-right'],
         ],
         [
-            'attribute'          => 'username',
-            'label'              => Yii::t('podium/view', 'Username') . Helper::sortOrder('username'),
-            'encodeLabel'        => false,
+            'attribute'   => 'username',
+            'label'       => Yii::t('podium/view', 'Username') . Helper::sortOrder('username'),
+            'encodeLabel' => false,
         ],
         [
-            'attribute'          => 'email',
-            'label'              => Yii::t('podium/view', 'E-mail') . Helper::sortOrder('email'),
-            'encodeLabel'        => false,
-            'format'             => 'raw',
-            'value'              => function ($model) {
+            'attribute'   => 'email',
+            'label'       => Yii::t('podium/view', 'E-mail') . Helper::sortOrder('email'),
+            'encodeLabel' => false,
+            'format'      => 'raw',
+            'value'       => function ($model) {
                 return Html::mailto($model->email);
             },
         ],
         [
-            'attribute'          => 'role',
-            'label'              => Yii::t('podium/view', 'Role') . Helper::sortOrder('role'),
-            'encodeLabel'        => false,
-            'filter'             => User::getRoles(),
-            'value'              => function ($model) {
+            'attribute'   => 'role',
+            'label'       => Yii::t('podium/view', 'Role') . Helper::sortOrder('role'),
+            'encodeLabel' => false,
+            'filter'      => User::getRoles(),
+            'value'       => function ($model) {
                 return Yii::t('podium/view', ArrayHelper::getValue(User::getRoles(), $model->role));
             },
         ],
         [
-            'attribute'          => 'status',
-            'label'              => Yii::t('podium/view', 'Status') . Helper::sortOrder('status'),
-            'encodeLabel'        => false,
-            'filter'             => User::getStatuses(),
-            'value'              => function ($model) {
+            'attribute'   => 'status',
+            'label'       => Yii::t('podium/view', 'Status') . Helper::sortOrder('status'),
+            'encodeLabel' => false,
+            'filter'      => User::getStatuses(),
+            'value'       => function ($model) {
                 return Yii::t('podium/view', ArrayHelper::getValue(User::getStatuses(), $model->status));
             },
         ],
@@ -102,7 +93,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                     }
                 },
-                'ban'            => function($url, $model) {
+                'ban' => function($url, $model) {
                     if ($model->id !== Yii::$app->user->id) {
                         if ($model->status !== User::STATUS_BANNED) {
                             return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ban Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalBan', 'data-url' => $url]);
@@ -124,9 +115,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'members']);
             ],
         ]
     ],
-]);
-
-?>
+]); ?>
 <?php Pjax::end(); ?>
 
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModalDelete">

@@ -4,6 +4,10 @@
  * Podium Module
  * Yii 2 Forum Module
  */
+
+use yii\helpers\Html;
+use yii\helpers\Url;
+
 ?>
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="category<?= $model->id ?>">
@@ -11,7 +15,7 @@
             <a data-toggle="collapse" href="#collapse<?= $model->id ?>" aria-expanded="true" aria-controls="collapse<?= $model->id ?>" class="pull-right">
                 <span class="glyphicon glyphicon-chevron-up"></span>
             </a>
-            <a href="<?= \yii\helpers\Url::to(['category', 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= \yii\helpers\Html::encode($model->name) ?></a>
+            <a href="<?= Url::to(['category', 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
         </h4>
     </div>
     <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="category<?= $model->id ?>">

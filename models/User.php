@@ -260,9 +260,9 @@ class User extends ActiveRecord implements PodiumUserInterface
     public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
     {
         if ($status === null) {
-            return static::findOne(['or', ['email' => $keyfield], ['username' => $keyfield]]);
+            return static::find()->where(['or', ['email' => $keyfield], ['username' => $keyfield]])->limit(1)->one();
         }
-        return static::findOne(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]]);
+        return static::find()->where(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]])->limit(1)->one();
     }
     
     /**
@@ -398,7 +398,16 @@ class User extends ActiveRecord implements PodiumUserInterface
      */
     public function getPodiumId()
     {
-        return $this->getPrimaryKey();
+        return $this->id;
+    }
+    
+    /**
+     * Returns user's ID attribute.
+     * @return integer
+     */
+    public function getPodiumIdAttribute()
+    {
+        return 'id';
     }
     
     /**

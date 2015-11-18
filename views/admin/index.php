@@ -3,14 +3,17 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Url;
 
-$this->title                   = Yii::t('podium/view', 'Administration Dashboard');
+$this->title = Yii::t('podium/view', 'Administration Dashboard');
 $this->params['breadcrumbs'][] = $this->title;
 
-echo  $this->render('/elements/admin/_navbar', ['active' => 'index']); ?>
-
+?>
+<?= $this->render('/elements/admin/_navbar', ['active' => 'index']); ?>
 <br>
 <div class="row">
     <div class="col-sm-3">

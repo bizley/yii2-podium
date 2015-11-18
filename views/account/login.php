@@ -3,22 +3,23 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->title                   = Yii::t('podium/view', 'Sign in');
+$this->title = Yii::t('podium/view', 'Sign in');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
 ?>
 <div class="row">
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
-        
             <div class="form-group">
                 <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'Username or E-mail')])->label(false) ?>
             </div>

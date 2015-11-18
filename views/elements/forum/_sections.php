@@ -4,6 +4,7 @@
  * Podium Module
  * Yii 2 Forum Module
  */
+
 ?>
 <div class="panel-group" role="tablist" aria-multiselectable="true">
     <?= \yii\widgets\ListView::widget([

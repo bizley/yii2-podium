@@ -4,7 +4,7 @@
  * TODO:
  * -----------------------------------------------------------------------------
  * panel glowny admina
- * grupy userow
+ * odblokowac pager na 100
  * rss
  * -----------------------------------------------------------------------------
  * 
@@ -43,7 +43,6 @@ use yii\web\GroupUrlRule;
  * Podium Module
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
- * requires 'bootstrap' => ['log', 'podium'],
  */
 class Module extends BaseModule implements BootstrapInterface
 {
