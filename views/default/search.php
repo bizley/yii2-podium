@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Html;
 
 if (!isset($author)) {
@@ -17,7 +20,6 @@ else {
     $type    = $model->type;
     $display = $model->display;
 }
-
 ?>
 <?php if (!empty($dataProvider)): ?>
 <?php
@@ -28,8 +30,8 @@ if (!empty($query)) {
 if (!empty($author)) {
     $title .= ' by "{author}"';
 }
-$this->title                   = Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $type == 'topics' ? 'threads' : 'posts']);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];
+$this->title = Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $type == 'topics' ? 'threads' : 'posts']);
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Search Forum'), 'url' => ['default/search']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -49,8 +51,8 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <?php else: ?>
 <?php
-$this->title                   = Yii::t('podium/view', 'Search Forum');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['index']];
+$this->title = Yii::t('podium/view', 'Search Forum');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">

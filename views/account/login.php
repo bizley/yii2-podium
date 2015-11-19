@@ -30,7 +30,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
                 <?= $form->field($model, 'rememberMe')->checkBox()->label(null, ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Don\'t use this option on public computers!')]) ?>
             </div>
             <div class="form-group">
-                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Sign in'), ['class' => 'btn btn-block btn-primary', 'name' => 'register-button']) ?>
+                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Sign in'), ['class' => 'btn btn-block btn-primary', 'name' => 'login-button']) ?>
             </div>
             <div class="form-group">
                 <a href="<?= Url::to('reset') ?>" class="pull-right"><?= Yii::t('podium/view', 'Reset Password') ?></a>

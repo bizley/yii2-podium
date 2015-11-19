@@ -101,7 +101,7 @@ class PodiumUser extends Component
     
     /**
      * Sets relation with Activity.
-     * @return \yii\db\ActiveQuery
+     * @return Activity
      */
     public function getActivity()
     {
@@ -155,7 +155,7 @@ class PodiumUser extends Component
     
     /**
      * Sets relation with Meta.
-     * @return \yii\db\ActiveQuery
+     * @return Meta
      */
     public function getMeta()
     {
@@ -173,7 +173,7 @@ class PodiumUser extends Component
     
     /**
      * Sets relation with Mod.
-     * @return \yii\db\ActiveQuery
+     * @return Mod[]
      */
     public function getMods()
     {
