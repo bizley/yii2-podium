@@ -3,7 +3,12 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
+use yii\helpers\Url;
+
 ?>
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -14,7 +19,7 @@
 <?php foreach ($latest as $post): ?>
         <tr>
             <td>
-                <a href="<?= \yii\helpers\Url::to(['default/show', 'id' => $post['id']]) ?>" class="center-block"><?= $post['title'] ?></a>
+                <a href="<?= Url::to(['default/show', 'id' => $post['id']]) ?>" class="center-block"><?= $post['title'] ?></a>
                 <small>
                     <?= Yii::$app->formatter->asRelativeTime($post['created']) ?> 
                     <?= $post['author'] ?>

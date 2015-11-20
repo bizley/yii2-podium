@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Html;
 
 $title = 'Search for {type}';
@@ -13,6 +16,7 @@ if (!empty($query)) {
 if (!empty($author)) {
     $title .= ' by "{author}"';
 }
+
 ?>
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="forumSearch">

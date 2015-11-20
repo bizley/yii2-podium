@@ -3,16 +3,17 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * 
  */
+
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 $content = $model->postData->content;
-$thread = Html::encode($model->postData->thread->name);
+$thread  = Html::encode($model->postData->thread->name);
 if ($type == 'topics') {
     foreach ($words as $word) {
         $thread = preg_replace("/$word/", '*#*&*?*' . $word . '*%*(*!*', $thread);
@@ -26,7 +27,8 @@ else {
     $content = str_replace(['*#*&*?*', '*%*(*!*'], ['<mark>', '</mark>'], $content);
 }
 
-?><div class="row" id="post<?= $model->postData->id ?>">
+?>
+<div class="row" id="post<?= $model->postData->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->postData->id ?>">
         <?= Avatar::widget(['author' => $model->postData->podiumUser->user, 'showName' => false]) ?>
     </div>

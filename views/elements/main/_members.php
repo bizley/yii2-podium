@@ -3,14 +3,18 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\Activity;
 use yii\helpers\Url;
 
 $lastActive = Activity::lastActive();
 
-?><div class="panel panel-default">
+?>
+<div class="panel panel-default">
     <div class="panel-body small">
         <p class="pull-right">
             <a href="<?= Url::to(['default/rss']) ?>">RSS</a>

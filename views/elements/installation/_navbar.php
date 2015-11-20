@@ -3,10 +3,14 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\bootstrap\NavBar;
 
-NavBar::begin([
+?>
+<?php NavBar::begin([
     'brandLabel'            => 'Podium',
     'brandUrl'              => ['default/index'],
     'options'               => ['class' => 'navbar-inverse navbar-default',],

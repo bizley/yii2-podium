@@ -3,57 +3,21 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
 
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('jQuery(\'.podium-quote\').click(function(e){
-    e.preventDefault();
-    var selection = \'\';
-    if (window.getSelection) selection = window.getSelection().toString();
-    else if (document.selection && document.selection.type != \'Control\') selection = document.selection.createRange().text;
-    jQuery(this).parent().find(\'.quote-selection\').val(selection);
-    jQuery(this).parent().find(\'.quick-quote-form\').submit();
-})', View::POS_READY, 'podium-quote');
-$this->registerJs('jQuery(\'.podium-thumb-up\').click(function(e){
-    e.preventDefault(); var $link = jQuery(this);
-    $link.removeClass(\'btn-success\').addClass(\'disabled text-muted\');
-    jQuery.post(\'' . Url::to(['default/thumb']) . '\', {thumb:\'up\',post:jQuery(this).data(\'post-id\')}, null, \'json\').
-        fail(function(){ console.log(\'Thumb Up Error!\'); }).
-        done(function(data){ 
-            $link.parent().find(\'.podium-thumb-info\').html(data.msg);
-            if (data.error==0) {
-                var cl=\'default\';
-                if (data.summ>0) cl=\'success\'; else if (data.summ<0) cl=\'danger\';
-                $link.parent().parent().parent().find(\'.podium-rating\').removeClass(\'label-default label-danger label-success\').addClass(\'label-\'+cl).text(data.summ);
-                $link.parent().parent().parent().find(\'.podium-rating-details\').text(data.likes+\' / \'+data.dislikes);
-            }
-            $link.parent().find(\'.podium-thumb-down\').removeClass(\'disabled text-muted\').addClass(\'btn-danger\'); 
-        });
-})', View::POS_READY, 'podium-thumb-up');
-$this->registerJs('jQuery(\'.podium-thumb-down\').click(function(e){
-    e.preventDefault(); var $link = jQuery(this);
-    $link.removeClass(\'btn-danger\').addClass(\'disabled text-muted\');
-    jQuery.post(\'' . Url::to(['default/thumb']) . '\', {thumb:\'down\',post:jQuery(this).data(\'post-id\')}, null, \'json\').
-        fail(function(){ console.log(\'Thumb Down Error!\'); }).
-        done(function(data){ 
-            $link.parent().find(\'.podium-thumb-info\').html(data.msg);
-            if (data.error==0) {
-                var cl=\'default\';
-                if (data.summ>0) cl=\'success\'; else if (data.summ<0) cl=\'danger\';
-                $link.parent().parent().parent().find(\'.podium-rating\').removeClass(\'label-default label-danger label-success\').addClass(\'label-\'+cl).text(data.summ);
-                $link.parent().parent().parent().find(\'.podium-rating-details\').text(data.likes+\' / \'+data.dislikes);
-            }
-            $link.parent().find(\'.podium-thumb-up\').removeClass(\'disabled text-muted\').addClass(\'btn-success\'); 
-        });
-})', View::POS_READY, 'podium-thumb-down');
-$this->registerJs('jQuery(\'.podium-rating\').click(function(e){ e.preventDefault(); jQuery(\'.podium-rating-details\').removeClass(\'hidden\'); })', View::POS_READY, 'podium-rating');
-$this->registerJs('jQuery(\'.podium-rating-details\').click(function(e){ e.preventDefault(); jQuery(\'.podium-rating-details\').addClass(\'hidden\'); })', View::POS_READY, 'podium-rating-hide');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
+$this->registerJs("$('.podium-quote').click(function (e) { e.preventDefault(); var selection = ''; if (window.getSelection) selection = window.getSelection().toString(); else if (document.selection && document.selection.type != 'Control') selection = document.selection.createRange().text; $(this).parent().find('.quote-selection').val(selection); $(this).parent().find('.quick-quote-form').submit(); })");
+$this->registerJs("$('.podium-thumb-up').click(function (e) { e.preventDefault(); var link = $(this); link.removeClass('btn-success').addClass('disabled text-muted'); $.post('" . Url::to(['default/thumb']) . "', {thumb:'up', post:$(this).data('post-id')}, null, 'json').fail(function(){ console.log('Thumb Up Error!'); }).done(function(data){ link.parent().find('.podium-thumb-info').html(data.msg); if (data.error == 0) { var cl = 'default'; if (data.summ > 0) cl = 'success'; else if (data.summ < 0) cl = 'danger'; link.parent().parent().parent().find('.podium-rating').removeClass('label-default label-danger label-success').addClass('label-' + cl).text(data.summ); link.parent().parent().parent().find('.podium-rating-details').text(data.likes + ' / ' + data.dislikes); } link.parent().find('.podium-thumb-down').removeClass('disabled text-muted').addClass('btn-danger'); }); })");
+$this->registerJs("$('.podium-thumb-down').click(function (e) { e.preventDefault(); var link = $(this); link.removeClass('btn-danger').addClass('disabled text-muted'); $.post('" . Url::to(['default/thumb']) . "', {thumb:'down', post:$(this).data('post-id')}, null, 'json').fail(function(){ console.log('Thumb Down Error!'); }).done(function(data){ link.parent().find('.podium-thumb-info').html(data.msg); if (data.error == 0) { var cl = 'default'; if (data.summ > 0) cl = 'success'; else if (data.summ < 0) cl = 'danger'; link.parent().parent().parent().find('.podium-rating').removeClass('label-default label-danger label-success').addClass('label-' + cl).text(data.summ); link.parent().parent().parent().find('.podium-rating-details').text(data.likes + ' / ' + data.dislikes); } link.parent().find('.podium-thumb-up').removeClass('disabled text-muted').addClass('btn-success'); }); })");
+$this->registerJs("$('.podium-rating').click(function (e) { e.preventDefault(); $('.podium-rating-details').removeClass('hidden'); })");
+$this->registerJs("$('.podium-rating-details').click(function (e) { e.preventDefault(); $('.podium-rating-details').addClass('hidden'); })");
 
 if (!Yii::$app->user->isGuest) {
     $model->markSeen();
@@ -69,7 +33,8 @@ elseif ($rating < 0) {
     $ratingClass = 'danger';
 }
 
-?><div class="row" id="post<?= $model->id ?>">
+?>
+<div class="row" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">
         <?= Avatar::widget(['author' => $model->podiumUser->user, 'showName' => false]) ?>
     </div>
@@ -78,9 +43,9 @@ elseif ($rating < 0) {
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right">
-                    <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?>
+                    <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></span>
 <?php if ($model->edited && $model->edited_at): ?>
-                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->edited_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->edited_at, 'long')]); ?>)</em>
+                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
 <?php endif; ?>
                     &mdash;
                     <span class="podium-rating label label-<?= $ratingClass ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Rating') ?>"><?= $rating ?></span>

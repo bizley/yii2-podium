@@ -3,18 +3,22 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\PodiumUser;
-use yii\helpers\Html;
+use yii\helpers\Url;
 
 $podiumUser        = new PodiumUser;
 $messageCount      = $podiumUser->getNewMessagesCount();
 $subscriptionCount = $podiumUser->getSubscriptionsCount();
 
-echo Html::beginTag('ul', ['class' => 'nav nav-pills nav-stacked']);
-echo Html::tag('li', Html::a(Yii::t('podium/view', 'My Profile'), ['profile/index']), ['role' => 'presentation', 'class' => $active == 'profile' ? 'active' : null]);
-echo Html::tag('li', Html::a(Yii::t('podium/view', 'Account Details'), ['profile/details']), ['role' => 'presentation', 'class' => $active == 'details' ? 'active' : null]);
-echo Html::tag('li', Html::a(Yii::t('podium/view', 'Forum Details'), ['profile/forum']), ['role' => 'presentation', 'class' => $active == 'forum' ? 'active' : null]);
-echo Html::tag('li', Html::a(($messageCount ? Html::tag('span', $messageCount, ['class' => 'badge pull-right']) : '') . Yii::t('podium/view', 'Messages'), ['messages/inbox']), ['role' => 'presentation', 'class' => $active == 'messages' ? 'active' : null]);
-echo Html::tag('li', Html::a(($subscriptionCount ? Html::tag('span', $subscriptionCount, ['class' => 'badge pull-right']) : '') . Yii::t('podium/view', 'Subscriptions'), ['profile/subscriptions']), ['role' => 'presentation', 'class' => $active == 'subscriptions' ? 'active' : null]);
-echo Html::endTag('ul');
+?>
+<ul class="nav nav-pills nav-stacked">
+    <li role="presentation" class="<?= $active == 'profile' ? 'active' : '' ?>"><a href="<?= Url::to(['profile/index']) ?>"><?= Yii::t('podium/view', 'My Profile') ?></a></li>
+    <li role="presentation" class="<?= $active == 'details' ? 'active' : '' ?>"><a href="<?= Url::to(['profile/details']) ?>"><?= Yii::t('podium/view', 'Account Details') ?></a></li>
+    <li role="presentation" class="<?= $active == 'forum' ? 'active' : '' ?>"><a href="<?= Url::to(['profile/forum']) ?>"><?= Yii::t('podium/view', 'Forum Details') ?></a></li>
+    <li role="presentation" class="<?= $active == 'messages' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/inbox']) ?>"><?php if ($messageCount): ?><span class="badge pull-right"><?= $messageCount ?></span><?php endif; ?><?= Yii::t('podium/view', 'Messages') ?></a></li>
+    <li role="presentation" class="<?= $active == 'subscriptions' ? 'active' : '' ?>"><a href="<?= Url::to(['profile/subscriptions']) ?>"><?php if ($subscriptionCount): ?><span class="badge pull-right"><?= $subscriptionCount ?></span><?php endif; ?><?= Yii::t('podium/view', 'Subscriptions') ?></a></li>
+</ul>
