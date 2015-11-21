@@ -3,25 +3,23 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\web\View;
 use yii\widgets\Pjax;
 
-$this->title                   = Yii::t('podium/view', 'Sent Messages');
+$this->title = Yii::t('podium/view', 'Sent Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip();', View::POS_READY, 'bootstrap-tooltip');
-$this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    var url = button.data(\'url\');
-    jQuery(\'#deleteUrl\').attr(\'href\', url);
-});', View::POS_READY, 'bootstrap-modal-delete');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
+$this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); var url = button.data('url'); $('#deleteUrl').attr('href', url); });");
 
 ?>
 <div class="row">
@@ -29,43 +27,40 @@ $this->registerJs('jQuery(\'#podiumModal\').on(\'show.bs.modal\', function(e) {
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
     <div class="col-sm-9">
-        
         <?= $this->render('/elements/messages/_navbar', ['active' => 'sent']) ?>
-        
         <br>
-        
 <?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
-    'dataProvider' => $dataProvider,
-    'filterModel'  => $searchModel,
+    'dataProvider'   => $dataProvider,
+    'filterModel'    => $searchModel,
     'filterSelector' => 'select#per-page',
-    'tableOptions' => ['class' => 'table table-striped table-hover'],
-    'columns'      => [
+    'tableOptions'   => ['class' => 'table table-striped table-hover'],
+    'columns'        => [
         [
-            'attribute'          => 'receiverName',
-            'label'              => Yii::t('podium/view', 'To') . Helper::sortOrder('receiverName'),
-            'encodeLabel'        => false,
-            'format'             => 'raw',
-            'value'              => function($model) {
+            'attribute'   => 'receiverName',
+            'label'       => Yii::t('podium/view', 'To') . Helper::sortOrder('receiverName'),
+            'encodeLabel' => false,
+            'format'      => 'raw',
+            'value'       => function($model) {
                 return $model->getReceiverName();
             }
         ],
         [
-            'attribute'          => 'topic',
-            'label'              => Yii::t('podium/view', 'Topic') . Helper::sortOrder('topic'),
-            'encodeLabel'        => false,
-            'format'             => 'raw',
-            'value'              => function($model) {
+            'attribute'   => 'topic',
+            'label'       => Yii::t('podium/view', 'Topic') . Helper::sortOrder('topic'),
+            'encodeLabel' => false,
+            'format'      => 'raw',
+            'value'       => function($model) {
                 return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id]);
             }
         ],
         [
-            'attribute'          => 'created_at',
-            'label'              => Yii::t('podium/view', 'Sent') . Helper::sortOrder('created_at'),
-            'encodeLabel'        => false,
-            'format'             => 'raw',
-            'value'              => function($model) {
+            'attribute'   => 'created_at',
+            'label'       => Yii::t('podium/view', 'Sent') . Helper::sortOrder('created_at'),
+            'encodeLabel' => false,
+            'format'      => 'raw',
+            'value'       => function($model) {
                 return Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]);
             }
         ],

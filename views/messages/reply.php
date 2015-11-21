@@ -3,20 +3,22 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use yii\web\View;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
-$this->title                   = Yii::t('podium/view', 'Reply to Message');
+$this->title = Yii::t('podium/view', 'Reply to Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
 ?>
 <div class="row">
@@ -24,11 +26,8 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
     <div class="col-sm-9">
-        
         <?= $this->render('/elements/messages/_navbar', ['active' => 'new']) ?>
-        
         <br>
-        
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
@@ -47,10 +46,10 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                 <div class="col-sm-8">
                     <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
                             'clientOptions' => [
-                                'height' => '100',
-                                'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
+                                'height'     => '100',
+                                'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                 'codemirror' => null,
-                                'toolbar' => Helper::summerNoteToolbars('full'),
+                                'toolbar'    => Helper::summerNoteToolbars('full'),
                             ],
                         ]) ?>
                 </div>
@@ -71,7 +70,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                     <div class="popover right podium">
                         <div class="arrow"></div>
                         <div class="popover-title">
-                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->created_at, 'long')]); ?></small>
+                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($reply->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($reply->created_at) ?></span></small>
                             <?= Html::encode($reply->topic) ?>
                         </div>
                         <div class="popover-content">
@@ -93,7 +92,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                     <div class="popover right podium">
                         <div class="arrow"></div>
                         <div class="popover-title">
-                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long')]); ?></small>
+                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($reply->reply->created_at) ?></span></small>
                             <?= Html::encode($reply->reply->topic) ?>
                         </div>
                         <div class="popover-content">

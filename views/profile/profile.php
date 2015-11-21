@@ -3,12 +3,15 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Html;
 use bizley\podium\components\Helper;
 use cebe\gravatar\Gravatar;
 
-$this->title                   = Yii::t('podium/view', 'My Profile');
+$this->title = Yii::t('podium/view', 'My Profile');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -21,11 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel-body">
 <?php if (!empty($model->meta->gravatar)): ?>
                 <?= Gravatar::widget([
-                    'email' => $model->getEmail(),
+                    'email'        => $model->getEmail(),
                     'defaultImage' => 'identicon',
-                    'rating' => 'r',
-                    'options' => [
-                        'alt' => Html::encode($model->getName()),
+                    'rating'       => 'r',
+                    'options'      => [
+                        'alt'   => Html::encode($model->getName()),
                         'class' => 'podium-avatar img-circle img-responsive pull-right',
                 ]]); ?>
 <?php elseif (!empty($model->meta->avatar)): ?>

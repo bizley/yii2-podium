@@ -3,32 +3,32 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use yii\web\View;
 use Zelenin\yii\widgets\Summernote\Summernote;
 
-$this->title                   = Yii::t('podium/view', 'New Message');
+$this->title = Yii::t('podium/view', 'New Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+
 ?>
 <div class="row">
     <div class="col-sm-3">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
     <div class="col-sm-9">
-        
         <?= $this->render('/elements/messages/_navbar', ['active' => 'new']) ?>
-        
         <br>
-        
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
@@ -44,7 +44,7 @@ $this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_REA
                                     'dataType' => 'json',
                                     'data'     => new JsExpression('function(params) { return {q:params.term}; }')
                                 ],
-                                'escapeMarkup'       => new JsExpression('function (markup) { return markup; }'),
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                             ],
                         ])->label(false); ?>
                 </div>

@@ -3,45 +3,20 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Url;
-use yii\web\View;
 use yii\bootstrap\Progress;
-
-$js = "var nextStep = function(step, version){
-    jQuery.ajax({
-        url: '" . Url::to(['install/update']) . "',
-        method: 'POST',
-        data: {step: step, from: version},
-        dataType: 'json'
-    }).fail(function(){
-        jQuery('#progressBar').addClass('hide');
-        jQuery('#installationError').removeClass('hide');
-    }).done(function(data){
-        jQuery('#progressBar .progress-bar').css('width', data.percent+'%').attr('aria-valuenow', data.percent).html(data.percent+'%');
-        jQuery('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>'+data.table+'</strong> '+data.result+'</li>');
-        if (data.percent < 100) nextStep(++step, version);
-        else {
-            jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
-            if (data.error) jQuery('#installationFinishedError').removeClass('hide');
-            else jQuery('#installationFinished').removeClass('hide');
-        }
-    });
-};
-jQuery('#installPodium').click(function(e){
-    e.preventDefault();
-    jQuery('#startInstallation').addClass('hide');
-    jQuery('#installationResults').removeClass('hide');
-    jQuery('#progressBar .progress-bar').css('width', '10px');
-    nextStep(0, '$dbVersion');
-});";
-
-$this->registerJs($js, View::POS_READY, 'podium-update');
 
 $this->title                   = Yii::t('podium/view', 'Podium Upgrade');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
+
+$this->registerJs("var nextStep = function(step, version) { $.ajax({url: '" . Url::to(['install/update']) . "', method: 'POST', data: {step: step, from: version}, dataType: 'json'}).fail(function(){ $('#progressBar').addClass('hide'); $('#installationError').removeClass('hide'); }).done(function(data){ $('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%'); $('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>' + data.table + '</strong> ' + data.result + '</li>'); if (data.percent < 100) nextStep(++step, version); else { $('#progressBar .progress-bar').removeClass('active progress-bar-striped'); if (data.error) $('#installationFinishedError').removeClass('hide'); else $('#installationFinished').removeClass('hide'); }}); }; $('#installPodium').click(function(e){ e.preventDefault(); $('#startInstallation').addClass('hide'); $('#installationResults').removeClass('hide'); $('#progressBar .progress-bar').css('width', '10px'); nextStep(0, '$dbVersion'); });");
+
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">

@@ -13,15 +13,11 @@ namespace bizley\podium\widgets;
  * here in case you are using the basic template.
  * 
  * @since 0.1
- */
-
-/**
+ * 
  * @link http://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- */
-
-/**
+ * 
  * Alert widget renders a message from session flash. All flash messages are displayed
  * in the sequence they were assigned using setFlash. You can set message as following:
  *

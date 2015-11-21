@@ -47,11 +47,11 @@ class Avatar extends Widget
             if ($meta) {
                 if (!empty($meta->gravatar)) {
                     $avatar = Gravatar::widget([
-                        'email' => $this->author->getEmail(),
+                        'email'        => $this->author->getEmail(),
                         'defaultImage' => 'identicon',
-                        'rating' => 'r',
-                        'options' => [
-                            'alt' => Html::encode($this->author->getPodiumName()),
+                        'rating'       => 'r',
+                        'options'      => [
+                            'alt'   => Html::encode($this->author->getPodiumName()),
                             'class' => 'podium-avatar img-circle img-responsive center-block',
                         ]
                     ]);
@@ -61,10 +61,8 @@ class Avatar extends Widget
                 }
             }
             $name = $this->showName ? $this->author->getPodiumTag() : '';
-            
         }
         else {
-            
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);
             $name = $this->showName ? Helper::deletedUserTag(true) : '';
         }

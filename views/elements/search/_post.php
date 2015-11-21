@@ -3,7 +3,8 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
- * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
 
 use bizley\podium\widgets\Avatar;
@@ -37,9 +38,9 @@ else {
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right">
-                    <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->postData->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->postData->created_at, 'long')]); ?>
+                    <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->postData->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->postData->created_at) ?></span>
 <?php if ($model->postData->edited && $model->postData->edited_at): ?>
-                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->postData->edited_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->postData->edited_at, 'long')]); ?>)</em>
+                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->postData->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->postData->edited_at) ?>)</span></em>
 <?php endif; ?>
                 </small>
                 <?= $model->postData->podiumUser->user->getPodiumTag() ?>

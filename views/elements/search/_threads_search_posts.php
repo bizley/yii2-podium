@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
 
@@ -20,13 +23,13 @@ foreach ($tmp as $tmp) {
 <br>
 <?php Pjax::begin();
 echo ListView::widget([
-    'dataProvider' => $dataProvider,
-    'itemView' => '/elements/search/_post',
-    'viewParams' => ['words' => $words, 'type' => $type],
-    'summary' => '',
-    'emptyText' => Yii::t('podium/view', $type == 'topics' ? 'No matching threads can be found.' : 'No matching posts can be found.'),
+    'dataProvider'     => $dataProvider,
+    'itemView'         => '/elements/search/_post',
+    'viewParams'       => ['words' => $words, 'type' => $type],
+    'summary'          => '',
+    'emptyText'        => Yii::t('podium/view', $type == 'topics' ? 'No matching threads can be found.' : 'No matching posts can be found.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
-    'pager' => ['options' => ['class' => 'pagination pull-right']]
+    'pager'            => ['options' => ['class' => 'pagination pull-right']]
 ]); 
 Pjax::end(); ?>
 <br>

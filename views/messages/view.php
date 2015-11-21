@@ -3,19 +3,21 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->title                   = Yii::t('podium/view', 'View Message');
+$this->title = Yii::t('podium/view', 'View Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
 $perm = false;
 if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_DELETED) || 
@@ -29,9 +31,7 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
     <div class="col-sm-9">
-        
         <?= $this->render('/elements/messages/_navbar', ['active' => 'view']) ?>
-        
         <br>
         <div <?= Helper::replyBgd() ?>>
             <div class="row">
@@ -42,18 +42,18 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
                     <div class="popover right podium">
                         <div class="arrow"></div>
                         <div class="popover-title">
-                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($model->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]); ?></small>
+                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></span></small>
                             <?= Html::encode($model->topic) ?>
                         </div>
                         <div class="popover-content">
                             <?= $model->content ?>
                             <div class="text-right">
 <?php if ($model->sender_id != Yii::$app->user->id && $model->senderUser !== null): ?>
-                                <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', ['reply', 'id' => $model->id], ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Reply to Message')]) ?>
+                                <a href="<?= Url::to(['messages/reply', 'id' => $model->id]) ?>" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Reply to Message') ?>"><span class="glyphicon glyphicon-share-alt"></span></a>
 <?php else: ?>
-                                <?= Html::a('<span class="glyphicon glyphicon-share-alt"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']); ?>
+                                <a href="#" class="btn btn-xs disabled text-muted"><span class="glyphicon glyphicon-share-alt"></span></a>
 <?php endif; ?>
-                                <?= Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => Yii::t('podium/view', 'Delete Message')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModal']) ?>
+                                <span data-toggle="modal" data-target="#podiumModal"><button class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Delete Message') ?>"><span class="glyphicon glyphicon-trash"></span></button></span>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
                     <div class="popover right podium">
                         <div class="arrow"></div>
                         <div class="popover-title">
-                            <small class="pull-right"><?= Html::tag('span', Yii::$app->formatter->asRelativeTime($reply->reply->created_at), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long')]); ?></small>
+                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($reply->reply->created_at) ?></span></small>
                             <?= Html::encode($reply->reply->topic) ?>
                         </div>
                         <div class="popover-content">

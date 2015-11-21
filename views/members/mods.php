@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
@@ -11,52 +14,50 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\web\View;
 use yii\widgets\Pjax;
 
-$this->title                   = Yii::t('podium/view', 'Moderation Team');
+$this->title = Yii::t('podium/view', 'Moderation Team');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
-echo Html::beginTag('ul', ['class' => 'nav nav-tabs']);
-echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-user"></span> ' . Yii::t('podium/view', 'Members List'), ['index']), ['role' => 'presentation']);
-echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-scissors"></span> ' . Yii::t('podium/view', 'Moderation Team'), ['mods']), ['role' => 'presentation', 'class' => 'active']);
-echo Html::endTag('ul'); ?>
-
+?>
+<ul class="nav nav-tabs">
+    <li role="presentation"><a href="<?= Url::to(['members/index']) ?>"><span class="glyphicon glyphicon-user"></span> <?= Yii::t('podium/view', 'Members List') ?></a></li>
+    <li role="presentation" class="active"><a href="<?= Url::to(['members/mods']) ?>"><span class="glyphicon glyphicon-scissors"></span> <?= Yii::t('podium/view', 'Moderation Team') ?></a></li>
+</ul>
 <br>
-
 <?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>
 <?= GridView::widget([
-    'dataProvider' => $dataProvider,
-    'filterModel'  => $searchModel,
+    'dataProvider'   => $dataProvider,
+    'filterModel'    => $searchModel,
     'filterSelector' => 'select#per-page',
-    'tableOptions' => ['class' => 'table table-striped table-hover'],
-    'columns'      => [
+    'tableOptions'   => ['class' => 'table table-striped table-hover'],
+    'columns'        => [
         [
-            'attribute'          => 'username',
-            'label'              => Yii::t('podium/view', 'Username') . Helper::sortOrder('username'),
-            'encodeLabel'        => false,
-            'format'             => 'raw',
-            'value'              => function ($model) {
+            'attribute'   => 'username',
+            'label'       => Yii::t('podium/view', 'Username') . Helper::sortOrder('username'),
+            'encodeLabel' => false,
+            'format'      => 'raw',
+            'value'       => function ($model) {
                 return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug]);
             },
         ],
         [
-            'attribute'          => 'role',
-            'label'              => Yii::t('podium/view', 'Role') . Helper::sortOrder('role'),
-            'encodeLabel'        => false,
-            'filter'             => false,
-            'value'              => function ($model) {
+            'attribute'   => 'role',
+            'label'       => Yii::t('podium/view', 'Role') . Helper::sortOrder('role'),
+            'encodeLabel' => false,
+            'filter'      => false,
+            'value'       => function ($model) {
                 return Yii::t('podium/view', ArrayHelper::getValue(User::getRoles(), $model->role));
             },
         ],
         [
-            'attribute'          => 'created_at',
-            'label'              => Yii::t('podium/view', 'Joined') . Helper::sortOrder('created_at'),
-            'encodeLabel'        => false,
-            'value'              => function ($model) {
+            'attribute'   => 'created_at',
+            'label'       => Yii::t('podium/view', 'Joined') . Helper::sortOrder('created_at'),
+            'encodeLabel' => false,
+            'value'       => function ($model) {
                 return Yii::$app->formatter->asDatetime($model->created_at);
             },
         ],
@@ -81,7 +82,5 @@ echo Html::endTag('ul'); ?>
             ],
         ]
     ],
-]);
-
-?>
-<?php Pjax::end(); ?>
+]); ?>
+<?php Pjax::end();

@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\assets\PodiumAsset;
 use bizley\podium\widgets\Alert;
 use yii\helpers\Html;

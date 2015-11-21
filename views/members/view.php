@@ -3,36 +3,32 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use cebe\gravatar\Gravatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->title                   = Yii::t('podium/view', 'Member View');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Members List'), 'url' => ['index']];
+$this->title = Yii::t('podium/view', 'Member View');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Members List'), 'url' => ['members/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs('jQuery(\'[data-toggle="tooltip"]\').tooltip()', View::POS_READY, 'bootstrap-tooltip');
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 if (!Yii::$app->user->isGuest) {
-    $this->registerJs('jQuery(\'#podiumModalIgnore\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    jQuery(\'#ignoreUrl\').attr(\'href\', button.data(\'url\'));
-});', View::POS_READY, 'bootstrap-modal-ban');
-    $this->registerJs('jQuery(\'#podiumModalUnIgnore\').on(\'show.bs.modal\', function(e) {
-    var button = jQuery(e.relatedTarget);
-    jQuery(\'#unignoreUrl\').attr(\'href\', button.data(\'url\'));
-});', View::POS_READY, 'bootstrap-modal-unban');
+    $this->registerJs("$('#podiumModalIgnore').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#ignoreUrl').attr('href', button.data('url')); });");
+    $this->registerJs("$('#podiumModalUnIgnore').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#unignoreUrl').attr('href', button.data('url')); });");
 }
 
-echo Html::beginTag('ul', ['class' => 'nav nav-tabs']);
-echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-user"></span> ' . Yii::t('podium/view', 'Members List'), ['index']), ['role' => 'presentation']);
-echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-scissors"></span> ' . Yii::t('podium/view', 'Moderation Team'), ['mods']), ['role' => 'presentation']);
-echo Html::tag('li', Html::a('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Member View'), ''), ['role' => 'presentation', 'class' => 'active']);
-echo Html::endTag('ul'); ?>
-
+?>
+<ul class="nav nav-tabs">
+    <li role="presentation"><a href="<?= Url::to(['members/index']) ?>"><span class="glyphicon glyphicon-user"></span> <?= Yii::t('podium/view', 'Members List') ?></a></li>
+    <li role="presentation"><a href="<?= Url::to(['members/mods']) ?>"><span class="glyphicon glyphicon-scissors"></span> <?= Yii::t('podium/view', 'Moderation Team') ?></a></li>
+    <li role="presentation" class="active"><a href="#"><span class="glyphicon glyphicon-eye-open"></span> <?= Yii::t('podium/view', 'Member View') ?></a></li>
+</ul>
 <br>
 <div class="row">
     <div class="col-sm-9">
@@ -41,18 +37,18 @@ echo Html::endTag('ul'); ?>
 <?php if (!Yii::$app->user->isGuest): ?>
                 <div class="pull-right">
 <?php if ($model->getId() !== Yii::$app->user->id): ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->getId()], ['class' => 'btn btn-default btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]); ?>
+                    <a href="<?= Url::to(['messages/new', 'user' => $model->getId()]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php else: ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-lg disabled text-muted']); ?>
+                    <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php endif; ?>
 <?php if ($model->getId() !== Yii::$app->user->id && $model->getRole() !== User::ROLE_ADMIN): ?>
 <?php if (!$model->isIgnoredBy(Yii::$app->user->id)): ?>
-                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->getId()])]); ?>
+                    <span data-toggle="modal" data-target="#podiumModalIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->getId()]) ?>"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Ignore Member') ?>"><span class="glyphicon glyphicon-ban-circle"></span></button></span>
 <?php else: ?>
-                    <?= Html::tag('span', Html::button('<span class="glyphicon glyphicon-ok-circle"></span>', ['class' => 'btn btn-success btn-lg', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Unignore Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalUnIgnore', 'data-url' => Url::to(['ignore', 'id' => $model->getId()])]); ?>
+                    <span data-toggle="modal" data-target="#podiumModalUnIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->getId()]) ?>"><button class="btn btn-success btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Unignore Member') ?>"><span class="glyphicon glyphicon-ok-circle"></span></button></span>
 <?php endif; ?>
 <?php else: ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', '#', ['class' => 'btn btn-lg disabled text-muted']); ?>
+                    <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-ban-circle"></span></a>
 <?php endif; ?>
                 </div>
 <?php if ($model->isIgnoredBy(Yii::$app->user->id)): ?>
@@ -87,11 +83,11 @@ echo Html::endTag('ul'); ?>
     <div class="col-sm-3">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
-            'email' => $model->getEmail(),
+            'email'        => $model->getEmail(),
             'defaultImage' => 'identicon',
-            'rating' => 'r',
-            'options' => [
-                'alt' => Yii::t('podium/view', 'Your Gravatar image'),
+            'rating'       => 'r',
+            'options'      => [
+                'alt'   => Yii::t('podium/view', 'Your Gravatar image'),
                 'class' => 'img-circle img-responsive',
             ]]); ?>
 <?php elseif (!empty($model->meta->avatar)): ?>

@@ -3,7 +3,10 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 ?>
 <tr>
     <th class="col-sm-7"><small><?= Yii::t('podium/view', 'Thread') ?></small></th>

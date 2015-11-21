@@ -3,14 +3,17 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  */
+
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\View;
 
-$this->registerJs('jQuery(\'[data-toggle="popover"]\').popover();', View::POS_READY, 'bootstrap-popover');
+$this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 
-?><td class="podium-thread-line">
+?>
+<td class="podium-thread-line">
     <a href="<?= Url::to(['default/show', 'id' => $model->post->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($model->post->content)) ?><br><strong><?= $model->post->podiumUser->user->getPodiumName() ?></strong> <?= Yii::$app->formatter->asRelativeTime($model->post->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'Found Post') ?>">
         <span class="glyphicon glyphicon-comment"></span>
     </a>
