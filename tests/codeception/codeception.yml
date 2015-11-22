@@ -1,0 +1,16 @@
+namespace: tests\codeception
+actor: Tester
+paths:
+    tests: .
+    log: _output
+    data: _data
+    helpers: _support
+settings:
+    bootstrap: _bootstrap.php
+    suite_class: \PHPUnit_Framework_TestSuite
+    colors: false
+    memory_limit: 1024M
+    log: true
+modules:
+    config:
+        test_entry_url: http://localhost:8080/frontend/web/index-test.php

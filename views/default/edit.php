@@ -45,10 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Post'))->widget(Summernote::className(), [
                                 'clientOptions' => [
-                                    'height' => '200',
-                                    'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
+                                    'height'     => '200',
+                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                     'codemirror' => null,
-                                    'toolbar' => Helper::summerNoteToolbars('full'),
+                                    'toolbar'    => Helper::summerNoteToolbars('full'),
                                 ],
                             ]) ?>
                         </div>

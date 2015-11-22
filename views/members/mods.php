@@ -14,6 +14,7 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Moderation Team');
@@ -41,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function ($model) {
-                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug]);
+                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug], ['data-pjax' => '0']);
             },
         ],
         [
@@ -69,11 +70,11 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'template'       => '{view}' . (!Yii::$app->user->isGuest ? ' {pm}' : ''),
             'buttons'        => [
                 'view' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
                 },
                 'pm' => function($url, $model) {
                     if ($model->id !== Yii::$app->user->id) {
-                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
+                        return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);

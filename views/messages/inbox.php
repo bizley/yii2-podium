@@ -56,7 +56,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function($model) {
-                return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id]);
+                return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id], ['data-pjax' => '0']);
             }
         ],
         [
@@ -76,11 +76,11 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'template'       => '{view} {reply} {delete}',
             'buttons'        => [
                 'view' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Message')]);
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Message')]);
                 },
                 'reply' => function($url, $model) {
                     if ($model->senderUser !== null) {
-                        return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ['class' => 'btn btn-success btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Reply to Message')]);
+                        return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ['class' => 'btn btn-success btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Reply to Message')]);
                     }
                     else {
                         return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);

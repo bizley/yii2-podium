@@ -31,10 +31,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Summernote::className(), [
                                 'clientOptions' => [
-                                    'height' => '100',
-                                    'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
+                                    'height'     => '100',
+                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                     'codemirror' => null,
-                                    'toolbar' => Helper::summerNoteToolbars(),
+                                    'toolbar'    => Helper::summerNoteToolbars(),
                                 ],
                             ]) ?>
                         </div>

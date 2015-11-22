@@ -52,7 +52,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function($model) {
-                return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id]);
+                return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id], ['data-pjax' => '0']);
             }
         ],
         [
@@ -72,7 +72,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'template'       => '{view} {delete}',
             'buttons'        => [
                 'view' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Message')]);
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Message')]);
                 },
                 'delete' => function($url) {
                     return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Message')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModal', 'data-url' => $url]);

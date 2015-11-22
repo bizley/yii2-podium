@@ -71,12 +71,12 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 
 <?php Pjax::begin(); ?>
 <?= ListView::widget([
-    'dataProvider' => $dataProvider,
-    'itemView' => '/elements/forum/_post',
-    'summary' => '',
-    'emptyText' => Yii::t('podium/view', 'No posts have been added yet.'),
+    'dataProvider'     => $dataProvider,
+    'itemView'         => '/elements/forum/_post',
+    'summary'          => '',
+    'emptyText'        => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
-    'pager' => ['options' => ['class' => 'pagination pull-right']]
+    'pager'            => ['options' => ['class' => 'pagination pull-right']]
 ]); ?> 
 <?php Pjax::end(); ?>
 
@@ -106,10 +106,10 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
                                 'clientOptions' => [
-                                    'height' => '100',
-                                    'lang' => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
+                                    'height'     => '100',
+                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
                                     'codemirror' => null,
-                                    'toolbar' => Helper::summerNoteToolbars(),
+                                    'toolbar'    => Helper::summerNoteToolbars(),
                                 ],
                             ]) ?>
                         </div>
