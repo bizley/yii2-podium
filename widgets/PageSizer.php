@@ -50,5 +50,4 @@ class PageSizer extends Widget
                 ['class' => 'pull-right form-inline']
             ) . '<br><br>';
     }
-
 }

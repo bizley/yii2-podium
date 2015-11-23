@@ -71,5 +71,4 @@ class Avatar extends Widget
         
         return $avatar . $name;
     }
-
 }

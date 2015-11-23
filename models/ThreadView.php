@@ -27,5 +27,4 @@ class ThreadView extends ActiveRecord
     {
         return '{{%podium_thread_view}}';
     }
-
 }

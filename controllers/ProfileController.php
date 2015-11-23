@@ -385,4 +385,4 @@ class ProfileController extends BaseController
             return $this->redirect(['default/index']);
         }
     }
-}                
+}

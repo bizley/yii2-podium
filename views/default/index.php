@@ -19,4 +19,4 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $this->render('/elements/misc/_latest', ['latest' => $latest]) ?>
     </div>
 </div>
-<?= $this->render('/elements/main/_members') ?>
+<?= $this->render('/elements/main/_members');

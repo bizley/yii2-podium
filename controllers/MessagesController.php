@@ -252,4 +252,4 @@ class MessagesController extends BaseController
             return $this->redirect(['inbox']);
         }        
     }
-}                
+}

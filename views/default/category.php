@@ -21,4 +21,4 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-<?= $this->render('/elements/main/_members') ?>
+<?= $this->render('/elements/main/_members');

@@ -38,5 +38,4 @@ class PostThumb extends ActiveRecord
             TimestampBehavior::className(),
         ];
     }
-
 }
