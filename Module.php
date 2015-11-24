@@ -1,18 +1,12 @@
 <?php
 
 /**
- * TODO:
- * -----------------------------------------------------------------------------
- * panel glowny admina
- * rss
- * -----------------------------------------------------------------------------
- * 
  * Podium Module
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @version 0.1 (beta)
- * @license TBA
+ * @license Apache License 2.0
  * 
  * https://github.com/bizley-code/yii2-podium
  * Please report all issues at GitHub

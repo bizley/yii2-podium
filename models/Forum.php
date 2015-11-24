@@ -132,11 +132,17 @@ class Forum extends ActiveRecord
      * @param integer|null $category_id
      * @return ActiveDataProvider
      */
-    public function search($category_id = null)
+    public function search($category_id = null, $onlyVisible = false)
     {
         $query = static::find();
         if ($category_id) {
-            $query->where(['category_id' => $category_id]);
+            $query->andWhere(['category_id' => $category_id]);
+        }
+        if ($onlyVisible) {
+            $query->joinWith(['category' => function ($query) {
+                $query->andWhere([Category::tableName() . '.visible' => 1]);
+            }]);
+            $query->andWhere([static::tableName() . '.visible' => 1]);
         }
 
         $dataProvider = new ActiveDataProvider([

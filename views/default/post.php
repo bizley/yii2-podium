@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="popover right podium">
             <div class="arrow"></div>
             <div class="popover-title">
-                <small class="pull-right"><?= Html::tag('span', Yii::t('podium/view', 'In a while'), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'As soon as you click Post Reply')]); ?></small>
+                <small class="pull-right"><span data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'As soon as you click Post Reply') ?>"><?= Yii::t('podium/view', 'In a while') ?></span></small>
                 <?= Yii::$app->user->identity->getPodiumTag() ?>
             </div>
             <div class="popover-content podium-content">

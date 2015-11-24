@@ -1514,11 +1514,11 @@ class DefaultController extends BaseController
         $headers->set('Content-Type', 'application/rss+xml; charset=utf-8');
 
         $response->content = RssView::widget([
-            'dataProvider' => (new Forum())->search(),
+            'dataProvider' => (new Forum)->search(null, true),
             'channel'      => [
-                'title'       => Yii::$app->name, // TODO: Podium title
+                'title'       => Config::getInstance()->get('name'),
                 'link'        => Url::to(['default/index'], true),
-                'description' => 'Podium Main Categories', // TODO: Podium description
+                'description' => Config::getInstance()->get('meta_description'),
                 'language'    => Yii::$app->language
             ],
             'items' => [
@@ -1532,7 +1532,7 @@ class DefaultController extends BaseController
                     },
                 'description' => function ($model, $widget) {
                         if (!empty($model->latest)) {
-                            return StringHelper::truncateWords($model->latest->content, 50);
+                            return StringHelper::truncateWords($model->latest->content, 50, '...', true);
                         }
                         return '';
                     },
@@ -1544,9 +1544,9 @@ class DefaultController extends BaseController
                     },
                 'author' => function ($model, $widget) {
                         if (!empty($model->latest)) {
-                            return $model->latest->user->getPodiumName();
+                            return $model->latest->podiumUser->getName();
                         }
-                        return '';
+                        return 'Podium';
                     },
                 'guid' => function ($model, $widget) {
                         if (!empty($model->latest)) {

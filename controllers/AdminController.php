@@ -16,6 +16,7 @@ use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
 use bizley\podium\models\LogSearch;
 use bizley\podium\models\Mod;
+use bizley\podium\models\Post;
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use Exception;
@@ -445,13 +446,14 @@ class AdminController extends BaseController
     }
     
     /**
-     * Dashboard
+     * Dashboard.
      * @return string
      */
     public function actionIndex()
     {
         return $this->render('index', [
-            'members' => (new PodiumUser)->getNewest(10)
+            'members' => (new PodiumUser)->getNewest(10),
+            'posts'   => Post::find()->orderBy(['id' => SORT_DESC])->limit(10)->all()
         ]);
     }
 
