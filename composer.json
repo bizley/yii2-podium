@@ -3,7 +3,7 @@
     "type": "yii2-extension",
     "description": "Yii 2 Forum Module.",
     "keywords": ["forum", "yii2", "extension", "podium"],
-    "license": "",
+    "license": "Apache License 2.0",
     "support": {
         "source": "https://github.com/bizley-code/yii2-podium"
     },
