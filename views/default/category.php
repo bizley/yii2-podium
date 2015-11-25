@@ -9,9 +9,9 @@
 
 use yii\helpers\Html;
 
-$this->title = Html::encode($model->name);
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = Html::encode($this->title);
 
 ?>
 <div class="row">

@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
-use yii\helpers\Url;
 use yii\bootstrap\Progress;
+use yii\helpers\Url;
 
 $this->title = Yii::t('podium/view', 'New Installation');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];

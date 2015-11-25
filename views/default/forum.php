@@ -11,10 +11,10 @@ use bizley\podium\rbac\Rbac;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = Html::encode($model->name);
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = Html::encode($this->title);
 
 ?>
 <?php if (Yii::$app->user->can(Rbac::PERM_CREATE_THREAD)): ?>

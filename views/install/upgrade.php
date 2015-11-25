@@ -7,10 +7,10 @@
  * @since 0.1
  */
 
-use yii\helpers\Url;
 use yii\bootstrap\Progress;
+use yii\helpers\Url;
 
-$this->title                   = Yii::t('podium/view', 'Podium Upgrade');
+$this->title = Yii::t('podium/view', 'Podium Upgrade');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;

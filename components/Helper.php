@@ -756,5 +756,15 @@ class Helper
                 'Pacific/Yap' => 'Pacific/Yap',
             ]
         ];
-    }    
+    }
+    
+    /**
+     * Adds forum name to view title.
+     * @param string $title
+     * @return string
+     */
+    public static function title($title)
+    {
+        return $title . ' - ' . Config::getInstance()->get('name');
+    }
 }

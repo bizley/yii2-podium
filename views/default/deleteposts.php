@@ -6,6 +6,7 @@
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  */
+
 use yii\helpers\Html;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
