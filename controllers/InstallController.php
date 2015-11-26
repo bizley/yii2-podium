@@ -61,6 +61,7 @@ class InstallController extends Controller
             }
         }
         
+        echo Yii::t('podium/view', 'Access to Podium installation is denied due to IP address restriction.');
         Yii::warning('Access to Podium installation is denied due to IP address restriction. The requested IP is ' . $ip, __METHOD__);
         return false;
     }

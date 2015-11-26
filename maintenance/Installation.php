@@ -276,19 +276,6 @@ class Installation extends Maintenance
     {
         return [
             [
-                'table'  => 'config',
-                'call'   => 'create',
-                'schema' => [
-                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
-                    'value' => Schema::TYPE_STRING . ' NOT NULL',
-                    'PRIMARY KEY (name)',
-                ],
-            ],
-            [
-                'table' => 'config',
-                'call'  => 'addConfig',
-            ],
-            [
                 'table'  => 'log',
                 'call'   => 'create',
                 'schema' => [
@@ -301,6 +288,19 @@ class Installation extends Maintenance
                     'model'    => Schema::TYPE_INTEGER,
                     'blame'    => Schema::TYPE_INTEGER,
                 ],
+            ],
+            [
+                'table'  => 'config',
+                'call'   => 'create',
+                'schema' => [
+                    'name'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'value' => Schema::TYPE_STRING . ' NOT NULL',
+                    'PRIMARY KEY (name)',
+                ],
+            ],
+            [
+                'table' => 'config',
+                'call'  => 'addConfig',
             ],
             [
                 'table' => 'log',

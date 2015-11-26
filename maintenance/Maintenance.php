@@ -139,7 +139,10 @@ class Maintenance extends Component
             return $this->outputSuccess(Yii::t('podium/flash', Messages::TABLE_CREATED, ['name' => $this->db->getSchema()->getRawTableName($this->getTable())]));
         }
         catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            // in case of creating log table don't try to log error in it if it's not available
+            if ($this->_table != 'log') {
+                Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            }
             $this->setError(true);
             return $this->outputDanger(Yii::t('podium/flash', Messages::TABLE_CREATING_ERROR, ['name' => $this->getTable()]) . ': ' .
                             Html::tag('pre', $e->getMessage()));
@@ -351,7 +354,8 @@ class Maintenance extends Component
             return true;
         }
         catch (Exception $e) {
-            Yii::warning(Messages::PREPARING_FOR_INSTALLATION, __METHOD__);
+            // Prepare for installation.
+            // No log because table might not be available.
         }
 
         return false;
