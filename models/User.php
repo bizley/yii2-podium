@@ -10,6 +10,7 @@ use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\components\PodiumUserInterface;
 use bizley\podium\log\Log;
+use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
@@ -143,7 +144,7 @@ class User extends ActiveRecord implements PodiumUserInterface
             ['email', 'unique'],
             ['new_email', 'unique', 'targetAttribute' => 'email'],
             ['password', 'passwordRequirements'],
-            ['password', 'compare'],
+            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
             ['anonymous', 'boolean'],
@@ -176,7 +177,7 @@ class User extends ActiveRecord implements PodiumUserInterface
             $transaction = self::getDb()->beginTransaction();
             try {
                 if ($this->save()) {
-                    if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole('user'), $this->id)) {
+                    if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
                         $transaction->commit();
                         return true;
                     }

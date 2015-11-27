@@ -86,22 +86,22 @@ class AdminController extends BaseController
                 if ($model->getStatus() == User::STATUS_ACTIVE) {
                     if ($model->ban()) {
                         Cache::getInstance()->delete('members.fieldlist');
-                        Log::info('User banned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        Log::info('User banned', $model->getId(), __METHOD__);
                         $this->success('User has been banned.');
                     }
                     else {
-                        Log::error('Error while banning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        Log::error('Error while banning user', $model->getId(), __METHOD__);
                         $this->error('Sorry! There was some error while banning the user.');
                     }
                 }
                 elseif ($model->getStatus() == User::STATUS_BANNED) {
                     if ($model->unban()) {
                         Cache::getInstance()->delete('members.fieldlist');
-                        Log::info('User unbanned', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        Log::info('User unbanned', $model->getId(), __METHOD__);
                         $this->success('User has been unbanned.');
                     }
                     else {
-                        Log::error('Error while unbanning user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        Log::error('Error while unbanning user', $model->getId(), __METHOD__);
                         $this->error('Sorry! There was some error while unbanning the user.');
                     }
                 }
@@ -200,11 +200,11 @@ class AdminController extends BaseController
                 if ($model->delete()) {
                     Cache::getInstance()->delete('members.fieldlist');
                     Cache::getInstance()->delete('forum.memberscount');
-                    Log::info('User deleted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                    Log::info('User deleted', $model->getId(), __METHOD__);
                     $this->success('User has been deleted.');
                 }
                 else {
-                    Log::error('Error while deleting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                    Log::error('Error while deleting user', $model->getId(), __METHOD__);
                     $this->error('Sorry! There was some error while deleting the user.');
                 }
             }
@@ -312,18 +312,18 @@ class AdminController extends BaseController
                     $transaction = User::getDb()->beginTransaction();
                     try {
                         if ($model->demoteTo(User::ROLE_MEMBER)) {
-                            if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                            if (Yii::$app->authManager->getRolesByUser($model->getId())) {
                                 Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->getId());
                             }
                             if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->getId())) {
                                 Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->getId()])->execute();
                                 $transaction->commit();
-                                Log::info('User demoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                                Log::info('User demoted', $model->getId(), __METHOD__);
                                 $this->success('User has been demoted.');
                                 return $this->redirect(['admin/members']);
                             }
                         }
-                        Log::error('Error while demoting user', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                        Log::error('Error while demoting user', $model->getId(), __METHOD__);
                         $this->error('Sorry! There was an error while demoting the user.');
                     }
                     catch (Exception $e) {
@@ -707,12 +707,12 @@ class AdminController extends BaseController
                     $transaction = User::getDb()->beginTransaction();
                     try {
                         if ($model->promoteTo(User::ROLE_MODERATOR)) {
-                            if (!empty(Yii::$app->authManager->getRolesByUser($model->getId()))) {
+                            if (Yii::$app->authManager->getRolesByUser($model->getId())) {
                                 Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->getId());
                             }
                             if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->getId())) {
                                 $transaction->commit();
-                                Log::info('User promoted', !empty($model->getId()) ? $model->getId() : '', __METHOD__);
+                                Log::info('User promoted', $model->getId(), __METHOD__);
                                 $this->success('User has been promoted.');
                                 return $this->redirect(['admin/mods', 'id' => $model->getId()]);
                             }

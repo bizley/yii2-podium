@@ -15,6 +15,8 @@
  * Podium requires Yii 2
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
+ * Podium requires PECL intl >= 2.0.0
+ * http://php.net/manual/en/intro.intl.php
  */
 namespace bizley\podium;
 
