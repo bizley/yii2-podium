@@ -76,10 +76,10 @@ class AdminController extends BaseController
             $model = (new PodiumUser)->findOne((int)$id);
 
             if (empty($model->user)) {
-                $this->error('Sorry! We can not find Member with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             }
             elseif ($model->getId() == Yii::$app->user->id) {
-                $this->error('Sorry! You can not ban or unban your own account.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You can not ban or unban your own account.'));
             }
             else {
 
@@ -87,31 +87,31 @@ class AdminController extends BaseController
                     if ($model->ban()) {
                         Cache::getInstance()->delete('members.fieldlist');
                         Log::info('User banned', $model->getId(), __METHOD__);
-                        $this->success('User has been banned.');
+                        $this->success(Yii::t('podium/flash', 'User has been banned.'));
                     }
                     else {
                         Log::error('Error while banning user', $model->getId(), __METHOD__);
-                        $this->error('Sorry! There was some error while banning the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while banning the user.'));
                     }
                 }
                 elseif ($model->getStatus() == User::STATUS_BANNED) {
                     if ($model->unban()) {
                         Cache::getInstance()->delete('members.fieldlist');
                         Log::info('User unbanned', $model->getId(), __METHOD__);
-                        $this->success('User has been unbanned.');
+                        $this->success(Yii::t('podium/flash', 'User has been unbanned.'));
                     }
                     else {
                         Log::error('Error while unbanning user', $model->getId(), __METHOD__);
-                        $this->error('Sorry! There was some error while unbanning the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while unbanning the user.'));
                     }
                 }
                 else {
-                    $this->error('Sorry! User has got the wrong status.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! User has got the wrong status.'));
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['admin/members']);
@@ -133,10 +133,10 @@ class AdminController extends BaseController
     public function actionClear()
     {
         if (Cache::getInstance()->flush()) {
-            $this->success('Cache has been cleared.');
+            $this->success(Yii::t('podium/flash', 'Cache has been cleared.'));
         }
         else {
-            $this->error('Sorry! There was some error while clearing the cache.');
+            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while clearing the cache.'));
         }
         
         return $this->redirect(['admin/settings']);
@@ -165,14 +165,14 @@ class AdminController extends BaseController
             
             if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
                 if ($model->save()) {
-                    $this->success('Content has been saved.');
+                    $this->success(Yii::t('podium/flash', 'Content has been saved.'));
                 }
                 else {
-                    $this->error('Sorry! There was some error while saving the content.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while saving the content.'));
                 }
             }
             else {
-                $this->error('You are not allowed to perform this action.');
+                $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
             }
             return $this->refresh();
         }
@@ -191,26 +191,26 @@ class AdminController extends BaseController
             $model = (new PodiumUser)->findOne((int)$id);
 
             if (empty($model->user)) {
-                $this->error('Sorry! We can not find Member with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             }
             elseif ($model->getId() == Yii::$app->user->id) {
-                $this->error('Sorry! You can not delete your own account.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You can not delete your own account.'));
             }
             else {
                 if ($model->delete()) {
                     Cache::getInstance()->delete('members.fieldlist');
                     Cache::getInstance()->delete('forum.memberscount');
                     Log::info('User deleted', $model->getId(), __METHOD__);
-                    $this->success('User has been deleted.');
+                    $this->success(Yii::t('podium/flash', 'User has been deleted.'));
                 }
                 else {
                     Log::error('Error while deleting user', $model->getId(), __METHOD__);
-                    $this->error('Sorry! There was some error while deleting the user.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the user.'));
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['admin/members']);
@@ -227,23 +227,23 @@ class AdminController extends BaseController
             $model = Category::findOne((int) $id);
 
             if (empty($model)) {
-                $this->error('Sorry! We can not find Category with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             }
             else {
                 if ($model->delete()) {
                     Cache::getInstance()->delete('forum.threadscount');
                     Cache::getInstance()->delete('forum.postscount');
                     Log::info('Category deleted', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->success('Category has been deleted.');
+                    $this->success(Yii::t('podium/flash', 'Category has been deleted.'));
                 }
                 else {
                     Log::error('Error while deleting category', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while deleting the category.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the category.'));
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['admin/categories']);
@@ -261,30 +261,30 @@ class AdminController extends BaseController
             $category = Category::findOne((int) $cid);
 
             if (empty($category)) {
-                $this->error('Sorry! We can not find Category with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
                 return $this->redirect(['admin/categories']);
             }
 
             $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
             if (empty($model)) {
-                $this->error('Sorry! We can not find Forum with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
             }
             else {
                 if ($model->delete()) {
                     Cache::getInstance()->delete('forum.threadscount');
                     Cache::getInstance()->delete('forum.postscount');
                     Log::info('Forum deleted', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->success('Forum has been deleted.');
+                    $this->success(Yii::t('podium/flash', 'Forum has been deleted.'));
                 }
                 else {
                     Log::error('Error while deleting forum', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while deleting the forum.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the forum.'));
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['admin/forums', 'cid' => $category->id]);
@@ -301,12 +301,12 @@ class AdminController extends BaseController
             $model = (new PodiumUser)->findOne((int)$id);
 
             if (empty($model->user)) {
-                $this->error('Sorry! We can not find User with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));
             }
             else {
 
                 if ($model->getRole() != User::ROLE_MODERATOR) {
-                    $this->error('You can only demote Moderators to Members.');
+                    $this->error(Yii::t('podium/flash', 'You can only demote Moderators to Members.'));
                 }
                 else {
                     $transaction = User::getDb()->beginTransaction();
@@ -319,23 +319,23 @@ class AdminController extends BaseController
                                 Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->getId()])->execute();
                                 $transaction->commit();
                                 Log::info('User demoted', $model->getId(), __METHOD__);
-                                $this->success('User has been demoted.');
+                                $this->success(Yii::t('podium/flash', 'User has been demoted.'));
                                 return $this->redirect(['admin/members']);
                             }
                         }
                         Log::error('Error while demoting user', $model->getId(), __METHOD__);
-                        $this->error('Sorry! There was an error while demoting the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while demoting the user.'));
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while demoting the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while demoting the user.'));
                     }
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['admin/members']);
@@ -351,7 +351,7 @@ class AdminController extends BaseController
         $model = Category::findOne((int) $id);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Category with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             return $this->redirect(['admin/categories']);
         }
         else {
@@ -359,14 +359,14 @@ class AdminController extends BaseController
                 if (Yii::$app->user->can(Rbac::PERM_UPDATE_CATEGORY)) {
                     if ($model->save()) {
                         Log::info('Category updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('Category has been updated.');
+                        $this->success(Yii::t('podium/flash', 'Category has been updated.'));
                     }
                     else {
-                        $this->error('Sorry! There was an error while updating the category.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the category.'));
                     }
                 }
                 else {
-                    $this->error('You are not allowed to perform this action.');
+                    $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
                 }
                 return $this->redirect(['admin/categories']);
             }
@@ -389,14 +389,14 @@ class AdminController extends BaseController
         $category = Category::findOne((int) $cid);
 
         if (empty($category)) {
-            $this->error('Sorry! We can not find Category with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             return $this->redirect(['admin/categories']);
         }
 
         $model = Forum::findOne(['id' => (int) $id, 'category_id' => $category->id]);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Forum with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
             return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
         else {
@@ -404,14 +404,14 @@ class AdminController extends BaseController
                 if (Yii::$app->user->can(Rbac::PERM_UPDATE_FORUM)) {
                     if ($model->save()) {
                         Log::info('Forum updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('Forum has been updated.');
+                        $this->success(Yii::t('podium/flash', 'Forum has been updated.'));
                     }
                     else {
-                        $this->error('Sorry! There was an error while updating the forum.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the forum.'));
                     }
                 }
                 else {
-                    $this->error('You are not allowed to perform this action.');
+                    $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
                 }
                 return $this->redirect(['admin/forums']);
             }
@@ -434,7 +434,7 @@ class AdminController extends BaseController
         $model = Category::findOne((int) $cid);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Category with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             return $this->redirect(['admin/categories']);
         }
 
@@ -496,18 +496,18 @@ class AdminController extends BaseController
     {
         if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
             if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
-                $this->error('Sorry! We can not find the moderator or forum with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the moderator or forum with this ID.'));
             }
             else {
                 $mod = (new PodiumUser)->findModerator((int)$uid);
                 if (empty($mod->user)) {
-                    $this->error('Sorry! We can not find the moderator with this ID.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the moderator with this ID.'));
                     return $this->redirect(['admin/mods']);
                 }
 
                 $forum = Forum::findOne(['id' => $fid]);
                 if (!$forum) {
-                    $this->error('Sorry! We can not find the forum with this ID.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum with this ID.'));
                 }
                 else {
                     try {
@@ -519,11 +519,11 @@ class AdminController extends BaseController
                         }
                         Cache::getInstance()->deleteElement('forum.moderators', $forum->id);
                         Log::info('Moderator updated', $mod->getId(), __METHOD__);
-                        $this->success('Moderation list has been updated.');
+                        $this->success(Yii::t('podium/flash', 'Moderation list has been updated.'));
                     }
                     catch (Exception $e) {
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while updating the moderatoration list.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the moderatoration list.'));
                     }
                 }
 
@@ -531,7 +531,7 @@ class AdminController extends BaseController
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
         return $this->redirect(['admin/mods']);
     }
@@ -567,7 +567,7 @@ class AdminController extends BaseController
                 $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
 
                 if ($mod_id != $mod->getId()) {
-                    $this->error('Sorry! There was an error while selecting the moderator ID.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was an error while selecting the moderator ID.'));
                 }
                 else {
                     try {
@@ -595,18 +595,18 @@ class AdminController extends BaseController
                         }
                         Cache::getInstance()->delete('forum.moderators');
                         Log::info('Moderators updated', null, __METHOD__);
-                        $this->success('Moderation list has been saved.');
+                        $this->success(Yii::t('podium/flash', 'Moderation list has been saved.'));
                     }
                     catch (Exception $e) {
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while saving the moderatoration list.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while saving the moderatoration list.'));
                     }
 
                     return $this->refresh();
                 }
             }
             else {
-                $this->error('You are not allowed to perform this action.');
+                $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
             }
         }
         
@@ -631,7 +631,7 @@ class AdminController extends BaseController
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Log::info('Category added', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('New category has been created.');
+                $this->success(Yii::t('podium/flash', 'New category has been created.'));
                 return $this->redirect(['admin/categories']);
             }
 
@@ -641,7 +641,7 @@ class AdminController extends BaseController
             ]);
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
             return $this->redirect(['admin/categories']);
         }
     }
@@ -656,7 +656,7 @@ class AdminController extends BaseController
         $category = Category::findOne((int) $cid);
 
         if (empty($category)) {
-            $this->error('Sorry! We can not find Category with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             return $this->redirect(['admin/categories']);
         }
 
@@ -668,7 +668,7 @@ class AdminController extends BaseController
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Log::info('Forum added', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('New forum has been created.');
+                $this->success(Yii::t('podium/flash', 'New forum has been created.'));
                 return $this->redirect(['admin/forums', 'cid' => $category->id]);
             }
             else {
@@ -680,7 +680,7 @@ class AdminController extends BaseController
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
             return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
     }
@@ -696,12 +696,12 @@ class AdminController extends BaseController
             $model = (new PodiumUser)->findOne((int)$id);
 
             if (empty($model->user)) {
-                $this->error('Sorry! We can not find User with this ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));
             }
             else {
 
                 if ($model->getRole() != User::ROLE_MEMBER) {
-                    $this->error('You can only promote Members to Moderators.');
+                    $this->error(Yii::t('podium/flash', 'You can only promote Members to Moderators.'));
                 }
                 else {
                     $transaction = User::getDb()->beginTransaction();
@@ -713,22 +713,22 @@ class AdminController extends BaseController
                             if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->getId())) {
                                 $transaction->commit();
                                 Log::info('User promoted', $model->getId(), __METHOD__);
-                                $this->success('User has been promoted.');
+                                $this->success(Yii::t('podium/flash', 'User has been promoted.'));
                                 return $this->redirect(['admin/mods', 'id' => $model->getId()]);
                             }
                         }
-                        $this->error('Sorry! There was an error while promoting the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while promoting the user.'));
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while promoting the user.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while promoting the user.'));
                     }
                 }
             }
         }
         else {
-            $this->error('You are not allowed to perform this action.');
+            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
         }
 
         return $this->redirect(['members']);
@@ -746,15 +746,15 @@ class AdminController extends BaseController
             if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
                 if ($model->update($data)) {
                     Log::info('Settings updated', null, __METHOD__);
-                    $this->success('Settings have been updated.');
+                    $this->success(Yii::t('podium/flash', 'Settings have been updated.'));
                     return $this->refresh();
                 }
                 else {
-                    $this->error('One of the setting\'s value is too long (255 characters max).');
+                    $this->error(Yii::t('podium/flash', 'One of the setting\'s value is too long (255 characters max).'));
                 }
             }
             else {
-                $this->error('You are not allowed to perform this action.');
+                $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
             }
         }
 
@@ -895,7 +895,7 @@ class AdminController extends BaseController
         $model = (new PodiumUser)->findOne((int)$id);
 
         if (empty($model->user)) {
-            $this->error('Sorry! We can not find Member with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['admin/members']);
         }
 

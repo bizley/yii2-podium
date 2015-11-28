@@ -552,7 +552,7 @@ class Maintenance extends Component
     
     /**
      * Installation steps to be set.
-     * Overridden by [[Installation]] and [[Update]].
+     * Overridden by Installation and Update.
      */
     public static function steps()
     {

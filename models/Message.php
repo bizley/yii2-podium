@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
@@ -17,6 +18,8 @@ use yii\helpers\HtmlPurifier;
 /**
  * Message model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $sender_id
  * @property integer $receiver_id
@@ -38,36 +41,17 @@ class Message extends ActiveRecord
     
     const RE = 'Re:';
     
+    /**
+     * @var string Sender's name
+     */
     public $senderName;
+    
+    /**
+     * @var string Receiver's name
+     */
     public $receiverName;
     
-    public static function re()
-    {
-        return Yii::t('podium/view', self::RE);
-    }
-
-    public static function getInboxStatuses()
-    {
-        return [
-            self::STATUS_NEW, self::STATUS_READ
-        ];
-    }
-    
-    public static function getSentStatuses()
-    {
-        return [
-            self::STATUS_READ
-        ];
-    }
-    
-    public static function getDeletedStatuses()
-    {
-        return [
-            self::STATUS_DELETED
-        ];
-    }
-
-        /**
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -112,35 +96,94 @@ class Message extends ActiveRecord
         ];
     }
     
+    /**
+     * Returns Re: prefix for subject.
+     * @return string
+     */
+    public static function re()
+    {
+        return Yii::t('podium/view', self::RE);
+    }
+
+    /**
+     * Returns list of inbox statuse.
+     * @return string[]
+     */
+    public static function getInboxStatuses()
+    {
+        return [self::STATUS_NEW, self::STATUS_READ];
+    }
+    
+    /**
+     * Returns list of sent statuses.
+     * @return string[]
+     */
+    public static function getSentStatuses()
+    {
+        return [self::STATUS_READ];
+    }
+    
+    /**
+     * Returns list of deleted statuses.
+     * @return string[]
+     */
+    public static function getDeletedStatuses()
+    {
+        return [self::STATUS_DELETED];
+    }
+
+    /**
+     * Returns sender User.
+     * @return User
+     */
     public function getSenderUser()
     {
         return $this->hasOne(User::className(), ['id' => 'sender_id']);
     }
     
+    /**
+     * Returns receiver User.
+     * @return User
+     */
     public function getReceiverUser()
     {
         return $this->hasOne(User::className(), ['id' => 'receiver_id']);
     }
     
+    /**
+     * Returns sender's name.
+     * @return string
+     */
     public function getSenderName()
     {
         return !empty($this->senderUser) ? $this->senderUser->getPodiumTag() : Helper::deletedUserTag();
     }
     
+    /**
+     * Returns receiver's name.
+     * @return string
+     */
     public function getReceiverName()
     {
         return !empty($this->receiverUser) ? $this->receiverUser->getPodiumTag() : Helper::deletedUserTag();
     }
     
+    /**
+     * Returns reply Message.
+     * @return Message
+     */
     public function getReply()
     {
         return $this->hasOne(self::className(), ['id' => 'replyto']);
     }
     
+    /**
+     * Sends message.
+     * @return boolean
+     */
     public function send()
     {
-        $query = new Query;
-        if (!$query->select('id')->from(User::tableName())->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
+        if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
             return false;
         }
         
@@ -149,7 +192,6 @@ class Message extends ActiveRecord
         $this->receiver_status = self::STATUS_NEW;
         
         if ($this->save()) {
-            
             Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
             return true;
         }
@@ -157,6 +199,11 @@ class Message extends ActiveRecord
         return false;
     }
     
+    /**
+     * Removes message.
+     * @param integer $perm Permanent removal flag
+     * @return boolean
+     */
     public function remove($perm = 0)
     {
         $clearCache = false;

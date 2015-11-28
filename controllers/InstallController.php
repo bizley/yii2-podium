@@ -156,6 +156,12 @@ class InstallController extends Controller
         return $this->render('upgrade', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
     }
     
+    /**
+     * Comparing versions.
+     * @param array $a
+     * @param array $b
+     * @return string
+     */
     public function compareVersions($a, $b)
     {
         $versionPos = max(count($a), count($b));

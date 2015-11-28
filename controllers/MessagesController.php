@@ -66,7 +66,7 @@ class MessagesController extends BaseController
     public function actionDelete($id = null, $perm = 0)
     {
         if (!is_numeric($id) || $id < 1 || !in_array($perm, [0, 1])) {
-            $this->error('Sorry! We can not find the message you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
             return $this->redirect(['inbox']);
         }
         else {
@@ -76,19 +76,19 @@ class MessagesController extends BaseController
             if ($model) {
                 if ($model->remove($perm)) {
                     if ($perm) {
-                        $this->success('Message has been deleted permanently.');
+                        $this->success(Yii::t('podium/flash', 'Message has been deleted permanently.'));
                     }
                     else {
-                        $this->success('Message has been moved to Deleted Messages.');
+                        $this->success(Yii::t('podium/flash', 'Message has been moved to Deleted Messages.'));
                     }
                 }
                 else {
                     Log::error('Error while deleting message', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->error('Sorry! We can not delete this message. Contact administrator about this problem.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
             }
             else {
-                $this->error('Sorry! We can not find the message with the given ID.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             }
             if ($perm) {
                 return $this->redirect(['deleted']);
@@ -150,12 +150,12 @@ class MessagesController extends BaseController
                 if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
 
                     if ($model->send()) {
-                        $this->success('Message has been sent.');
+                        $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                         return $this->redirect(['inbox']);
                     }
                 }
                 else {
-                    $this->error('Sorry! This member ignores you so you can not send the message.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
                 }
             }
         }
@@ -187,12 +187,12 @@ class MessagesController extends BaseController
                         $model->replyto = $reply->id;
 
                         if ($model->send()) {
-                            $this->success('Message has been sent.');
+                            $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                             return $this->redirect(['inbox']);
                         }
                     }
                     else {
-                        $this->error('Sorry! This member ignores you so you can not send the message.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
                     }
                 }
             }
@@ -205,7 +205,7 @@ class MessagesController extends BaseController
             ]);
         }
         else {
-            $this->error('Sorry! We can not find the message with the given ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['inbox']);
         }
     }
@@ -248,7 +248,7 @@ class MessagesController extends BaseController
             ]);
         }
         else {
-            $this->error('Sorry! We can not find the message with the given ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['inbox']);
         }        
     }

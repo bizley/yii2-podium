@@ -8,12 +8,26 @@ namespace bizley\podium\models;
 
 use yii\base\Model;
 
+/**
+ * ReForm model
+ * Calls for password reset and new activation link.
+ *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class ReForm extends Model
 {
 
+    /**
+     * @var string Username or email
+     */
     public $username;
+    
     private $_user = false;
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -21,6 +35,11 @@ class ReForm extends Model
         ];
     }
 
+    /**
+     * Returns User.
+     * @param integer $status
+     * @return User
+     */
     public function getUser($status = null)
     {
         if ($this->_user === false) {
@@ -30,6 +49,10 @@ class ReForm extends Model
         return $this->_user;
     }
 
+    /**
+     * Generates new password reset token.
+     * @return boolean
+     */
     public function reset()
     {
         $user = $this->getUser();
@@ -43,6 +66,10 @@ class ReForm extends Model
         return false;
     }
     
+    /**
+     * Generates new activation token.
+     * @return boolean
+     */
     public function reactivate()
     {
         $user = $this->getUser(User::STATUS_REGISTERED);

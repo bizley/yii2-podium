@@ -41,10 +41,10 @@ class BaseController extends YiiController
 
             if (Config::getInstance()->get('maintenance_mode') == '1') {
                 if ($action->id !== 'maintenance') {
-                    $this->warning(Messages::MAINTENANCE_WARNING, [
-                        'maintenancePage' => Html::a(Yii::t('podium/view', Messages::PAGE_MAINTENANCE), ['default/maintenance']),
-                        'settingsPage' => Html::a(Yii::t('podium/view', Messages::PAGE_SETTINGS), ['admin/settings']),
-                    ]);
+                    $this->warning(Yii::t('podium/flash', Messages::MAINTENANCE_WARNING, [
+                        'maintenancePage' => Html::a(Yii::t('podium/flash', Messages::PAGE_MAINTENANCE), ['default/maintenance']),
+                        'settingsPage' => Html::a(Yii::t('podium/flash', Messages::PAGE_SETTINGS), ['admin/settings']),
+                    ]));
                     if (!Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
                         return $this->redirect(['default/maintenance']);
                     }

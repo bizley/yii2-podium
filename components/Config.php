@@ -82,7 +82,7 @@ class Config
     }
     
     /**
-     * Alias for [[fromCache()]].
+     * Alias for fromCache().
      * @return array
      */
     public function all()

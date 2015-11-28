@@ -23,11 +23,10 @@ use yii\db\Query;
  *
  * Base User object for Podium.
  * User Identity class is provided with Yii::$app->user->identityClass component.
- * By default User Identity class is the instance of 
- * [[\bizley\podium\models\User]] but it can be changed by setting 
- * [[\bizley\podium\Module::$userComponent]] to 'inherit'. Podium then takes 
- * whatever is set to be User Identity class as long as it implements 
- * [[\bizley\podium\components\PodiumUserInterface]].
+ * By default User Identity class is the instance of \bizley\podium\models\User 
+ * but it can be changed by setting \bizley\podium\Module::$userComponent to 
+ * 'inherit'. Podium then takes whatever is set to be User Identity class as 
+ * long as it implements \bizley\podium\components\PodiumUserInterface.
  */
 class PodiumUser extends Component
 {
@@ -62,7 +61,7 @@ class PodiumUser extends Component
     
     /**
      * Demotes user to given role.
-     * @see [[\bizley\podium\models\User::getRoles()]]
+     * @see \bizley\podium\models\User::getRoles()
      * @param integer $role role ID
      * @return boolean
      */
@@ -350,7 +349,7 @@ class PodiumUser extends Component
     
     /**
      * Promotes user to given role.
-     * @see [[\bizley\podium\models\User::getRoles()]]
+     * @see \bizley\podium\models\User::getRoles()
      * @param integer $role role ID
      * @return boolean
      */

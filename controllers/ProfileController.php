@@ -120,7 +120,7 @@ class ProfileController extends BaseController
                         }
                         else {
                             Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->success('Your account has been updated.');
+                            $this->success(Yii::t('podium/flash', 'Your account has been updated.'));
                         }
 
                         return $this->refresh();
@@ -164,7 +164,7 @@ class ProfileController extends BaseController
                     if (!FileHelper::createDirectory($path)) {
                         $folderExists = false;
                         Log::error('Error while creating avatars folder', null, __METHOD__);
-                        $this->error('Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.'));
                     }
                 }
                 if ($folderExists) {
@@ -182,11 +182,11 @@ class ProfileController extends BaseController
                 if ($uploadAvatar) {
                     if (!$avatar->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
                         Log::error('Error while saving avatar image', null, __METHOD__);
-                        $this->error('Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.'));
                     }
                 }
                 Log::info('Profile updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Your profile details have been updated.');
+                $this->success(Yii::t('podium/flash', 'Your profile details have been updated.'));
                 return $this->refresh();
             }
             else {
@@ -243,12 +243,12 @@ class ProfileController extends BaseController
             try {
                 if (!empty($selection)) {
                     Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $selection, 'user_id' => Yii::$app->user->id])->execute();
-                    $this->success('Subscription list has been updated.');
+                    $this->success(Yii::t('podium/flash', 'Subscription list has been updated.'));
                 }
             }
             catch (Exception $e) {
                 Log::error($e->getMessage(), null, __METHOD__);
-                $this->error('Sorry! There was an error while unsubscribing the thread list.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while unsubscribing the thread list.'));
             }
 
             return $this->refresh();
@@ -267,32 +267,32 @@ class ProfileController extends BaseController
         $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Subscription with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         }
         else {
 
             if ($model->post_seen == Subscription::POST_SEEN) {
                 if ($model->unseen()) {
                     Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
-                    $this->success('Thread has been marked unseen.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been marked unseen.'));
                 }
                 else {
                     Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while marking the thread.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
             }
             elseif ($model->post_seen == Subscription::POST_NEW) {
                 if ($model->seen()) {
                     Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
-                    $this->success('Thread has been marked seen.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been marked seen.'));
                 }
                 else {
                     Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while marking the thread.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
             }
             else {
-                $this->error('Sorry! Subscription has got the wrong status.');
+                $this->error(Yii::t('podium/flash', 'Sorry! Subscription has got the wrong status.'));
             }
         }
 
@@ -309,17 +309,17 @@ class ProfileController extends BaseController
         $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
 
         if (empty($model)) {
-            $this->error('Sorry! We can not find Subscription with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         }
         else {
 
             if ($model->delete()) {
                 Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
-                $this->success('Thread has been unsubscribed.');
+                $this->success(Yii::t('podium/flash', 'Thread has been unsubscribed.'));
             }
             else {
                 Log::error('Error while deleting subscription', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->error('Sorry! There was some error while deleting the subscription.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the subscription.'));
             }
         }
 

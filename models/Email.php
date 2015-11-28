@@ -46,9 +46,7 @@ class Email extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
     
     /**

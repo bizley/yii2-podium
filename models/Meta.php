@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
@@ -14,7 +15,10 @@ use bizley\podium\components\Helper;
 
 /**
  * Meta model
+ * User's meta data.
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property string $location
@@ -27,7 +31,14 @@ use bizley\podium\components\Helper;
 class Meta extends ActiveRecord
 {
 
+    /**
+     * @var string Current password (write-only)
+     */
     public $current_password;
+    
+    /**
+     * @var mixed Avatar image
+     */
     public $image;
 
     /**
@@ -43,9 +54,7 @@ class Meta extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
 
     /**
@@ -80,6 +89,10 @@ class Meta extends ActiveRecord
         }
     }
     
+    /**
+     * Validates current password.
+     * @param string $attribute
+     */
     public function validateCurrentPassword($attribute)
     {
         if (!empty($this->user_id)) {

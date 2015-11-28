@@ -111,13 +111,13 @@ class MembersController extends BaseController
                 $model = (new PodiumUser)->findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
 
                 if (empty($model)) {
-                    $this->error('Sorry! We can not find Member with this ID.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
                 }
                 elseif ($model->id == Yii::$app->user->id) {
-                    $this->error('Sorry! You can not ignore your own account.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore your own account.'));
                 }
                 elseif ($model->id == User::ROLE_ADMIN) {
-                    $this->error('Sorry! You can not ignore Administrator.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore Administrator.'));
                 }
                 else {
 
@@ -125,17 +125,17 @@ class MembersController extends BaseController
 
                         Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => Yii::$app->user->id, ':iid' => $model->id])->execute();
                         Log::info('User unignored', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('User has been unignored.');                    
+                        $this->success(Yii::t('podium/flash', 'User has been unignored.'));                    
                     }
                     else {
                         Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => Yii::$app->user->id, 'ignored_id' => $model->id])->execute();
                         Log::info('User ignored', !empty($model->id) ? $model->id : '', __METHOD__);
-                        $this->success('User has been ignored.');
+                        $this->success(Yii::t('podium/flash', 'User has been ignored.'));
                     }
                 }
             }
             catch (Exception $e) {
-                $this->error('Sorry! There was some error while performing this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
                 Log::error($e->getMessage(), null, __METHOD__);
             }
         }
@@ -178,13 +178,13 @@ class MembersController extends BaseController
     public function actionPosts($id = null, $slug = null)
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error('Sorry! We can not find the user you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
 
         $user = (new PodiumUser)->findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
-            $this->error('Sorry! We can not find the user you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
         else {
@@ -199,13 +199,13 @@ class MembersController extends BaseController
     public function actionThreads($id = null, $slug = null)
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error('Sorry! We can not find the user you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
 
         $user = (new PodiumUser)->findOne(['id' => (int)$id, 'slug' => $slug]);
         if (!$user) {
-            $this->error('Sorry! We can not find the user you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
         else {
@@ -222,7 +222,7 @@ class MembersController extends BaseController
         $model = (new PodiumUser)->findOne(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]]);
         
         if (empty($model->user)) {
-            $this->error('Sorry! We can not find Member with this ID.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
         }
         

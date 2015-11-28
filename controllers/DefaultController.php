@@ -124,7 +124,7 @@ class DefaultController extends BaseController
     public function actionCategory($id = null, $slug = null)
     {
         if (!is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error('Sorry! We can not find the category you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the category you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -135,7 +135,7 @@ class DefaultController extends BaseController
         $model = Category::findOne($conditions);
 
         if (!$model) {
-            $this->error('Sorry! We can not find the category you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the category you are looking for.'));
             return $this->redirect(['default/index']);
         }
         
@@ -159,7 +159,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -184,18 +184,18 @@ class DefaultController extends BaseController
                             Cache::getInstance()->delete('user.postscount');
 
                             Log::info('Thread deleted', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                            $this->success('Thread has been deleted.');
+                            $this->success(Yii::t('podium/flash', 'Thread has been deleted.'));
                             return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                         }
                     }
                     catch (Exception $e) {
                         $transaction->rollBack();
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while deleting the thread.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the thread.'));
                     }
                 }
                 else {
-                    $this->error('Incorrect thread ID.');
+                    $this->error(Yii::t('podium/flash', 'Incorrect thread ID.'));
                 }
             }
             
@@ -207,11 +207,11 @@ class DefaultController extends BaseController
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to delete the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to delete the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -228,28 +228,28 @@ class DefaultController extends BaseController
     public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
         $category = Category::findOne(['id' => (int) $cid]);
 
         if (!$category) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
             $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
             if (!$forum) {
-                $this->error('Sorry! We can not find the post you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
                 $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
 
                 if (!$thread) {
-                    $this->error('Sorry! We can not find the post you are looking for.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
@@ -257,7 +257,7 @@ class DefaultController extends BaseController
                         $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
                         
                         if (!$model) {
-                            $this->error('Sorry! We can not find the post you are looking for.');
+                            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                             return $this->redirect(['default/index']);
                         }
                         else {
@@ -290,7 +290,7 @@ class DefaultController extends BaseController
                                                 Cache::getInstance()->delete('user.postscount');
 
                                                 Log::info('Post deleted', !empty($model->id) ? $model->id : '', __METHOD__);
-                                                $this->success('Post has been deleted.');
+                                                $this->success(Yii::t('podium/flash', 'Post has been deleted.'));
                                                 if ($wholeThread) {
                                                     return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                                                 }
@@ -302,11 +302,11 @@ class DefaultController extends BaseController
                                         catch (Exception $e) {
                                             $transaction->rollBack();
                                             Log::error($e->getMessage(), null, __METHOD__);
-                                            $this->error('Sorry! There was an error while deleting the post.');
+                                            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the post.'));
                                         }
                                     }
                                     else {
-                                        $this->error('Incorrect thread ID.');
+                                        $this->error(Yii::t('podium/flash', 'Incorrect thread ID.'));
                                     }
                                 }
 
@@ -319,18 +319,18 @@ class DefaultController extends BaseController
                             }
                             else {
                                 if (Yii::$app->user->isGuest) {
-                                    $this->warning('Please sign in to delete the post.');
+                                    $this->warning(Yii::t('podium/flash', 'Please sign in to delete the post.'));
                                     return $this->redirect(['account/login']);
                                 }
                                 else {
-                                    $this->error('Sorry! You do not have the required permission to perform this action.');
+                                    $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                                     return $this->redirect(['default/index']);
                                 }
                             }
                         }
                     }
                     else {
-                        $this->info('This thread is locked.');
+                        $this->info(Yii::t('podium/flash', 'This thread is locked.'));
                         return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
                     }
                 }
@@ -351,7 +351,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -364,7 +364,7 @@ class DefaultController extends BaseController
                 $posts     = Yii::$app->request->post('post');
                 
                 if (empty($posts) || !is_array($posts)) {
-                    $this->error('You have to select at least one post.');
+                    $this->error(Yii::t('podium/flash', 'You have to select at least one post.'));
                 }
                 else {
                     $transaction = Post::getDb()->beginTransaction();
@@ -372,14 +372,14 @@ class DefaultController extends BaseController
                         $error = false;
                         foreach ($posts as $post) {
                             if (!is_numeric($post) || $post < 1) {
-                                $this->error('Incorrect post ID.');
+                                $this->error(Yii::t('podium/flash', 'Incorrect post ID.'));
                                 $error = true;
                                 break;
                             }
                             else {
                                 $nPost = Post::findOne(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
                                 if (!$nPost) {
-                                    $this->error('We can not find the post with this ID.');
+                                    $this->error(Yii::t('podium/flash', 'We can not find the post with this ID.'));
                                     $error = true;
                                     break;
                                 }
@@ -409,7 +409,7 @@ class DefaultController extends BaseController
                             Cache::getInstance()->delete('user.postscount');
 
                             Log::info('Posts deleted', null, __METHOD__);
-                            $this->success('Posts have been deleted.');
+                            $this->success(Yii::t('podium/flash', 'Posts have been deleted.'));
                             if ($wholeThread) {
                                 return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                             }
@@ -421,7 +421,7 @@ class DefaultController extends BaseController
                     catch (Exception $e) {
                         $transaction->rollBack();
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error('Sorry! There was an error while deleting the posts.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the posts.'));
                     }
                 }
             }
@@ -435,11 +435,11 @@ class DefaultController extends BaseController
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to update the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -457,28 +457,28 @@ class DefaultController extends BaseController
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
         $category = Category::findOne(['id' => (int) $cid]);
 
         if (!$category) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
             $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
             if (!$forum) {
-                $this->error('Sorry! We can not find the post you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
                 $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
 
                 if (!$thread) {
-                    $this->error('Sorry! We can not find the post you are looking for.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
@@ -486,7 +486,7 @@ class DefaultController extends BaseController
                         $model = Post::findOne(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
 
                         if (!$model) {
-                            $this->error('Sorry! We can not find the post you are looking for.');
+                            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                             return $this->redirect(['default/index']);
                         }
                         else {
@@ -533,14 +533,14 @@ class DefaultController extends BaseController
                                                 $transaction->commit();
 
                                                 Log::info('Post updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                                                $this->success('Post has been updated.');
+                                                $this->success(Yii::t('podium/flash', 'Post has been updated.'));
 
                                                 return $this->redirect(['show', 'id' => $model->id]);
                                             }
                                             catch (Exception $e) {
                                                 $transaction->rollBack();
                                                 Log::error($e->getMessage(), null, __METHOD__);
-                                                $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while adding the reply. Contact administrator about this problem.'));
                                             }
                                         }
                                     }
@@ -557,18 +557,18 @@ class DefaultController extends BaseController
                             }
                             else {
                                 if (Yii::$app->user->isGuest) {
-                                    $this->warning('Please sign in to edit the post.');
+                                    $this->warning(Yii::t('podium/flash', 'Please sign in to edit the post.'));
                                     return $this->redirect(['account/login']);
                                 }
                                 else {
-                                    $this->error('Sorry! You do not have the required permission to perform this action.');
+                                    $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                                     return $this->redirect(['default/index']);
                                 }
                             }
                         }
                     }
                     else {
-                        $this->info('This thread is locked.');
+                        $this->info(Yii::t('podium/flash', 'This thread is locked.'));
                         return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
                     }
                 }
@@ -586,7 +586,7 @@ class DefaultController extends BaseController
     public function actionForum($cid = null, $id = null, $slug = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error('Sorry! We can not find the forum you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -597,7 +597,7 @@ class DefaultController extends BaseController
         $category = Category::findOne($conditions);
 
         if (!$category) {
-            $this->error('Sorry! We can not find the forum you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
@@ -646,13 +646,13 @@ class DefaultController extends BaseController
     public function actionLast($id = null)
     {
         if (!is_numeric($id) || $id < 1) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
         
         $thread = Thread::findOne((int)$id);
         if (!$thread) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
         
@@ -675,7 +675,7 @@ class DefaultController extends BaseController
             return $this->redirect($url);
         }
         catch (Exception $e) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
     }
@@ -693,7 +693,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -709,25 +709,25 @@ class DefaultController extends BaseController
             if ($thread->save()) {
                 if ($thread->locked) {
                     Log::info('Thread locked', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                    $this->success('Thread has been locked.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been locked.'));
                 }
                 else {
                     Log::info('Thread unlocked', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                    $this->success('Thread has been unlocked.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been unlocked.'));
                 }
             }
             else {
-                $this->error('Sorry! There was an error while updating the thread.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
             }
             return $this->redirect(['thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to update the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -755,7 +755,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -789,25 +789,25 @@ class DefaultController extends BaseController
                                 $transaction->commit();
                                 
                                 Log::info('Thread moved', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                                $this->success('Thread has been moved.');
+                                $this->success(Yii::t('podium/flash', 'Thread has been moved.'));
                                 return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
                             catch (Exception $e) {
                                 $transaction->rollBack();
                                 Log::error($e->getMessage(), null, __METHOD__);
-                                $this->error('Sorry! There was an error while moving the thread.');
+                                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while moving the thread.'));
                             }
                         }
                         else {
-                            $this->error('Sorry! There was an error while moving the thread.');
+                            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while moving the thread.'));
                         }
                     }
                     else {
-                        $this->error('Sorry! We can not find the forum you want to move this thread to.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you want to move this thread to.'));
                     }
                 }
                 else {
-                    $this->error('Incorrect forum ID.');
+                    $this->error(Yii::t('podium/flash', 'Incorrect forum ID.'));
                 }
             }
             
@@ -839,11 +839,11 @@ class DefaultController extends BaseController
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to update the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -862,7 +862,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -878,19 +878,19 @@ class DefaultController extends BaseController
                 $newforum  = Yii::$app->request->post('newforum');
                 
                 if (empty($posts) || !is_array($posts)) {
-                    $this->error('You have to select at least one post.');
+                    $this->error(Yii::t('podium/flash', 'You have to select at least one post.'));
                 }
                 else {
                     if (!is_numeric($newthread) || $newthread < 0) {
-                        $this->error('You have to select a thread for this posts to be moved to.');
+                        $this->error(Yii::t('podium/flash', 'You have to select a thread for this posts to be moved to.'));
                     }
                     else {
                         if ($newthread == 0 && (empty($newname) || empty($newforum) || !is_numeric($newforum) || $newforum < 1)) {
-                            $this->error('If you want to move posts to a new thread you have to enter its name and select parent forum.');
+                            $this->error(Yii::t('podium/flash', 'If you want to move posts to a new thread you have to enter its name and select parent forum.'));
                         }
                         else {
                             if ($newthread == $thread->id) {
-                                $this->error('Are you trying to move posts from this thread to this very same thread?');
+                                $this->error(Yii::t('podium/flash', 'Are you trying to move posts from this thread to this very same thread?'));
                             }
                             else {
                                 $transaction = Thread::getDb()->beginTransaction();
@@ -898,7 +898,7 @@ class DefaultController extends BaseController
                                     if ($newthread == 0) {
                                         $parent = Forum::findOne(['id' => $newforum]);
                                         if (!$parent) {
-                                            $this->error('We can not find the parent forum with this ID.');
+                                            $this->error(Yii::t('podium/flash', 'We can not find the parent forum with this ID.'));
                                         }
                                         else {
                                             $nThread = new Thread;
@@ -914,21 +914,21 @@ class DefaultController extends BaseController
                                     else {
                                         $nThread = Thread::findOne(['id' => $newthread]);
                                         if (!$nThread) {
-                                            $this->error('We can not find the thread with this ID.');
+                                            $this->error(Yii::t('podium/flash', 'We can not find the thread with this ID.'));
                                         }
                                     }
                                     if (!empty($nThread)) {
                                         $error = false;
                                         foreach ($posts as $post) {
                                             if (!is_numeric($post) || $post < 1) {
-                                                $this->error('Incorrect post ID.');
+                                                $this->error(Yii::t('podium/flash', 'Incorrect post ID.'));
                                                 $error = true;
                                                 break;
                                             }
                                             else {
                                                 $nPost = Post::findOne(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
                                                 if (!$nPost) {
-                                                    $this->error('We can not find the post with this ID.');
+                                                    $this->error(Yii::t('podium/flash', 'We can not find the post with this ID.'));
                                                     $error = true;
                                                     break;
                                                 }
@@ -963,7 +963,7 @@ class DefaultController extends BaseController
                                             Cache::getInstance()->delete('forum.latestposts');
 
                                             Log::info('Posts moved', null, __METHOD__);
-                                            $this->success('Posts have been moved.');
+                                            $this->success(Yii::t('podium/flash', 'Posts have been moved.'));
                                             if ($wholeThread) {
                                                 return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                                             }
@@ -976,7 +976,7 @@ class DefaultController extends BaseController
                                 catch (Exception $e) {
                                     $transaction->rollBack();
                                     Log::error($e->getMessage(), null, __METHOD__);
-                                    $this->error('Sorry! There was an error while moving the posts.');
+                                    $this->error(Yii::t('podium/flash', 'Sorry! There was an error while moving the posts.'));
                                 }
                             }
                         }
@@ -1023,11 +1023,11 @@ class DefaultController extends BaseController
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to update the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -1043,30 +1043,30 @@ class DefaultController extends BaseController
     {
         if (!Yii::$app->user->can(Rbac::PERM_CREATE_THREAD)) {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to create a new thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to create a new thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
         else {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1) {
-                $this->error('Sorry! We can not find the forum you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
                 return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne((int) $cid);
 
             if (!$category) {
-                $this->error('Sorry! We can not find the forum you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
                 if (!$forum) {
-                    $this->error('Sorry! We can not find the forum you are looking for.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
@@ -1135,7 +1135,7 @@ class DefaultController extends BaseController
                                     Cache::getInstance()->delete('forum.latestposts');
                                     
                                     Log::info('Thread added', !empty($model->id) ? $model->id : '', __METHOD__);
-                                    $this->success('New thread has been created.');
+                                    $this->success(Yii::t('podium/flash', 'New thread has been created.'));
 
                                     return $this->redirect(['thread', 'cid'  => $category->id,
                                                 'fid'  => $forum->id, 'id'   => $model->id,
@@ -1144,7 +1144,7 @@ class DefaultController extends BaseController
                                 catch (Exception $e) {
                                     $transaction->rollBack();
                                     Log::error($e->getMessage(), null, __METHOD__);
-                                    $this->error('Sorry! There was an error while creating the thread. Contact administrator about this problem.');
+                                    $this->error(Yii::t('podium/flash', 'Sorry! There was an error while creating the thread. Contact administrator about this problem.'));
                                 }
                             }
                         }
@@ -1174,7 +1174,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -1190,25 +1190,25 @@ class DefaultController extends BaseController
             if ($thread->save()) {
                 if ($thread->pinned) {
                     Log::info('Thread pinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                    $this->success('Thread has been pinned.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been pinned.'));
                 }
                 else {
                     Log::info('Thread unpinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
-                    $this->success('Thread has been unpinned.');
+                    $this->success(Yii::t('podium/flash', 'Thread has been unpinned.'));
                 }
             }
             else {
-                $this->error('Sorry! There was an error while updating the thread.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
             }
             return $this->redirect(['thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
         }
         else {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to update the thread.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
@@ -1227,31 +1227,31 @@ class DefaultController extends BaseController
     {
         if (!Yii::$app->user->can(Rbac::PERM_CREATE_POST)) {
             if (Yii::$app->user->isGuest) {
-                $this->warning('Please sign in to post a reply.');
+                $this->warning(Yii::t('podium/flash', 'Please sign in to post a reply.'));
                 return $this->redirect(['account/login']);
             }
             else {
-                $this->error('Sorry! You do not have the required permission to perform this action.');
+                $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
                 return $this->redirect(['default/index']);
             }
         }
         else {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1) {
-                $this->error('Sorry! We can not find the thread you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                 return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne(['id' => (int) $cid]);
 
             if (!$category) {
-                $this->error('Sorry! We can not find the thread you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
                 if (!$forum) {
-                    $this->error('Sorry! We can not find the thread you are looking for.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
@@ -1259,7 +1259,7 @@ class DefaultController extends BaseController
                                 'forum_id' => $forum->id]);
 
                     if (!$thread) {
-                        $this->error('Sorry! We can not find the thread you are looking for.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                         return $this->redirect(['default/index']);
                     }
                     else {
@@ -1346,7 +1346,7 @@ class DefaultController extends BaseController
                                                 Cache::getInstance()->delete('forum.latestposts');
 
                                                 Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
-                                                $this->success('New reply has been added.');
+                                                $this->success(Yii::t('podium/flash', 'New reply has been added.'));
 
                                                 return $this->redirect(['default/show', 'id' => $id]);
                                             }
@@ -1357,7 +1357,7 @@ class DefaultController extends BaseController
                                         catch (Exception $e) {
                                             $transaction->rollBack();
                                             Log::error($e->getMessage(), null, __METHOD__);
-                                            $this->error('Sorry! There was an error while adding the reply. Contact administrator about this problem.');
+                                            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while adding the reply. Contact administrator about this problem.'));
                                         }
                                     }
                                 }
@@ -1374,7 +1374,7 @@ class DefaultController extends BaseController
                             ]);
                         }
                         else {
-                            $this->info('This thread is locked.');
+                            $this->info(Yii::t('podium/flash', 'This thread is locked.'));
                             return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
                         }
                     }
@@ -1396,40 +1396,40 @@ class DefaultController extends BaseController
     {
         if (!Yii::$app->user->isGuest) {
             if (!is_numeric($cid) || $cid < 1 || !is_numeric($fid) || $fid < 1 || !is_numeric($tid) || $tid < 1 || !is_numeric($pid) || $pid < 1 || empty($slug)) {
-                $this->error('Sorry! We can not find the post you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
 
             $category = Category::findOne(['id' => (int) $cid]);
 
             if (!$category) {
-                $this->error('Sorry! We can not find the post you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
                 $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
 
                 if (!$forum) {
-                    $this->error('Sorry! We can not find the post you are looking for.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
                     $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug]);
 
                     if (!$thread) {
-                        $this->error('Sorry! We can not find the post you are looking for.');
+                        $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                         return $this->redirect(['default/index']);
                     }
                     else {
                         $post = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
 
                         if (!$post) {
-                            $this->error('Sorry! We can not find the post you are looking for.');
+                            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                             return $this->redirect(['default/index']);
                         }
                         else {
                             if ($post->author_id == Yii::$app->user->id) {
-                                $this->info('You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.');
+                                $this->info(Yii::t('podium/flash', 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.'));
                                 return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
                             else {
@@ -1469,16 +1469,16 @@ class DefaultController extends BaseController
                                                 Cache::getInstance()->delete('user.newmessages');
                                                 
                                                 Log::info('Post reported', !empty($post->id) ? $post->id : '', __METHOD__);
-                                                $this->success('Thank you for your report. The moderation team will take a look at this post.');
+                                                $this->success(Yii::t('podium/flash', 'Thank you for your report. The moderation team will take a look at this post.'));
                                                 return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                                             }
                                             else {
-                                                $this->warning('Apparently there is no one we can send this report to except you and you already reporting it so...');
+                                                $this->warning(Yii::t('podium/flash', 'Apparently there is no one we can send this report to except you and you already reporting it so...'));
                                             }
                                         }
                                         catch (Exception $e) {
                                             Log::error($e->getMessage(), null, __METHOD__);
-                                            $this->error('Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.');
+                                            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.'));
                                         }
                                     }
                                 }
@@ -1497,7 +1497,7 @@ class DefaultController extends BaseController
             }
         }
         else {
-            $this->warning('Please sign in to report the post.');
+            $this->warning(Yii::t('podium/flash', 'Please sign in to report the post.'));
             return $this->redirect(['account/login']);
         }
     }
@@ -1601,7 +1601,7 @@ class DefaultController extends BaseController
             
             if ($model->load(Yii::$app->request->post()) && $model->validate()) {
                 if (empty($model->query) && empty($model->author)) {
-                    $this->error('You have to enter words or author\'s name first.');
+                    $this->error(Yii::t('podium/flash', 'You have to enter words or author\'s name first.'));
                 }
                 else {
                     $stop = false;
@@ -1615,7 +1615,7 @@ class DefaultController extends BaseController
                         }
                         $model->query = implode(' ', $checkedWords);
                         if (mb_strlen($model->query, 'UTF-8') < 3) {
-                            $this->error('You have to enter word at least 3 characters long.');
+                            $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
                             $stop = true;
                         }
                     }
@@ -1648,13 +1648,13 @@ class DefaultController extends BaseController
     public function actionShow($id = null)
     {
         if (!is_numeric($id) || $id < 1) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         
         $post = Post::findOne((int)$id);
         if (!$post) {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         
@@ -1680,12 +1680,12 @@ class DefaultController extends BaseController
                 return $this->redirect($url);
             }
             catch (Exception $e) {
-                $this->error('Sorry! We can not find the post you are looking for.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
         }
         else {
-            $this->error('Sorry! We can not find the post you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }        
     }
@@ -1703,7 +1703,7 @@ class DefaultController extends BaseController
         $verify = $this->_verifyThread($cid, $fid, $id, $slug);
         
         if ($verify === false) {
-            $this->error('Sorry! We can not find the thread you are looking for.');
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['default/index']);
         }
 
@@ -1845,6 +1845,11 @@ class DefaultController extends BaseController
         }
     }
     
+    /**
+     * Setting meta tags.
+     * @param string $keywords
+     * @param string $description
+     */
     public function setMetaTags($keywords = '', $description = '')
     {
         if ($keywords == '') {

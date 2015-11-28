@@ -9,6 +9,12 @@ namespace bizley\podium\models;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
+/**
+ * LogSearch model
+ *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class LogSearch extends ActiveRecord
 {
 
@@ -20,6 +26,9 @@ class LogSearch extends ActiveRecord
         return '{{%podium_log}}';
     }
     
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -28,6 +37,11 @@ class LogSearch extends ActiveRecord
         ];
     }
 
+    /**
+     * Searches for logs.
+     * @param array $params Attributes
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $query = static::find();

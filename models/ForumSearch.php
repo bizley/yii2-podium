@@ -72,5 +72,4 @@ class ForumSearch extends Forum
 
         return $dataProvider;
     }
-
 }

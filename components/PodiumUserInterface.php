@@ -13,8 +13,8 @@ use yii\web\IdentityInterface;
  * 
  * This interface must be implemented by class providing User Identity for 
  * Podium.
- * By default it is implemented by [[\bizley\podium\models\User]] but by setting 
- * [[\bizley\podium\Module::$userComponent]] to 'inherit' forum can take app's 
+ * By default it is implemented by \bizley\podium\models\User but by setting 
+ * \bizley\podium\Module::$userComponent to 'inherit' forum can take app's 
  * User Identity class as own as long as it implements this interface.
  */
 interface PodiumUserInterface extends IdentityInterface
@@ -88,7 +88,7 @@ interface PodiumUserInterface extends IdentityInterface
     
     /**
      * Declares a `has-many` relation.
-     * @see [[BaseActiveRecord::hasMany()]]
+     * @see BaseActiveRecord::hasMany()
      * @param string $class the class name of the related record
      * @param array $link the primary-foreign key constraint. The keys of the array refer to
      * the attributes of the record associated with the `$class` model, while the values of the
@@ -99,7 +99,7 @@ interface PodiumUserInterface extends IdentityInterface
     
     /**
      * Declares a `has-one` relation.
-     * @see [[BaseActiveRecord::hasOne()]]
+     * @see BaseActiveRecord::hasOne()
      * @param string $class the class name of the related record
      * @param array $link the primary-foreign key constraint. The keys of the array refer to
      * the attributes of the record associated with the `$class` model, while the values of the

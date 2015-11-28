@@ -10,9 +10,20 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;
 
+/**
+ * SearchForm model
+ * Advanced forum search.
+ *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class SearchForm extends Model
 {
 
+    /**
+     *
+     * @var type 
+     */
     public $query;
     public $match;
     public $author;

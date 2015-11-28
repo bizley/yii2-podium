@@ -21,6 +21,8 @@ use yii\helpers\HtmlPurifier;
 /**
  * Post model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property string $content
  * @property integer $thread_id
@@ -34,7 +36,14 @@ use yii\helpers\HtmlPurifier;
 class Post extends ActiveRecord
 {
 
+    /**
+     * @var boolean Subscription flag.
+     */
     public $subscribe;
+    
+    /**
+     * @var string Topic.
+     */
     public $topic;
     
     /**
@@ -50,9 +59,7 @@ class Post extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
 
     /**
@@ -84,31 +91,57 @@ class Post extends ActiveRecord
         }
     }
     
+    /**
+     * Returns Podium User.
+     * @return PodiumUser
+     */
     public function getPodiumUser()
     {
         return (new PodiumUser)->findOne($this->author_id);
     }
     
+    /**
+     * Thread relation.
+     * @return Thread
+     */
     public function getThread()
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
+    /**
+     * Forum relation.
+     * @return Forum
+     */
     public function getForum()
     {
         return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
     }
     
+    /**
+     * Thumbs relation.
+     * @return PostThumb
+     */
     public function getThumb()
     {
         return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
     }
     
+    /**
+     * Returns latest posts for registered users.
+     * @param integer $limit Number of latest posts.
+     * @return Post[]
+     */
     public function getLatestPostsForMembers($limit = 5)
     {
         return self::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
     
+    /**
+     * Returns latest visible posts for guests.
+     * @param integer $limit Number of latest posts.
+     * @return Post[]
+     */
     public function getLatestPostsForGuests($limit = 5)
     {
         return self::find()->joinWith(['forum' => function ($query) {
@@ -118,6 +151,12 @@ class Post extends ActiveRecord
         }])->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
     
+    /**
+     * Updates post tag words.
+     * @param boolean $insert
+     * @param array $changedAttributes
+     * @throws Exception
+     */
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
@@ -135,6 +174,10 @@ class Post extends ActiveRecord
         }
     }
 
+    /**
+     * Prepares tag words.
+     * @return string[]
+     */
     protected function _prepareWords()
     {
         $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(preg_replace(['/\n/', '/\<br ?\/?\>/i'], ' ', $this->content)))));
@@ -148,6 +191,11 @@ class Post extends ActiveRecord
         return $allWords;
     }
     
+    /**
+     * Adds new tag words.
+     * @param string[] $allWords All words extracted from post
+     * @throws Exception
+     */
     protected function _addNewWords($allWords)
     {
         try {
@@ -173,6 +221,10 @@ class Post extends ActiveRecord
         }
     }
     
+    /**
+     * Inserts tag words.
+     * @throws Exception
+     */
     protected function _insertWords()
     {
         try {
@@ -195,6 +247,10 @@ class Post extends ActiveRecord
         }
     }
 
+    /**
+     * Updates tag words.
+     * @throws Exception
+     */
     protected function _updateWords()
     {
         try {
@@ -224,11 +280,22 @@ class Post extends ActiveRecord
         }
     }
     
+    /**
+     * Verifies if user is this forum's moderator.
+     * @param integer|null $user_id User's ID or null for current signed in.
+     * @return boolean
+     */
     public function isMod($user_id = null)
     {
         return $this->forum->isMod($user_id);
     }
     
+    /**
+     * Searches for posts.
+     * @param integer $forum_id
+     * @param integer $thread_id
+     * @return ActiveDataProvider
+     */
     public function search($forum_id, $thread_id)
     {
         $query = self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]);
@@ -247,6 +314,11 @@ class Post extends ActiveRecord
         return $dataProvider;
     }
     
+    /**
+     * Searches for posts added by given user.
+     * @param integer $user_id
+     * @return ActiveDataProvider
+     */
     public function searchByUser($user_id)
     {
         $query = self::find();
@@ -271,6 +343,9 @@ class Post extends ActiveRecord
         return $dataProvider;
     }
     
+    /**
+     * Marks post as seen by current user.
+     */
     public function markSeen()
     {
         if (!Yii::$app->user->isGuest) {
@@ -319,6 +394,10 @@ class Post extends ActiveRecord
         }
     }
     
+    /**
+     * Returns latest post.
+     * @return type
+     */
     public function getLatest()
     {
         $latest = [];

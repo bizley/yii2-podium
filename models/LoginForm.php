@@ -9,16 +9,35 @@ namespace bizley\podium\models;
 use Yii;
 use yii\base\Model;
 
+/**
+ * LoginForm model
+ *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class LoginForm extends Model
 {
 
+    /**
+     * @var string Username or email
+     */
     public $username;
+    
+    /**
+     * @var string Password
+     */
     public $password;
-    public $pattern;
+    
+    /**
+     * @var boolean Remember me flag
+     */
     public $rememberMe = false;
     
     private $_user = false;
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -29,6 +48,10 @@ class LoginForm extends Model
         ];
     }
 
+    /**
+     * Validates password.
+     * @param string $attribute
+     */
     public function validatePassword($attribute)
     {
         if (!$this->hasErrors()) {
@@ -40,6 +63,10 @@ class LoginForm extends Model
         }
     }
 
+    /**
+     * Logs user in.
+     * @return boolean
+     */
     public function login()
     {
         if ($this->validate()) {
@@ -50,6 +77,10 @@ class LoginForm extends Model
         }
     }
 
+    /**
+     * Return User.
+     * @return User
+     */
     public function getUser()
     {
         if ($this->_user === false) {
@@ -58,5 +89,4 @@ class LoginForm extends Model
 
         return $this->_user;
     }
-
 }

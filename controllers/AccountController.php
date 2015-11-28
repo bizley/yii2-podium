@@ -94,16 +94,16 @@ class AccountController extends BaseController
             if ($model->activate()) {
                 Cache::clearAfterActivate();
                 Log::info('Account activated', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Your account has been activated. You can sign in now.');
+                $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
             }
             else {
                 Log::error('Error while activating account', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->error('Sorry! There was some error while activating your account. Contact administrator about this problem.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your account. Contact administrator about this problem.'));
             }
             return $this->module->goPodium();
         }
         else {
-            $this->error('The provided activation token is invalid or expired.');
+            $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
             return $this->module->goPodium();
         }
     }
@@ -136,16 +136,16 @@ class AccountController extends BaseController
             $model->setScenario('token');
             if ($model->changeEmail()) {
                 Log::info('Email address changed', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Your new e-mail address has been activated.');
+                $this->success(Yii::t('podium/flash', 'Your new e-mail address has been activated.'));
             }
             else {
                 Log::error('Error while activating email', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->error('Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.');
+                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.'));
             }
             return $this->module->goPodium();
         }
         else {
-            $this->error('The provided activation token is invalid or expired.');
+            $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
             return $this->module->goPodium();
         }
     }
@@ -163,7 +163,7 @@ class AccountController extends BaseController
             $model->setScenario('passwordChange');
             if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
                 Log::info('Password changed', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Your account password has been changed.');
+                $this->success(Yii::t('podium/flash', 'Your account password has been changed.'));
                 return $this->module->goPodium();
             }
             else {
@@ -171,7 +171,7 @@ class AccountController extends BaseController
             }
         }
         else {
-            $this->error('The provided password reset token is invalid or expired.');
+            $this->error(Yii::t('podium/flash', 'The provided password reset token is invalid or expired.'));
             return $this->module->goPodium();
         }
     }
@@ -208,17 +208,17 @@ class AccountController extends BaseController
                         !empty($model->getUser()->id) ? $model->getUser()->id : null
                     )) {
                     Log::info('Reactivation link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->success('The account activation link has been sent to your e-mail address.');
+                    $this->success(Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'));
                 }
                 else {
                     Log::error('Error while queuing reactivation link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'));
                 }
 
                 return $this->module->goPodium();
             }
             else {
-                $this->error('Sorry! We can not find the account with that user name or e-mail address.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
             }
         }
 
@@ -256,7 +256,7 @@ class AccountController extends BaseController
                     !empty($model->id) ? $model->id : null
                 )) {
                 Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success('Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.');
+                $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.'));
             }
             else {
                 Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
@@ -306,17 +306,17 @@ class AccountController extends BaseController
                         !empty($model->getUser()->id) ? $model->getUser()->id : null
                     )) {
                     Log::info('Password reset link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->success('The password reset link has been sent to your e-mail address.');
+                    $this->success(Yii::t('podium/flash', 'The password reset link has been sent to your e-mail address.'));
                 }
                 else {
                     Log::error('Error while queuing password reset link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->error('Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.');
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.'));
                 }
                 
                 return $this->module->goPodium();
             }
             else {
-                $this->error('Sorry! We can not find the account with that user name or e-mail address.');
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
             }
         }
 

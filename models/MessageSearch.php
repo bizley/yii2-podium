@@ -1,13 +1,20 @@
 <?php
 
 /**
- * @author Bizley
+ * Podium Module
+ * Yii 2 Forum Module
  */
 namespace bizley\podium\models;
 
 use Yii;
 use yii\data\ActiveDataProvider;
 
+/**
+ * MessageSearch model
+ * 
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class MessageSearch extends Message
 {
 
@@ -21,6 +28,10 @@ class MessageSearch extends Message
         ];
     }
     
+    /**
+     * Searches for messages.
+     * @return ActiveDataProvider
+     */
     public function search()
     {
         $query = self::find();
@@ -48,6 +59,11 @@ class MessageSearch extends Message
         return $dataProvider;
     }
     
+    /**
+     * Searches for inbox messages.
+     * @param array $params
+     * @return ActiveDataProvider
+     */
     public function searchInbox($params)
     {
         $dataProvider = $this->search();
@@ -67,6 +83,11 @@ class MessageSearch extends Message
         return $dataProvider;
     }
     
+    /**
+     * Searches for sent messages.
+     * @param array $params
+     * @return ActiveDataProvider
+     */
     public function searchSent($params)
     {
         $dataProvider = $this->search();
@@ -86,6 +107,11 @@ class MessageSearch extends Message
         return $dataProvider;
     }
     
+    /**
+     * Searches for deleted messages.
+     * @param array $params
+     * @return ActiveDataProvider
+     */
     public function searchDeleted($params)
     {
         $dataProvider = $this->search();

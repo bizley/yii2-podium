@@ -12,6 +12,8 @@ use yii\db\ActiveRecord;
 /**
  * PostThumb model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property integer $post_id
@@ -34,8 +36,6 @@ class PostThumb extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
 }

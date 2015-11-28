@@ -16,7 +16,7 @@ use yii\widgets\FragmentCache;
  * Cache helper
  * 
  * Handles the cache component. If cache component is not set in configuration 
- * [[\yii\caching\DummyCache|DummyCache]] is used instead.
+ * \yii\caching\DummyCache is used instead.
  * Every Podium cache element is prefixed with 'podium.' automatically.
  * This helper also allows to operate on single array key of cached elements and views content.
  * 
@@ -65,7 +65,7 @@ class Cache
     }
     
     /**
-     * Begins [[FragmentCache]] widget.
+     * Begins FragmentCache widget.
      * Usage:
      * if (Cache::getInstance()->beginCache('key', $this)) {
      *      $this->endCache();
@@ -125,7 +125,7 @@ class Cache
     }
     
     /**
-     * Ends [[FragmentCache]] widget.
+     * Ends FragmentCache widget.
      */
     public function endCache()
     {
@@ -181,7 +181,7 @@ class Cache
 
     /**
      * Initialises component.
-     * If cache is not set in configuration [[DummyCache]] is used instead.
+     * If cache is not set in configuration DummyCache is used instead.
      */
     public function init()
     {
