@@ -69,7 +69,8 @@ class Thread extends ActiveRecord
             TimestampBehavior::className(),
             [
                 'class'     => Slug::className(),
-                'attribute' => 'name'
+                'attribute' => 'name',
+                'immutable' => false,
             ]
         ];
     }

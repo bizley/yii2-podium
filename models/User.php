@@ -103,7 +103,8 @@ class User extends ActiveRecord implements PodiumUserInterface
             TimestampBehavior::className(),
             [
                 'class'     => Slug::className(),
-                'attribute' => 'username'
+                'attribute' => 'username',
+                'immutable' => false,
             ],
         ];
     }
