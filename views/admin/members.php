@@ -86,7 +86,7 @@ $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var 
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
                 },
                 'pm' => function($url, $model) {
-                    if ($model->id !== Yii::$app->user->id) {
+                    if ($model->id !== User::loggedId()) {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {
@@ -94,7 +94,7 @@ $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var 
                     }
                 },
                 'ban' => function($url, $model) {
-                    if ($model->id !== Yii::$app->user->id) {
+                    if ($model->id !== User::loggedId()) {
                         if ($model->status !== User::STATUS_BANNED) {
                             return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ban Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalBan', 'data-url' => $url]);
                         }
@@ -105,7 +105,7 @@ $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var 
                     return Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                 },
                 'delete' => function($url, $model) {
-                    if ($model->id !== Yii::$app->user->id) {
+                    if ($model->id !== User::loggedId()) {
                         return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                     }
                     else {

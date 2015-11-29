@@ -30,7 +30,7 @@ class Installation extends Maintenance
 {
 
     const DEFAULT_USER_EMAIL = 'podium_admin@podium.net';
-    const DEFAULT_USERNAME = 'admin';
+    const DEFAULT_USERNAME   = 'admin';
     
     /**
      * Adds Administrator account.
@@ -39,20 +39,32 @@ class Installation extends Maintenance
     protected function _addAdmin()
     {
         try {
-            
             $podium = PodiumModule::getInstance();
             if ($podium->userComponent == PodiumModule::USER_INHERIT) {
                 
                 if (!empty($podium->adminId)) {
-                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
-                    return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_PRIVILEGES_SET, ['id' => $podium->adminId]));
+                    $admin = new User;
+                    $admin->setScenario('installation');
+                    $admin->inherited_id = $podium->adminId;
+                    $admin->username     = self::DEFAULT_USERNAME;
+                    $admin->email        = self::DEFAULT_USER_EMAIL;
+                    $admin->status       = User::STATUS_ACTIVE;
+                    $admin->role         = User::ROLE_ADMIN;
+                    if ($admin->save()) {
+                        $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
+                        return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_PRIVILEGES_SET, ['id' => $podium->adminId]));
+                    }
+                    else {
+                        $this->setError(true);
+                        return $this->outputDanger(Yii::t('podium/flash', Messages::ACCOUNT_CREATING_ERROR) . ': ' .
+                                        Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
+                    }
                 }
                 else {
                     return $this->outputWarning(Yii::t('podium/flash', Messages::NO_ADMINISTRATOR_PRIVILEGES_SET));
                 }
             }
             else {
-            
                 $admin = new User;
                 $admin->setScenario('installation');
                 $admin->username = self::DEFAULT_USERNAME;
@@ -62,9 +74,7 @@ class Installation extends Maintenance
                 $admin->generateAuthKey();
                 $admin->setPassword(self::DEFAULT_USERNAME);
                 if ($admin->save()) {
-
                     $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $admin->getId());
-
                     return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_ACCOUNT_CREATED) .
                                     ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
                                     ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) .
@@ -738,6 +748,7 @@ class Installation extends Maintenance
                 'call'   => 'create',
                 'schema' => [
                     'id'                   => Schema::TYPE_PK,
+                    'inherited_id'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                     'username'             => Schema::TYPE_STRING . ' NOT NULL',
                     'slug'                 => Schema::TYPE_STRING . ' NOT NULL',
                     'auth_key'             => Schema::TYPE_STRING . '(32) NOT NULL',

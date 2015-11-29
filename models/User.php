@@ -8,14 +8,16 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
-use bizley\podium\components\PodiumUserInterface;
+use bizley\podium\components\UserQuery;
 use bizley\podium\log\Log;
+use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 use Zelenin\yii\behaviors\Slug;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
@@ -25,6 +27,7 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * @property integer $id
+ * @property integer $inherited_id
  * @property string $username
  * @property string $slug
  * @property string $password_hash
@@ -44,7 +47,7 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
  * @property string $password_repeat write-only password repeated
  * @property integer $tos write-only terms of service agreement
  */
-class User extends ActiveRecord implements PodiumUserInterface
+class User extends ActiveRecord implements IdentityInterface
 {
 
     /**
@@ -92,6 +95,14 @@ class User extends ActiveRecord implements PodiumUserInterface
     public static function tableName()
     {
         return '{{%podium_user}}';
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
     
     /**
@@ -368,103 +379,12 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Returns anonymous flag.
-     * @return integer
-     */
-    public function getPodiumAnonymous()
-    {
-        return $this->anonymous;
-    }
-    
-    /**
-     * Returns account create date.
-     * @return integer 
-     */
-    public function getPodiumCreatedAt()
-    {
-        return $this->created_at;
-    }
-    
-    /**
-     * Returns user's email address.
-     * @return string
-     */
-    public function getPodiumEmail()
-    {
-        return $this->email;
-    }
-    
-    /**
-     * Returns user's ID.
-     * @return integer
-     */
-    public function getPodiumId()
-    {
-        return $this->id;
-    }
-    
-    /**
-     * Returns user's ID attribute.
-     * @return integer
-     */
-    public function getPodiumIdAttribute()
-    {
-        return 'id';
-    }
-    
-    /**
-     * Returns Podium's moderators.
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPodiumModerators()
-    {
-        return static::find()->where(['role' => User::ROLE_MODERATOR])->orderBy(['username' => SORT_ASC])->indexBy('id')->all();
-    }
-    
-    /**
      * Returns Podium name.
      * @return string
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->getPodiumId()]);
-    }
-    
-    /**
-     * Newest registered members.
-     * @param integer $limit
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPodiumNewest($limit = 10)
-    {
-        return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
-    }
-    
-    /**
-     * Returns user's role.
-     * @return integer
-     */
-    public function getPodiumRole()
-    {
-        return $this->role;
-    }
-    
-    /**
-     * Returns user's slug.
-     * @return string
-     */
-    public function getPodiumSlug()
-    {
-        return $this->slug;
-    }
-    
-    /**
-     * Returns user's status.
-     * @return integer
-     */
-    public function getPodiumStatus()
-    {
-        return $this->status;
+        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
     }
     
     /**
@@ -474,16 +394,7 @@ class User extends ActiveRecord implements PodiumUserInterface
      */
     public function getPodiumTag($simple = false)
     {
-        return Helper::podiumUserTag($this->getPodiumName(), $this->getPodiumRole(), $this->getPodiumId(), $this->getPodiumSlug(), $simple);
-    }
-    
-    /**
-     * Returns chosen time zone.
-     * @return string
-     */
-    public function getPodiumTimeZone()
-    {
-        return !empty($this->timezone) ? $this->timezone : 'UTC';
+        return Helper::podiumUserTag($this->podiumName, $this->role, $this->id, $this->slug, $simple);
     }
     
     /**
@@ -585,10 +496,30 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
+     * Returns ID of current logged user.
+     * @return integer
+     */
+    public static function loggedId()
+    {
+        if (!Yii::$app->user->isGuest) {
+            if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+                $user = static::find()->loggedUser(Yii::$app->user->id)->limit(1)->one();
+                if ($user) {
+                    return $user->id;
+                }
+            }
+            else {
+                return Yii::$app->user->id;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Bans account.
      * @return boolean
      */
-    public function podiumBan()
+    public function ban()
     {
         $this->setScenario('ban');
         $this->status = self::STATUS_BANNED;
@@ -596,20 +527,11 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Deletes account.
-     * @return boolean
-     */
-    public function podiumDelete()
-    {
-        return $this->delete();
-    }
-    
-    /**
      * Demotes user to given role.
      * @param integer $role
      * @return boolean
      */
-    public function podiumDemoteTo($role)
+    public function demoteTo($role)
     {
         $this->setScenario('role');
         $this->role = $role;
@@ -617,31 +539,11 @@ class User extends ActiveRecord implements PodiumUserInterface
     }
     
     /**
-     * Returns moderator of given ID.
-     * @param integer $id
-     * @return User
-     */
-    public function podiumFindModerator($id)
-    {
-        return static::findOne(['id' => $id, 'role' => self::ROLE_MODERATOR]);
-    }
-    
-    /**
-     * Returns user of given ID.
-     * @param integer $id
-     * @return User
-     */
-    public function podiumFindOne($id)
-    {
-        return static::findOne($id);
-    }
-    
-    /**
      * Promotes user to given role.
      * @param integer $role
      * @return boolean
      */
-    public function podiumPromoteTo($role)
+    public function promoteTo($role)
     {
         $this->setScenario('role');
         $this->role = $role;
@@ -652,26 +554,11 @@ class User extends ActiveRecord implements PodiumUserInterface
      * Unbans account.
      * @return boolean
      */
-    public function podiumUnban()
+    public function unban()
     {
         $this->setScenario('ban');
         $this->status = self::STATUS_ACTIVE;
         return $this->save();
-    }
-    
-    /**
-     * Provides data for user search.
-     * @param array $params
-     * @param boolean $active
-     * @param boolean $mods
-     * @return array
-     */
-    public function podiumUserSearch($params, $active = false, $mods = false)
-    {
-        $searchModel  = new UserSearch();
-        $dataProvider = $searchModel->search($params, $active, $mods);
-        
-        return [$searchModel, $dataProvider];
     }
     
     /**

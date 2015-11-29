@@ -4,6 +4,10 @@
  * Podium Module
  * Yii 2 Forum Module
  * 
+ * -----------------------------------------------------------------------------
+ * TODO: rebuilt inherited user identity
+ * -----------------------------------------------------------------------------
+ * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @version 0.1 (beta)
  * @license Apache License 2.0

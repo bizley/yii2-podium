@@ -28,12 +28,12 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="pull-right">
-<?php if ($model->getId() !== Yii::$app->user->id): ?>
+<?php if ($model->getId() !== User::loggedId()): ?>
                     <a href="<?= Url::to(['messages/new', 'user' => $model->getId()]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php endif; ?>
-<?php if ($model->getId() !== Yii::$app->user->id): ?>
+<?php if ($model->getId() !== User::loggedId()): ?>
 <?php if ($model->getStatus() !== User::STATUS_BANNED): ?>
                     <span data-toggle="modal" data-target="#podiumModalBan"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Ban Member') ?>"><span class="glyphicon glyphicon-ban-circle"></span></button></span>
 <?php else: ?>
@@ -42,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-ban-circle"></span></a>
 <?php endif; ?>
-<?php if ($model->getId() !== Yii::$app->user->id): ?>
+<?php if ($model->getId() !== User::loggedId()): ?>
                     <span data-toggle="modal" data-target="#podiumModalDelete"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete Member') ?>"><span class="glyphicon glyphicon-trash"></span></button></span>
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-trash"></span></a>

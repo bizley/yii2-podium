@@ -18,6 +18,7 @@ use bizley\podium\models\PostThumb;
 use bizley\podium\models\SearchForm;
 use bizley\podium\models\Subscription;
 use bizley\podium\models\Thread;
+use bizley\podium\models\User;
 use bizley\podium\models\Vocabulary;
 use bizley\podium\rbac\Rbac;
 use Exception;
@@ -83,11 +84,11 @@ class DefaultController extends BaseController
             return false;
         }
 
-        $conditions = ['id' => (int) $category_id];
+        $conditions = ['id' => (int)$category_id];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
-        $category = Category::findOne($conditions);
+        $category = Category::find()->where($conditions)->limit(1)->one();
 
         if (!$category) {
             return false;
@@ -97,13 +98,13 @@ class DefaultController extends BaseController
             if (Yii::$app->user->isGuest) {
                 $conditions['visible'] = 1;
             }
-            $forum = Forum::findOne($conditions);
+            $forum = Forum::find()->where($conditions)->limit(1)->one();
             
             if (!$forum) {
                 return false;
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $id, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug]);
+                $thread = Thread::find()->where(['id' => (int) $id, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug])->limit(1)->one();
                 
                 if (!$thread) {
                     return false;
@@ -128,11 +129,11 @@ class DefaultController extends BaseController
             return $this->redirect(['default/index']);
         }
 
-        $conditions = ['id' => (int) $id, 'slug' => $slug];
+        $conditions = ['id' => (int)$id, 'slug' => $slug];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
-        $model = Category::findOne($conditions);
+        $model = Category::find()->where($conditions)->limit(1)->one();
 
         if (!$model) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the category you are looking for.'));
@@ -141,9 +142,7 @@ class DefaultController extends BaseController
         
         $this->setMetaTags($model->keywords, $model->description);
 
-        return $this->render('category', [
-                    'model' => $model
-        ]);
+        return $this->render('category', ['model' => $model]);
     }
     
     /**
@@ -183,7 +182,7 @@ class DefaultController extends BaseController
                             Cache::getInstance()->delete('user.threadscount');
                             Cache::getInstance()->delete('user.postscount');
 
-                            Log::info('Thread deleted', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                            Log::info('Thread deleted', $thread->id, __METHOD__);
                             $this->success(Yii::t('podium/flash', 'Thread has been deleted.'));
                             return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                         }
@@ -232,21 +231,21 @@ class DefaultController extends BaseController
             return $this->redirect(['default/index']);
         }
 
-        $category = Category::findOne(['id' => (int) $cid]);
+        $category = Category::findOne((int)$cid);
 
         if (!$category) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
-            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+            $forum = Forum::find()->where(['id' => (int)$fid, 'category_id' => $category->id])->limit(1)->one();
 
             if (!$forum) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+                $thread = Thread::find()->where(['id' => (int)$tid, 'category_id' => $category->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                 if (!$thread) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -254,7 +253,7 @@ class DefaultController extends BaseController
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
-                        $model = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
+                        $model = Post::find()->where(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id])->limit(1)->one();
                         
                         if (!$model) {
                             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -361,7 +360,7 @@ class DefaultController extends BaseController
 
             if (Yii::$app->request->post()) {
                 
-                $posts     = Yii::$app->request->post('post');
+                $posts = Yii::$app->request->post('post');
                 
                 if (empty($posts) || !is_array($posts)) {
                     $this->error(Yii::t('podium/flash', 'You have to select at least one post.'));
@@ -461,21 +460,21 @@ class DefaultController extends BaseController
             return $this->redirect(['default/index']);
         }
 
-        $category = Category::findOne(['id' => (int) $cid]);
+        $category = Category::findOne((int)$cid);
 
         if (!$category) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
-            $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+            $forum = Forum::find()->where(['id' => (int)$fid, 'category_id' => $category->id])->limit(1)->one();
 
             if (!$forum) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
-                $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id]);
+                $thread = Thread::find()->where(['id' => (int)$tid, 'category_id' => $category->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                 if (!$thread) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -483,7 +482,7 @@ class DefaultController extends BaseController
                 }
                 else {
                     if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {                 
-                        $model = Post::findOne(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
+                        $model = Post::find()->where(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                         if (!$model) {
                             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -491,9 +490,8 @@ class DefaultController extends BaseController
                         }
                         else {
                             if (Yii::$app->user->can(Rbac::PERM_UPDATE_OWN_POST, ['post' => $model]) || Yii::$app->user->can(Rbac::PERM_UPDATE_POST, ['item' => $model])) {
-
                                 $isFirstPost = false;
-                                $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->one();
+                                $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->limit(1)->one();
                                 if ($firstPost->id == $model->id) {
                                     $model->setScenario('firstPost');
                                     $model->topic = $thread->name;
@@ -501,38 +499,31 @@ class DefaultController extends BaseController
                                 }                            
 
                                 $postData = Yii::$app->request->post();
-
-                                $preview = '';
+                                $preview  = '';
 
                                 if ($model->load($postData)) {
-
                                     if ($model->validate()) {
-
                                         if (isset($postData['preview-button'])) {
                                             $preview = $model->content;
                                         }
                                         else {
-
                                             $transaction = Post::getDb()->beginTransaction();
                                             try {
-
                                                 $model->edited    = 1;
                                                 $model->edited_at = time();
 
                                                 if ($model->save()) {
-
                                                     if ($isFirstPost) {
                                                         $thread->name = $model->topic;
                                                         $thread->save();
                                                     }
-
                                                     $model->markSeen();
                                                     $thread->touch('edited_post_at');
                                                 }
 
                                                 $transaction->commit();
 
-                                                Log::info('Post updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                                                Log::info('Post updated', $model->id, __METHOD__);
                                                 $this->success(Yii::t('podium/flash', 'Post has been updated.'));
 
                                                 return $this->redirect(['show', 'id' => $model->id]);
@@ -590,22 +581,22 @@ class DefaultController extends BaseController
             return $this->redirect(['default/index']);
         }
 
-        $conditions = ['id' => (int) $cid];
+        $conditions = ['id' => (int)$cid];
         if (Yii::$app->user->isGuest) {
             $conditions['visible'] = 1;
         }
-        $category = Category::findOne($conditions);
+        $category = Category::find()->where($conditions)->limit(1)->one();
 
         if (!$category) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
             return $this->redirect(['default/index']);
         }
         else {
-            $conditions = ['id' => (int) $id, 'category_id' => $category->id, 'slug' => $slug];
+            $conditions = ['id' => (int)$id, 'category_id' => $category->id, 'slug' => $slug];
             if (Yii::$app->user->isGuest) {
                 $conditions['visible'] = 1;
             }
-            $model = Forum::findOne($conditions);
+            $model = Forum::find()->where($conditions)->limit(1)->one();
         }
 
         $keywords = $model->keywords;
@@ -633,8 +624,8 @@ class DefaultController extends BaseController
         $this->setMetaTags();
         
         return $this->render('index', [
-            'dataProvider' => (new Category())->search(),
-            'latest'       => (new Post())->getLatest(),
+            'dataProvider' => (new Category)->search(),
+            'latest'       => (new Post)->getLatest(),
         ]);
     }
     
@@ -657,7 +648,7 @@ class DefaultController extends BaseController
         }
         
         $url = [
-            'thread', 
+            'default/thread', 
             'cid'  => $thread->category_id,
             'fid'  => $thread->forum_id, 
             'id'   => $thread->id, 
@@ -708,18 +699,18 @@ class DefaultController extends BaseController
             }
             if ($thread->save()) {
                 if ($thread->locked) {
-                    Log::info('Thread locked', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                    Log::info('Thread locked', $thread->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Thread has been locked.'));
                 }
                 else {
-                    Log::info('Thread unlocked', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                    Log::info('Thread unlocked', $thread->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Thread has been unlocked.'));
                 }
             }
             else {
                 $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
             }
-            return $this->redirect(['thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
+            return $this->redirect(['default/thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
         }
         else {
             if (Yii::$app->user->isGuest) {
@@ -762,18 +753,14 @@ class DefaultController extends BaseController
         list($category, $forum, $thread) = $verify;
         
         if (Yii::$app->user->can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])) {
-
             $postData = Yii::$app->request->post();
             if ($postData) {
                 $moveTo = $postData['forum'];
                 if (is_numeric($moveTo) && $moveTo > 0 && $moveTo != $forum->id) {
-                    
-                    $newParent = Forum::findOne(['id' => $moveTo]);
+                    $newParent = Forum::findOne($moveTo);
                     if ($newParent) {
-                    
                         $postsCount = $thread->posts;
-                        
-                        $oldParent = Forum::findOne(['id' => $thread->forum_id]);
+                        $oldParent = Forum::findOne($thread->forum_id);
                         if ($oldParent) {
                             $transaction = Forum::getDb()->beginTransaction();
                             try {
@@ -788,7 +775,7 @@ class DefaultController extends BaseController
                                 
                                 $transaction->commit();
                                 
-                                Log::info('Thread moved', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                                Log::info('Thread moved', $thread->id, __METHOD__);
                                 $this->success(Yii::t('podium/flash', 'Thread has been moved.'));
                                 return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
@@ -896,7 +883,7 @@ class DefaultController extends BaseController
                                 $transaction = Thread::getDb()->beginTransaction();
                                 try {
                                     if ($newthread == 0) {
-                                        $parent = Forum::findOne(['id' => $newforum]);
+                                        $parent = Forum::findOne($newforum);
                                         if (!$parent) {
                                             $this->error(Yii::t('podium/flash', 'We can not find the parent forum with this ID.'));
                                         }
@@ -907,12 +894,12 @@ class DefaultController extends BaseController
                                             $nThread->views       = 0;
                                             $nThread->category_id = $parent->category_id;
                                             $nThread->forum_id    = $parent->id;
-                                            $nThread->author_id   = Yii::$app->user->id;
+                                            $nThread->author_id   = User::loggedId();
                                             $nThread->save();
                                         }
                                     }
                                     else {
-                                        $nThread = Thread::findOne(['id' => $newthread]);
+                                        $nThread = Thread::findOne($newthread);
                                         if (!$nThread) {
                                             $this->error(Yii::t('podium/flash', 'We can not find the thread with this ID.'));
                                         }
@@ -926,7 +913,7 @@ class DefaultController extends BaseController
                                                 break;
                                             }
                                             else {
-                                                $nPost = Post::findOne(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id]);
+                                                $nPost = Post::find()->where(['id' => $post, 'thread_id' => $thread->id, 'forum_id' => $forum->id])->limit(1)->one();
                                                 if (!$nPost) {
                                                     $this->error(Yii::t('podium/flash', 'We can not find the post with this ID.'));
                                                     $error = true;
@@ -940,7 +927,6 @@ class DefaultController extends BaseController
                                             }
                                         }
                                         if (!$error) {
-                                            
                                             $wholeThread = false;
                                             if ((new Query)->from(Post::tableName())->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->count()) {
                                                 $thread->updateCounters(['posts' => -count($posts)]);
@@ -965,10 +951,10 @@ class DefaultController extends BaseController
                                             Log::info('Posts moved', null, __METHOD__);
                                             $this->success(Yii::t('podium/flash', 'Posts have been moved.'));
                                             if ($wholeThread) {
-                                                return $this->redirect(['forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
+                                                return $this->redirect(['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]);
                                             }
                                             else {
-                                                return $this->redirect(['thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                                return $this->redirect(['default/thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]);
                                             }
                                         }
                                     }
@@ -1057,14 +1043,14 @@ class DefaultController extends BaseController
                 return $this->redirect(['default/index']);
             }
 
-            $category = Category::findOne((int) $cid);
+            $category = Category::findOne((int)$cid);
 
             if (!$category) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
-                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+                $forum = Forum::find()->where(['id' => (int)$fid, 'category_id' => $category->id])->limit(1)->one();
                 if (!$forum) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
                     return $this->redirect(['default/index']);
@@ -1084,31 +1070,27 @@ class DefaultController extends BaseController
                         $model->views       = 0;
                         $model->category_id = $category->id;
                         $model->forum_id    = $forum->id;
-                        $model->author_id   = Yii::$app->user->id;
+                        $model->author_id   = User::loggedId();
 
                         if ($model->validate()) {
-                            
                             if (isset($postData['preview-button'])) {
                                 $preview = $model->post;
                             }
                             else {
-
                                 $transaction = Thread::getDb()->beginTransaction();
                                 try {
                                     if ($model->save()) {
-
                                         $forum->updateCounters(['threads' => 1]);
 
                                         $post            = new Post;
                                         $post->content   = $model->post;
                                         $post->thread_id = $model->id;
                                         $post->forum_id  = $model->forum_id;
-                                        $post->author_id = Yii::$app->user->id;
+                                        $post->author_id = User::loggedId();
                                         $post->likes     = 0;
                                         $post->dislikes  = 0;
                                         
                                         if ($post->save()) {
-                                            
                                             $post->markSeen();
                                             $forum->updateCounters(['posts' => 1]);
                                             $model->updateCounters(['posts' => 1]);
@@ -1118,7 +1100,7 @@ class DefaultController extends BaseController
                                             
                                             if ($model->subscribe) {
                                                 $subscription = new Subscription();
-                                                $subscription->user_id   = Yii::$app->user->id;
+                                                $subscription->user_id   = User::loggedId();
                                                 $subscription->thread_id = $model->id;
                                                 $subscription->post_seen = Subscription::POST_SEEN;
                                                 $subscription->save();
@@ -1130,15 +1112,17 @@ class DefaultController extends BaseController
                                     
                                     Cache::getInstance()->delete('forum.threadscount');
                                     Cache::getInstance()->delete('forum.postscount');
-                                    Cache::getInstance()->deleteElement('user.threadscount', Yii::$app->user->id);
-                                    Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                    Cache::getInstance()->deleteElement('user.threadscount', User::loggedId());
+                                    Cache::getInstance()->deleteElement('user.postscount', User::loggedId());
                                     Cache::getInstance()->delete('forum.latestposts');
                                     
-                                    Log::info('Thread added', !empty($model->id) ? $model->id : '', __METHOD__);
+                                    Log::info('Thread added', $model->id, __METHOD__);
                                     $this->success(Yii::t('podium/flash', 'New thread has been created.'));
 
-                                    return $this->redirect(['thread', 'cid'  => $category->id,
-                                                'fid'  => $forum->id, 'id'   => $model->id,
+                                    return $this->redirect(['thread', 
+                                                'cid'  => $category->id,
+                                                'fid'  => $forum->id, 
+                                                'id'   => $model->id,
                                                 'slug' => $model->slug]);
                                 }
                                 catch (Exception $e) {
@@ -1189,18 +1173,18 @@ class DefaultController extends BaseController
             }
             if ($thread->save()) {
                 if ($thread->pinned) {
-                    Log::info('Thread pinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                    Log::info('Thread pinned', $thread->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Thread has been pinned.'));
                 }
                 else {
-                    Log::info('Thread unpinned', !empty($thread->id) ? $thread->id : '', __METHOD__);
+                    Log::info('Thread unpinned', $thread->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Thread has been unpinned.'));
                 }
             }
             else {
                 $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
             }
-            return $this->redirect(['thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
+            return $this->redirect(['default/thread', 'cid' => $cid, 'fid' => $fid, 'id' => $id, 'slug' => $slug]);
         }
         else {
             if (Yii::$app->user->isGuest) {
@@ -1241,22 +1225,21 @@ class DefaultController extends BaseController
                 return $this->redirect(['default/index']);
             }
 
-            $category = Category::findOne(['id' => (int) $cid]);
+            $category = Category::findOne((int)$cid);
 
             if (!$category) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
-                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+                $forum = Forum::find()->where(['id' => (int)$fid, 'category_id' => $category->id])->limit(1)->one();
 
                 if (!$forum) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id,
-                                'forum_id' => $forum->id]);
+                    $thread = Thread::find()->where(['id' => (int)$tid, 'category_id' => $category->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                     if (!$thread) {
                         $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
@@ -1285,27 +1268,24 @@ class DefaultController extends BaseController
                             }
 
                             $preview = '';
-                            $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_DESC])->one();
+                            $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_DESC])->limit(1)->one();
 
                             if ($model->load($postData)) {
 
                                 $model->thread_id = $thread->id;
                                 $model->forum_id  = $forum->id;
-                                $model->author_id = Yii::$app->user->id;
+                                $model->author_id = User::loggedId();
 
                                 if ($model->validate()) {
-
                                     if (isset($postData['preview-button'])) {
                                         $preview = $model->content;
                                     }
                                     else {
-
                                         $transaction = Post::getDb()->beginTransaction();
                                         try {
-
                                             $id = null;
                                             
-                                            if ($previous->author_id == Yii::$app->user->id) {
+                                            if ($previous->author_id == User::loggedId()) {
                                                 $previous->content .= '<hr>' . $model->content;
                                                 $previous->edited = 1;
                                                 $previous->edited_at = time();
@@ -1328,12 +1308,11 @@ class DefaultController extends BaseController
                                             }
                                             
                                             if ($id !== null) {
-                                                
                                                 Subscription::notify($thread->id);
                                                 
                                                 if ($model->subscribe && !$model->thread->subscription) {
                                                     $subscription = new Subscription();
-                                                    $subscription->user_id   = Yii::$app->user->id;
+                                                    $subscription->user_id   = User::loggedId();
                                                     $subscription->thread_id = $model->thread->id;
                                                     $subscription->post_seen = Subscription::POST_SEEN;
                                                     $subscription->save();
@@ -1342,10 +1321,10 @@ class DefaultController extends BaseController
                                                 $transaction->commit();
 
                                                 Cache::getInstance()->delete('forum.postscount');
-                                                Cache::getInstance()->deleteElement('user.postscount', Yii::$app->user->id);
+                                                Cache::getInstance()->deleteElement('user.postscount', User::loggedId());
                                                 Cache::getInstance()->delete('forum.latestposts');
 
-                                                Log::info('Post added', !empty($model->id) ? $model->id : '', __METHOD__);
+                                                Log::info('Post added', $model->id, __METHOD__);
                                                 $this->success(Yii::t('podium/flash', 'New reply has been added.'));
 
                                                 return $this->redirect(['default/show', 'id' => $id]);
@@ -1400,35 +1379,35 @@ class DefaultController extends BaseController
                 return $this->redirect(['default/index']);
             }
 
-            $category = Category::findOne(['id' => (int) $cid]);
+            $category = Category::findOne((int)$cid);
 
             if (!$category) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                 return $this->redirect(['default/index']);
             }
             else {
-                $forum = Forum::findOne(['id' => (int) $fid, 'category_id' => $category->id]);
+                $forum = Forum::find()->where(['id' => (int)$fid, 'category_id' => $category->id])->limit(1)->one();
 
                 if (!$forum) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    $thread = Thread::findOne(['id' => (int) $tid, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug]);
+                    $thread = Thread::find()->where(['id' => (int)$tid, 'category_id' => $category->id, 'forum_id' => $forum->id, 'slug' => $slug])->limit(1)->one();
 
                     if (!$thread) {
                         $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                         return $this->redirect(['default/index']);
                     }
                     else {
-                        $post = Post::findOne(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id]);
+                        $post = Post::find()->where(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id])->limit(1)->one();
 
                         if (!$post) {
                             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if ($post->author_id == Yii::$app->user->id) {
+                            if ($post->author_id == User::loggedId()) {
                                 $this->info(Yii::t('podium/flash', 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.'));
                                 return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                             }
@@ -1446,9 +1425,9 @@ class DefaultController extends BaseController
                                             $mods    = $forum->getMods();
                                             $package = [];
                                             foreach ($mods as $mod) {
-                                                if ($mod != Yii::$app->user->id) {
+                                                if ($mod != User::loggedId()) {
                                                     $package[] = [
-                                                        'sender_id'       => Yii::$app->user->id,
+                                                        'sender_id'       => User::loggedId(),
                                                         'receiver_id'     => $mod,
                                                         'topic'           => Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
                                                         'content'         => $model->content . '<hr>' . 
@@ -1468,9 +1447,9 @@ class DefaultController extends BaseController
                                                 
                                                 Cache::getInstance()->delete('user.newmessages');
                                                 
-                                                Log::info('Post reported', !empty($post->id) ? $post->id : '', __METHOD__);
+                                                Log::info('Post reported', $post->id, __METHOD__);
                                                 $this->success(Yii::t('podium/flash', 'Thank you for your report. The moderation team will take a look at this post.'));
-                                                return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
+                                                return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                                             }
                                             else {
                                                 $this->warning(Yii::t('podium/flash', 'Apparently there is no one we can send this report to except you and you already reporting it so...'));
@@ -1544,7 +1523,7 @@ class DefaultController extends BaseController
                     },
                 'author' => function ($model, $widget) {
                         if (!empty($model->latest)) {
-                            return $model->latest->podiumUser->getName();
+                            return $model->latest->user->username;
                         }
                         return 'Podium';
                     },
@@ -1661,7 +1640,7 @@ class DefaultController extends BaseController
         if ($post->thread) {
             
             $url = [
-                'thread', 
+                'default/thread', 
                 'cid'  => $post->thread->category_id,
                 'fid'  => $post->forum_id, 
                 'id'   => $post->thread_id, 
@@ -1753,7 +1732,6 @@ class DefaultController extends BaseController
                     
                     $post = Post::findOne((int)$postId);
                     if ($post) {
-                        
                         if ($post->thread->locked) {
                             $data = [
                                 'error' => 1,
@@ -1761,8 +1739,7 @@ class DefaultController extends BaseController
                             ];
                         }
                         else {
-                        
-                            if ($post->author_id == Yii::$app->user->id) {
+                            if ($post->author_id == User::loggedId()) {
                                 return Json::encode([
                                     'error' => 1,
                                     'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'You can not vote on your own post!'), ['class' => 'text-info']),
@@ -1770,7 +1747,7 @@ class DefaultController extends BaseController
                             }
 
                             $count = 0;
-                            $votes = Cache::getInstance()->get('user.votes.' . Yii::$app->user->id);
+                            $votes = Cache::getInstance()->get('user.votes.' . User::loggedId());
                             if ($votes !== false) {
                                 if ($votes['expire'] < time()) {
                                     $votes = false;
@@ -1803,7 +1780,7 @@ class DefaultController extends BaseController
                             else {
                                 $postThumb          = new PostThumb;
                                 $postThumb->post_id = $post->id;
-                                $postThumb->user_id = Yii::$app->user->id;
+                                $postThumb->user_id = User::loggedId();
                                 $postThumb->thumb   = $thumb == 'up' ? 1 : -1;
                                 if ($postThumb->save()) {
                                     if ($thumb == 'up') {
@@ -1822,10 +1799,10 @@ class DefaultController extends BaseController
                                 'msg'      => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'Your vote has been saved!'), ['class' => 'text-success']),
                             ];
                             if ($count == 0) {
-                                Cache::getInstance()->set('user.votes.' . Yii::$app->user->id, ['count' => 1, 'expire' => time() + 3600]);
+                                Cache::getInstance()->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
                             }
                             else {
-                                Cache::getInstance()->setElement('user.votes.' . Yii::$app->user->id, 'count', $count + 1);
+                                Cache::getInstance()->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
                             }
                         }
                     }

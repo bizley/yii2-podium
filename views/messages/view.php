@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
+use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -20,8 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
 $perm = false;
-if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_DELETED) || 
-        ($model->sender_id == Yii::$app->user->id && $model->sender_status == Message::STATUS_DELETED)) {
+if (($model->receiver_id == User::loggedId() && $model->receiver_status == Message::STATUS_DELETED) || 
+        ($model->sender_id == User::loggedId() && $model->sender_status == Message::STATUS_DELETED)) {
     $perm = true;
 }
 
@@ -48,7 +49,7 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
                         <div class="popover-content">
                             <?= $model->content ?>
                             <div class="text-right">
-<?php if ($model->sender_id != Yii::$app->user->id && $model->senderUser !== null): ?>
+<?php if ($model->sender_id != User::loggedId() && $model->senderUser !== null): ?>
                                 <a href="<?= Url::to(['messages/reply', 'id' => $model->id]) ?>" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Reply to Message') ?>"><span class="glyphicon glyphicon-share-alt"></span></a>
 <?php else: ?>
                                 <a href="#" class="btn btn-xs disabled text-muted"><span class="glyphicon glyphicon-share-alt"></span></a>
@@ -61,8 +62,8 @@ if (($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Me
             </div>
         
 <?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): ?>
-<?php if (($reply->reply->receiver_id == Yii::$app->user->id && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
-        ($reply->reply->sender_id == Yii::$app->user->id && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
+<?php if (($reply->reply->receiver_id == User::loggedId() && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+        ($reply->reply->sender_id == User::loggedId() && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
 <?php $reply = $reply->reply; else: ?>
             <div class="row">
                 <div class="col-sm-2 text-center">

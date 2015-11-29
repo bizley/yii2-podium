@@ -6,7 +6,9 @@
  */
 namespace bizley\podium\log;
 
+use bizley\podium\models\User;
 use Yii;
+use yii\web\Application;
 
 /**
  * Log helper
@@ -23,8 +25,8 @@ class Log
      */
     public static function blame()
     {
-        if (Yii::$app instanceof \yii\web\Application && !Yii::$app->user->isGuest) {
-            return Yii::$app->user->id;
+        if (Yii::$app instanceof Application && !Yii::$app->user->isGuest) {
+            return User::loggedId();
         }
         return null;
     }

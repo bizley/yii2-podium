@@ -90,7 +90,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
                 },
                 'pm' => function($url, $model) {
-                    if ($model->id !== Yii::$app->user->id) {
+                    if ($model->id !== User::loggedId()) {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {

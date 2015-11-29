@@ -122,7 +122,7 @@ class Forum extends ActiveRecord
      */
     public function isMod($user_id = null)
     {
-        if (in_array($user_id ?: Yii::$app->user->id, $this->getMods())) {
+        if (in_array($user_id ?: User::loggedId(), $this->getMods())) {
             return true;
         }
         return false;

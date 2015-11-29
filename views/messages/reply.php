@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
+use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -81,8 +82,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
 
 <?php $stack = 0; while ($reply->reply && $stack < 4): ?>
-<?php if (($reply->reply->receiver_id == Yii::$app->user->id && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
-        ($reply->reply->sender_id == Yii::$app->user->id && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
+<?php if (($reply->reply->receiver_id == User::loggedId() && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+        ($reply->reply->sender_id == User::loggedId() && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
 <?php $reply = $reply->reply; else: ?>
             <div class="row">
                 <div class="col-sm-2 text-center">

@@ -124,7 +124,7 @@ class Post extends ActiveRecord
      */
     public function getThumb()
     {
-        return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+        return $this->hasOne(PostThumb::className(), ['post_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     /**
@@ -349,11 +349,11 @@ class Post extends ActiveRecord
     public function markSeen()
     {
         if (!Yii::$app->user->isGuest) {
-            $threadView = ThreadView::findOne(['user_id' => Yii::$app->user->id, 'thread_id' => $this->thread_id]);
+            $threadView = ThreadView::findOne(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id]);
             
             if (!$threadView) {
                 $threadView                   = new ThreadView;
-                $threadView->user_id          = Yii::$app->user->id;
+                $threadView->user_id          = User::loggedId();
                 $threadView->thread_id        = $this->thread_id;
                 $threadView->new_last_seen    = $this->created_at;
                 $threadView->edited_last_seen = !empty($this->edited_at) ? $this->edited_at : $this->created_at;

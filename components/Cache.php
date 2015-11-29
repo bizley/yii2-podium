@@ -61,7 +61,12 @@ class Cache
      */
     protected function __construct()
     {
-        $this->init();
+        try {
+            $this->cache = Instance::ensure($this->cache, DefaultCache::className());
+        }
+        catch (Exception $e) {
+            $this->cache = new DummyCache();
+        }
     }
     
     /**
@@ -179,20 +184,6 @@ class Cache
         return self::$_instance;
     }
 
-    /**
-     * Initialises component.
-     * If cache is not set in configuration DummyCache is used instead.
-     */
-    public function init()
-    {
-        try {
-            $this->cache = Instance::ensure($this->cache, DefaultCache::className());
-        }
-        catch (Exception $e) {
-            $this->cache = new DummyCache();
-        }
-    }
-    
     /**
      * Stores the value identified by the key into cache.
      * @param string $key the key identifying the value to be cached.

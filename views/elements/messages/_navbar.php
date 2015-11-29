@@ -13,7 +13,7 @@ use yii\helpers\Url;
 <ul class="nav nav-tabs">
     <li role="presentation" class="<?= $active == 'inbox' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/inbox']) ?>"><span class="glyphicon glyphicon-inbox"></span> <?= Yii::t('podium/view', 'Messages Inbox') ?></a></li>
     <li role="presentation" class="<?= $active == 'sent' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/sent']) ?>"><span class="glyphicon glyphicon-upload"></span> <?= Yii::t('podium/view', 'Sent Messages') ?></a></li>
-    <li role="presentation" class="<?= $active == 'trash' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/trash']) ?>"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Deleted Messages') ?></a></li>
+    <li role="presentation" class="<?= $active == 'trash' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/deleted']) ?>"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Deleted Messages') ?></a></li>
     <li role="presentation" class="<?= $active == 'new' ? 'active' : '' ?>"><a href="<?= Url::to(['messages/new']) ?>"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'New Message') ?></a></li>
 <?php if ($active == 'view'): ?>
     <li role="presentation" class="active"><a href="#"><span class="glyphicon glyphicon-eye-open"></span> <?= Yii::t('podium/view', 'View Message') ?></a></li>

@@ -135,8 +135,8 @@ interface PodiumUserInterface extends IdentityInterface
     public function podiumFindModerator($id);
     
     /**
-     * Finds Podium User of given ID.
-     * @param integer ID.
+     * Finds Podium User of given ID or array of conditions.
+     * @param mixed ID.
      * @return PodiumUserInterface
      */
     public function podiumFindOne($id);

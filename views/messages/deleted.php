@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
+use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -84,7 +85,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Message')]);
                 },
                 'reply' => function($url, $model) {
-                    if ($model->sender_id != Yii::$app->user->id && $model->senderUser !== null) {
+                    if ($model->sender_id != User::loggedId() && $model->senderUser !== null) {
                         return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ['class' => 'btn btn-success btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Reply to Message')]);
                     }
                     else {

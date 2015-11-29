@@ -42,7 +42,7 @@ class Avatar extends Widget
     {
         if ($this->author instanceof PodiumUser) {
 
-            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
+            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getName())]);
             $meta = $this->author->meta;
             if ($meta) {
                 if (!empty($meta->gravatar)) {
@@ -51,16 +51,16 @@ class Avatar extends Widget
                         'defaultImage' => 'identicon',
                         'rating'       => 'r',
                         'options'      => [
-                            'alt'   => Html::encode($this->author->getPodiumName()),
+                            'alt'   => Html::encode($this->author->getName()),
                             'class' => 'podium-avatar img-circle img-responsive center-block',
                         ]
                     ]);
                 }
                 elseif (!empty($meta->avatar)) {
-                    $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getPodiumName())]);
+                    $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->getName())]);
                 }
             }
-            $name = $this->showName ? $this->author->getPodiumTag() : '';
+            $name = $this->showName ? $this->author->getTag() : '';
         }
         else {
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);

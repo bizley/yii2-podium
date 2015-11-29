@@ -9,7 +9,6 @@ namespace bizley\podium\models;
 use bizley\podium\components\Config;
 use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
-use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
@@ -49,7 +48,7 @@ class Subscription extends ActiveRecord
     
     public function search($params)
     {
-        $query = self::find()->where(['user_id' => Yii::$app->user->id]);
+        $query = self::find()->where(['user_id' => User::loggedId()]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

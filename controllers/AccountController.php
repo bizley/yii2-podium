@@ -15,6 +15,7 @@ use bizley\podium\models\Email;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
+use bizley\podium\Module as PodiumModule;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -87,17 +88,22 @@ class AccountController extends BaseController
      */
     public function actionActivate($token)
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please contact the administrator to activate your account.'));
+            return $this->module->goPodium();
+        }
+        
         $model = User::findByActivationToken($token);
 
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
                 Cache::clearAfterActivate();
-                Log::info('Account activated', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('Account activated', $model->id, __METHOD__);
                 $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
             }
             else {
-                Log::error('Error while activating account', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::error('Error while activating account', $model->id, __METHOD__);
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your account. Contact administrator about this problem.'));
             }
             return $this->module->goPodium();
@@ -114,6 +120,11 @@ class AccountController extends BaseController
      */
     public function actionLogin()
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please use application Login form to sign in.'));
+            return $this->module->goPodium();
+        }
+        
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -135,11 +146,11 @@ class AccountController extends BaseController
         if ($model) {
             $model->setScenario('token');
             if ($model->changeEmail()) {
-                Log::info('Email address changed', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('Email address changed', $model->id, __METHOD__);
                 $this->success(Yii::t('podium/flash', 'Your new e-mail address has been activated.'));
             }
             else {
-                Log::error('Error while activating email', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::error('Error while activating email', $model->id, __METHOD__);
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.'));
             }
             return $this->module->goPodium();
@@ -157,12 +168,17 @@ class AccountController extends BaseController
      */
     public function actionPassword($token)
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please contact the administrator to change your account password.'));
+            return $this->module->goPodium();
+        }
+        
         $model = User::findByPasswordResetToken($token);
 
         if ($model) {
             $model->setScenario('passwordChange');
             if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
-                Log::info('Password changed', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('Password changed', $model->id, __METHOD__);
                 $this->success(Yii::t('podium/flash', 'Your account password has been changed.'));
                 return $this->module->goPodium();
             }
@@ -182,6 +198,11 @@ class AccountController extends BaseController
      */
     public function actionReactivate()
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please contact the administrator to reactivate your account.'));
+            return $this->module->goPodium();
+        }
+        
         $model = new ReForm();
 
         if ($model->load(Yii::$app->request->post())) {
@@ -207,11 +228,11 @@ class AccountController extends BaseController
                             ), $content)),
                         !empty($model->getUser()->id) ? $model->getUser()->id : null
                     )) {
-                    Log::info('Reactivation link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
+                    Log::info('Reactivation link queued', $model->getUser()->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'));
                 }
                 else {
-                    Log::error('Error while queuing reactivation link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
+                    Log::error('Error while queuing reactivation link', $model->getUser()->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'));
                 }
 
@@ -231,6 +252,11 @@ class AccountController extends BaseController
      */
     public function actionRegister()
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please use application Register form to sign up.'));
+            return $this->module->goPodium();
+        }
+        
         $model = new User();
         $model->setScenario('register');
         
@@ -280,6 +306,11 @@ class AccountController extends BaseController
      */
     public function actionReset()
     {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $this->info(Yii::t('podium/flash', 'Please contact the administrator to reset your account password.'));
+            return $this->module->goPodium();
+        }
+        
         $model = new ReForm();
 
         if ($model->load(Yii::$app->request->post())) {

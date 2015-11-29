@@ -36,13 +36,13 @@ if (!Yii::$app->user->isGuest) {
             <div class="panel-body">
 <?php if (!Yii::$app->user->isGuest): ?>
                 <div class="pull-right">
-<?php if ($model->getId() !== Yii::$app->user->id): ?>
+<?php if ($model->getId() !== User::loggedId()): ?>
                     <a href="<?= Url::to(['messages/new', 'user' => $model->getId()]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php endif; ?>
-<?php if ($model->getId() !== Yii::$app->user->id && $model->getRole() !== User::ROLE_ADMIN): ?>
-<?php if (!$model->isIgnoredBy(Yii::$app->user->id)): ?>
+<?php if ($model->getId() !== User::loggedId() && $model->getRole() !== User::ROLE_ADMIN): ?>
+<?php if (!$model->isIgnoredBy(User::loggedId())): ?>
                     <span data-toggle="modal" data-target="#podiumModalIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->getId()]) ?>"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Ignore Member') ?>"><span class="glyphicon glyphicon-ban-circle"></span></button></span>
 <?php else: ?>
                     <span data-toggle="modal" data-target="#podiumModalUnIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->getId()]) ?>"><button class="btn btn-success btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Unignore Member') ?>"><span class="glyphicon glyphicon-ok-circle"></span></button></span>
@@ -51,7 +51,7 @@ if (!Yii::$app->user->isGuest) {
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-ban-circle"></span></a>
 <?php endif; ?>
                 </div>
-<?php if ($model->isIgnoredBy(Yii::$app->user->id)): ?>
+<?php if ($model->isIgnoredBy(User::loggedId())): ?>
                 <h4 class="text-danger"><?= Yii::t('podium/view', 'You are ignoring this user.') ?></h4>
 <?php endif; ?>
 <?php endif; ?>

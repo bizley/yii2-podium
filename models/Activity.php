@@ -56,12 +56,12 @@ class Activity extends ActiveRecord
      */
     protected static function _addGuest($ip, $url)
     {
-        $activity = self::findOne(['ip' => $ip, 'user_id' => null]);
+        $activity = self::find()->where(['ip' => $ip, 'user_id' => null])->limit(1)->one();
         if ($activity) {
             $activity->url = $url;
         }
         else {
-            $activity      = new Activity();
+            $activity = new Activity();
             $activity->url = $url;
             $activity->ip  = $ip;
         }
@@ -76,22 +76,24 @@ class Activity extends ActiveRecord
      */
     protected static function _addUser($ip, $url)
     {
-        $user = new PodiumUser;
-        
-        $activity = self::findOne(['user_id' => $user->getId()]);
-        if (!$activity) {
-            $activity          = new Activity();
-            $activity->user_id = $user->getId();
-        }
-        
-        $activity->username  = $user->getName();
-        $activity->user_role = $user->getRole();
-        $activity->user_slug = $user->getSlug();
-        $activity->url       = $url;
-        $activity->ip        = $ip;
-        $activity->anonymous = $user->getAnonymous();
+        $user = User::findOne(User::loggedId());
+        if ($user) {
+            $activity = self::find()->where(['user_id' => $user->id])->limit(1)->one();
+            if (!$activity) {
+                $activity          = new Activity();
+                $activity->user_id = $user->id;
+            }
 
-        return $activity->save();
+            $activity->username  = $user->username;
+            $activity->user_role = $user->role;
+            $activity->user_slug = $user->slug;
+            $activity->url       = $url;
+            $activity->ip        = $ip;
+            $activity->anonymous = $user->anonymous;
+
+            return $activity->save();
+        }
+        return false;
     }
 
     /**

@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\components\PodiumUser;
 use bizley\podium\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -64,11 +65,12 @@ class Message extends ActiveRecord
      */
     public function behaviors()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return [TimestampBehavior::className()];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function scenarios()
     {
         return array_merge(
@@ -77,7 +79,6 @@ class Message extends ActiveRecord
         );
     }
 
-
     /**
      * @inheritdoc
      */
@@ -85,7 +86,7 @@ class Message extends ActiveRecord
     {
         return [
             [['receiver_id', 'topic', 'content'], 'required'],
-            ['receiver_id', 'number', 'min' => 1],
+            ['receiver_id', 'validateReceiver'],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value);
@@ -96,6 +97,22 @@ class Message extends ActiveRecord
         ];
     }
     
+    /**
+     * Validates receiver ID.
+     */
+    public function validateReceiver()
+    {
+        if (!is_numeric($this->receiver_id) || $this->receiver_id < 1) {
+            $this->addError('receiver_id', Yii::t('podium/view', 'Invalid receiver.'));
+        }
+        else {
+            if ($this->receiver_id == User::loggedId()) {
+                $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
+                $this->receiver_id = null;
+            }
+        }
+    }
+
     /**
      * Returns Re: prefix for subject.
      * @return string
@@ -138,7 +155,7 @@ class Message extends ActiveRecord
      */
     public function getSenderUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'sender_id']);
+        return (new PodiumUser)->findOne($this->sender_id);
     }
     
     /**
@@ -147,7 +164,7 @@ class Message extends ActiveRecord
      */
     public function getReceiverUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'receiver_id']);
+        return (new PodiumUser)->findOne($this->receiver_id);
     }
     
     /**
@@ -156,7 +173,7 @@ class Message extends ActiveRecord
      */
     public function getSenderName()
     {
-        return !empty($this->senderUser) ? $this->senderUser->getPodiumTag() : Helper::deletedUserTag();
+        return !empty($this->senderUser) ? $this->senderUser->getTag() : Helper::deletedUserTag();
     }
     
     /**
@@ -165,7 +182,7 @@ class Message extends ActiveRecord
      */
     public function getReceiverName()
     {
-        return !empty($this->receiverUser) ? $this->receiverUser->getPodiumTag() : Helper::deletedUserTag();
+        return !empty($this->receiverUser) ? $this->receiverUser->getTag() : Helper::deletedUserTag();
     }
     
     /**
@@ -187,7 +204,7 @@ class Message extends ActiveRecord
             return false;
         }
         
-        $this->sender_id = Yii::$app->user->id;
+        $this->sender_id = User::loggedId();
         $this->sender_status = self::STATUS_READ;
         $this->receiver_status = self::STATUS_NEW;
         
@@ -210,16 +227,16 @@ class Message extends ActiveRecord
         if ($this->receiver_status == self::STATUS_NEW) {
             $clearCache = true;
         }
-        if ($this->receiver_id == Yii::$app->user->id) {
+        if ($this->receiver_id == User::loggedId()) {
             $this->receiver_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
         }
-        if ($this->sender_id == Yii::$app->user->id) {
+        if ($this->sender_id == User::loggedId()) {
             $this->sender_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
         }
         if ($this->receiver_status == self::STATUS_REMOVED && $this->sender_status == self::STATUS_REMOVED) {
             if ($this->delete()) {
                 if ($clearCache) {
-                    Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+                    Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
                 }
                 return true;
             }
@@ -229,7 +246,7 @@ class Message extends ActiveRecord
         }
         if ($this->save()) {
             if ($clearCache) {
-                Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+                Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
             }
             return true;
         }

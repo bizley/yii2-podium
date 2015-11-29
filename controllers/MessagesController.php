@@ -7,7 +7,6 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\components\Cache;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
@@ -67,12 +66,10 @@ class MessagesController extends BaseController
     {
         if (!is_numeric($id) || $id < 1 || !in_array($perm, [0, 1])) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
-            return $this->redirect(['inbox']);
+            return $this->redirect(['messages/inbox']);
         }
         else {
-        
-            $model = Message::findOne(['and', ['id' => (int)$id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
-
+            $model = Message::find()->where(['and', ['id' => (int)$id], ['or', 'receiver_id' => User::loggedId(), 'sender_id' => User::loggedId()]])->limit(1)->one();
             if ($model) {
                 if ($model->remove($perm)) {
                     if ($perm) {
@@ -83,7 +80,7 @@ class MessagesController extends BaseController
                     }
                 }
                 else {
-                    Log::error('Error while deleting message', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while deleting message', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
             }
@@ -91,10 +88,10 @@ class MessagesController extends BaseController
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             }
             if ($perm) {
-                return $this->redirect(['deleted']);
+                return $this->redirect(['messages/deleted']);
             }
             else {
-                return $this->redirect(['inbox']);
+                return $this->redirect(['messages/inbox']);
             }
         }
     }
@@ -138,9 +135,9 @@ class MessagesController extends BaseController
     {
         $model = new Message();
         
-        $podiumUser = new PodiumUser;
+        $podiumUser = Yii::$app->user->identity;
         
-        if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->getId()) {
+        if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
             $model->receiver_id = (int)$user;
         }
         
@@ -151,7 +148,7 @@ class MessagesController extends BaseController
 
                     if ($model->send()) {
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
-                        return $this->redirect(['inbox']);
+                        return $this->redirect(['messages/inbox']);
                     }
                 }
                 else {
@@ -171,9 +168,9 @@ class MessagesController extends BaseController
     public function actionReply($id = null)
     {
         $model      = new Message;
-        $podiumUser = new PodiumUser;
+        $podiumUser = User::findOne(User::loggedId());
         
-        $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->getId()]);
+        $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->id]);
         
         if ($reply) {
             
@@ -188,7 +185,7 @@ class MessagesController extends BaseController
 
                         if ($model->send()) {
                             $this->success(Yii::t('podium/flash', 'Message has been sent.'));
-                            return $this->redirect(['inbox']);
+                            return $this->redirect(['messages/inbox']);
                         }
                     }
                     else {
@@ -206,7 +203,7 @@ class MessagesController extends BaseController
         }
         else {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            return $this->redirect(['inbox']);
+            return $this->redirect(['messages/inbox']);
         }
     }
     
@@ -232,14 +229,13 @@ class MessagesController extends BaseController
      */  
     public function actionView($id = null)
     {
-        $model = Message::findOne(['and', ['id' => $id], ['or', 'receiver_id' => Yii::$app->user->id, 'sender_id' => Yii::$app->user->id]]);
+        $model = Message::find()->where(['and', ['id' => $id], ['or', 'receiver_id' => User::loggedId(), 'sender_id' => User::loggedId()]])->limit(1)->one();
         
         if ($model) {
-            
-            if ($model->receiver_id == Yii::$app->user->id && $model->receiver_status == Message::STATUS_NEW) {
+            if ($model->receiver_id == User::loggedId() && $model->receiver_status == Message::STATUS_NEW) {
                 $model->receiver_status = Message::STATUS_READ;
                 if ($model->save()) {
-                    Cache::getInstance()->deleteElement('user.newmessages', Yii::$app->user->id);
+                    Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
                 }
             }
             
@@ -249,7 +245,7 @@ class MessagesController extends BaseController
         }
         else {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            return $this->redirect(['inbox']);
+            return $this->redirect(['messages/inbox']);
         }        
     }
 }

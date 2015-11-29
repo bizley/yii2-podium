@@ -114,12 +114,12 @@ class Thread extends ActiveRecord
 
     public function getView()
     {
-        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     public function getSubscription()
     {
-        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => Yii::$app->user->id]);
+        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     public function getLatest()

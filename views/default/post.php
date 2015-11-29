@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
+use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
@@ -21,6 +22,8 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' =
 $this->params['breadcrumbs'][] = ['label' => Html::encode($thread->name), 'url' => ['default/thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
+$author = User::findOne(User::loggedId());
+
 ?>
 <?php if (!empty($preview)): ?>
 <div class="row">
@@ -32,14 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="row">
     <div class="col-sm-2 text-center">
-        <?= Avatar::widget(['author' => Yii::$app->user->identity, 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => $author, 'showName' => false]) ?>
     </div>
     <div class="col-sm-10">
         <div class="popover right podium">
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right"><span data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'As soon as you click Post Reply') ?>"><?= Yii::t('podium/view', 'In a while') ?></span></small>
-                <?= Yii::$app->user->identity->getPodiumTag() ?>
+                <?= $author->getPodiumTag() ?>
             </div>
             <div class="popover-content podium-content">
                 <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>

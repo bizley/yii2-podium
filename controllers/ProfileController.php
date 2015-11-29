@@ -8,7 +8,6 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
@@ -75,66 +74,58 @@ class ProfileController extends BaseController
      */
     public function actionDetails()
     {
-        if ($this->module->userComponent == PodiumModule::USER_OWN) {
-            $model = User::findOne(Yii::$app->user->id);
-            if (empty($model)) {
-                return $this->redirect(['account/login']);
-            }
-            
-            $model->setScenario('account');
+        $model = User::findOne(User::loggedId());
+        if (empty($model)) {
+            return $this->redirect(['account/login']);
+        }
 
-            if ($model->load(Yii::$app->request->post())) {
-                if ($model->validate()) {
-                    if ($model->saveChanges()) {
-                        if ($model->new_email) {
+        $model->setScenario('account');
 
-                            $email = Content::find()->where(['name' => 'email-new'])->one();
-                            if ($email) {
-                                $topic   = $email->topic;
-                                $content = $email->content;
-                            }
-                            else {
-                                $topic   = 'New e-mail activation link at {forum}';
-                                $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
-                            }
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate()) {
+                if ($model->saveChanges()) {
+                    if ($model->new_email) {
 
-                            $forum = Config::getInstance()->get('name');
-                            if (Email::queue($model->new_email, 
-                                    str_replace('{forum}', $forum, $topic),
-                                    str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                            Url::to(['account/new-email', 'token' => $model->email_token], true),
-                                            Url::to(['account/new-email', 'token' => $model->email_token], true)
-                                        ), $content)),
-                                    !empty($model->id) ? $model->id : null
-                                )) {
-                                Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                                $this->success('Your account has been updated but your new e-mail address is not active yet. '
-                                        . 'Click the activation link that has been sent to your new e-mail address.');
-                            }
-                            else {
-                                Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                                $this->warning('Your account has been updated but your new e-mail address is not active yet. '
-                                        . 'Unfortunately there was some error while sending you the activation link. '
-                                        . 'Contact administrator about this problem.');
-                            }
+                        $email = Content::find()->where(['name' => 'email-new'])->limit(1)->one();
+                        if ($email) {
+                            $topic   = $email->topic;
+                            $content = $email->content;
                         }
                         else {
-                            Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->success(Yii::t('podium/flash', 'Your account has been updated.'));
+                            $topic   = 'New e-mail activation link at {forum}';
+                            $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
                         }
 
-                        return $this->refresh();
+                        $forum = Config::getInstance()->get('name');
+                        if (Email::queue($model->new_email, 
+                                str_replace('{forum}', $forum, $topic),
+                                str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                        Url::to(['account/new-email', 'token' => $model->email_token], true),
+                                        Url::to(['account/new-email', 'token' => $model->email_token], true)
+                                    ), $content)),
+                                !empty($model->id) ? $model->id : null
+                            )) {
+                            Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                            $this->success('Your account has been updated but your new e-mail address is not active yet. '
+                                    . 'Click the activation link that has been sent to your new e-mail address.');
+                        }
+                        else {
+                            Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                            $this->warning('Your account has been updated but your new e-mail address is not active yet. '
+                                    . 'Unfortunately there was some error while sending you the activation link. '
+                                    . 'Contact administrator about this problem.');
+                        }
                     }
-                }
-                else {
-                    $model->current_password = null;
+                    else {
+                        Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'Your account has been updated.'));
+                    }
+
+                    return $this->refresh();
                 }
             }
-        }
-        else {
-            $model = (new PodiumUser)->findOne(Yii::$app->user->id);
-            if (empty($model)) {
-                return $this->module->goPodium();
+            else {
+                $model->current_password = null;
             }
         }
 
@@ -147,14 +138,14 @@ class ProfileController extends BaseController
      */
     public function actionForum()
     {
-        $model = Meta::findOne(['user_id' => Yii::$app->user->id]);
+        $model = Meta::find()->where(['user_id' => User::loggedId()])->limit(1)->one();
         
         if (empty($model)) {
             $model = new Meta();
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            $model->user_id = Yii::$app->user->id;
+            $model->user_id = User::loggedId();
             $uploadAvatar = false;
             $path = Yii::getAlias('@webroot/avatars');
             $avatar = UploadedFile::getInstance($model, 'image');
@@ -185,7 +176,7 @@ class ProfileController extends BaseController
                         $this->error(Yii::t('podium/flash', 'Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.'));
                     }
                 }
-                Log::info('Profile updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::info('Profile updated', $model->id, __METHOD__);
                 $this->success(Yii::t('podium/flash', 'Your profile details have been updated.'));
                 return $this->refresh();
             }
@@ -196,7 +187,7 @@ class ProfileController extends BaseController
 
         return $this->render('forum', [
                 'model' => $model,
-                'user' => User::findOne(Yii::$app->user->id)
+                'user' => User::findOne(User::loggedId())
         ]);
     }
 
@@ -206,7 +197,7 @@ class ProfileController extends BaseController
      */
     public function actionIndex()
     {
-        $model = (new PodiumUser)->findOne(Yii::$app->user->id);
+        $model = User::findOne(User::loggedId());
 
         if (empty($model)) {
             if ($this->module->userComponent == PodiumModule::USER_OWN) {
@@ -242,7 +233,7 @@ class ProfileController extends BaseController
             $selection = !empty($postData['selection']) ? $postData['selection'] : [];
             try {
                 if (!empty($selection)) {
-                    Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $selection, 'user_id' => Yii::$app->user->id])->execute();
+                    Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $selection, 'user_id' => User::loggedId()])->execute();
                     $this->success(Yii::t('podium/flash', 'Subscription list has been updated.'));
                 }
             }
@@ -264,30 +255,29 @@ class ProfileController extends BaseController
      */
     public function actionMark($id = null)
     {
-        $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
+        $model = Subscription::find()->where(['id' => (int)$id, 'user_id' => User::loggedId()])->limit(1)->one();
 
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         }
         else {
-
             if ($model->post_seen == Subscription::POST_SEEN) {
                 if ($model->unseen()) {
-                    Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                    Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
                     $this->success(Yii::t('podium/flash', 'Thread has been marked unseen.'));
                 }
                 else {
-                    Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while marking thread', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
             }
             elseif ($model->post_seen == Subscription::POST_NEW) {
                 if ($model->seen()) {
-                    Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                    Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
                     $this->success(Yii::t('podium/flash', 'Thread has been marked seen.'));
                 }
                 else {
-                    Log::error('Error while marking thread', !empty($model->id) ? $model->id : '', __METHOD__);
+                    Log::error('Error while marking thread', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
             }
@@ -306,19 +296,18 @@ class ProfileController extends BaseController
      */
     public function actionDelete($id = null)
     {
-        $model = Subscription::findOne(['id' => (int)$id, 'user_id' => Yii::$app->user->id]);
+        $model = Subscription::find()->where(['id' => (int)$id, 'user_id' => User::loggedId()])->limit(1)->one();
 
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         }
         else {
-
             if ($model->delete()) {
-                Cache::getInstance()->deleteElement('user.subscriptions', Yii::$app->user->id);
+                Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
                 $this->success(Yii::t('podium/flash', 'Thread has been unsubscribed.'));
             }
             else {
-                Log::error('Error while deleting subscription', !empty($model->id) ? $model->id : '', __METHOD__);
+                Log::error('Error while deleting subscription', $model->id, __METHOD__);
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the subscription.'));
             }
         }
@@ -334,20 +323,16 @@ class ProfileController extends BaseController
     public function actionAdd($id = null)
     {
         if (Yii::$app->request->isAjax) {
-            
             $data = [
                 'error' => 1,
                 'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Error while adding this subscription!'), ['class' => 'text-danger']),
             ];
             
             if (!Yii::$app->user->isGuest) {
-                
                 if (is_numeric($id) && $id > 0) {
-                    
                     $thread = Thread::findOne((int)$id);
                     if ($thread) {
-                        
-                        $subscription = Subscription::findOne(['thread_id' => $thread->id, 'user_id' => Yii::$app->user->id]);
+                        $subscription = Subscription::findOne(['thread_id' => $thread->id, 'user_id' => User::loggedId()]);
                         
                         if ($subscription) {
                             $data = [
@@ -356,10 +341,9 @@ class ProfileController extends BaseController
                             ];
                         }
                         else {
-                        
                             $sub = new Subscription;
                             $sub->thread_id = $thread->id;
-                            $sub->user_id   = Yii::$app->user->id;
+                            $sub->user_id   = User::loggedId();
                             $sub->post_seen = Subscription::POST_SEEN;
                             
                             if ($sub->save()) {
