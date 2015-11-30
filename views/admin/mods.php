@@ -17,7 +17,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Moderators');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
@@ -37,7 +37,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
     <div class="col-sm-3">
         <ul class="nav nav-pills nav-stacked">
 <?php foreach ($moderators as $moderator): ?>
-            <li role="presentation" class="<?= $moderator->id == $mod->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/mods', 'id' => $moderator->id]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Html::encode($moderator->getPodiumName()) ?></a></li>
+            <li role="presentation" class="<?= $moderator->id == $mod->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/mods', 'id' => $moderator->id]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Html::encode($moderator->podiumName) ?></a></li>
 <?php endforeach; ?>
         </ul>
     </div>

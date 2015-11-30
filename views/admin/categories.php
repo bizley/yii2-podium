@@ -12,7 +12,7 @@ use kartik\sortable\Sortable;
 use yii\helpers\Url;
 
 $this->title = Yii::t('podium/view', 'Forums');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $items = [];
@@ -31,7 +31,7 @@ if (!empty($items)) {
 <div class="row">
     <div class="col-sm-12 text-right">
         <p class="pull-left" id="podiumSortInfo"></p>
-        <a href="<?= Url::to(['new-category']) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a>
+        <a href="<?= Url::to(['admin/new-category']) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a>
     </div>
 </div>
 <div class="row">
@@ -45,7 +45,7 @@ if (!empty($items)) {
             'handleLabel'  => '<span class="btn btn-default btn-xs pull-left" style="margin-right:10px"><span class="glyphicon glyphicon-move"></span></span> ',
             'items'        => $items,
             'pluginEvents' => [
-                'sortupdate' => 'function(e, ui) { $.post(\'' . Url::to(['sort-category']) . '\', {id:ui.item.find(\'.podium-forum\').data(\'id\'), new:ui.item.index()}).done(function(data){ $(\'#podiumSortInfo\').html(data); }).fail(function(){ $(\'#podiumSortInfo\').html(\'<span class="text-danger">' . Yii::t('podium/view', 'Sorry! There was some error while changing the order of the categories.') . '</span>\'); }); }',
+                'sortupdate' => 'function(e, ui) { $.post(\'' . Url::to(['admin/sort-category']) . '\', {id:ui.item.find(\'.podium-forum\').data(\'id\'), new:ui.item.index()}).done(function(data){ $(\'#podiumSortInfo\').html(data); }).fail(function(){ $(\'#podiumSortInfo\').html(\'<span class="text-danger">' . Yii::t('podium/view', 'Sorry! There was some error while changing the order of the categories.') . '</span>\'); }); }',
             ]
         ]); ?>
 <?php endif; ?>

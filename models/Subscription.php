@@ -7,7 +7,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
-use bizley\podium\components\PodiumUser;
+use bizley\podium\components\Messages;
 use bizley\podium\log\Log;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -17,6 +17,8 @@ use yii\helpers\Url;
 /**
  * Subscription model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property integer $thread_id
@@ -36,16 +38,29 @@ class Subscription extends ActiveRecord
         return '{{%podium_subscription}}';
     }
 
-    public function getPodiumUser()
+    /**
+     * User relation.
+     * @return User
+     */
+    public function getUser()
     {
-        return (new PodiumUser)->findOne($this->user_id);
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
     
+    /**
+     * Thread relation.
+     * @return Thread
+     */
     public function getThread()
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
+    /**
+     * Searches for subscription
+     * @param array $params
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $query = self::find()->where(['user_id' => User::loggedId()]);
@@ -67,30 +82,42 @@ class Subscription extends ActiveRecord
         return $dataProvider;
     }
     
+    /**
+     * Marks post as seen.
+     * @return boolean
+     */
     public function seen()
     {
         $this->post_seen = self::POST_SEEN;
         return $this->save();
     }
     
+    /**
+     * Marks post as unseen.
+     * @return boolean
+     */
     public function unseen()
     {
         $this->post_seen = self::POST_NEW;
         return $this->save();
     }
     
+    /**
+     * Prepares notification email.
+     * @param integer $thread
+     */
     public static function notify($thread)
     {
         if (is_numeric($thread) && $thread > 0) {
             
-            $email = Content::find()->where(['name' => 'email-sub'])->one();
+            $email = Content::find()->where(['name' => 'email-sub'])->limit(1)->one();
             if ($email) {
                 $topic   = $email->topic;
                 $content = $email->content;
             }
             else {
-                $topic   = 'New post in subscribed thread at {forum}';
-                $content = '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br />{forum}</p>';
+                $topic   = Messages::EMAIL_SUB_TITLE;
+                $content = Messages::EMAIL_SUB_BODY;
             }
 
             $forum = Config::getInstance()->get('name');
@@ -101,18 +128,18 @@ class Subscription extends ActiveRecord
                 $sub->post_seen = static::POST_NEW;
                 if ($sub->save()) {
                     
-                    if (Email::queue($sub->podiumUser->user->email, 
+                    if (Email::queue($sub->user->email, 
                             str_replace('{forum}', $forum, $topic),
                             str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                     Url::to(['default/last', 'id' => $sub->thread_id], true),
                                     Url::to(['default/last', 'id' => $sub->thread_id], true)
                                 ), $content)),
-                            !empty($sub->user_id) ? $sub->user_id : null
+                            $sub->user_id
                         )) {
-                        Log::info('Subscription notice link queued', !empty($sub->user_id) ? $sub->user_id : '', __METHOD__);
+                        Log::info('Subscription notice link queued', $sub->user_id, __METHOD__);
                     }
                     else {
-                        Log::error('Error while queuing subscription notice link', !empty($sub->user_id) ? $sub->user_id : '', __METHOD__);
+                        Log::error('Error while queuing subscription notice link', $sub->user_id, __METHOD__);
                     }
                 }
             }

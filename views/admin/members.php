@@ -17,13 +17,15 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Forum Members');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 $this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#deleteUrl').attr('href', button.data('url')); });");
 $this->registerJs("$('#podiumModalBan').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#banUrl').attr('href', button.data('url')); });");
 $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#unbanUrl').attr('href', button.data('url')); });");
+
+$loggedId = User::loggedId();
 
 ?>
 <?= $this->render('/elements/admin/_navbar', ['active' => 'members']); ?>
@@ -85,16 +87,16 @@ $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var 
                 'view' => function($url) {
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
                 },
-                'pm' => function($url, $model) {
-                    if ($model->id !== User::loggedId()) {
+                'pm' => function($url, $model) use ($loggedId) {
+                    if ($model->id !== $loggedId) {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', ['messages/new', 'user' => $model->id], ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Send Message')]);
                     }
                     else {
                         return Html::a('<span class="glyphicon glyphicon-envelope"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                     }
                 },
-                'ban' => function($url, $model) {
-                    if ($model->id !== User::loggedId()) {
+                'ban' => function($url, $model) use ($loggedId) {
+                    if ($model->id !== $loggedId) {
                         if ($model->status !== User::STATUS_BANNED) {
                             return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ban-circle"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Ban Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalBan', 'data-url' => $url]);
                         }
@@ -104,8 +106,8 @@ $this->registerJs("$('#podiumModalUnBan').on('show.bs.modal', function(e) { var 
                     }
                     return Html::a('<span class="glyphicon glyphicon-ban-circle"></span>', '#', ['class' => 'btn btn-xs disabled text-muted']);
                 },
-                'delete' => function($url, $model) {
-                    if ($model->id !== User::loggedId()) {
+                'delete' => function($url, $model) use ($loggedId) {
+                    if ($model->id !== $loggedId) {
                         return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Member')]), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                     }
                     else {

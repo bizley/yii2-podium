@@ -11,7 +11,7 @@
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="memberThreads">
         <h4 class="panel-title">
-            <?= Yii::t('podium/view', 'Threads started by {name}', ['name' => $user->getPodiumName()]) ?>
+            <?= Yii::t('podium/view', 'Threads started by {name}', ['name' => $user->podiumName]) ?>
         </h4>
     </div>
     <div id="collapseThreads" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="memberThreads">

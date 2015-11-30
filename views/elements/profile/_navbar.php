@@ -7,10 +7,10 @@
  * @since 0.1
  */
 
-use bizley\podium\components\PodiumUser;
+use bizley\podium\models\User;
 use yii\helpers\Url;
 
-$podiumUser        = new PodiumUser;
+$podiumUser        = User::findMe();
 $messageCount      = $podiumUser->getNewMessagesCount();
 $subscriptionCount = $podiumUser->getSubscriptionsCount();
 

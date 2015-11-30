@@ -8,7 +8,6 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -150,21 +149,21 @@ class Message extends ActiveRecord
     }
 
     /**
-     * Returns sender User.
+     * Sender relation.
      * @return User
      */
     public function getSenderUser()
     {
-        return (new PodiumUser)->findOne($this->sender_id);
+        return $this->hasOne(User::className(), ['id' => 'sender_id']);
     }
     
     /**
-     * Returns receiver User.
+     * Receiver relation.
      * @return User
      */
     public function getReceiverUser()
     {
-        return (new PodiumUser)->findOne($this->receiver_id);
+        return $this->hasOne(User::className(), ['id' => 'receiver_id']);
     }
     
     /**

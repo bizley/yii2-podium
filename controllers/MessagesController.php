@@ -10,6 +10,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageSearch;
+use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 
@@ -135,7 +136,7 @@ class MessagesController extends BaseController
     {
         $model = new Message();
         
-        $podiumUser = Yii::$app->user->identity;
+        $podiumUser = User::findMe();
         
         if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
             $model->receiver_id = (int)$user;
@@ -168,7 +169,7 @@ class MessagesController extends BaseController
     public function actionReply($id = null)
     {
         $model      = new Message;
-        $podiumUser = User::findOne(User::loggedId());
+        $podiumUser = User::findMe();
         
         $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->id]);
         

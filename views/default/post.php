@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' =
 $this->params['breadcrumbs'][] = ['label' => Html::encode($thread->name), 'url' => ['default/thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
-$author = User::findOne(User::loggedId());
+$author = User::findMe();
 
 ?>
 <?php if (!empty($preview)): ?>
@@ -42,7 +42,7 @@ $author = User::findOne(User::loggedId());
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right"><span data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'As soon as you click Post Reply') ?>"><?= Yii::t('podium/view', 'In a while') ?></span></small>
-                <?= $author->getPodiumTag() ?>
+                <?= $author->podiumTag ?>
             </div>
             <div class="popover-content podium-content">
                 <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>

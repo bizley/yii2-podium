@@ -164,7 +164,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])) {
 
             $postData = Yii::$app->request->post();
             if ($postData) {
@@ -252,7 +252,7 @@ class DefaultController extends BaseController
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
+                    if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
                         $model = Post::find()->where(['id' => (int)$pid, 'forum_id' => $forum->id, 'thread_id' => $thread->id])->limit(1)->one();
                         
                         if (!$model) {
@@ -260,7 +260,7 @@ class DefaultController extends BaseController
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can(Rbac::PERM_DELETE_OWN_POST, ['post' => $model]) || Yii::$app->user->can(Rbac::PERM_DELETE_POST, ['item' => $model])) {
+                            if (User::can(Rbac::PERM_DELETE_OWN_POST, ['post' => $model]) || User::can(Rbac::PERM_DELETE_POST, ['item' => $model])) {
 
                                 $postData = Yii::$app->request->post();
                                 if ($postData) {
@@ -356,7 +356,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_DELETE_POST, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_DELETE_POST, ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -481,7 +481,7 @@ class DefaultController extends BaseController
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {                 
+                    if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {                 
                         $model = Post::find()->where(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                         if (!$model) {
@@ -489,7 +489,7 @@ class DefaultController extends BaseController
                             return $this->redirect(['default/index']);
                         }
                         else {
-                            if (Yii::$app->user->can(Rbac::PERM_UPDATE_OWN_POST, ['post' => $model]) || Yii::$app->user->can(Rbac::PERM_UPDATE_POST, ['item' => $model])) {
+                            if (User::can(Rbac::PERM_UPDATE_OWN_POST, ['post' => $model]) || User::can(Rbac::PERM_UPDATE_POST, ['item' => $model])) {
                                 $isFirstPost = false;
                                 $firstPost   = Post::find()->where(['thread_id' => $thread->id, 'forum_id' => $forum->id])->orderBy(['id' => SORT_ASC])->limit(1)->one();
                                 if ($firstPost->id == $model->id) {
@@ -690,7 +690,7 @@ class DefaultController extends BaseController
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])) {
             if ($thread->locked) {
                 $thread->locked = 0;
             }
@@ -752,7 +752,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])) {
             $postData = Yii::$app->request->post();
             if ($postData) {
                 $moveTo = $postData['forum'];
@@ -807,7 +807,7 @@ class DefaultController extends BaseController
                 $catlist = [];
                 foreach ($forums as $for) {
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         if ($for->id == $forum->id) {
                             $options[$for->id] = ['disabled' => true];
                         }
@@ -855,7 +855,7 @@ class DefaultController extends BaseController
 
         list($category, $forum, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_MOVE_POST, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_MOVE_POST, ['item' => $thread])) {
 
             if (Yii::$app->request->post()) {
                 
@@ -982,10 +982,10 @@ class DefaultController extends BaseController
                 foreach ($forums as $for) {
                     $forlist = [];
                     if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
+                        $catlist[$for->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name);
                         foreach ($threads as $thr) {
                             if ($thr->category_id == $cat->id && $thr->forum_id == $for->id) {
-                                $forlist[$thr->id] = (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
+                                $forlist[$thr->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thr]) ? '* ' : '') . Html::encode($cat->name) . ' &raquo; ' . Html::encode($for->name) . ' &raquo; ' . Html::encode($thr->name);
                                 if ($thr->id == $thread->id) {
                                     $options[$thr->id] = ['disabled' => true];
                                 }
@@ -1027,7 +1027,7 @@ class DefaultController extends BaseController
      */
     public function actionNewThread($cid = null, $fid = null)
     {
-        if (!Yii::$app->user->can(Rbac::PERM_CREATE_THREAD)) {
+        if (!User::can(Rbac::PERM_CREATE_THREAD)) {
             if (Yii::$app->user->isGuest) {
                 $this->warning(Yii::t('podium/flash', 'Please sign in to create a new thread.'));
                 return $this->redirect(['account/login']);
@@ -1164,7 +1164,7 @@ class DefaultController extends BaseController
 
         list(,, $thread) = $verify;
         
-        if (Yii::$app->user->can(Rbac::PERM_PIN_THREAD, ['item' => $thread])) {
+        if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])) {
             if ($thread->pinned) {
                 $thread->pinned = 0;
             }
@@ -1209,7 +1209,7 @@ class DefaultController extends BaseController
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (!Yii::$app->user->can(Rbac::PERM_CREATE_POST)) {
+        if (!User::can(Rbac::PERM_CREATE_POST)) {
             if (Yii::$app->user->isGuest) {
                 $this->warning(Yii::t('podium/flash', 'Please sign in to post a reply.'));
                 return $this->redirect(['account/login']);
@@ -1246,7 +1246,7 @@ class DefaultController extends BaseController
                         return $this->redirect(['default/index']);
                     }
                     else {
-                        if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
+                        if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
                             
                             $model = new Post;
                             $model->subscribe = 1;
@@ -1431,7 +1431,7 @@ class DefaultController extends BaseController
                                                         'receiver_id'     => $mod,
                                                         'topic'           => Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
                                                         'content'         => $model->content . '<hr>' . 
-                                                            Html::a(Yii::t('podium/view', 'Direct link to the post'), ['show', 'id' => $post->id]) . '<hr>' .
+                                                            Html::a(Yii::t('podium/view', 'Direct link to the post'), ['default/show', 'id' => $post->id]) . '<hr>' .
                                                             '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><blockquote>' . $post->content . '</blockquote>',
                                                         'sender_status'   => Message::STATUS_REMOVED,
                                                         'receiver_status' => Message::STATUS_NEW,
@@ -1523,7 +1523,7 @@ class DefaultController extends BaseController
                     },
                 'author' => function ($model, $widget) {
                         if (!empty($model->latest)) {
-                            return $model->latest->user->username;
+                            return $model->latest->author->username;
                         }
                         return 'Podium';
                     },

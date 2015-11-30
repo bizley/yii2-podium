@@ -9,9 +9,18 @@ namespace bizley\podium\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
+/**
+ * UserSearch model
+ *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
+ */
 class UserSearch extends User
 {
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -22,11 +31,17 @@ class UserSearch extends User
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function scenarios()
     {
         return Model::scenarios();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function search($params, $active = false, $mods = false)
     {
         $query = User::find();
@@ -55,5 +70,4 @@ class UserSearch extends User
 
         return $dataProvider;
     }
-
 }

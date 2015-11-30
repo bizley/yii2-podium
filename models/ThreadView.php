@@ -11,6 +11,8 @@ use yii\db\ActiveRecord;
 /**
  * ThreadView model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property integer $user_id
  * @property integer $thread_id

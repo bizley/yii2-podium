@@ -26,9 +26,9 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
                     <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
 <?php endif; ?>
                 </small>
-                <?= $model->podiumUser->user->getPodiumTag() ?>
+                <?= $model->author->podiumTag ?>
                 <small>
-                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->podiumUser->getPostsCount() ?></span>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->author->postsCount ?></span>
                 </small>
             </div>
             <div class="popover-content podium-content">

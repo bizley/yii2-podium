@@ -82,8 +82,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
 
 <?php $stack = 0; while ($reply->reply && $stack < 4): ?>
-<?php if (($reply->reply->receiver_id == User::loggedId() && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
-        ($reply->reply->sender_id == User::loggedId() && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
+<?php $loggedId = User::loggedId(); if (($reply->reply->receiver_id == $loggedId && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+        ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
 <?php $reply = $reply->reply; else: ?>
             <div class="row">
                 <div class="col-sm-2 text-center">

@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\components\UserQuery;
@@ -17,6 +18,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 use Zelenin\yii\behaviors\Slug;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
@@ -88,6 +90,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @var int Terms of service agreement flag (write-only).
      */
     public $tos;
+    
+    private $_access = [];
     
     /**
      * @inheritdoc
@@ -226,6 +230,20 @@ class User extends ActiveRecord implements IdentityInterface
         $this->generateAuthKey();
         $this->removePasswordResetToken();
         return $this->save();
+    }
+    
+    /**
+     * Returns current user based on module configuration.
+     * @return User
+     */
+    public static function findMe()
+    {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            return static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+        }
+        else {
+            return Yii::$app->user->identity;
+        }
     }
     
     /**
@@ -370,6 +388,15 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Activity relation.
+     * @return Activity
+     */
+    public function getActivity()
+    {
+        return $this->hasOne(Activity::className(), ['user_id' => 'id']);
+    }
+    
+    /**
      * Meta relation.
      * @return \yii\db\ActiveQuery
      */
@@ -379,12 +406,28 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Returns number of new user messages.
+     * @return integer
+     */
+    public function getNewMessagesCount()
+    {
+        $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Message::tableName())->where(['receiver_id' => $this->id,
+                        'receiver_status' => Message::STATUS_NEW])->count();
+            Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
+        }
+
+        return $cache;
+    }
+    
+    /**
      * Returns Podium name.
      * @return string
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{ID}', ['ID' => $this->id]);
+        return $this->username ? $this->username : Yii::t('podium/view', 'Member#{id}', ['id' => $this->id]);
     }
     
     /**
@@ -395,6 +438,56 @@ class User extends ActiveRecord implements IdentityInterface
     public function getPodiumTag($simple = false)
     {
         return Helper::podiumUserTag($this->podiumName, $this->role, $this->id, $this->slug, $simple);
+    }
+    
+    /**
+     * Gets number of active posts added by user.
+     * @return integer
+     */
+    public function getPostsCount()
+    {
+        return static::findPostsCount($this->id);
+    }
+    
+    /**
+     * Gets number of active posts added by user of given ID.
+     * @param integer $id
+     * @return integer
+     */
+    public static function findPostsCount($id)
+    {
+        $cache = Cache::getInstance()->getElement('user.postscount', $id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Post::tableName())->where(['author_id' => $id])->count();
+            Cache::getInstance()->setElement('user.postscount', $id, $cache);
+        }
+
+        return $cache;
+    }
+    
+    /**
+     * Gets number of active threads added by user.
+     * @return integer
+     */
+    public function getThreadsCount()
+    {
+        return static::findThreadsCount($this->id);
+    }
+    
+    /**
+     * Gets number of active threads added by user of given ID.
+     * @param integer $id
+     * @return integer
+     */
+    public static function findThreadsCount($id)
+    {
+        $cache = Cache::getInstance()->getElement('user.threadscount', $id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Thread::tableName())->where(['author_id' => $id])->count();
+            Cache::getInstance()->setElement('user.threadscount', $id, $cache);
+        }
+
+        return $cache;
     }
     
     /**
@@ -421,6 +514,22 @@ class User extends ActiveRecord implements IdentityInterface
             self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
             self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
         ];
+    }
+    
+    /**
+     * Gets number of user subscribed threads with new posts.
+     * @return integer
+     */
+    public function getSubscriptionsCount()
+    {
+        $cache = Cache::getInstance()->getElement('user.subscriptions', $this->id);
+        if ($cache === false) {
+            $cache = (new Query)->from(Subscription::tableName())->where(['user_id' => $this->id,
+                        'post_seen' => Subscription::POST_NEW])->count();
+            Cache::getInstance()->setElement('user.subscriptions', $this->id, $cache);
+        }
+
+        return $cache;
     }
     
     /**
@@ -482,6 +591,32 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Finds out if user is ignored by another.
+     * @param integer $user_id user ID
+     * @return boolean
+     */
+    public function isIgnoredBy($user_id)
+    {
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id, 'ignored_id' => $this->id])->exists()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Finds out if user is ignoring another.
+     * @param integer $user_id user ID
+     * @return boolean
+     */
+    public function isIgnoring($user_id)
+    {
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $this->id, 'ignored_id' => $user_id])->exists()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Finds out if unencrypted password fulfill requirements.
      */
     public function passwordRequirements()
@@ -503,7 +638,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (!Yii::$app->user->isGuest) {
             if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
-                $user = static::find()->loggedUser(Yii::$app->user->id)->limit(1)->one();
+                $user = static::findMe();
                 if ($user) {
                     return $user->id;
                 }
@@ -664,6 +799,37 @@ class User extends ActiveRecord implements IdentityInterface
             if (!preg_match('/^[\p{L}][\w\p{L}]{2,254}$/u', $this->username)) {
                 $this->addError($attribute, Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'));
             }
+        }
+    }
+    
+    /**
+     * Implementation of \yii\web\User::can().
+     * @param string $permissionName the name of the permission (e.g. "edit post") that needs access check.
+     * @param array $params name-value pairs that would be passed to the rules associated
+     * with the roles and permissions assigned to the user. A param with name 'user' is added to
+     * this array, which holds the value of [[id]].
+     * @param boolean $allowCaching whether to allow caching the result of access check.
+     * When this parameter is true (default), if the access check of an operation was performed
+     * before, its result will be directly returned when calling this method to check the same
+     * operation. If this parameter is false, this method will always call
+     * [[\yii\rbac\ManagerInterface::checkAccess()]] to obtain the up-to-date access result. Note that this
+     * caching is effective only within the same request and only works when `$params = []`.
+     * @return boolean whether the user can perform the operation as specified by the given permission.
+     */
+    public static function can($permissionName, $params = [], $allowCaching = true)
+    {
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
+                return $this->_access[$permissionName];
+            }
+            $access = Yii::$app->authManager->checkAccess($this->id, $permissionName, $params);
+            if ($allowCaching && empty($params)) {
+                $this->_access[$permissionName] = $access;
+            }
+            return $access;
+        }
+        else {
+            return Yii::$app->user->can($permissionName, $params, $allowCaching);
         }
     }
 }

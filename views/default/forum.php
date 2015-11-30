@@ -17,10 +17,10 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url
 $this->params['breadcrumbs'][] = Html::encode($this->title);
 
 ?>
-<?php if (Yii::$app->user->can(Rbac::PERM_CREATE_THREAD)): ?>
+<?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>
 <div class="row">
     <div class="col-sm-12 text-right">
-        <a href="<?= Url::to(['new-thread', 'cid' => $category->id, 'fid' => $model->id]) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a>
+        <a href="<?= Url::to(['default/new-thread', 'cid' => $category->id, 'fid' => $model->id]) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a>
         <br><br>
     </div>
 </div>

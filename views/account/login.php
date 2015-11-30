@@ -33,8 +33,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
                 <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Sign in'), ['class' => 'btn btn-block btn-primary', 'name' => 'login-button']) ?>
             </div>
             <div class="form-group">
-                <a href="<?= Url::to('reset') ?>" class="pull-right"><?= Yii::t('podium/view', 'Reset Password') ?></a>
-                <a href="<?= Url::to('reactivate') ?>" class="pull-left"><?= Yii::t('podium/view', 'Resend activation link') ?></a>
+                <a href="<?= Url::to(['account/reset']) ?>" class="pull-right"><?= Yii::t('podium/view', 'Reset Password') ?></a>
+                <a href="<?= Url::to(['account/reactivate']) ?>" class="pull-left"><?= Yii::t('podium/view', 'Resend activation link') ?></a>
             </div>
         <?php ActiveForm::end(); ?>
     </div>

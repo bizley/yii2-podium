@@ -16,7 +16,7 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 
 $this->title = Yii::t('podium/view', 'Logs');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

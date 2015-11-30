@@ -30,16 +30,16 @@ $this->params['breadcrumbs'][] = $this->title;
 </div><br>
 
 <?= Html::beginForm(); ?>
-    <?php Pjax::begin(); ?>
-    <?= ListView::widget([
-        'dataProvider'     => $dataProvider,
-        'itemView'         => '/elements/forum/_post_select',
-        'summary'          => '',
-        'emptyText'        => Yii::t('podium/view', 'No posts have been added yet.'),
-        'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
-        'pager'            => ['options' => ['class' => 'pagination pull-right']]
-    ]);  ?>
-    <?php Pjax::end(); ?>
+<?php Pjax::begin(); ?>
+<?= ListView::widget([
+    'dataProvider'     => $dataProvider,
+    'itemView'         => '/elements/forum/_post_select',
+    'summary'          => '',
+    'emptyText'        => Yii::t('podium/view', 'No posts have been added yet.'),
+    'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
+    'pager'            => ['options' => ['class' => 'pagination pull-right']]
+]);  ?>
+<?php Pjax::end(); ?>
     <br>
     <div class="row">
         <div class="col-sm-10 col-sm-offset-2">

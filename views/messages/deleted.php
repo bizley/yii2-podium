@@ -44,7 +44,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function($model) {
-                return $model->getSenderName();
+                return $model->senderName;
             }
         ],
         [
@@ -53,7 +53,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function($model) {
-                return $model->getReceiverName();
+                return $model->receiverName;
             }
         ],
         [
@@ -62,7 +62,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function($model) {
-                return Html::a(Html::encode($model->topic), ['view', 'id' => $model->id], ['data-pjax' => '0']);
+                return Html::a(Html::encode($model->topic), ['messages/view', 'id' => $model->id], ['data-pjax' => '0']);
             }
         ],
         [

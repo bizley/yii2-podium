@@ -42,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function ($model) {
-                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug], ['data-pjax' => '0']);
+                return Html::a($model->podiumName, ['members/view', 'id' => $model->id, 'slug' => $model->slug], ['data-pjax' => '0']);
             },
         ],
         [

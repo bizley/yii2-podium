@@ -8,7 +8,6 @@
  */
 
 use bizley\podium\components\Helper;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
@@ -43,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'encodeLabel' => false,
             'format'      => 'raw',
             'value'       => function ($model) {
-                return Html::a($model->getPodiumName(), ['view', 'id' => $model->id, 'slug' => $model->slug], ['data-pjax' => '0']);
+                return Html::a($model->podiumName, ['members/view', 'id' => $model->id, 'slug' => $model->slug], ['data-pjax' => '0']);
             },
         ],
         [
@@ -68,7 +67,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'label'       => Yii::t('podium/view', 'Threads'),
             'encodeLabel' => false,
             'value'       => function ($model) {
-                return (new PodiumUser)->getThreadsCount($model->getPodiumId());
+                return $model->threadsCount;
             },
         ],
         [
@@ -76,7 +75,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             'label'       => Yii::t('podium/view', 'Posts'),
             'encodeLabel' => false,
             'value'       => function ($model) {
-                return (new PodiumUser)->getPostsCount($model->getPodiumId());
+                return $model->postsCount;
             },
         ],
         [

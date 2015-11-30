@@ -57,7 +57,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
                             <?= $form->field($model, 'image')->label(Yii::t('podium/view', 'Or upload your own avatar'))->widget(FileInput::className(), [
                                 'options'       => ['accept' => 'image/*'],
                                 'pluginOptions' => ['allowedFileExtensions' => ['jpg', 'jpeg', 'gif', 'png']]]) ?>
-                            <small><?= Yii::t('podium/view', 'Maximum size is {SIZE}, {WIDTH} x {HEIGHT} pixels, png, jpg and gif images only.', ['SIZE' => '500kB', 'WIDTH' => 500, 'HEIGHT' => 500]) ?></small>
+                            <small><?= Yii::t('podium/view', 'Maximum size is {size}, {width} x {height} pixels, png, jpg and gif images only.', ['size' => '500kB', 'width' => 500, 'height' => 500]) ?></small>
                         </div>
                     </div>
                 </div>

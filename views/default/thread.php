@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
+use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use yii\bootstrap\ActiveForm;
@@ -27,7 +28,7 @@ $this->registerJs("$('.add-subscription').click(function (e) { e.preventDefault(
 $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0-9]+$/)) $(anchor).find('.podium-content').addClass('podium-gradient');");
 
 ?>
-<?php if (Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])): ?>
+<?php if (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])): ?>
 <div class="row">
     <div class="col-sm-12">
         <div class="panel panel-warning">
@@ -80,7 +81,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 ]); ?> 
 <?php Pjax::end(); ?>
 
-<?php if ($thread->locked == 0 || ($thread->locked == 1 && Yii::$app->user->can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))): ?>
+<?php if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))): ?>
 <?php if (!Yii::$app->user->isGuest): ?>
 <br>
 <div class="row">
@@ -91,14 +92,14 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <br>
 <div class="row">
     <div class="col-sm-2 text-center">
-        <?= Avatar::widget(['author' => Yii::$app->user->identity, 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => User::findMe(), 'showName' => false]) ?>
     </div>
     <div class="col-sm-10">
         <div class="popover right podium">
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right"><?= Html::tag('span', Yii::t('podium/view', 'In a while'), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'As soon as you click Post Reply')]); ?></small>
-                <strong><?= Yii::t('podium/view', 'Post Quick Reply') ?></strong> <?= Yii::$app->user->identity->getPodiumTag() ?>
+                <strong><?= Yii::t('podium/view', 'Post Quick Reply') ?></strong> <?= User::findMe()->podiumTag ?>
             </div>
             <div class="popover-content podium-content">
                 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]]); ?>

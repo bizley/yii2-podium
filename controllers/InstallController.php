@@ -137,7 +137,7 @@ class InstallController extends Controller
         
         $mdVersion = $this->module->version;
         $extractMd = explode('.', $mdVersion);
-        $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->one();
+        $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
         if (!isset($dbVersion['value'])) {
             $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
         }

@@ -17,7 +17,7 @@ $lastActive = Activity::lastActive();
 <div class="panel panel-default">
     <div class="panel-body small">
         <p class="pull-right">
-            <a href="<?= Url::to(['default/rss']) ?>">RSS</a>
+            <small><a href="<?= Url::to(['default/rss']) ?>">RSS</a></small>
         </p>
         <p>
             <?= Yii::t('podium/view', '{n, plural, =1{# active user} other{# active users}} (in the past 15 minutes)', ['n' => !empty($lastActive['count']) ? $lastActive['count'] : 0]) ?><br>

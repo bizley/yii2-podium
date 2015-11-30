@@ -8,7 +8,6 @@
  */
 
 use bizley\podium\components\Helper;
-use bizley\podium\Module as PodiumModule;
 use cebe\gravatar\Gravatar;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
@@ -27,7 +26,6 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
     </div>
     <div class="col-sm-6">
         <div class="panel panel-default">
-<?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
             <?php $form = ActiveForm::begin(['id' => 'details-form']); ?>
                 <div class="panel-body">
                     <div class="row">
@@ -103,33 +101,12 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
                     </div>
                 </div>
             <?php ActiveForm::end(); ?>
-<?php else: ?>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <strong><?= Yii::t('podium/view', 'Username') ?></strong><br>
-                        <?= Html::encode($model->podiumUser->user->getName()) ?>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <strong><?= Yii::t('podium/view', 'Time Zone') ?></strong><br>
-                        <?= Html::encode($model->podiumUser->user->getTimeZone()) ?>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <strong><?= Yii::t('podium/view', $model->podiumUser->user->getAnonymous() ? 'Anonymous Forum Viewing' : 'Public Forum Viewing') ?></strong>
-                    </div>
-                </div>
-            </div>
-<?php endif; ?>
         </div>
     </div>
     <div class="col-sm-3">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
-            'email'        => PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN ? $model->email : $model->getEmail(),
+            'email'        => $model->email,
             'defaultImage' => 'identicon',
             'rating'       => 'r',
             'options'      => [

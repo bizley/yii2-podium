@@ -8,7 +8,6 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
 use Exception;
 use Yii;
@@ -92,12 +91,12 @@ class Post extends ActiveRecord
     }
     
     /**
-     * Returns Podium User.
-     * @return PodiumUser
+     * Author relation.
+     * @return User
      */
-    public function getPodiumUser()
+    public function getAuthor()
     {
-        return (new PodiumUser)->findOne($this->author_id);
+        return $this->hasOne(User::className(), ['id' => 'author_id']);
     }
     
     /**
@@ -411,7 +410,7 @@ class Post extends ActiveRecord
                         'id'      => $post->id,
                         'title'   => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->podiumUser->user->getPodiumTag()
+                        'author'  => $post->author->podiumTag
                     ];
                 }
                 Cache::getInstance()->setElement('forum.latestposts', 'guest', $latest);
@@ -426,7 +425,7 @@ class Post extends ActiveRecord
                         'id'      => $post->id,
                         'title'   => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->podiumUser->user->getPodiumTag()
+                        'author'  => $post->author->podiumTag
                     ];
                 }
                 Cache::getInstance()->setElement('forum.latestposts', 'member', $latest);

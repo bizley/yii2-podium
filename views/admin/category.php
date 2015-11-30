@@ -11,9 +11,9 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 
-$this->title = Yii::t('podium/view', $model->getIsNewRecord() ? 'New Category' : 'Edit Category');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Forums'), 'url' => ['categories']];
+$this->title = Yii::t('podium/view', $model->isNewRecord ? 'New Category' : 'Edit Category');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Forums'), 'url' => ['admin/categories']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
@@ -28,14 +28,14 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
 <?php foreach ($categories as $category): ?>
             <li role="presentation" class="<?= $model->id == $category->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/edit-category', 'id' => $category->id]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Html::encode($category->name) ?></a></li>
 <?php endforeach; ?>
-            <li role="presentation" class="<?= $model->getIsNewRecord() ? 'active' : '' ?>"><a href="<?= Url::to(['admin/new-category']) ?>"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a></li>
+            <li role="presentation" class="<?= $model->isNewRecord ? 'active' : '' ?>"><a href="<?= Url::to(['admin/new-category']) ?>"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a></li>
         </ul>
     </div>
     <div class="col-sm-6">
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'edit-category-form']); ?>
                 <div class="panel-heading">
-                    <h3 class="panel-title"><?= Yii::t('podium/view', $model->getIsNewRecord() ? 'New Category' : 'Edit Category') ?></h3>
+                    <h3 class="panel-title"><?= Yii::t('podium/view', $model->isNewRecord ? 'New Category' : 'Edit Category') ?></h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -83,7 +83,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', $model->getIsNewRecord() ? 'Create New Category' : 'Save Category'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', $model->isNewRecord ? 'Create New Category' : 'Save Category'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
                         </div>
                     </div>
                 </div>

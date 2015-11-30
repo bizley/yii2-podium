@@ -13,15 +13,29 @@ use yii\helpers\HtmlPurifier;
 
 /**
  * Vocabulary model
+ * Automatic tag words from posts.
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property string $word
  */
 class Vocabulary extends ActiveRecord
 {
 
+    /**
+     * @var string Query
+     */
     public $query;
+    
+    /**
+     * @var integer 
+     */
     public $thread_id;
+    
+    /**
+     * @var integer 
+     */
     public $post_id;
     
     /**
@@ -45,22 +59,37 @@ class Vocabulary extends ActiveRecord
         ];
     }
     
+    /**
+     * Thread relation.
+     * @return Thread
+     */
     public function getThread()
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
     
+    /**
+     * Post relation.
+     * @return Post
+     */
     public function getPostData()
     {
         return $this->hasOne(Post::className(), ['id' => 'post_id']);
     }
 
+    /**
+     * Posts relation via junction.
+     * @return Post[]
+     */
     public function getPosts()
     {
         return $this->hasMany(Post::className(), ['id' => 'post_id'])
             ->viaTable('{{%podium_vocabulary_junction}}', ['word_id' => 'id']);
     }
     
+    /**
+     * @inheritdoc
+     */
     public function search()
     {
         $query = self::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);

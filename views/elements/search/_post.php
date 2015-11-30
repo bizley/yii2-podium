@@ -31,7 +31,7 @@ else {
 ?>
 <div class="row" id="post<?= $model->postData->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->postData->id ?>">
-        <?= Avatar::widget(['author' => $model->postData->podiumUser->user, 'showName' => false]) ?>
+        <?= Avatar::widget(['author' => $model->postData->author, 'showName' => false]) ?>
     </div>
     <div class="col-sm-10" id="postContent<?= $model->postData->id ?>">
         <div class="popover right podium">
@@ -43,9 +43,9 @@ else {
                     <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->postData->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->postData->edited_at) ?>)</span></em>
 <?php endif; ?>
                 </small>
-                <?= $model->postData->podiumUser->user->getPodiumTag() ?>
+                <?= $model->postData->author->podiumTag ?>
                 <small>
-                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->postData->podiumUser->getPostsCount() ?></span>
+                    <span class="label label-info" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Number of posts') ?>"><?= $model->postData->author->postsCount ?></span>
                 </small>
             </div>
             <div class="popover-content podium-content">

@@ -45,7 +45,7 @@ class BaseController extends YiiController
                         'maintenancePage' => Html::a(Yii::t('podium/flash', Messages::PAGE_MAINTENANCE), ['default/maintenance']),
                         'settingsPage' => Html::a(Yii::t('podium/flash', Messages::PAGE_SETTINGS), ['admin/settings']),
                     ]));
-                    if (!Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
+                    if (!User::can(Rbac::ROLE_ADMIN)) {
                         return $this->redirect(['default/maintenance']);
                     }
                 }

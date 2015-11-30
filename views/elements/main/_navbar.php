@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\components\Config;
-use bizley\podium\components\PodiumUser;
+use bizley\podium\models\User;
 use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\Rbac;
 use yii\bootstrap\Nav;
@@ -17,7 +17,6 @@ use yii\helpers\Html;
 
 $items = [['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']]];
 
-$podiumUser   = new PodiumUser;
 $podiumModule = PodiumModule::getInstance();
 
 if (Yii::$app->user->isGuest) {
@@ -39,10 +38,11 @@ if (Yii::$app->user->isGuest) {
 }
 else {
     
-    $messageCount      = $podiumUser->getNewMessagesCount();
-    $subscriptionCount = $podiumUser->getSubscriptionsCount();
+    $podiumUser        = User::findMe();
+    $messageCount      = $podiumUser->newMessagesCount;
+    $subscriptionCount = $podiumUser->subscriptionsCount;
     
-    if (Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
+    if (User::can(Rbac::ROLE_ADMIN)) {
         $items[] = [
             'label'  => Yii::t('podium/layout', 'Administration'), 
             'url'    => ['admin/index'],

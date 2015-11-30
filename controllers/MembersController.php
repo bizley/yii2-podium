@@ -8,7 +8,6 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;

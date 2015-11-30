@@ -20,6 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 
+$loggedId = User::loggedId();
+
 ?>
 <?= $this->render('/elements/admin/_navbar', ['active' => 'members']); ?>
 <br>
@@ -28,13 +30,13 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="pull-right">
-<?php if ($model->getId() !== User::loggedId()): ?>
-                    <a href="<?= Url::to(['messages/new', 'user' => $model->getId()]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
+<?php if ($model->id !== $loggedId): ?>
+                    <a href="<?= Url::to(['messages/new', 'user' => $model->id]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php endif; ?>
-<?php if ($model->getId() !== User::loggedId()): ?>
-<?php if ($model->getStatus() !== User::STATUS_BANNED): ?>
+<?php if ($model->id !== $loggedId): ?>
+<?php if ($model->status !== User::STATUS_BANNED): ?>
                     <span data-toggle="modal" data-target="#podiumModalBan"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Ban Member') ?>"><span class="glyphicon glyphicon-ban-circle"></span></button></span>
 <?php else: ?>
                     <span data-toggle="modal" data-target="#podiumModalUnBan"><button class="btn btn-success btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Unban Member') ?>"><span class="glyphicon glyphicon-ok-circle"></span></button></span>
@@ -42,63 +44,63 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-ban-circle"></span></a>
 <?php endif; ?>
-<?php if ($model->getId() !== User::loggedId()): ?>
+<?php if ($model->id !== $loggedId): ?>
                     <span data-toggle="modal" data-target="#podiumModalDelete"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete Member') ?>"><span class="glyphicon glyphicon-trash"></span></button></span>
 <?php else: ?>
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-trash"></span></a>
 <?php endif; ?>
                 </div>
                 <h2>
-                    <?= Html::encode($model->getName()) ?> 
+                    <?= Html::encode($model->podiumName) ?> 
                     <small>
-                        <?= Html::encode($model->getEmail()) ?> 
-                        <?= Helper::roleLabel($model->getRole()) ?>
-                        <?= Helper::statusLabel($model->getStatus()) ?>
+                        <?= Html::encode($model->email) ?> 
+                        <?= Helper::roleLabel($model->role) ?>
+                        <?= Helper::statusLabel($model->status) ?>
                     </small>
                 </h2>
                 
-                <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->getMeta()) && !empty($model->getMeta()->location) ? Html::encode($model->getMeta()->location) : '-' ?></p>
+                <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
 
-<?php if ($model->getStatus() == User::STATUS_ACTIVE): ?>
-<?php if ($model->getRole() == User::ROLE_MEMBER): ?>
-                <p><button class="btn btn-primary" data-toggle="modal" data-target="#podiumModalPromote"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Promote {name} to Moderator', ['name' => Html::encode($model->getName())]) ?></button></p>
-<?php elseif ($model->getRole() == User::ROLE_MODERATOR): ?>
-                <p><button class="btn btn-warning" data-toggle="modal" data-target="#podiumModalDemote"><span class="glyphicon glyphicon-save"></span> <?= Yii::t('podium/view', 'Demote {name} to Member', ['name' => Html::encode($model->getName())]) ?></button></p>
+<?php if ($model->status == User::STATUS_ACTIVE): ?>
+<?php if ($model->role == User::ROLE_MEMBER): ?>
+                <p><button class="btn btn-primary" data-toggle="modal" data-target="#podiumModalPromote"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Promote {name} to Moderator', ['name' => Html::encode($model->podiumName)]) ?></button></p>
+<?php elseif ($model->role == User::ROLE_MODERATOR): ?>
+                <p><button class="btn btn-warning" data-toggle="modal" data-target="#podiumModalDemote"><span class="glyphicon glyphicon-save"></span> <?= Yii::t('podium/view', 'Demote {name} to Member', ['name' => Html::encode($model->podiumName)]) ?></button></p>
 <?php endif; ?>
 <?php endif; ?>                
-                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->getCreatedAt(), 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->getCreatedAt()) ?>)</p>
-<?php if ($model->getStatus() == User::STATUS_REGISTERED): ?>
+                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
+<?php if ($model->status == User::STATUS_REGISTERED): ?>
                 <p><em><?= Yii::t('podium/view', 'The account is awaiting activation.') ?></em></p>
 <?php else: ?>
-<?php if (!empty($model->getActivity())): ?>
-                <p><?= Yii::t('podium/view', 'Last action') ?>: <code><?= Html::encode($model->getActivity()->url) ?></code> <small><?= Yii::t('podium/view', 'IP') ?>: <code><?= Html::encode($model->getActivity()->ip) ?></code> <?= Yii::t('podium/view', 'Date') ?>: <?= Yii::$app->formatter->asDatetime($model->getActivity()->created_at) ?> (<?= Yii::$app->formatter->asRelativeTime($model->getActivity()->created_at) ?>)</small></p>
+<?php if (!empty($model->activity)): ?>
+                <p><?= Yii::t('podium/view', 'Last action') ?>: <code><?= Html::encode($model->activity->url) ?></code> <small><?= Yii::t('podium/view', 'IP') ?>: <code><?= Html::encode($model->activity->ip) ?></code> <?= Yii::t('podium/view', 'Date') ?>: <?= Yii::$app->formatter->asDatetime($model->activity->created_at) ?> (<?= Yii::$app->formatter->asRelativeTime($model->activity->created_at) ?>)</small></p>
 <?php endif; ?>
                 <p>
-                    <a href="<?= Url::to(['members/threads', 'id' => $model->getId(), 'slug' => $model->getSlug()]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->getName())]) ?></a> 
-                    <a href="<?= Url::to(['members/posts', 'id' => $model->getId(), 'slug' => $model->getSlug()]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->getName())]) ?></a>
+                    <a href="<?= Url::to(['members/threads', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->podiumName)]) ?></a> 
+                    <a href="<?= Url::to(['members/posts', 'id' => $model->id, 'slug' => $model->slug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all posts created by {name}', ['name' => Html::encode($model->podiumName)]) ?></a>
                 </p>
 <?php endif; ?>
             </div>
             <div class="panel-footer">
                 <ul class="list-inline">
-                    <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= $model->getThreadsCount() ?></span></li>
-                    <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge"><?= $model->getPostsCount() ?></span></li>
+                    <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= $model->threadsCount ?></span></li>
+                    <li><?= Yii::t('podium/view', 'Posts') ?> <span class="badge"><?= $model->postsCount ?></span></li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="col-sm-3">
-<?php if (!empty($model->getMeta()->gravatar)): ?>
+<?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
-            'email'        => $model->getEmail(),
+            'email'        => $model->email,
             'defaultImage' => 'identicon',
             'rating'       => 'r',
             'options'      => [
                 'alt'   => Yii::t('podium/view', 'Gravatar image'),
                 'class' => 'img-circle img-responsive',
             ]]); ?>
-<?php elseif (!empty($model->getMeta()->avatar)): ?>
-        <img class="img-circle img-responsive" src="/avatars/<?= $model->getMeta()->avatar ?>" alt="<?= Yii::t('podium/view', 'User\'s avatar') ?>">
+<?php elseif (!empty($model->meta->avatar)): ?>
+        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'User\'s avatar') ?>">
 <?php else: ?>
         <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
 <?php endif; ?>
@@ -119,7 +121,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/delete', 'id' => $model->getId()]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete user') ?></a>
+                <a href="<?= Url::to(['admin/delete', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete user') ?></a>
             </div>
         </div>
     </div>
@@ -138,7 +140,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/ban', 'id' => $model->getId()]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Ban user') ?></a>
+                <a href="<?= Url::to(['admin/ban', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Ban user') ?></a>
             </div>
         </div>
     </div>
@@ -156,7 +158,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/ban', 'id' => $model->getId()]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Unban user') ?></a>
+                <a href="<?= Url::to(['admin/ban', 'id' => $model->id]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Unban user') ?></a>
             </div>
         </div>
     </div>
@@ -174,7 +176,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/promote', 'id' => $model->getId()]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Promote user') ?></a>
+                <a href="<?= Url::to(['admin/promote', 'id' => $model->id]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Promote user') ?></a>
             </div>
         </div>
     </div>
@@ -192,7 +194,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/demote', 'id' => $model->getId()]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Demote user') ?></a>
+                <a href="<?= Url::to(['admin/demote', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Demote user') ?></a>
             </div>
         </div>
     </div>

@@ -19,6 +19,8 @@ use Zelenin\yii\behaviors\Slug;
 /**
  * Thread model
  *
+ * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @since 0.1
  * @property integer $id
  * @property string $name
  * @property string $slug
@@ -94,7 +96,7 @@ class Thread extends ActiveRecord
     }
 
     /**
-     * Validates name
+     * Validates name.
      * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
      * @param string $attribute
      */
@@ -107,46 +109,82 @@ class Thread extends ActiveRecord
         }
     }
     
+    /**
+     * Forum relation.
+     * @return Forum
+     */
     public function getForum()
     {
         return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
     }
 
+    /**
+     * ThreadView relation.
+     * @return ThreadView
+     */
     public function getView()
     {
         return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
+    /**
+     * Subscription relation.
+     * @return Subscription
+     */
     public function getSubscription()
     {
         return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
+    /**
+     * Latest post relation.
+     * @return Post
+     */
     public function getLatest()
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
     
+    /**
+     * First post relation.
+     * @return Post
+     */
     public function getPostData()
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_ASC]);
     }
     
+    /**
+     * First new not seen post relation.
+     * @return Post
+     */
     public function getFirstNewNotSeen()
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'created_at', $this->view ? $this->view->new_last_seen : 0])->orderBy(['id' => SORT_ASC]);
     }
     
+    /**
+     * First edited not seen post relation.
+     * @return Post
+     */
     public function getFirstEditedNotSeen()
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'edited_at', $this->view ? $this->view->edited_last_seen : 0])->orderBy(['id' => SORT_ASC]);
     }
     
+    /**
+     * Author relation.
+     * @return User
+     */
     public function getAuthor()
     {
         return $this->hasOne(User::className(), ['id' => 'author_id']);
     }
     
+    /**
+     * Returns first post to see.
+     * @return Post
+     */
     public function firstToSee()
     {
         if ($this->firstNewNotSeen) {
@@ -160,6 +198,11 @@ class Thread extends ActiveRecord
         }
     }
 
+    /**
+     * Searches for thread.
+     * @param integer $forum_id
+     * @return ActiveDataProvider
+     */
     public function search($forum_id = null)
     {
         $query = self::find();
@@ -177,13 +220,18 @@ class Thread extends ActiveRecord
         return $dataProvider;
     }
     
+    /**
+     * Searches for threads created by user of given ID.
+     * @param integer $user_id
+     * @return ActiveDataProvider
+     */
     public function searchByUser($user_id)
     {
         $query = self::find();
         $query->where(['author_id' => (int) $user_id]);
         if (Yii::$app->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
-                $q->where(['podium_forum.visible' => 1]);
+                $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
         }
 
@@ -197,6 +245,10 @@ class Thread extends ActiveRecord
         return $dataProvider;
     }
 
+    /**
+     * Returns proper icon for thread.
+     * @return string
+     */
     public function getIcon()
     {
         $icon   = self::ICON_NO_NEW;
@@ -236,6 +288,10 @@ class Thread extends ActiveRecord
         return $icon;
     }
 
+    /**
+     * Returns proper description for thread.
+     * @return string
+     */
     public function getDescription()
     {
         $description = self::DESC_NO_NEW;
@@ -284,6 +340,10 @@ class Thread extends ActiveRecord
         return $description;
     }
 
+    /**
+     * Returns proper CSS class for thread.
+     * @return string
+     */
     public function getClass()
     {
         $class = self::CLASS_DEFAULT;
@@ -303,9 +363,14 @@ class Thread extends ActiveRecord
         return $class;
     }
     
+    /**
+     * Checks if user is this thread's moderator.
+     * @param integer $user_id
+     * @return boolean
+     */
     public function isMod($user_id = null)
     {
-        if (Yii::$app->user->can(Rbac::ROLE_ADMIN)) {
+        if (User::can(Rbac::ROLE_ADMIN)) {
             return true;
         }
         else {

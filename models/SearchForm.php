@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;
@@ -21,18 +22,48 @@ class SearchForm extends Model
 {
 
     /**
-     *
-     * @var type 
+     * @var string Query
      */
     public $query;
+    
+    /**
+     * @var string Whether to search for all words or any word
+     */
     public $match;
+    
+    /**
+     * @var string Author's name
+     */
     public $author;
+    
+    /**
+     * @var string Date from [yyyy-MM-dd]
+     */
     public $date_from;
+    
+    /**
+     * @var string Date to [yyyy-MM-dd]
+     */
     public $date_to;
+    
+    /**
+     * @var string Whether to search for posts or topics
+     */
     public $forums;
+    
+    /**
+     * @var string Whether to search for posts or topics
+     */
     public $type;
+    
+    /**
+     * @var string Whether to display results as posts or topics
+     */
     public $display;
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -46,18 +77,31 @@ class SearchForm extends Model
             [['date_from', 'date_to'], 'default', 'value' => null],
             ['date_from', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'date_from'],
             ['date_to', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'date_to'],
-            [['forums'], 'safe'],
+            [['forums'], 'each', 'rule' => ['integer']],
             [['type', 'display'], 'in', 'range' => ['posts', 'topics']],
         ];
     }
 
-    // TODO: ograniczenia widocznosci forum
+    /**
+     * Advanced search.
+     * @return ActiveDataProvider
+     */
     public function searchAdvanced()
     {
         if ($this->type == 'topics') {
             $query = Thread::find();
+            if (Yii::$app->user->isGuest) {
+                $query->joinWith([
+                    'category' => function ($q) {
+                        $q->andWhere([Category::tableName() . '.visible' => 1]);
+                    },
+                    'forum' => function ($q) {
+                        $q->andWhere([Forum::tableName() . '.visible' => 1]);
+                    }
+                ]);
+            }
             if (!empty($this->query)) {
-                $words = explode(' ', $this->query);
+                $words = explode(' ', preg_replace('/\s+/', ' ', $this->query));
                 foreach ($words as $word) {
                     if ($this->match == 'all') {
                         $query->andWhere(['like', 'name', $word]);
@@ -112,9 +156,23 @@ class SearchForm extends Model
             ];
         }
         else {
-            $query = Vocabulary::find()->select('post_id, thread_id')->joinWith(['posts']);
+            $query = Vocabulary::find()->select('post_id, thread_id');
+            if (Yii::$app->user->isGuest) {
+                $query->joinWith(['posts' => function ($q) {
+                    $q->joinWith([
+                        'forum' => function ($qu) {
+                            $qu->andWhere([Forum::tableName() . '.visible' => 1])->joinWith(['category' => function ($que) {
+                                $que->andWhere([Category::tableName() . '.visible' => 1]);
+                            }]);
+                        }
+                    ]);
+                }]);
+            }
+            else {
+                $query->joinWith(['posts']);
+            }
             if (!empty($this->query)) {
-                $words = explode(' ', $this->query);
+                $words = explode(' ', preg_replace('/\s+/', ' ', $this->query));
                 $countWords = 0;
                 foreach ($words as $word) {
                     $query->orWhere(['like', 'word', $word]);

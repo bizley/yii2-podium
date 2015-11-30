@@ -74,7 +74,7 @@ class ProfileController extends BaseController
      */
     public function actionDetails()
     {
-        $model = User::findOne(User::loggedId());
+        $model = User::findMe();
         if (empty($model)) {
             return $this->redirect(['account/login']);
         }
@@ -187,7 +187,7 @@ class ProfileController extends BaseController
 
         return $this->render('forum', [
                 'model' => $model,
-                'user' => User::findOne(User::loggedId())
+                'user'  => User::findMe()
         ]);
     }
 
@@ -197,7 +197,7 @@ class ProfileController extends BaseController
      */
     public function actionIndex()
     {
-        $model = User::findOne(User::loggedId());
+        $model = User::findMe();
 
         if (empty($model)) {
             if ($this->module->userComponent == PodiumModule::USER_OWN) {

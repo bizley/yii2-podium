@@ -209,7 +209,7 @@ class AccountController extends BaseController
 
             if ($model->reactivate()) {
                 
-                $email = Content::find()->where(['name' => 'email-react'])->one();
+                $email = Content::find()->where(['name' => 'email-react'])->limit(1)->one();
                 if ($email) {
                     $topic   = $email->topic;
                     $content = $email->content;
@@ -262,7 +262,7 @@ class AccountController extends BaseController
         
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
             
-            $email = Content::find()->where(['name' => 'email-reg'])->one();
+            $email = Content::find()->where(['name' => 'email-reg'])->limit(1)->one();
             if ($email) {
                 $topic   = $email->topic;
                 $content = $email->content;
@@ -317,7 +317,7 @@ class AccountController extends BaseController
 
             if ($model->reset()) {
 
-                $email = Content::find()->where(['name' => 'email-pass'])->one();
+                $email = Content::find()->where(['name' => 'email-pass'])->limit(1)->one();
                 if ($email) {
                     $topic   = $email->topic;
                     $content = $email->content;

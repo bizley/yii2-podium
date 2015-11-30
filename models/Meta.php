@@ -6,12 +6,11 @@
  */
 namespace bizley\podium\models;
 
-use Yii;
-use yii\helpers\HtmlPurifier;
-use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
-use bizley\podium\models\User;
 use bizley\podium\components\Helper;
+use bizley\podium\models\User;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\helpers\HtmlPurifier;
 
 /**
  * Meta model
@@ -96,7 +95,7 @@ class Meta extends ActiveRecord
     public function validateCurrentPassword($attribute)
     {
         if (!empty($this->user_id)) {
-            $user = User::findOne($this->user_id);
+            $user = User::findMe();
             if (!$user->validatePassword($this->current_password)) {
                 $this->addError($attribute, Yii::t('podium/view', 'Current password is incorrect.'));
             }

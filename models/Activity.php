@@ -7,7 +7,6 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\Log;
 use Exception;
 use Yii;
@@ -76,7 +75,7 @@ class Activity extends ActiveRecord
      */
     protected static function _addUser($ip, $url)
     {
-        $user = User::findOne(User::loggedId());
+        $user = User::findMe();
         if ($user) {
             $activity = self::find()->where(['user_id' => $user->id])->limit(1)->one();
             if (!$activity) {

@@ -72,7 +72,7 @@ class AdminController extends BaseController
      */
     public function actionBan($id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_BAN_USER)) {
+        if (User::can(Rbac::PERM_BAN_USER)) {
             $model = User::findOne((int)$id);
 
             if (empty($model)) {
@@ -154,14 +154,14 @@ class AdminController extends BaseController
             $name = 'terms';
         }        
         
-        $model = Content::find()->where(['name' => $name])->one();
+        $model = Content::find()->where(['name' => $name])->limit(1)->one();
         if (!$model) {
             $model = new Content();
             $model->name = $name;
         }        
 
         if ($model->load(Yii::$app->request->post())) {
-            if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
+            if (User::can(Rbac::PERM_CHANGE_SETTINGS)) {
                 if ($model->save()) {
                     $this->success(Yii::t('podium/flash', 'Content has been saved.'));
                 }
@@ -185,7 +185,7 @@ class AdminController extends BaseController
      */
     public function actionDelete($id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_DELETE_USER)) {
+        if (User::can(Rbac::PERM_DELETE_USER)) {
             $model = User::findOne((int)$id);
 
             if (empty($model)) {
@@ -221,7 +221,7 @@ class AdminController extends BaseController
      */
     public function actionDeleteCategory($id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_DELETE_CATEGORY)) {
+        if (User::can(Rbac::PERM_DELETE_CATEGORY)) {
             $model = Category::findOne((int)$id);
 
             if (empty($model)) {
@@ -255,7 +255,7 @@ class AdminController extends BaseController
      */
     public function actionDeleteForum($cid = null, $id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_DELETE_FORUM)) {
+        if (User::can(Rbac::PERM_DELETE_FORUM)) {
             $category = Category::findOne((int)$cid);
 
             if (empty($category)) {
@@ -295,7 +295,7 @@ class AdminController extends BaseController
      */
     public function actionDemote($id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+        if (User::can(Rbac::PERM_PROMOTE_USER)) {
             $model = User::findOne((int)$id);
 
             if (empty($model)) {
@@ -353,7 +353,7 @@ class AdminController extends BaseController
         }
         else {
             if ($model->load(Yii::$app->request->post())) {
-                if (Yii::$app->user->can(Rbac::PERM_UPDATE_CATEGORY)) {
+                if (User::can(Rbac::PERM_UPDATE_CATEGORY)) {
                     if ($model->save()) {
                         Log::info('Category updated', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'Category has been updated.'));
@@ -398,7 +398,7 @@ class AdminController extends BaseController
         }
         else {
             if ($model->load(Yii::$app->request->post())) {
-                if (Yii::$app->user->can(Rbac::PERM_UPDATE_FORUM)) {
+                if (User::can(Rbac::PERM_UPDATE_FORUM)) {
                     if ($model->save()) {
                         Log::info('Forum updated', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'Forum has been updated.'));
@@ -492,7 +492,7 @@ class AdminController extends BaseController
      */
     public function actionMod($uid = null, $fid = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+        if (User::can(Rbac::PERM_PROMOTE_USER)) {
             if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the moderator or forum with this ID.'));
             }
@@ -559,7 +559,7 @@ class AdminController extends BaseController
 
         $postData = Yii::$app->request->post();
         if ($postData) {
-            if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+            if (User::can(Rbac::PERM_PROMOTE_USER)) {
                 $mod_id    = !empty($postData['mod_id']) && is_numeric($postData['mod_id']) && $postData['mod_id'] > 0 ? $postData['mod_id'] : 0;
                 $selection = !empty($postData['selection']) ? $postData['selection'] : [];
                 $pre       = !empty($postData['pre']) ? $postData['pre'] : [];
@@ -622,7 +622,7 @@ class AdminController extends BaseController
      */
     public function actionNewCategory()
     {
-        if (Yii::$app->user->can(Rbac::PERM_CREATE_CATEGORY)) {
+        if (User::can(Rbac::PERM_CREATE_CATEGORY)) {
             $model          = new Category();
             $model->visible = 1;
             $model->sort    = 0;
@@ -658,7 +658,7 @@ class AdminController extends BaseController
             return $this->redirect(['admin/categories']);
         }
 
-        if (Yii::$app->user->can(Rbac::PERM_CREATE_FORUM)) {
+        if (User::can(Rbac::PERM_CREATE_FORUM)) {
             $model              = new Forum();
             $model->category_id = $category->id;
             $model->visible     = 1;
@@ -690,7 +690,7 @@ class AdminController extends BaseController
      */
     public function actionPromote($id = null)
     {
-        if (Yii::$app->user->can(Rbac::PERM_PROMOTE_USER)) {
+        if (User::can(Rbac::PERM_PROMOTE_USER)) {
             $model = User::findOne((int)$id);
 
             if (empty($model)) {
@@ -740,7 +740,7 @@ class AdminController extends BaseController
         $model = new ConfigForm();
 
         if ($data = Yii::$app->request->post('ConfigForm')) {
-            if (Yii::$app->user->can(Rbac::PERM_CHANGE_SETTINGS)) {
+            if (User::can(Rbac::PERM_CHANGE_SETTINGS)) {
                 if ($model->update($data)) {
                     Log::info('Settings updated', null, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Settings have been updated.'));
@@ -765,7 +765,7 @@ class AdminController extends BaseController
     public function actionSortCategory()
     {
         if (Yii::$app->request->isAjax) {
-            if (Yii::$app->user->can(Rbac::PERM_UPDATE_CATEGORY)) {
+            if (User::can(Rbac::PERM_UPDATE_CATEGORY)) {
                 $modelId = Yii::$app->request->post('id');
                 $new     = Yii::$app->request->post('new');
 
@@ -826,7 +826,7 @@ class AdminController extends BaseController
     public function actionSortForum()
     {
         if (Yii::$app->request->isAjax) {
-            if (Yii::$app->user->can(Rbac::PERM_UPDATE_FORUM)) {
+            if (User::can(Rbac::PERM_UPDATE_FORUM)) {
                 $modelId       = Yii::$app->request->post('id');
                 $modelCategory = Yii::$app->request->post('category');
                 $new           = Yii::$app->request->post('new');

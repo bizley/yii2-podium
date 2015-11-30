@@ -26,7 +26,6 @@ namespace bizley\podium;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\PodiumUser;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\models\Activity;
@@ -329,16 +328,29 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
-     * Registers formatter for signed users with chosen timezone.
+     * Registers formatter with chosen timezone.
      */
     public function registerFormatter()
     {
-        Yii::$app->setComponents([
+        $component = [
             'formatter' => [
                 'class'    => 'yii\i18n\Formatter',
-                'timeZone' => Yii::$app->user->isGuest ? 'UTC' : (new PodiumUser)->getTimeZone(),
+                'timeZone' => 'UTC',
             ],
-        ]);
+        ];
+        if (!Yii::$app->user->isGuest) {
+            if ($this->userComponent == self::USER_INHERIT) {
+                $user = models\User::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            }
+            else {
+                $user = Yii::$app->user->identity;
+            }            
+            if ($user && !empty($user->timezone)) {
+                $component['formatter']['timeZone'] = $user->timezone;
+            }
+        }
+        
+        Yii::$app->setComponents($component);
     }
 
     /**
@@ -352,7 +364,7 @@ class Module extends BaseModule implements BootstrapInterface
                 'class'           => 'yii\web\User',
                 'identityClass'   => 'bizley\podium\models\User',
                 'enableAutoLogin' => true,
-                'loginUrl'        => ['/podium/account/login'],
+                'loginUrl'        => $this->loginUrl,
                 'identityCookie'  => ['name' => 'podium', 'httpOnly' => true],
                 'idParam'         => '__id_podium',
             ],

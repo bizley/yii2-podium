@@ -145,7 +145,7 @@ class Helper
     public static function prepareQuote($post, $quote = '')
     {
         $content = !empty($quote) ? nl2br(HtmlPurifier::process($quote)) : $post->content;
-        return Html::tag('blockquote', Html::tag('small', $post->user->getPodiumTag() . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at)) . $content) . '<br>';
+        return Html::tag('blockquote', Html::tag('small', $post->author->podiumTag . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at)) . $content) . '<br>';
     }
     
     /**

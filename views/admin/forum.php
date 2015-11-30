@@ -11,9 +11,9 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = Yii::t('podium/view', $model->getIsNewRecord() ? 'New Forum' : 'Edit Forum');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Categories List'), 'url' => ['categories']];
+$this->title = Yii::t('podium/view', $model->isNewRecord ? 'New Forum' : 'Edit Forum');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Categories List'), 'url' => ['admin/categories']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
@@ -31,7 +31,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
 <?php foreach ($forums as $forum): ?>
             <li role="presentation" class="<?= $model->id == $forum->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/edit-forum', 'id' => $forum->id, 'cid' => $forum->category_id]) ?>"><span class="glyphicon glyphicon-bullhorn"></span> <?= Html::encode($forum->name) ?></a></li>
 <?php endforeach; ?>        
-            <li role="presentation" class="<?= $model->getIsNewRecord() ? 'active' : '' ?>"><a href="<?= Url::to(['admin/new-forum', 'cid' => $category->id]) ?>"><span class="glyphicon glyphicon-plus-sign"></span> <?= Yii::t('podium/view', 'Create new forum') ?></a></li>
+            <li role="presentation" class="<?= $model->isNewRecord ? 'active' : '' ?>"><a href="<?= Url::to(['admin/new-forum', 'cid' => $category->id]) ?>"><span class="glyphicon glyphicon-plus-sign"></span> <?= Yii::t('podium/view', 'Create new forum') ?></a></li>
 <?php endif; ?>
 <?php endforeach; ?>
             <li role="presentation"><a href="<?= Url::to(['admin/new-category']) ?>"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a></li>
@@ -41,7 +41,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'edit-forum-form']); ?>
                 <div class="panel-heading">
-                    <h3 class="panel-title"><?= Yii::t('podium/view', $model->getIsNewRecord() ? 'New Forum' : 'Edit Forum') ?></h3>
+                    <h3 class="panel-title"><?= Yii::t('podium/view', $model->isNewRecord ? 'New Forum' : 'Edit Forum') ?></h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -101,7 +101,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', $model->getIsNewRecord() ? 'Create New Forum' : 'Save Forum'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', $model->isNewRecord ? 'Create New Forum' : 'Save Forum'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
                         </div>
                     </div>
                 </div>
