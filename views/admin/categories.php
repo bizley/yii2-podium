@@ -22,7 +22,7 @@ foreach ($dataProvider as $category) {
 
 if (!empty($items)) {
     $this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#deleteUrl').attr('href', button.data('url')); });");
-    $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+    $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 }
 
 ?>

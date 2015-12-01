@@ -19,6 +19,8 @@ class Messages
     const ACCESS_ROLES_CREATED = 'Access roles have been created.';
     const ACCESS_ROLES_CREATING_ERROR = 'Error during access roles creating';
     const ACCOUNT_CREATING_ERROR = 'Error during account creating';
+    const ACCOUNT_INHERITED = 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.';
+    const ACCOUNT_INHERITED_ERROR = 'There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.';
     const ACTION_CALL_MISSING = 'Installation aborted! Action call missing.';
     const ADMINISTRATOR_ACCOUNT_CREATED = 'Administrator account has been created.';
     const ADMINISTRATOR_PRIVILEGES_SET = 'Administrator privileges have been set for the user of ID {id}.';
@@ -51,6 +53,7 @@ class Messages
     const NEW_TABLE_NAME_MISSING = 'Installation aborted! New table name missing.';
     const NO_ADMIN_ID_SET = '{userComponent} is set to \'{inheritParam}\' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.';
     const NO_ADMINISTRATOR_PRIVILEGES_SET = 'No administrator privileges have been set.';
+    const NO_EMAIL_SET = 'No e-mail address has been set for your account! Go to {link} to add one.';
     const PAGE_MAINTENANCE = 'Maintenance page';
     const PAGE_SETTINGS = 'Settings page';
     const PREPARING_FOR_INSTALLATION = 'Podium post database table not found - preparing for installation';

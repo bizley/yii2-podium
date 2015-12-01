@@ -220,20 +220,26 @@ class AccountController extends BaseController
                 }
                 
                 $forum = Config::getInstance()->get('name');
-                if (Email::queue($model->getUser()->email, 
-                        str_replace('{forum}', $forum, $topic),
-                        str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true),
-                                Url::to(['account/activate', 'token' => $model->getUser()->activation_token], true)
-                            ), $content)),
-                        !empty($model->getUser()->id) ? $model->getUser()->id : null
-                    )) {
-                    Log::info('Reactivation link queued', $model->getUser()->id, __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'));
+                if (!empty($model->user->email)) {
+                    if (Email::queue($model->user->email, 
+                            str_replace('{forum}', $forum, $topic),
+                            str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                    Url::to(['account/activate', 'token' => $model->user->activation_token], true),
+                                    Url::to(['account/activate', 'token' => $model->user->activation_token], true)
+                                ), $content)),
+                            !empty($model->user->id) ? $model->user->id : null
+                        )) {
+                        Log::info('Reactivation link queued', $model->user->id, __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'));
+                    }
+                    else {
+                        Log::error('Error while queuing reactivation link', $model->user->id, __METHOD__);
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'));
+                    }
                 }
                 else {
-                    Log::error('Error while queuing reactivation link', $model->getUser()->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'));
+                    Log::error('Error while queuing reactivation link - no email set', $model->user->id, __METHOD__);
+                    $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about reactivating.'));
                 }
 
                 return $this->module->goPodium();
@@ -273,25 +279,30 @@ class AccountController extends BaseController
             }
 
             $forum = Config::getInstance()->get('name');
-            if (Email::queue($model->email, 
-                    str_replace('{forum}', $forum, $topic),
-                    str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                            Url::to(['account/activate', 'token' => $model->activation_token], true),
-                            Url::to(['account/activate', 'token' => $model->activation_token], true)
-                        ), $content)),
-                    !empty($model->id) ? $model->id : null
-                )) {
-                Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.'));
+            if (!empty($model->email)) {
+                if (Email::queue($model->email, 
+                        str_replace('{forum}', $forum, $topic),
+                        str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                Url::to(['account/activate', 'token' => $model->activation_token], true),
+                                Url::to(['account/activate', 'token' => $model->activation_token], true)
+                            ), $content)),
+                        !empty($model->id) ? $model->id : null
+                    )) {
+                    Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.'));
+                }
+                else {
+                    Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                    $this->warning(Yii::t('podium/flash', 'Your account has been created but it is not active yet. '
+                            . 'Unfortunately there was some error while sending you the activation link. '
+                            . 'Contact administrator about this or try to {resend the link}.', [
+                                'resend the link' => Html::a(Yii::t('podium/flash', 'resend the link'), ['account/reactivate'])
+                            ]));
+                }
             }
             else {
-                Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                $this->warning('Your account has been created but it is not active yet. '
-                        . 'Unfortunately there was some error while sending you the activation link. '
-                        . 'Contact administrator about this or try to {link}resend the link{closelink}.', [
-                    'link'      => Html::beginTag('a', ['href' => Url::to('account/reactivate')]),
-                    'closelink' => Html::endTag('a')
-                ]);
+                Log::error('Error while queuing activation link - no email set', $model->id, __METHOD__);
+                $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about activating.'));
             }
             
             return $this->module->goPodium();
@@ -328,20 +339,26 @@ class AccountController extends BaseController
                 }
 
                 $forum = Config::getInstance()->get('name');
-                if (Email::queue($model->getUser()->email, 
-                        str_replace('{forum}', $forum, $topic),
-                        str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true),
-                                Url::to(['account/password', 'token' => $model->getUser()->password_reset_token], true)
-                            ), $content)),
-                        !empty($model->getUser()->id) ? $model->getUser()->id : null
-                    )) {
-                    Log::info('Password reset link queued', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'The password reset link has been sent to your e-mail address.'));
+                if (!empty($model->email)) {
+                    if (Email::queue($model->user->email, 
+                            str_replace('{forum}', $forum, $topic),
+                            str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                    Url::to(['account/password', 'token' => $model->user->password_reset_token], true),
+                                    Url::to(['account/password', 'token' => $model->user->password_reset_token], true)
+                                ), $content)),
+                            !empty($model->user->id) ? $model->user->id : null
+                        )) {
+                        Log::info('Password reset link queued', $model->user->id, __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'The password reset link has been sent to your e-mail address.'));
+                    }
+                    else {
+                        Log::error('Error while queuing password reset link', $model->user->id, __METHOD__);
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.'));
+                    }
                 }
                 else {
-                    Log::error('Error while queuing password reset link', !empty($model->getUser()->id) ? $model->getUser()->id : '', __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.'));
+                    Log::error('Error while queuing password reset link - no email set', $model->user->id, __METHOD__);
+                    $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about resetting password.'));
                 }
                 
                 return $this->module->goPodium();

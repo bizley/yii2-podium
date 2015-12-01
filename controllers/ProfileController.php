@@ -79,13 +79,19 @@ class ProfileController extends BaseController
             return $this->redirect(['account/login']);
         }
 
-        $model->setScenario('account');
-
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $model->setScenario('accountInherit');
+        }
+        else {
+            $model->setScenario('account');
+        }
+        
+        $model->current_password = null;
+        $previous_new_email = $model->new_email;
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
                 if ($model->saveChanges()) {
-                    if ($model->new_email) {
-
+                    if ($previous_new_email != $model->new_email) {
                         $email = Content::find()->where(['name' => 'email-new'])->limit(1)->one();
                         if ($email) {
                             $topic   = $email->topic;
@@ -105,19 +111,19 @@ class ProfileController extends BaseController
                                     ), $content)),
                                 !empty($model->id) ? $model->id : null
                             )) {
-                            Log::info('New email activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->success('Your account has been updated but your new e-mail address is not active yet. '
-                                    . 'Click the activation link that has been sent to your new e-mail address.');
+                            Log::info('New email activation link queued', $model->id, __METHOD__);
+                            $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. '
+                                    . 'Click the activation link that has been sent to your new e-mail address.'));
                         }
                         else {
-                            Log::error('Error while queuing new email activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                            $this->warning('Your account has been updated but your new e-mail address is not active yet. '
+                            Log::error('Error while queuing new email activation link', $model->id, __METHOD__);
+                            $this->warning(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. '
                                     . 'Unfortunately there was some error while sending you the activation link. '
-                                    . 'Contact administrator about this problem.');
+                                    . 'Contact administrator about this problem.'));
                         }
                     }
                     else {
-                        Log::info('Details updated', !empty($model->id) ? $model->id : '', __METHOD__);
+                        Log::info('Details updated', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'Your account has been updated.'));
                     }
 

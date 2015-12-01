@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administrati
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Forum Members'), 'url' => ['admin/members']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 $loggedId = User::loggedId();
 

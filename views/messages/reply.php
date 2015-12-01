@@ -19,7 +19,7 @@ $this->title = Yii::t('podium/view', 'Reply to Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 ?>
 <div class="row">

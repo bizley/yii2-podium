@@ -56,6 +56,8 @@ class Module extends BaseModule implements BootstrapInterface
     const ROUTE_REGISTER = '/podium/account/register';
     const MAIN_LAYOUT    = 'main';
     
+    const FIELD_PASSWORD = 'password_hash';
+    
     /**
      * @var null|integer Admin account ID if $user is set to 'inherit'.
      */
@@ -80,6 +82,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * @var string|array the URL for user login.
      * If this property is null login link is not provided in menu.
+     * Login link is not provided for inherited user component.
      */
     public $loginUrl = [self::ROUTE_LOGIN];
     
@@ -91,6 +94,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * @var string|array the URL for new user registering.
      * If this property is null registration link is not provided in menu.
+     * Registration link is not provided for inherited user component.
      */
     public $registerUrl = [self::ROUTE_REGISTER];
     
@@ -98,6 +102,13 @@ class Module extends BaseModule implements BootstrapInterface
      * @var string Module user component
      */
     public $userComponent = self::USER_OWN;
+    
+    /**
+     * @var string Module inherited user password_hash field.
+     * This will be used for profile updating comfirmation.
+     * Default value is 'password_hash'.
+     */
+    public $userPasswordField = self::FIELD_PASSWORD;
 
     /**
      * @var Config Module configuration instance
@@ -339,14 +350,20 @@ class Module extends BaseModule implements BootstrapInterface
             ],
         ];
         if (!Yii::$app->user->isGuest) {
-            if ($this->userComponent == self::USER_INHERIT) {
-                $user = models\User::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            try {
+                if ($this->userComponent == self::USER_INHERIT) {
+                    $user = models\User::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+                }
+                else {
+                    $user = Yii::$app->user->identity;
+                }            
+                if ($user && !empty($user->timezone)) {
+                    $component['formatter']['timeZone'] = $user->timezone;
+                }
             }
-            else {
-                $user = Yii::$app->user->identity;
-            }            
-            if ($user && !empty($user->timezone)) {
-                $component['formatter']['timeZone'] = $user->timezone;
+            catch (\Exception $e) {
+                Yii::error($e->getMessage());
+                Yii::warning('Problem with Podium user table - Podium not installed?');
             }
         }
         

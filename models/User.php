@@ -66,6 +66,8 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_MODERATOR    = 9;
     const ROLE_ADMIN        = 10;
     
+    const DEFAULT_TIMEZONE = 'UTC';
+    
     /**
      * @var string Captcha.
      */
@@ -137,6 +139,7 @@ class User extends ActiveRecord implements IdentityInterface
             'passwordChange' => ['password', 'password_repeat'],
             'register'       => ['email', 'password', 'password_repeat'],
             'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
+            'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
         
         if (Config::getInstance()->get('use_captcha')) {
@@ -164,6 +167,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['username', 'unique'],
             ['username', 'validateUsername'],
             ['anonymous', 'boolean'],
+            ['inherited_id', 'integer'],
             ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
@@ -780,12 +784,30 @@ class User extends ActiveRecord implements IdentityInterface
     
     /**
      * Validates password.
+     * In case of inherited user component password hash is compared to 
+     * password hash stored in Yii::$app->user->identity so this method should 
+     * not be used with User instance other than currently logged in one.
      * @param string $password password to validate
      * @return boolean if password provided is valid for current user
      */
     public function validatePassword($password)
     {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
+        $podium = PodiumModule::getInstance();
+        if ($podium->userComponent == PodiumModule::USER_INHERIT) {
+            $password_hash = PodiumModule::FIELD_PASSWORD;
+            if (!empty($podium->userPasswordField)) {
+                $password_hash = $podium->userPasswordField;
+            }
+            if (!empty(Yii::$app->user->identity->$password_hash)) {
+                return Yii::$app->security->validatePassword($password, Yii::$app->user->identity->$password_hash);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return Yii::$app->security->validatePassword($password, $this->password_hash);
+        }
     }
     
     /**
@@ -819,12 +841,13 @@ class User extends ActiveRecord implements IdentityInterface
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
         if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
-            if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
-                return $this->_access[$permissionName];
+            $user = static::findMe();
+            if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
+                return $user->_access[$permissionName];
             }
-            $access = Yii::$app->authManager->checkAccess($this->id, $permissionName, $params);
+            $access = Yii::$app->authManager->checkAccess($user->id, $permissionName, $params);
             if ($allowCaching && empty($params)) {
-                $this->_access[$permissionName] = $access;
+                $user->_access[$permissionName] = $access;
             }
             return $access;
         }

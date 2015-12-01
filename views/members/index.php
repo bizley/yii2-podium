@@ -20,7 +20,7 @@ use yii\widgets\Pjax;
 $this->title = Yii::t('podium/view', 'Members List');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 ?>
 <ul class="nav nav-tabs">

@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use yii\helpers\Html;
 use yii\helpers\Url;

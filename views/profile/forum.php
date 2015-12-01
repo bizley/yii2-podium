@@ -18,7 +18,7 @@ $this->title = Yii::t('podium/view', 'Forum Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"popover\"]').popover()");
+$this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 
 ?>
 <div class="row">
@@ -31,7 +31,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover()");
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'location')->textInput()->label(Yii::t('podium/view', 'Location')) ?>
+                            <?= $form->field($model, 'location')->textInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Location')) ?>
                         </div>
                     </div>
                     <div class="row">

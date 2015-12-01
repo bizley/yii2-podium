@@ -29,8 +29,7 @@ use yii\helpers\VarDumper;
 class Installation extends Maintenance
 {
 
-    const DEFAULT_USER_EMAIL = 'podium_admin@podium.net';
-    const DEFAULT_USERNAME   = 'admin';
+    const DEFAULT_USERNAME = 'admin';
     
     /**
      * Adds Administrator account.
@@ -47,9 +46,9 @@ class Installation extends Maintenance
                     $admin->setScenario('installation');
                     $admin->inherited_id = $podium->adminId;
                     $admin->username     = self::DEFAULT_USERNAME;
-                    $admin->email        = self::DEFAULT_USER_EMAIL;
                     $admin->status       = User::STATUS_ACTIVE;
                     $admin->role         = User::ROLE_ADMIN;
+                    $admin->timezone     = User::DEFAULT_TIMEZONE;
                     if ($admin->save()) {
                         $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
                         return $this->outputSuccess(Yii::t('podium/flash', Messages::ADMINISTRATOR_PRIVILEGES_SET, ['id' => $podium->adminId]));
@@ -68,9 +67,9 @@ class Installation extends Maintenance
                 $admin = new User;
                 $admin->setScenario('installation');
                 $admin->username = self::DEFAULT_USERNAME;
-                $admin->email    = self::DEFAULT_USER_EMAIL;
                 $admin->status   = User::STATUS_ACTIVE;
                 $admin->role     = User::ROLE_ADMIN;
+                $admin->timezone = User::DEFAULT_TIMEZONE;
                 $admin->generateAuthKey();
                 $admin->setPassword(self::DEFAULT_USERNAME);
                 if ($admin->save()) {

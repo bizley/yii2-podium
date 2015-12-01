@@ -18,7 +18,7 @@ $this->title = Yii::t('podium/view', 'View Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 $loggedId = User::loggedId();
 $perm = false;

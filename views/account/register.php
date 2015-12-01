@@ -16,7 +16,7 @@ use Zelenin\yii\widgets\Recaptcha\widgets\Recaptcha;
 $this->title = Yii::t('podium/view', 'Registration');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"popover\"]').popover()");
+$this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 
 ?>
 <div class="row">

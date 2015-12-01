@@ -20,7 +20,7 @@ $this->title = Yii::t('podium/view', 'Moderators');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 ?>
 <?= $this->render('/elements/admin/_navbar', ['active' => 'mods']); ?>

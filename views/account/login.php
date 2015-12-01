@@ -14,7 +14,7 @@ use yii\helpers\Url;
 $this->title = Yii::t('podium/view', 'Sign in');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip()");
+$this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 ?>
 <div class="row">

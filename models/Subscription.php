@@ -122,24 +122,28 @@ class Subscription extends ActiveRecord
 
             $forum = Config::getInstance()->get('name');
             
-            $subs = static::find()->where(['thread_id' => (int)$thread, 'post_seen' => static::POST_SEEN]);
+            $subs = static::find()->where(['thread_id' => (int)$thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {
 
-                $sub->post_seen = static::POST_NEW;
+                $sub->post_seen = self::POST_NEW;
                 if ($sub->save()) {
-                    
-                    if (Email::queue($sub->user->email, 
-                            str_replace('{forum}', $forum, $topic),
-                            str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                    Url::to(['default/last', 'id' => $sub->thread_id], true),
-                                    Url::to(['default/last', 'id' => $sub->thread_id], true)
-                                ), $content)),
-                            $sub->user_id
-                        )) {
-                        Log::info('Subscription notice link queued', $sub->user_id, __METHOD__);
+                    if (!empty($sub->user->email)) {
+                        if (Email::queue($sub->user->email, 
+                                str_replace('{forum}', $forum, $topic),
+                                str_replace('{forum}', $forum, str_replace('{link}', Html::a(
+                                        Url::to(['default/last', 'id' => $sub->thread_id], true),
+                                        Url::to(['default/last', 'id' => $sub->thread_id], true)
+                                    ), $content)),
+                                $sub->user_id
+                            )) {
+                            Log::info('Subscription notice link queued', $sub->user_id, __METHOD__);
+                        }
+                        else {
+                            Log::error('Error while queuing subscription notice link', $sub->user_id, __METHOD__);
+                        }
                     }
                     else {
-                        Log::error('Error while queuing subscription notice link', $sub->user_id, __METHOD__);
+                        Log::error('Error while queuing subscription notice link - no email set', $sub->user_id, __METHOD__);
                     }
                 }
             }

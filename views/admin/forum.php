@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administrati
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Categories List'), 'url' => ['admin/categories']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('[data-toggle=\"popover\"]').popover()");
+$this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 
 ?>
 <?= $this->render('/elements/admin/_navbar', ['active' => 'categories']); ?>
