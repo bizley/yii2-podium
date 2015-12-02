@@ -83,9 +83,9 @@ class Activity extends ActiveRecord
                 $activity->user_id = $user->id;
             }
 
-            $activity->username  = $user->username;
+            $activity->username  = $user->podiumName;
             $activity->user_role = $user->role;
-            $activity->user_slug = $user->slug;
+            $activity->user_slug = $user->podiumSlug;
             $activity->url       = $url;
             $activity->ip        = $ip;
             $activity->anonymous = $user->anonymous;
@@ -130,6 +130,67 @@ class Activity extends ActiveRecord
     }
     
     /**
+     * Deletes user activity.
+     * @param integer $id
+     */
+    public static function deleteUser($id)
+    {
+        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        if ($activity && $activity->delete()) {
+            Cache::getInstance()->delete('forum.lastactive');
+        }
+        else {
+            Log::error('Cannot delete user activity', $id, __METHOD__);
+        }
+    }
+    
+    /**
+     * Updates username after change.
+     * @param integer $id
+     * @param string $username
+     * @param string $slug
+     */
+    public static function updateName($id, $username, $slug)
+    {
+        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        if ($activity) {
+            $activity->username  = $username;
+            $activity->user_slug = $slug;
+            if ($activity->save()) {
+                Cache::getInstance()->delete('forum.lastactive');
+            }
+            else {
+                Log::error('Cannot update user activity', $id, __METHOD__);
+            }
+        }
+        else {
+            Log::error('Cannot update user activity', $id, __METHOD__);
+        }
+    }
+    
+    /**
+     * Updates role after change.
+     * @param integer $id
+     * @param integer $role
+     */
+    public static function updateRole($id, $role)
+    {
+        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        if ($activity) {
+            $activity->role = $role;
+            if ($activity->save()) {
+                Cache::getInstance()->delete('forum.lastactive');
+            }
+            else {
+                Log::error('Cannot update user activity', $id, __METHOD__);
+            }
+        }
+        else {
+            Log::error('Cannot update user activity', $id, __METHOD__);
+        }
+    }
+
+    /**
      * Updates tracking.
      * @return array
      */
@@ -137,22 +198,20 @@ class Activity extends ActiveRecord
     {
         $last = Cache::getInstance()->get('forum.lastactive');
         if ($last === false) {
-            
             $last              = [];
             $last['count']     = self::find()->where(['>', 'updated_at', time() - 15 * 60])->count();
             $last['members']   = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->count();
             $last['anonymous'] = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 1]])->count();
             $last['guests']    = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['user_id' => null]])->count();
             $last['names']     = [];
-            $members           = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->asArray()->all();
-            foreach ($members as $member) {
-                $last['names'][$member['user_id']] = [
-                    'name' => $member['username'],
-                    'role' => $member['user_role'],
-                    'slug' => $member['user_slug'],
+            $members           = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]]);
+            foreach ($members->each() as $member) {
+                $last['names'][$member->user_id] = [
+                    'name' => $member->username,
+                    'role' => $member->user_role,
+                    'slug' => $member->user_slug,
                 ];
             }
-            
             Cache::getInstance()->set('forum.lastactive', $last, 60);
         }
         

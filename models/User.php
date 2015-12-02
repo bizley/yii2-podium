@@ -94,6 +94,7 @@ class User extends ActiveRecord implements IdentityInterface
     public $tos;
     
     private $_access = [];
+    private static $_identity;
     
     /**
      * @inheritdoc
@@ -238,12 +239,15 @@ class User extends ActiveRecord implements IdentityInterface
     
     /**
      * Returns current user based on module configuration.
-     * @return User
+     * @return mixed
      */
     public static function findMe()
     {
         if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
-            return static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            if (self::$_identity === null) {
+                self::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            }
+            return self::$_identity;
         }
         else {
             return Yii::$app->user->identity;
@@ -441,7 +445,16 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getPodiumTag($simple = false)
     {
-        return Helper::podiumUserTag($this->podiumName, $this->role, $this->id, $this->slug, $simple);
+        return Helper::podiumUserTag($this->podiumName, $this->role, $this->id, $this->podiumSlug, $simple);
+    }
+    
+    /**
+     * Returns Podium member slug.
+     * @return string
+     */
+    public function getPodiumSlug()
+    {
+        return $this->slug ? $this->slug : Yii::t('podium/view', 'member-{id}', ['id' => $this->id]);
     }
     
     /**
@@ -738,7 +751,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Saves password and/or email changes.
+     * Saves user account details changes.
      * @return boolean
      */
     public function saveChanges()
@@ -749,7 +762,16 @@ class User extends ActiveRecord implements IdentityInterface
         if ($this->new_email) {
             $this->generateEmailToken();
         }
-        return $this->save();
+        $updateActivityName = $this->isAttributeChanged('username');
+        if ($this->save()) {
+            if ($updateActivityName) {
+                Activity::updateName($this->id, $this->podiumName, $this->podiumSlug);
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     /**

@@ -8,6 +8,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
+use bizley\podium\models\Activity;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Content;
@@ -198,6 +199,7 @@ class AdminController extends BaseController
                 if ($model->delete()) {
                     Cache::getInstance()->delete('members.fieldlist');
                     Cache::getInstance()->delete('forum.memberscount');
+                    Activity::deleteUser($model->id);
                     Log::info('User deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'User has been deleted.'));
                 }
@@ -314,6 +316,7 @@ class AdminController extends BaseController
                             }
                             if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->id)) {
                                 Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $model->id])->execute();
+                                Activity::updateRole($model->id, User::ROLE_MEMBER);
                                 $transaction->commit();
                                 Log::info('User demoted', $model->id, __METHOD__);
                                 $this->success(Yii::t('podium/flash', 'User has been demoted.'));
@@ -708,6 +711,7 @@ class AdminController extends BaseController
                                 Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $model->id);
                             }
                             if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $model->id)) {
+                                Activity::updateRole($model->id, User::ROLE_MODERATOR);
                                 $transaction->commit();
                                 Log::info('User promoted', $model->id, __METHOD__);
                                 $this->success(Yii::t('podium/flash', 'User has been promoted.'));

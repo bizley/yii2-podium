@@ -117,6 +117,15 @@ class DefaultController extends BaseController
     }
     
     /**
+     * Showing ban info.
+     */
+    public function actionBan()
+    {
+        $this->layout = 'maintenance';
+        return $this->render('ban');
+    }
+    
+    /**
      * Displaying the category of given ID and slug.
      * @param integer $id
      * @param string $slug

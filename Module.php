@@ -4,10 +4,6 @@
  * Podium Module
  * Yii 2 Forum Module
  * 
- * -----------------------------------------------------------------------------
- * TODO: rebuilt inherited user identity
- * -----------------------------------------------------------------------------
- * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @version 0.1 (beta)
  * @license Apache License 2.0
@@ -343,31 +339,12 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function registerFormatter()
     {
-        $component = [
+        Yii::$app->setComponents([
             'formatter' => [
                 'class'    => 'yii\i18n\Formatter',
                 'timeZone' => 'UTC',
             ],
-        ];
-        if (!Yii::$app->user->isGuest) {
-            try {
-                if ($this->userComponent == self::USER_INHERIT) {
-                    $user = models\User::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
-                }
-                else {
-                    $user = Yii::$app->user->identity;
-                }            
-                if ($user && !empty($user->timezone)) {
-                    $component['formatter']['timeZone'] = $user->timezone;
-                }
-            }
-            catch (\Exception $e) {
-                Yii::error($e->getMessage());
-                Yii::warning('Problem with Podium user table - Podium not installed?');
-            }
-        }
-        
-        Yii::$app->setComponents($component);
+        ]);
     }
 
     /**
