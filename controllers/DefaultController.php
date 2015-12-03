@@ -1589,7 +1589,7 @@ class DefaultController extends BaseController
             
             if ($model->load(Yii::$app->request->post()) && $model->validate()) {
                 if (empty($model->query) && empty($model->author)) {
-                    $this->error(Yii::t('podium/flash', 'You have to enter words or author\'s name first.'));
+                    $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
                 }
                 else {
                     $stop = false;

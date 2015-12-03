@@ -46,7 +46,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-placement' => 'right',
                                 'data-content'   => Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'),
                                 'data-trigger'   => 'focus'
-                            ])->label(Yii::t('podium/view', 'Category\'s Name')) ?>
+                            ])->label(Yii::t('podium/view', "Category's Name")) ?>
                         </div>
                     </div>
                     <div class="row">
@@ -64,7 +64,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-placement' => 'right',
                                 'data-content'   => Yii::t('podium/view', 'Meta keywords tag (leave empty to get global value).'),
                                 'data-trigger'   => 'focus'
-                            ])->label(Yii::t('podium/view', 'Category\'s Meta Keywords')) ?>
+                            ])->label(Yii::t('podium/view', "Category's Meta Keywords")) ?>
                         </div>
                     </div>
                     <div class="row">
@@ -76,7 +76,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-placement' => 'right',
                                 'data-content'   => Yii::t('podium/view', 'Meta description tag (leave empty to get global value).'),
                                 'data-trigger'   => 'focus'
-                            ])->label(Yii::t('podium/view', 'Category\'s Meta Description')) ?>
+                            ])->label(Yii::t('podium/view', "Category's Meta Description")) ?>
                         </div>
                     </div>
                 </div>

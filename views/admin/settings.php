@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h3 id="meta"><span class="label label-primary"><?= Yii::t('podium/view', 'Meta data') ?></span></h3>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('podium/view', 'Forum\'s Name')) ?>
+                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('podium/view', "Forum's Name")) ?>
                         </div>
                     </div>
                     <div class="row">

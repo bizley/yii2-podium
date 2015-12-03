@@ -39,12 +39,12 @@ class Update extends Maintenance
     protected function _proceedStep($data)
     {
         if (empty($data['table'])) {
-            throw new Exception(Yii::t('podium/flash', Messages::DATABASE_TABLE_NAME_MISSING));
+            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
         }
         else {
             $this->setTable($data['table']);
             if (empty($data['call'])) {
-                throw new Exception(Yii::t('podium/flash', Messages::ACTION_CALL_MISSING));
+                throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
             }
             else {
                 $this->setError(false);
@@ -106,12 +106,12 @@ class Update extends Maintenance
         $this->setVersion($version);
         try {
             if (!isset($this->getPartSteps()[(int)$step])) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', Messages::CANNOT_FIND_INSTALLATION_STEP)));
+                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
                 $this->setError(true);
                 $this->setPercent(100);
             }
             elseif ($this->getNumberOfSteps() == 0) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', Messages::CANNOT_FIND_INSTALLATION_STEPS)));
+                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
                 $this->setError(true);
                 $this->setPercent(100);
             }

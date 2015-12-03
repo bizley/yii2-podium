@@ -6,7 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Messages;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
 use bizley\podium\Module as PodiumModule;
@@ -94,7 +93,7 @@ class InstallController extends Controller
         if ($this->module->userComponent == PodiumModule::USER_INHERIT && empty($this->module->adminId)) {
             Yii::$app->session->addFlash('warning', Yii::t(
                     'podium/flash', 
-                    Messages::NO_ADMIN_ID_SET, 
+                    "{userComponent} is set to '{inheritParam}' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", 
                     [
                         'userComponent' => '$userComponent',
                         'inheritParam'  => PodiumModule::USER_INHERIT,

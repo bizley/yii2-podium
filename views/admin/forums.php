@@ -79,7 +79,7 @@ if (!empty($items)) {
             </div>
             <div class="modal-body">
                 <p><?= Yii::t('podium/view', 'Are you sure you want to delete this forum?') ?></p>
-                <p><?= Yii::t('podium/view', 'All forum\'s threads and posts will be deleted as well.') ?></p>
+                <p><?= Yii::t('podium/view', "All forum's threads and posts will be deleted as well.") ?></p>
                 <p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
             </div>
             <div class="modal-footer">

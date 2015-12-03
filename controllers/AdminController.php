@@ -751,7 +751,7 @@ class AdminController extends BaseController
                     return $this->refresh();
                 }
                 else {
-                    $this->error(Yii::t('podium/flash', 'One of the setting\'s value is too long (255 characters max).'));
+                    $this->error(Yii::t('podium/flash', "One of the setting's values is too long (255 characters max)."));
                 }
             }
             else {
@@ -794,16 +794,16 @@ class AdminController extends BaseController
                             }
                             $moved->sort = $newSort;
                             if (!$moved->save()) {
-                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', "Sorry! We can not save new categories' order."), ['class' => 'text-danger']);
                             }
                             else {
                                 Log::info('Categories orded updated', $moved->id, __METHOD__);
-                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New categories\' order has been saved.'), ['class' => 'text-success']);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', "New categories' order has been saved."), ['class' => 'text-success']);
                             }
                         }
                         catch (Exception $e) {
                             Log::error($e->getMessage(), null, __METHOD__);
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new categories\' order.'), ['class' => 'text-danger']);
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', "Sorry! We can not save new categories' order."), ['class' => 'text-danger']);
                         }
                     }
                     else {
@@ -857,16 +857,16 @@ class AdminController extends BaseController
                             }
                             $moved->sort = $newSort;
                             if (!$moved->save()) {
-                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', "Sorry! We can not save new forums' order."), ['class' => 'text-danger']);
                             }
                             else {
                                 Log::info('Forums orded updated', $moved->id, __METHOD__);
-                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', 'New forums\' order has been saved.'), ['class' => 'text-success']);
+                                return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . Yii::t('podium/view', "New forums' order has been saved."), ['class' => 'text-success']);
                             }
                         }
                         catch (Exception $e) {
                             Log::error($e->getMessage(), null, __METHOD__);
-                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', 'Sorry! We can not save new forums\' order.'), ['class' => 'text-danger']);
+                            return Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', "Sorry! We can not save new forums' order."), ['class' => 'text-danger']);
                         }
                     }
                     else {

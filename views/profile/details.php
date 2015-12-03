@@ -66,7 +66,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                             <button class="btn btn-success" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Click here to change your e-mail address') ?></button>
                             <div id="details-email" class="hide">
                                 <?= $form->field($model, 'new_email')->textInput([
-                                    'placeholder'    => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
+                                    'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                     'data-container' => 'body',
                                     'data-toggle'    => 'popover',
                                     'data-placement' => 'right',
@@ -88,7 +88,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                         <div class="row">
                             <div class="col-sm-12">
                                 <?= $form->field($model, 'password')->passwordInput([
-                                    'placeholder'    => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
+                                    'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                     'data-container' => 'body',
                                     'data-toggle'    => 'popover',
                                     'data-placement' => 'right',
@@ -103,7 +103,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                             <div class="col-sm-12">
                                 <?= $form->field($model, 'password_repeat')->passwordInput([
                                         'autocomplete' => 'off', 
-                                        'placeholder'  => Yii::t('podium/view', 'Leave empty if you don\'t want to change it'),
+                                        'placeholder'  => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                         'disabled'     => true
                                     ])->label(Yii::t('podium/view', 'Repeat new password')) ?>
                             </div>

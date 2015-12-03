@@ -8,7 +8,6 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\components\Messages;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
@@ -215,8 +214,8 @@ class AccountController extends BaseController
                     $content = $email->content;
                 }
                 else {
-                    $topic   = Messages::EMAIL_REACT_TITLE;
-                    $content = Messages::EMAIL_REACT_BODY;
+                    $topic   = '{forum} account reactivation';
+                    $content = '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>';
                 }
                 
                 $forum = Config::getInstance()->get('name');
@@ -274,8 +273,8 @@ class AccountController extends BaseController
                 $content = $email->content;
             }
             else {
-                $topic   = Messages::EMAIL_REG_TITLE;
-                $content = Messages::EMAIL_REG_BODY;
+                $topic   = 'Welcome to {forum}! This is your activation link';
+                $content = '<p>Thank you for registering at {forum}!</p><p>To activate you account open the following link in your Internet browser:<br>{link}<br></p><p>See you soon!<br>{forum}</p>';
             }
 
             $forum = Config::getInstance()->get('name');
@@ -334,8 +333,8 @@ class AccountController extends BaseController
                     $content = $email->content;
                 }
                 else {
-                    $topic   = Messages::EMAIL_PASS_TITLE;
-                    $content = Messages::EMAIL_PASS_BODY;
+                    $topic   = '{forum} password reset link';
+                    $content = '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>';
                 }
 
                 $forum = Config::getInstance()->get('name');

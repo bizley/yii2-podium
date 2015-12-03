@@ -100,7 +100,7 @@ $loggedId = User::loggedId();
                 'class' => 'img-circle img-responsive',
             ]]); ?>
 <?php elseif (!empty($model->meta->avatar)): ?>
-        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'User\'s avatar') ?>">
+        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', "User's avatar") ?>">
 <?php else: ?>
         <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
 <?php endif; ?>

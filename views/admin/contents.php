@@ -38,7 +38,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
                 <h3 class="panel-title"><?= Yii::t('podium/view', 'Content variables') ?></h3>
             </div>
             <div class="panel-body">
-                <strong>{forum}</strong> <?= Yii::t('podium/view', 'This forum\'s name') ?><br>
+                <strong>{forum}</strong> <?= Yii::t('podium/view', "This forum's name") ?><br>
                 <strong>{link}</strong> <?= Yii::t('podium/view', 'The link coming with email') ?><br>
             </div>
         </div>

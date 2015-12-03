@@ -7,7 +7,6 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
-use bizley\podium\components\Messages;
 use bizley\podium\log\Log;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -116,8 +115,8 @@ class Subscription extends ActiveRecord
                 $content = $email->content;
             }
             else {
-                $topic   = Messages::EMAIL_SUB_TITLE;
-                $content = Messages::EMAIL_SUB_BODY;
+                $topic   = 'New post in subscribed thread at {forum}';
+                $content = '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br>{forum}</p>';
             }
 
             $forum = Config::getInstance()->get('name');

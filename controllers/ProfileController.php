@@ -99,7 +99,7 @@ class ProfileController extends BaseController
                         }
                         else {
                             $topic   = 'New e-mail activation link at {forum}';
-                            $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br />{forum}</p>';
+                            $content = '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br>{forum}</p>';
                         }
 
                         $forum = Config::getInstance()->get('name');
