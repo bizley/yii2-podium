@@ -13,6 +13,7 @@ use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 
@@ -67,16 +68,31 @@ class MembersController extends BaseController
     public function actionFieldlist($q = null)
     {
         if (Yii::$app->request->isAjax) {
-            
             if (!is_null($q) && is_string($q)) {
-                
-                $cache = Cache::getInstance()->get('members.fieldlist');
+                $cache = false;//Cache::getInstance()->get('members.fieldlist');
                 if ($cache === false || empty($cache[$q])) {
                     if ($cache === false) {
                         $cache = [];
                     }
-                    
-                    $users = User::find()->where(['and', ['status' => User::STATUS_ACTIVE], ['!=', 'id', User::loggedId()], ['or', ['like', 'username', $q], ['username' => null]]])->orderBy('username, id');
+                    $users = User::find()->andWhere(['status' => User::STATUS_ACTIVE]);
+                    //$users->andWhere(['!=', 'id', User::loggedId()]);
+                    if (preg_match('/^(member|ember|mber|ber|er|r)?#([0-9]+)$/', strtolower($q), $matches)) {
+                        $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
+                    }
+                    elseif (preg_match('/^([0-9]+)$/', $q, $matches)) {
+                        $users->andWhere([
+                            'or', 
+                            ['like', 'username', $q],
+                            [
+                                'username' => ['', null],
+                                'id'       => $matches[1]
+                            ]
+                        ]);
+                    }
+                    else {
+                        $users->andWhere(['like', 'username', $q]);
+                    }
+                    $users->orderBy(['username' => SORT_ASC, 'id' => SORT_ASC]);
                     $results = ['results' => []];
                     foreach ($users->each() as $user) {
                         $results['results'][] = ['id' => $user->id, 'text' => $user->getPodiumTag(true)];

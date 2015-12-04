@@ -33,11 +33,12 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
                 <div class="col-sm-9">
-                    <?= $form->field($model, 'receiver_id')->widget(Select2::classname(), [
+                    <?= $form->field($model, 'receiver_id[]')->widget(Select2::classname(), [
                             'options'       => ['placeholder' => Yii::t('podium/view', 'Select a member...')],
                             'theme'         => Select2::THEME_KRAJEE,
                             'pluginOptions' => [
                                 'allowClear'         => true,
+                                'multiple'           => true,
                                 'minimumInputLength' => 3,
                                 'ajax'               => [
                                     'url'      => Url::to(['members/fieldlist']),

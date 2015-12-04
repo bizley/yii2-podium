@@ -103,7 +103,7 @@ class MessagesController extends BaseController
      */
     public function actionDeleted()
     {
-        $searchModel  = new MessageSearch();
+        $searchModel  = new MessageSearch;
         $dataProvider = $searchModel->searchDeleted(Yii::$app->request->get());
         
         return $this->render('deleted', [
@@ -118,7 +118,7 @@ class MessagesController extends BaseController
      */
     public function actionInbox()
     {
-        $searchModel  = new MessageSearch();
+        $searchModel  = new MessageSearch;
         $dataProvider = $searchModel->searchInbox(Yii::$app->request->get());
         
         return $this->render('inbox', [
@@ -134,26 +134,36 @@ class MessagesController extends BaseController
      */
     public function actionNew($user = null)
     {
-        $model = new Message();
-        
+        $model = new Message;
         $podiumUser = User::findMe();
         
         if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
-            $model->receiver_id = (int)$user;
+            $model->receiver_id[] = (int)$user;
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            
             if ($model->validate()) {
-                if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
-
+                $validated = [];
+                $errors = false;
+                foreach ($model->receiver_id as $r) {
+                    if ($r == $podiumUser->id) {
+                        $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
+                        $errors = true;
+                    }
+                    elseif ($podiumUser->isIgnoredBy($r)) {
+                        $this->addError('receiver_id', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
+                        $errors = true;
+                    }
+                    else {
+                        $validated[] = $r;
+                    }
+                }
+                $model->receiver_id = $validated;
+                if (!$errors) {
                     if ($model->send()) {
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                         return $this->redirect(['messages/inbox']);
                     }
-                }
-                else {
-                    $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
                 }
             }
         }
@@ -174,16 +184,11 @@ class MessagesController extends BaseController
         $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->id]);
         
         if ($reply) {
-            
             $model->topic = Message::re() . ' ' . $reply->topic;
-            
             if ($model->load(Yii::$app->request->post())) {
-            
                 if ($model->validate()) {
                     if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
-
                         $model->replyto = $reply->id;
-
                         if ($model->send()) {
                             $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                             return $this->redirect(['messages/inbox']);
@@ -214,7 +219,7 @@ class MessagesController extends BaseController
      */
     public function actionSent()
     {
-        $searchModel  = new MessageSearch();
+        $searchModel  = new MessageSearch;
         $dataProvider = $searchModel->searchSent(Yii::$app->request->get());
         
         return $this->render('sent', [

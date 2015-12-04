@@ -85,7 +85,7 @@ class Message extends ActiveRecord
     {
         return [
             [['receiver_id', 'topic', 'content'], 'required'],
-            ['receiver_id', 'validateReceiver'],
+            ['receiver_id', 'each', 'rule' => ['integer', 'min' => 1]],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value);
@@ -96,22 +96,6 @@ class Message extends ActiveRecord
         ];
     }
     
-    /**
-     * Validates receiver ID.
-     */
-    public function validateReceiver()
-    {
-        if (!is_numeric($this->receiver_id) || $this->receiver_id < 1) {
-            $this->addError('receiver_id', Yii::t('podium/view', 'Invalid receiver.'));
-        }
-        else {
-            if ($this->receiver_id == User::loggedId()) {
-                $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
-                $this->receiver_id = null;
-            }
-        }
-    }
-
     /**
      * Returns Re: prefix for subject.
      * @return string
