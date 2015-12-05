@@ -35,24 +35,13 @@ class Message extends ActiveRecord
     const STATUS_NEW = 1;
     const STATUS_READ = 10;
     const STATUS_DELETED = 20;
-    const STATUS_REMOVED = 99;
     
     const RE = 'Re:';
-    
-    /**
-     * @var string Sender's name
-     */
-    public $senderName;
     
     /**
      * @var integer[] Receivers' IDs.
      */
     public $receiversId;
-    
-    /**
-     * @var string Receiver's name
-     */
-    public $receiverName;
     
     /**
      * @inheritdoc
@@ -139,36 +128,18 @@ class Message extends ActiveRecord
      * Sender relation.
      * @return User
      */
-    public function getSenderUser()
+    public function getSender()
     {
         return $this->hasOne(User::className(), ['id' => 'sender_id']);
     }
     
     /**
-     * Receiver relation.
-     * @return User
+     * Receivers relation.
+     * @return MessageReceiver[]
      */
-    public function getReceiverUser()
+    public function getMessageReceivers()
     {
-        return $this->hasOne(User::className(), ['id' => 'receiver_id']);
-    }
-    
-    /**
-     * Returns sender's name.
-     * @return string
-     */
-    public function getSenderName()
-    {
-        return !empty($this->senderUser) ? $this->senderUser->getTag() : Helper::deletedUserTag();
-    }
-    
-    /**
-     * Returns receiver's name.
-     * @return string
-     */
-    public function getReceiverName()
-    {
-        return !empty($this->receiverUser) ? $this->receiverUser->getTag() : Helper::deletedUserTag();
+        return $this->hasMany(MessageReceiver::className(), ['message_id' => 'id']);
     }
     
     /**
@@ -229,20 +200,19 @@ class Message extends ActiveRecord
     
     /**
      * Removes message.
-     * @param integer $perm Permanent removal flag
      * @return boolean
      */
-    public function remove($perm = 0)
+    public function remove()
     {
         $clearCache = false;
         if ($this->receiver_status == self::STATUS_NEW) {
             $clearCache = true;
         }
         if ($this->receiver_id == User::loggedId()) {
-            $this->receiver_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
+            $this->receiver_status = self::STATUS_DELETED;
         }
         if ($this->sender_id == User::loggedId()) {
-            $this->sender_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
+            $this->sender_status = $self::STATUS_DELETED;
         }
         if ($this->receiver_status == self::STATUS_REMOVED && $this->sender_status == self::STATUS_REMOVED) {
             if ($this->delete()) {

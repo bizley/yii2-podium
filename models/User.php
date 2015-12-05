@@ -421,7 +421,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from(Message::tableName())->where(['receiver_id' => $this->id,
+            $cache = (new Query)->from(MessageReceiver::tableName())->where(['receiver_id' => $this->id,
                         'receiver_status' => Message::STATUS_NEW])->count();
             Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
         }

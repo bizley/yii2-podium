@@ -21,11 +21,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 $loggedId = User::loggedId();
-$perm = false;
-if (($model->receiver_id == $loggedId && $model->receiver_status == Message::STATUS_DELETED) || 
-        ($model->sender_id == $loggedId && $model->sender_status == Message::STATUS_DELETED)) {
-    $perm = true;
-}
 
 ?>
 <div class="row">
@@ -38,7 +33,7 @@ if (($model->receiver_id == $loggedId && $model->receiver_status == Message::STA
         <div <?= Helper::replyBgd() ?>>
             <div class="row">
                 <div class="col-sm-3 text-center">
-                    <?= Avatar::widget(['author' => $model->senderUser]) ?>
+                    <?= Avatar::widget(['author' => $model->sender]) ?>
                 </div>
                 <div class="col-sm-9">
                     <div class="popover right podium">
@@ -50,10 +45,8 @@ if (($model->receiver_id == $loggedId && $model->receiver_status == Message::STA
                         <div class="popover-content">
                             <?= $model->content ?>
                             <div class="text-right">
-<?php if ($model->sender_id != $loggedId && $model->senderUser !== null): ?>
+<?php if ($type == 'received'): ?>
                                 <a href="<?= Url::to(['messages/reply', 'id' => $model->id]) ?>" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Reply to Message') ?>"><span class="glyphicon glyphicon-share-alt"></span></a>
-<?php else: ?>
-                                <a href="#" class="btn btn-xs disabled text-muted"><span class="glyphicon glyphicon-share-alt"></span></a>
 <?php endif; ?>
                                 <span data-toggle="modal" data-target="#podiumModal"><button class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Delete Message') ?>"><span class="glyphicon glyphicon-trash"></span></button></span>
                             </div>
@@ -63,12 +56,13 @@ if (($model->receiver_id == $loggedId && $model->receiver_status == Message::STA
             </div>
         
 <?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): ?>
-<?php if (($reply->reply->receiver_id == $loggedId && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
+<?php if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) { $reply = $reply->reply; continue; } ?>
+<?php /*if (($reply->reply->receiver_id == $loggedId && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
         ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
-<?php $reply = $reply->reply; else: ?>
+<?php $reply = $reply->reply; else:*/ ?>
             <div class="row">
                 <div class="col-sm-2 text-center">
-                    <?= Avatar::widget(['author' => $reply->reply->senderUser]) ?>
+                    <?= Avatar::widget(['author' => $reply->reply->sender]) ?>
                 </div>
                 <div class="col-sm-10">
                     <div class="popover right podium">
@@ -83,42 +77,24 @@ if (($model->receiver_id == $loggedId && $model->receiver_status == Message::STA
                     </div>
                 </div>
             </div>
-<?php $reply = $reply->reply; $stack++; endif; endwhile; ?>
+<?php $reply = $reply->reply; $stack++; endwhile; ?>
         </div>
     </div>
 </div><br>
 
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModal" aria-hidden="true" id="podiumModal">
-<?php if ($perm): ?>
-    <div class="modal-dialog">
-<?php else: ?>
     <div class="modal-dialog modal-sm">
-<?php endif; ?>
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">
-<?php if ($perm): ?>
-                    <?= Yii::t('podium/view', 'Delete message permanently') ?>
-<?php else: ?>
-                    <?= Yii::t('podium/view', 'Delete message') ?>
-<?php endif; ?>
-                </h4>
+                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete message') ?></h4>
             </div>
             <div class="modal-body">
-<?php if ($perm): ?>
-                <?= Yii::t('podium/view', 'Are you sure you want to delete this message permanently?') ?>
-<?php else: ?>
-                <?= Yii::t('podium/view', 'Are you sure you want to move this message to Deleted Messages?') ?>
-<?php endif; ?>
+                <?= Yii::t('podium/view', 'Are you sure you want to delete this message?') ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-<?php if ($perm): ?>
-                <a href="<?= Url::to(['messages/delete', 'id' => $model->id, 'perm' => 1]) ?>" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete message permanently') ?></a>
-<?php else: ?>
-                <a href="<?= Url::to(['messages/delete', 'id' => $model->id]) ?>" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete message') ?></a>
-<?php endif; ?>
+                <a href="<?= Url::to(['messages/delete-' . $type, 'id' => $id]) ?>" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete message') ?></a>
             </div>
         </div>
     </div>

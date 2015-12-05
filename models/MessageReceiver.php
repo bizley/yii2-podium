@@ -9,6 +9,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\models\User;
 use yii\behaviors\TimestampBehavior;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 /**
@@ -29,7 +30,16 @@ class MessageReceiver extends ActiveRecord
     const STATUS_NEW = 1;
     const STATUS_READ = 10;
     const STATUS_DELETED = 20;
-    const STATUS_REMOVED = 99;
+    
+    /**
+     * @var string Sender's name
+     */
+    public $senderName;
+    
+    /**
+     * @var string Message topic
+     */
+    public $topic;
     
     /**
      * @inheritdoc
@@ -53,18 +63,28 @@ class MessageReceiver extends ActiveRecord
     public function rules()
     {
         return [
-            [['receiver_id'], 'required'],
+            [['receiver_id'], 'required', 'on' => 'new'],
             ['receiver_id', 'integer', 'min' => 1],
+            [['senderName', 'topic'], 'string']
         ];
     }
     
     /**
      * Message relation.
-     * @return User
+     * @return Message
      */
     public function getMessage()
     {
         return $this->hasOne(Message::className(), ['id' => 'message_id']);
+    }
+    
+    /**
+     * Receiver relation.
+     * @return User
+     */
+    public function getReceiver()
+    {
+        return $this->hasOne(User::className(), ['id' => 'receiver_id']);
     }
     
     /**
@@ -104,5 +124,45 @@ class MessageReceiver extends ActiveRecord
         else {
             return false;
         }
+    }
+    
+    /**
+     * Searches for messages.
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = self::find()->where(['receiver_id' => User::loggedId()]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort'  => [
+                'attributes' => ['id', 'topic', 'created_at', 
+                    'senderName' => [
+                        'asc' => [User::tableName() . '.username' => SORT_ASC, User::tableName() . '.id' => SORT_ASC],
+                        'desc' => [User::tableName() . '.username' => SORT_DESC, User::tableName() . '.id' => SORT_DESC],
+                        'default' => SORT_ASC
+                    ],
+                ],
+            ],
+        ]);
+
+        $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];
+        
+        if (!($this->load($params) && $this->validate())) {
+            $dataProvider->query->joinWith(['message' => function ($q) {
+                $q->joinWith(['sender']);
+            }]);
+            return $dataProvider;
+        }
+
+        $dataProvider->query->andFilterWhere(['like', 'topic', $this->topic]);
+        $dataProvider->query->joinWith(['message' => function($q) {
+            $q->joinWith(['sender' => function ($q) {
+                $q->andFilterWhere(['like', User::tableName() . '.username', $this->senderName]);
+            }]);
+        }]);
+
+        return $dataProvider;
     }
 }

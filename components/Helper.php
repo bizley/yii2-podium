@@ -133,7 +133,7 @@ class Helper
             return $encodedName;
         }
         
-        return Html::a($encodedName, $url, ['class' => 'btn btn-xs btn-default']);
+        return Html::a($encodedName, $url, ['class' => 'btn btn-xs btn-default', 'data-pjax' => '0']);
     }
     
     /**

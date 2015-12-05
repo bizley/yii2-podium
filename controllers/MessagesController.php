@@ -6,9 +6,9 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Message;
+use bizley\podium\models\MessageReceiver;
 use bizley\podium\models\MessageSearch;
 use bizley\podium\models\User;
 use Yii;
@@ -98,28 +98,13 @@ class MessagesController extends BaseController
     }
     
     /**
-     * Listing the deleted messages.
-     * @return string
-     */
-    public function actionDeleted()
-    {
-        $searchModel  = new MessageSearch;
-        $dataProvider = $searchModel->searchDeleted(Yii::$app->request->get());
-        
-        return $this->render('deleted', [
-                'dataProvider' => $dataProvider,
-                'searchModel'  => $searchModel
-        ]);
-    }
-    
-    /**
      * Listing the messages inbox.
      * @return string
      */
     public function actionInbox()
     {
-        $searchModel  = new MessageSearch;
-        $dataProvider = $searchModel->searchInbox(Yii::$app->request->get());
+        $searchModel  = new MessageReceiver;
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
         
         return $this->render('inbox', [
                 'dataProvider' => $dataProvider,
@@ -145,7 +130,7 @@ class MessagesController extends BaseController
             if ($model->validate()) {
                 $validated = [];
                 $errors = false;
-                foreach ($model->receiver_id as $r) {
+                foreach ($model->receiversId as $r) {
                     if ($r == $podiumUser->id) {
                         $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
                         $errors = true;
@@ -158,7 +143,7 @@ class MessagesController extends BaseController
                         $validated[] = $r;
                     }
                 }
-                $model->receiver_id = $validated;
+                $model->receiversId = $validated;
                 if (!$errors) {
                     if ($model->send()) {
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
@@ -181,13 +166,15 @@ class MessagesController extends BaseController
         $model      = new Message;
         $podiumUser = User::findMe();
         
-        $reply = Message::findOne(['id' => $id, 'receiver_id' => $podiumUser->id]);
+        $reply = Message::find()->where([Message::tableName() . '.id' => $id])->joinWith(['messageReceivers' => function ($q) use ($podiumUser) {
+            $q->where(['receiver_id' => $podiumUser->id]);
+        }])->limit(1)->one();
         
         if ($reply) {
             $model->topic = Message::re() . ' ' . $reply->topic;
             if ($model->load(Yii::$app->request->post())) {
                 if ($model->validate()) {
-                    if (!$podiumUser->isIgnoredBy($model->receiver_id)) {
+                    if (!$podiumUser->isIgnoredBy($model->receiversId[0])) {
                         $model->replyto = $reply->id;
                         if ($model->send()) {
                             $this->success(Yii::t('podium/flash', 'Message has been sent.'));
@@ -200,7 +187,7 @@ class MessagesController extends BaseController
                 }
             }
             
-            $model->receiver_id = $reply->sender_id;
+            $model->receiversId[0] = $reply->sender_id;
             
             return $this->render('reply', [
                     'model' => $model,
@@ -220,7 +207,7 @@ class MessagesController extends BaseController
     public function actionSent()
     {
         $searchModel  = new MessageSearch;
-        $dataProvider = $searchModel->searchSent(Yii::$app->request->get());
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
         
         return $this->render('sent', [
                 'dataProvider' => $dataProvider,
@@ -229,29 +216,36 @@ class MessagesController extends BaseController
     }
     
     /**
-     * Viewing the message of given ID.
+     * Viewing the sent message of given ID.
      * @param integer $id
      * @return string|\yii\web\Response
      */  
-    public function actionView($id = null)
+    public function actionViewSent($id = null)
     {
-        $model = Message::find()->where(['and', ['id' => $id], ['or', 'receiver_id' => User::loggedId(), 'sender_id' => User::loggedId()]])->limit(1)->one();
+        $model = Message::find()->where(['id' => $id, 'sender_id' => User::loggedId()])->limit(1)->one();
         
-        if ($model) {
-            if ($model->receiver_id == User::loggedId() && $model->receiver_status == Message::STATUS_NEW) {
-                $model->receiver_status = Message::STATUS_READ;
-                if ($model->save()) {
-                    Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
-                }
-            }
-            
-            return $this->render('view', [
-                    'model' => $model
-            ]);
-        }
-        else {
+        if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['messages/inbox']);
-        }        
+        }
+        
+        return $this->render('view', ['model' => $model, 'type' => 'sent', 'id' => $model->id]);
+    }
+    
+    /**
+     * Viewing the received message of given ID.
+     * @param integer $id
+     * @return string|\yii\web\Response
+     */  
+    public function actionViewReceived($id = null)
+    {
+        $model = MessageReceiver::find()->where(['id' => $id, 'receiver_id' => User::loggedId()])->limit(1)->one();
+        
+        if (empty($model)) {
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
+            return $this->redirect(['messages/inbox']);
+        }
+        
+        return $this->render('view', ['model' => $model->message, 'type' => 'received', 'id' => $model->id]);
     }
 }
