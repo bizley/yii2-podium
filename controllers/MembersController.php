@@ -13,7 +13,6 @@ use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Exception;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
 
@@ -62,6 +61,10 @@ class MembersController extends BaseController
 
     /**
      * Listing the active users for ajax.
+     * Entering 'member#XX' (or any last part of 'member' with #XX) looks for 
+     * member of the XX ID without username.
+     * Entering integer looks for member with XX in username or empty username 
+     * and that ID.
      * @param string $q Username query
      * @return string|\yii\web\Response
      */
@@ -69,13 +72,13 @@ class MembersController extends BaseController
     {
         if (Yii::$app->request->isAjax) {
             if (!is_null($q) && is_string($q)) {
-                $cache = false;//Cache::getInstance()->get('members.fieldlist');
+                $cache = Cache::getInstance()->get('members.fieldlist');
                 if ($cache === false || empty($cache[$q])) {
                     if ($cache === false) {
                         $cache = [];
                     }
                     $users = User::find()->andWhere(['status' => User::STATUS_ACTIVE]);
-                    //$users->andWhere(['!=', 'id', User::loggedId()]);
+                    $users->andWhere(['!=', 'id', User::loggedId()]);
                     if (preg_match('/^(member|ember|mber|ber|er|r)?#([0-9]+)$/', strtolower($q), $matches)) {
                         $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
                     }
@@ -138,9 +141,7 @@ class MembersController extends BaseController
                     $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore Administrator.'));
                 }
                 else {
-
                     if ($model->isIgnoredBy(User::loggedId())) {
-
                         Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => User::loggedId(), ':iid' => $model->id])->execute();
                         Log::info('User unignored', !empty($model->id) ? $model->id : '', __METHOD__);
                         $this->success(Yii::t('podium/flash', 'User has been unignored.'));                    

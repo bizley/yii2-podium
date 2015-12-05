@@ -22,12 +22,10 @@ use yii\helpers\HtmlPurifier;
  * @since 0.1
  * @property integer $id
  * @property integer $sender_id
- * @property integer $receiver_id
  * @property string $topic
  * @property string $content
  * @property integer $replyto
  * @property integer $sender_status
- * @property integer $receiver_status
  * @property integer $updated_at
  * @property integer $created_at
  */
@@ -45,6 +43,11 @@ class Message extends ActiveRecord
      * @var string Sender's name
      */
     public $senderName;
+    
+    /**
+     * @var integer[] Receivers' IDs.
+     */
+    public $receiversId;
     
     /**
      * @var string Receiver's name
@@ -84,8 +87,8 @@ class Message extends ActiveRecord
     public function rules()
     {
         return [
-            [['receiver_id', 'topic', 'content'], 'required'],
-            ['receiver_id', 'each', 'rule' => ['integer', 'min' => 1]],
+            [['receiversId', 'topic', 'content'], 'required'],
+            ['receiversId', 'each', 'rule' => ['integer', 'min' => 1]],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value);
@@ -183,17 +186,42 @@ class Message extends ActiveRecord
      */
     public function send()
     {
-        if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $this->receiver_id, 'status' => User::STATUS_ACTIVE])->exists()) {
-            return false;
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $this->sender_id = User::loggedId();
+            $this->sender_status = self::STATUS_READ;
+            
+            if ($this->save()) {
+                $count = count($this->receiversId);
+                foreach ($this->receiversId as $receiver) {
+                    if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
+                        if ($count == 1) {
+                            throw new Exception('No active receivers to send message to!');
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    $message = new MessageReceiver;
+                    $message->message_id      = $this->id;
+                    $message->receiver_id     = $receiver;
+                    $message->receiver_status = self::STATUS_NEW;
+                    if ($message->save()) {
+                        Cache::getInstance()->deleteElement('user.newmessages', $receiver);
+                    }
+                    else {
+                        throw new Exception('MessageReceiver saving error!');
+                    }
+                }
+                $transaction->commit();
+                return true;
+            }
+            else {
+                throw new Exception('Message saving error!');
+            }
         }
-        
-        $this->sender_id = User::loggedId();
-        $this->sender_status = self::STATUS_READ;
-        $this->receiver_status = self::STATUS_NEW;
-        
-        if ($this->save()) {
-            Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
-            return true;
+        catch (Exception $e) {
+            $transaction->rollBack();
         }
         
         return false;
