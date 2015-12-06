@@ -16,6 +16,12 @@ use yii\helpers\Url;
 
 $this->title = Yii::t('podium/view', 'View Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
+if ($type == 'received') {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Messages Inbox'), 'url' => ['messages/inbox']];
+}
+else {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Sent Messages'), 'url' => ['messages/sent']];
+}
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
@@ -57,9 +63,6 @@ $loggedId = User::loggedId();
         
 <?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): ?>
 <?php if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) { $reply = $reply->reply; continue; } ?>
-<?php /*if (($reply->reply->receiver_id == $loggedId && $reply->reply->receiver_status == Message::STATUS_REMOVED) || 
-        ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_REMOVED)): ?>
-<?php $reply = $reply->reply; else:*/ ?>
             <div class="row">
                 <div class="col-sm-2 text-center">
                     <?= Avatar::widget(['author' => $reply->reply->sender]) ?>
@@ -78,6 +81,7 @@ $loggedId = User::loggedId();
                 </div>
             </div>
 <?php $reply = $reply->reply; $stack++; endwhile; ?>
+            
         </div>
     </div>
 </div><br>

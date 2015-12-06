@@ -7,7 +7,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
+use bizley\podium\log\Log;
 use bizley\podium\models\User;
+use Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -60,13 +62,36 @@ class MessageReceiver extends ActiveRecord
     /**
      * @inheritdoc
      */
+    public function scenarios()
+    {
+        return array_merge(
+            parent::scenarios(),
+            [
+                'remove' => ['receiver_status'],
+            ]                
+        );
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
-            [['receiver_id'], 'required', 'on' => 'new'],
-            ['receiver_id', 'integer', 'min' => 1],
+            [['receiver_id', 'message_id'], 'required'],
+            [['receiver_id', 'message_id'], 'integer', 'min' => 1],
+            ['receiver_status', 'in', 'range' => self::getStatuses()],
             [['senderName', 'topic'], 'string']
         ];
+    }
+    
+    /**
+     * Returns list of statuses.
+     * @return string[]
+     */
+    public static function getStatuses()
+    {
+        return [self::STATUS_NEW, self::STATUS_READ, self::STATUS_DELETED];
     }
     
     /**
@@ -89,41 +114,58 @@ class MessageReceiver extends ActiveRecord
     
     /**
      * Removes message.
-     * @param integer $perm Permanent removal flag
      * @return boolean
      */
-    public function remove($perm = 0)
+    public function remove()
     {
         $clearCache = false;
         if ($this->receiver_status == self::STATUS_NEW) {
             $clearCache = true;
         }
-        if ($this->receiver_id == User::loggedId()) {
-            $this->receiver_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
-        }
-        if ($this->sender_id == User::loggedId()) {
-            $this->sender_status = $perm ? self::STATUS_REMOVED : self::STATUS_DELETED;
-        }
-        if ($this->receiver_status == self::STATUS_REMOVED && $this->sender_status == self::STATUS_REMOVED) {
-            if ($this->delete()) {
-                if ($clearCache) {
-                    Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
+        
+        $deleteParent = null;
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if ($this->message->sender_status != Message::STATUS_DELETED) {
+                $this->receiver_status = self::STATUS_DELETED;
+                if ($this->save()) {
+                    if ($clearCache) {
+                        Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+                    }
+                    $transaction->commit();
+                    return true;
                 }
-                return true;
+                else {
+                    throw new Exception('Message status changing error!');
+                }
             }
             else {
-                return false;
+                if ($this->message->sender_status == Message::STATUS_DELETED && count($this->message->messageReceivers) == 1) {
+                    $deleteParent = $this->message;
+                }
+                if ($this->delete()) {
+                    if ($clearCache) {
+                        Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+                    }
+                    if ($deleteParent) {
+                        if (!$deleteParent->delete()) {
+                            throw new Exception('Sender message deleting error!');
+                        }
+                    }
+                    $transaction->commit();
+                    return true;
+                }
+                else {
+                    throw new Exception('Message removing error!');
+                }
             }
         }
-        if ($this->save()) {
-            if ($clearCache) {
-                Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
-            }
-            return true;
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), $this->id, __METHOD__);
         }
-        else {
-            return false;
-        }
+        
+        return false;
     }
     
     /**
@@ -132,7 +174,10 @@ class MessageReceiver extends ActiveRecord
      */
     public function search($params)
     {
-        $query = self::find()->where(['receiver_id' => User::loggedId()]);
+        $query = self::find()->where(['and', 
+            ['receiver_id' => User::loggedId()], 
+            ['!=', 'receiver_status', self::STATUS_DELETED]
+        ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

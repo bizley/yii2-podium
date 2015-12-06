@@ -33,6 +33,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
                 <div class="col-sm-9">
+<?php if (empty($to)): ?>                   
                     <?= $form->field($model, 'receiversId[]')->widget(Select2::classname(), [
                             'options'       => ['placeholder' => Yii::t('podium/view', 'Select a member...')],
                             'theme'         => Select2::THEME_KRAJEE,
@@ -48,6 +49,10 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
                                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                             ],
                         ])->label(false); ?>
+<?php else: ?>                    
+                    <p class="form-control-static"><?= $to->getPodiumTag(true) ?></p>
+                    <?= $form->field($model, 'receiversId[]')->hiddenInput(['value' => $model->receiversId[0]])->label(false) ?>
+<?php endif; ?>
                 </div>
             </div>
             <div class="row">

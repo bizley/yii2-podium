@@ -8,7 +8,9 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\log\Log;
 use bizley\podium\models\User;
+use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -66,7 +68,10 @@ class Message extends ActiveRecord
     {
         return array_merge(
             parent::scenarios(),
-            ['report' => ['content']]
+            [
+                'report' => ['content'],
+                'remove' => ['sender_status'],
+            ]                
         );
     }
 
@@ -78,6 +83,7 @@ class Message extends ActiveRecord
         return [
             [['receiversId', 'topic', 'content'], 'required'],
             ['receiversId', 'each', 'rule' => ['integer', 'min' => 1]],
+            ['sender_status', 'in', 'range' => self::getStatuses()],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value);
@@ -98,7 +104,16 @@ class Message extends ActiveRecord
     }
 
     /**
-     * Returns list of inbox statuse.
+     * Returns list of statuses.
+     * @return string[]
+     */
+    public static function getStatuses()
+    {
+        return [self::STATUS_NEW, self::STATUS_READ, self::STATUS_DELETED];
+    }
+    
+    /**
+     * Returns list of inbox statuses.
      * @return string[]
      */
     public static function getInboxStatuses()
@@ -193,6 +208,7 @@ class Message extends ActiveRecord
         }
         catch (Exception $e) {
             $transaction->rollBack();
+            Log::error($e->getMessage(), $this->id, __METHOD__);
         }
         
         return false;
@@ -205,34 +221,69 @@ class Message extends ActiveRecord
     public function remove()
     {
         $clearCache = false;
-        if ($this->receiver_status == self::STATUS_NEW) {
+        if ($this->sender_status == self::STATUS_NEW) {
             $clearCache = true;
         }
-        if ($this->receiver_id == User::loggedId()) {
-            $this->receiver_status = self::STATUS_DELETED;
-        }
-        if ($this->sender_id == User::loggedId()) {
-            $this->sender_status = $self::STATUS_DELETED;
-        }
-        if ($this->receiver_status == self::STATUS_REMOVED && $this->sender_status == self::STATUS_REMOVED) {
-            if ($this->delete()) {
-                if ($clearCache) {
-                    Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
+        
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if (empty($this->messageReceivers)) {
+                if ($this->delete()) {
+                    if ($clearCache) {
+                        Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                    }
+                    $transaction->commit();
+                    return true;
                 }
-                return true;
+                else {
+                    throw new Exception('Message removing error!');
+                }
             }
             else {
-                return false;
+                $allDeleted = true;
+                foreach ($this->messageReceivers as $mr) {
+                    if ($mr->receiver_status != MessageReceiver::STATUS_DELETED) {
+                        $allDeleted = false;
+                        break;
+                    }
+                }
+                if ($allDeleted) {
+                    foreach ($this->messageReceivers as $mr) {
+                        if (!$mr->delete()) {
+                            throw new Exception('Received message removing error!');
+                        }
+                    }
+                    if ($this->delete()) {
+                        if ($clearCache) {
+                            Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                        }
+                        $transaction->commit();
+                        return true;
+                    }
+                    else {
+                        throw new Exception('Message removing error!');
+                    }
+                }
+                else {
+                    $this->sender_status = self::STATUS_DELETED;
+                    if ($this->save()) {
+                        if ($clearCache) {
+                            Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                        }
+                        $transaction->commit();
+                        return true;
+                    }
+                    else {
+                        throw new Exception('Message status changing error!');
+                    }
+                }
             }
         }
-        if ($this->save()) {
-            if ($clearCache) {
-                Cache::getInstance()->deleteElement('user.newmessages', User::loggedId());
-            }
-            return true;
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), $this->id, __METHOD__);
         }
-        else {
-            return false;
-        }
+        
+        return false;
     }
 }
