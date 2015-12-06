@@ -40,6 +40,10 @@ class Message extends ActiveRecord
     
     const RE = 'Re:';
     
+    const MAX_RECEIVERS = 10;
+    const SPAM_MESSAGES = 10;
+    const SPAM_WAIT     = 1;
+    
     /**
      * @var integer[] Receivers' IDs.
      */
@@ -200,6 +204,15 @@ class Message extends ActiveRecord
                     }
                 }
                 $transaction->commit();
+                $sessionKey = 'messages.' . $this->sender_id;
+                if (Yii::$app->session->has($sessionKey)) {
+                    $sentAlready = explode('|', Yii::$app->session->get($sessionKey));
+                    $sentAlready[] = time();
+                    Yii::$app->session->set($sessionKey, implode('|', $sentAlready));
+                }
+                else {
+                    Yii::$app->session->set($sessionKey, time());
+                }
                 return true;
             }
             else {
@@ -214,6 +227,33 @@ class Message extends ActiveRecord
         return false;
     }
     
+    /**
+     * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT 
+     * minutes.
+     * @param integer $user_id
+     * @return boolean
+     */
+    public static function tooMany($user_id)
+    {
+        $sessionKey = 'messages.' . $user_id;
+        if (Yii::$app->session->has($sessionKey)) {
+            $sentAlready = explode('|', Yii::$app->session->get($sessionKey));
+            $validated = [];
+            foreach ($sentAlready as $t) {
+                if (preg_match('/^[0-9]+$/', $t)) {
+                    if ($t > time() - self::SPAM_WAIT * 60) {
+                        $validated[] = $t;
+                    }
+                }
+            }
+            Yii::$app->session->set($sessionKey, implode('|', $validated));
+            if (count($validated) >= self::SPAM_MESSAGES) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Removes message.
      * @return boolean

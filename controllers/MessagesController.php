@@ -150,8 +150,14 @@ class MessagesController extends BaseController
      */
     public function actionNew($user = null)
     {
-        $model = new Message;
         $podiumUser = User::findMe();
+        
+        if (Message::tooMany($podiumUser->id)) {
+            $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', ['max_messages' => Message::SPAM_MESSAGES, 'max_minutes' => Message::SPAM_WAIT]));
+            return $this->redirect(['messages/inbox']);
+        }
+        
+        $model = new Message;
         $to = null;
         
         if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
@@ -180,6 +186,11 @@ class MessagesController extends BaseController
                         $member = User::find()->where(['id' => (int)$r, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
                         if ($member) {
                             $validated[] = $member->id;
+                            if (count($validated) > Message::MAX_RECEIVERS) {
+                                $this->addError('receiver_id', Yii::t('podium/view', 'You can send message up to a maximum of 10 receivers at once.'));
+                                $errors = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -203,14 +214,19 @@ class MessagesController extends BaseController
      */
     public function actionReply($id = null)
     {
-        $model      = new Message;
         $podiumUser = User::findMe();
+        
+        if (Message::tooMany($podiumUser->id)) {
+            $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', ['max_messages' => Message::SPAM_MESSAGES, 'max_minutes' => Message::SPAM_WAIT]));
+            return $this->redirect(['messages/inbox']);
+        }
         
         $reply = Message::find()->where([Message::tableName() . '.id' => $id])->joinWith(['messageReceivers' => function ($q) use ($podiumUser) {
             $q->where(['receiver_id' => $podiumUser->id]);
         }])->limit(1)->one();
         
         if ($reply) {
+            $model = new Message;
             $model->topic = Message::re() . ' ' . $reply->topic;
             if ($model->load(Yii::$app->request->post())) {
                 if ($model->validate()) {
