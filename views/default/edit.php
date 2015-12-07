@@ -8,10 +8,10 @@
  */
 
 use bizley\podium\components\Helper;
+use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'Edit Post');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
@@ -43,13 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Post'))->widget(Summernote::className(), [
-                                'clientOptions' => [
-                                    'height'     => '200',
-                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                    'codemirror' => null,
-                                    'toolbar'    => Helper::summerNoteToolbars('full'),
-                                ],
+                            <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
+                                'clientOptions' => Helper::ckEditorOptions('full'),
                             ]) ?>
                         </div>
                     </div>

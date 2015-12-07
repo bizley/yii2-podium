@@ -10,10 +10,10 @@
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
+use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'New Reply');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
@@ -48,13 +48,8 @@ $author = User::findMe();
                 <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
-                                'clientOptions' => [
-                                    'height'     => '200',
-                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                    'codemirror' => null,
-                                    'toolbar'    => Helper::summerNoteToolbars('full'),
-                                ],
+                            <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
+                                'clientOptions' => Helper::ckEditorOptions('full'),
                             ]) ?>
                         </div>
                     </div>

@@ -15,13 +15,13 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
+        "2amigos/yii2-ckeditor-widget" : "~1.0",
         "cebe/yii2-gravatar": "*",
         "kartik-v/yii2-widget-fileinput": "*",
         "kartik-v/yii2-sortable": "*",
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-datepicker": "*",
         "zelenin/yii2-rss": "~0.1",
-        "zelenin/yii2-summernote-widget": "@dev",
         "zelenin/yii2-slug-behavior": "~1.0@stable"
     },
     "autoload": {

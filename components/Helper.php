@@ -56,6 +56,48 @@ class Helper
     }
     
     /**
+     * Returns CKEditor toolbars.
+     * @param string $type name of the set
+     * @return array toolbars configuration
+     */
+    public static function ckEditorOptions($type = 'minimal', $height = null)
+    {
+        $options = [];
+        
+        switch ($type) {
+            case 'full':
+                $options = [
+                    'magicline_color' => '#337AB7',
+                    'toolbar' => [
+                        ['Format', 'FontSize'],
+                        ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
+                        ['NumberedList', 'BulletedList', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                        ['TextColor', 'BGColor'],
+                        ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+                        ['Link', 'Unlink'],
+                        ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar'],
+                        ['Source'],
+                    ],
+                ];
+                break;
+            default:
+                $options = [
+                    'toolbar' => [
+                        ['Bold', 'Italic', 'Underline', 'Strike'],
+                        ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+                        ['Link', 'Unlink'],
+                    ],
+                ];
+        }
+        
+        if ($height) {
+            $options['height'] = $height;
+        }
+        
+        return $options;
+    }
+    
+    /**
      * Returns image source for default avatar image in base64.
      * @return string image source
      */
@@ -225,37 +267,6 @@ class Helper
         return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
     }
     
-    /**
-     * Returns SummerNote toolbars.
-     * @param string $type name of the set
-     * @return array toolbars configuration
-     */
-    public static function summerNoteToolbars($type = 'minimal')
-    {
-        $toolbars = [];
-        
-        switch ($type) {
-            case 'full':
-                $toolbars = [
-                    ['css', ['style']],
-                    ['clear', ['clear']],
-                    ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'hr', 'table']],
-                    ['misc', ['codeview']],
-                ];
-                break;
-            default:
-                $toolbars = [
-                    ['style', ['bold', 'italic', 'underline']],
-                    ['para', ['ul', 'ol']],
-                    ['insert', ['link', 'picture']],
-                ];
-        }
-        
-        return $toolbars;
-    }
-
     /**
      * Returns timezones array.
      * http://php.net/manual/en/timezones.php

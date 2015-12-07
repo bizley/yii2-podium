@@ -8,9 +8,9 @@
  */
 
 use bizley\podium\components\Helper;
+use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'Report Post');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
@@ -29,13 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Summernote::className(), [
-                                'clientOptions' => [
-                                    'height'     => '100',
-                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                    'codemirror' => null,
-                                    'toolbar'    => Helper::summerNoteToolbars(),
-                                ],
+                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(CKEditor::className(), [
+                                'clientOptions' => Helper::ckEditorOptions(),
                             ]) ?>
                         </div>
                     </div>

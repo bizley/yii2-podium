@@ -11,12 +11,12 @@ use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = $thread->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
@@ -105,13 +105,8 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
-                                'clientOptions' => [
-                                    'height'     => '100',
-                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                    'codemirror' => null,
-                                    'toolbar'    => Helper::summerNoteToolbars(),
-                                ],
+                            <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
+                                'clientOptions' => Helper::ckEditorOptions(),
                             ]) ?>
                         </div>
                     </div>

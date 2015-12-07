@@ -9,10 +9,10 @@
 
 use bizley\podium\components\Helper;
 use cebe\gravatar\Gravatar;
+use dosamigos\ckeditor\CKEditor;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'Forum Details');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
@@ -36,13 +36,8 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Summernote::className(), [
-                                'clientOptions' => [
-                                    'height'     => '100',
-                                    'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                    'codemirror' => null,
-                                    'toolbar'    => Helper::summerNoteToolbars(),
-                                ],
+                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(CKEditor::className(), [
+                                'clientOptions' => Helper::ckEditorOptions('minimal', 100),
                             ]) ?>
                         </div>
                     </div>

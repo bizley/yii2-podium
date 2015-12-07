@@ -8,10 +8,10 @@
  */
 
 use bizley\podium\components\Helper;
+use dosamigos\ckeditor\CKEditor;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'Contents');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
@@ -53,14 +53,9 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
-                            'clientOptions' => [
-                                'height'     => '300',
-                                'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                'codemirror' => null,
-                                'toolbar'    => Helper::summerNoteToolbars(),
-                            ],
-                        ]) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
+                        'clientOptions' => Helper::ckEditorOptions('full'),
+                    ]) ?>
                 </div>
             </div>
             <div class="row">

@@ -11,9 +11,9 @@ use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
+use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Summernote\Summernote;
 
 $this->title = Yii::t('podium/view', 'Reply to Message');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
@@ -47,14 +47,9 @@ $loggedId = User::loggedId();
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-sm-9">
-                    <?= $form->field($model, 'content')->label(false)->widget(Summernote::className(), [
-                            'clientOptions' => [
-                                'height'     => '100',
-                                'lang'       => Yii::$app->language != 'en-US' ? Yii::$app->language : null,
-                                'codemirror' => null,
-                                'toolbar'    => Helper::summerNoteToolbars('full'),
-                            ],
-                        ]) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
+                        'clientOptions' => Helper::ckEditorOptions(),
+                    ]) ?>
                 </div>
             </div>
             <div class="row">
