@@ -70,7 +70,6 @@ else {
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],
             ['label' => Yii::t('podium/view', 'Sent'), 'url' => ['messages/sent']],
-            ['label' => Yii::t('podium/view', 'Deleted'), 'url' => ['messages/deleted']],
             ['label' => Yii::t('podium/view', 'New Message'), 'url' => ['messages/new']],
         ]
     ];

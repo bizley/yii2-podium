@@ -72,7 +72,9 @@ class Post extends ActiveRecord
             ['subscribe', 'boolean'],
             ['content', 'required'],
             ['content', 'string', 'min' => 10],
-            ['content', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full')); }],
+            ['content', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+            }],
         ];
     }
 
@@ -84,8 +86,8 @@ class Post extends ActiveRecord
     public function validateTopic($attribute)
     {
         if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\s\p{L}]{1,255}$/u', $this->topic)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
+            if (!preg_match('/^[\w\-\s\p{L}]{1,255}$/u', $this->topic)) {
+                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, hyphens, underscores and spaces (255 characters max).'));
             }
         }
     }

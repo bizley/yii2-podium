@@ -93,7 +93,7 @@ class Message extends ActiveRecord
                 return HtmlPurifier::process($value);
             }],
             ['content', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('minimal'));
             }],
         ];
     }
