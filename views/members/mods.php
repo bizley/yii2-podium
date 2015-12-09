@@ -51,7 +51,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             'encodeLabel' => false,
             'filter'      => false,
             'value'       => function ($model) {
-                return Yii::t('podium/view', ArrayHelper::getValue(User::getRoles(), $model->role));
+                return ArrayHelper::getValue(User::getRoles(), $model->role);
             },
         ],
         [

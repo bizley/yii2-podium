@@ -1461,7 +1461,7 @@ class DefaultController extends BaseController
                                                 return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                                             }
                                             else {
-                                                $this->warning(Yii::t('podium/flash', 'Apparently there is no one we can send this report to except you and you already reporting it so...'));
+                                                $this->warning(Yii::t('podium/flash', 'Apparently there is no one we can send this report to except you and you are already reporting it so...'));
                                             }
                                         }
                                         catch (Exception $e) {

@@ -65,7 +65,7 @@ $loggedId = User::loggedId();
             'encodeLabel' => false,
             'filter'      => User::getRoles(),
             'value'       => function ($model) {
-                return Yii::t('podium/view', ArrayHelper::getValue(User::getRoles(), $model->role));
+                return ArrayHelper::getValue(User::getRoles(), $model->role);
             },
         ],
         [
@@ -74,7 +74,7 @@ $loggedId = User::loggedId();
             'encodeLabel' => false,
             'filter'      => User::getStatuses(),
             'value'       => function ($model) {
-                return Yii::t('podium/view', ArrayHelper::getValue(User::getStatuses(), $model->status));
+                return ArrayHelper::getValue(User::getStatuses(), $model->status);
             },
         ],
         [

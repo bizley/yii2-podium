@@ -38,8 +38,6 @@ class Message extends ActiveRecord
     const STATUS_READ = 10;
     const STATUS_DELETED = 20;
     
-    const RE = 'Re:';
-    
     const MAX_RECEIVERS = 10;
     const SPAM_MESSAGES = 10;
     const SPAM_WAIT     = 1;
@@ -104,7 +102,7 @@ class Message extends ActiveRecord
      */
     public static function re()
     {
-        return Yii::t('podium/view', self::RE);
+        return Yii::t('podium/view', 'Re:');
     }
 
     /**

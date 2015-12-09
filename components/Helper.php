@@ -31,7 +31,7 @@ class Helper
     public static function adminCategoriesPrepareContent($category)
     {
         $actions = [];
-        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($category->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', $category->visible ? 'Category visible for guests' : 'Category hidden for guests')]);
+        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($category->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => $category->visible ? Yii::t('podium/view', 'Category visible for guests') : Yii::t('podium/view', 'Category hidden for guests')]);
         $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-list']) . ' ' . Yii::t('podium/view', 'List Forums'), ['admin/forums', 'cid' => $category->id], ['class' => 'btn btn-default btn-xs']);
         $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-plus-sign']) . ' ' . Yii::t('podium/view', 'Create new forum'), ['admin/new-forum', 'cid' => $category->id], ['class' => 'btn btn-success btn-xs']);
         $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-cog']), ['admin/edit-category', 'id' => $category->id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Edit Category')]);
@@ -48,7 +48,7 @@ class Helper
     public static function adminForumsPrepareContent($forum)
     {
         $actions = [];
-        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($forum->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', $forum->visible ? 'Forum visible for guests (if category is visible)' : 'Forum hidden for guests')]);
+        $actions[] = Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-eye-' . ($forum->visible ? 'open' : 'close')]), ['class' => 'btn btn-xs text-muted', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => $forum->visible ? Yii::t('podium/view', 'Forum visible for guests (if category is visible)') : Yii::t('podium/view', 'Forum hidden for guests')]);
         $actions[] = Html::a(Html::tag('span', '', ['class' => 'glyphicon glyphicon-cog']), ['admin/edit-forum', 'id' => $forum->id, 'cid' => $forum->category_id], ['class' => 'btn btn-default btn-xs', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Edit Forum')]);
         $actions[] = Html::tag('span', Html::button(Html::tag('span', '', ['class' => 'glyphicon glyphicon-trash']), ['class' => 'btn btn-danger btn-xs', 'data-url' => Url::to(['admin/delete-forum', 'id' => $forum->id, 'cid' => $forum->category_id]), 'data-toggle' => 'modal', 'data-target' => '#podiumModalDelete']), ['data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'Delete Forum')]);
 
@@ -220,7 +220,7 @@ class Helper
                 $name = ArrayHelper::getValue(User::getRoles(), User::ROLE_MEMBER);
         }
         
-        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
+        return Html::tag('span', $name, ['class' => 'label label-' . $label]);
     }
     
     /**
@@ -264,7 +264,7 @@ class Helper
                 $name = ArrayHelper::getValue(User::getStatuses(), User::STATUS_REGISTERED);
         }
         
-        return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $label]);
+        return Html::tag('span', $name, ['class' => 'label label-' . $label]);
     }
     
     /**

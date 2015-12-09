@@ -36,10 +36,10 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                 <ul class="list-inline">
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
 <?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>                    
-                    <li><a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= Yii::t('podium/view', $thread->pinned ? 'Unpin Thread' : 'Pin Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= $thread->pinned ? Yii::t('podium/view', 'Unpin Thread') : Yii::t('podium/view', 'Pin Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', $thread->locked ? 'Unlock Thread' : 'Lock Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= $thread->locked ? Yii::t('podium/view', 'Unlock Thread') : Yii::t('podium/view', 'Lock Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])): ?>
                     <li><a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>

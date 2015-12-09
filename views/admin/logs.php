@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     case 4:  $class = 'info';    break;
                     default: $class = 'default';
                 }
-                return Html::tag('span', Yii::t('podium/view', $name), ['class' => 'label label-' . $class]);
+                return Html::tag('span', $name, ['class' => 'label label-' . $class]);
             },
         ],
         [

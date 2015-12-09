@@ -9,19 +9,21 @@
 
 use yii\helpers\Html;
 
-$title = 'Search for {type}';
-if (!empty($query)) {
-    $title .= ' with "{query}"';
-}
-if (!empty($author)) {
-    $title .= ' by "{author}"';
-}
+$typeName = $type == 'topics' ? Yii::t('podium/view', 'threads') : Yii::t('podium/view', 'posts');
 
 ?>
 <div class="row">
     <div class="col-sm-12">
         <h4>
-            <?= Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $type == 'topics' ? 'threads' : 'posts']) ?>
+<?php if (!empty($query) && !empty($author)): ?>
+            <?= Yii::t('podium/view', 'Search for {type} with "{query}" by "{author}"', ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $typeName]) ?>
+<?php elseif (!empty($query) && empty($author)): ?>
+            <?= Yii::t('podium/view', 'Search for {type} with "{query}"', ['query' => Html::encode($query), 'type' => $typeName]) ?>
+<?php elseif (empty($query) && !empty($author)): ?>
+            <?= Yii::t('podium/view', 'Search for {type} by "{author}"', ['author' => Html::encode($author), 'type' => $typeName]) ?>
+<?php else: ?>
+            <?= Yii::t('podium/view', 'Search for {type}', ['type' => $typeName]) ?>
+<?php endif; ?>
         </h4>
     </div>
 </div>

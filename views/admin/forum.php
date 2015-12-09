@@ -11,7 +11,7 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = Yii::t('podium/view', $model->isNewRecord ? 'New Forum' : 'Edit Forum');
+$this->title = $model->isNewRecord ? Yii::t('podium/view', 'New Forum') : Yii::t('podium/view', 'Edit Forum');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Administration Dashboard'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Categories List'), 'url' => ['admin/categories']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -41,7 +41,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'edit-forum-form']); ?>
                 <div class="panel-heading">
-                    <h3 class="panel-title"><?= Yii::t('podium/view', $model->isNewRecord ? 'New Forum' : 'Edit Forum') ?></h3>
+                    <h3 class="panel-title"><?= $this->title ?></h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -101,7 +101,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', $model->isNewRecord ? 'Create New Forum' : 'Save Forum'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . ($model->isNewRecord ? Yii::t('podium/view', 'Create New Forum') : Yii::t('podium/view', 'Save Forum')), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
                         </div>
                     </div>
                 </div>

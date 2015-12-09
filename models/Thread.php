@@ -34,13 +34,6 @@ use Zelenin\yii\behaviors\Slug;
 class Thread extends ActiveRecord
 {
 
-    const DESC_EDITED   = 'Edited Posts';
-    const DESC_HOT      = 'Hot Thread';
-    const DESC_NEW      = 'New Posts';
-    const DESC_NO_NEW   = 'No New Posts';
-    const DESC_LOCKED   = 'Locked Thread';
-    const DESC_PINNED   = 'Pinned Thread';
-    
     const CLASS_DEFAULT = 'default';
     const CLASS_EDITED  = 'warning';
     const CLASS_NEW     = 'success';
@@ -294,46 +287,46 @@ class Thread extends ActiveRecord
      */
     public function getDescription()
     {
-        $description = self::DESC_NO_NEW;
+        $description = Yii::t('podium/view', 'No New Posts');
         $append      = false;
 
         if ($this->locked) {
-            $description = self::DESC_LOCKED;
+            $description = Yii::t('podium/view', 'Locked Thread');
             $append      = true;
         }
         elseif ($this->pinned) {
-            $description = self::DESC_PINNED;
+            $description = Yii::t('podium/view', 'Pinned Thread');
             $append      = true;
         }
         elseif ($this->posts >= Config::getInstance()->get('hot_minimum')) {
-            $description = self::DESC_HOT;
+            $description = Yii::t('podium/view', 'Hot Thread');
             $append      = true;
         }
 
         if ($this->view) {
             if ($this->new_post_at > $this->view->new_last_seen) {
                 if (!$append) {
-                    $description = self::DESC_NEW;
+                    $description = Yii::t('podium/view', 'New Posts');
                 }
                 else {
-                    $description .= ' (' . self::DESC_NEW . ')';
+                    $description .= ' (' . Yii::t('podium/view', 'New Posts') . ')';
                 }
             }
             elseif ($this->edited_post_at > $this->view->edited_last_seen) {
                 if (!$append) {
-                    $description = self::DESC_EDITED;
+                    $description = Yii::t('podium/view', 'Edited Posts');
                 }
                 else {
-                    $description = ' (' . self::DESC_EDITED . ')';
+                    $description = ' (' . Yii::t('podium/view', 'Edited Posts') . ')';
                 }
             }
         }
         else {
             if (!$append) {
-                $description = self::DESC_NEW;
+                $description = Yii::t('podium/view', 'New Posts');
             }
             else {
-                $description .= ' (' . self::DESC_NEW . ')';
+                $description .= ' (' . Yii::t('podium/view', 'New Posts') . ')';
             }
         }
 

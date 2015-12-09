@@ -27,7 +27,7 @@ echo ListView::widget([
     'itemView'         => '/elements/search/_post',
     'viewParams'       => ['words' => $words, 'type' => $type],
     'summary'          => '',
-    'emptyText'        => Yii::t('podium/view', $type == 'topics' ? 'No matching threads can be found.' : 'No matching posts can be found.'),
+    'emptyText'        => $type == 'topics' ? Yii::t('podium/view', 'No matching threads can be found.') : Yii::t('podium/view', 'No matching posts can be found.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
     'pager'            => ['options' => ['class' => 'pagination pull-right']]
 ]); 

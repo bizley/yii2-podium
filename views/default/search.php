@@ -23,14 +23,19 @@ else {
 ?>
 <?php if (!empty($dataProvider)): ?>
 <?php
-$title = 'Search for {type}';
-if (!empty($query)) {
-    $title .= ' with "{query}"';
+$typeName = $type == 'topics' ? Yii::t('podium/view', 'threads') : Yii::t('podium/view', 'posts');
+if (!empty($query) && !empty($author)) {
+    $this->title = Yii::t('podium/view', 'Search for {type} with "{query}" by "{author}"', ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $typeName]);
 }
-if (!empty($author)) {
-    $title .= ' by "{author}"';
+elseif (!empty($query) && empty($author)) {
+    $this->title = Yii::t('podium/view', 'Search for {type} with "{query}"', ['query' => Html::encode($query), 'type' => $typeName]);
 }
-$this->title = Yii::t('podium/view', $title, ['query' => Html::encode($query), 'author' => Html::encode($author), 'type' => $type == 'topics' ? 'threads' : 'posts']);
+elseif (empty($query) && !empty($author)) {
+    $this->title = Yii::t('podium/view', 'Search for {type} by "{author}"', ['author' => Html::encode($author), 'type' => $typeName]);
+}
+else {
+    $this->title = Yii::t('podium/view', 'Search for {type}', ['type' => $typeName]);
+}
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Search Forum'), 'url' => ['default/search']];
 $this->params['breadcrumbs'][] = $this->title;

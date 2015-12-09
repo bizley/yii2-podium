@@ -119,7 +119,7 @@ class Installation extends Maintenance
                     ['meta_keywords', Config::META_KEYWORDS],
                     ['meta_description', Config::META_DESCRIPTION],
                 ])->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Config default settings have been added.'));
+            return $this->outputSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
         }
         catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
