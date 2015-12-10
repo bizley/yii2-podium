@@ -157,7 +157,7 @@ class Maintenance extends Component
         try {
             if ($this->db->schema->getTableSchema($this->getTable(), true) !== null) {
                 $this->db->createCommand()->dropTable($this->getTable())->execute();
-                return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been dropped.', ['name' => $this->getTable()]));
+                return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been dropped', ['name' => $this->getTable()]));
             }
         }
         catch (Exception $e) {

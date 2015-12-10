@@ -524,7 +524,7 @@ class AdminController extends BaseController
                     }
                     catch (Exception $e) {
                         Log::error($e->getMessage(), null, __METHOD__);
-                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the moderatoration list.'));
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the moderation list.'));
                     }
                 }
 

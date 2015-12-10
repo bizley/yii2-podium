@@ -112,14 +112,11 @@ class ProfileController extends BaseController
                                 !empty($model->id) ? $model->id : null
                             )) {
                             Log::info('New email activation link queued', $model->id, __METHOD__);
-                            $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. '
-                                    . 'Click the activation link that has been sent to your new e-mail address.'));
+                            $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Click the activation link that has been sent to your new e-mail address.'));
                         }
                         else {
                             Log::error('Error while queuing new email activation link', $model->id, __METHOD__);
-                            $this->warning(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. '
-                                    . 'Unfortunately there was some error while sending you the activation link. '
-                                    . 'Contact administrator about this problem.'));
+                            $this->warning(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Unfortunately there was some error while sending you the activation link. Contact administrator about this problem.'));
                         }
                     }
                     else {

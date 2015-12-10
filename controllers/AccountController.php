@@ -292,9 +292,7 @@ class AccountController extends BaseController
                 }
                 else {
                     Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->warning(Yii::t('podium/flash', 'Your account has been created but it is not active yet. '
-                            . 'Unfortunately there was some error while sending you the activation link. '
-                            . 'Contact administrator about this or try to {resend the link}.', [
+                    $this->warning(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Unfortunately there was some error while sending you the activation link. Contact administrator about this or try to {resend the link}.', [
                                 'resend the link' => Html::a(Yii::t('podium/flash', 'resend the link'), ['account/reactivate'])
                             ]));
                 }
