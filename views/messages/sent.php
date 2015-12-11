@@ -94,14 +94,14 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete message') ?></h4>
+                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete Message') ?></h4>
             </div>
             <div class="modal-body">
                 <?= Yii::t('podium/view', 'Are you sure you want to delete this message?') ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="#" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete message') ?></a>
+                <a href="#" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete Message') ?></a>
             </div>
         </div>
     </div>

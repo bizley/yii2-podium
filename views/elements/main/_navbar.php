@@ -15,24 +15,24 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 
-$items = [['label' => Yii::t('podium/layout', 'Home'), 'url' => ['default/index']]];
+$items = [['label' => Yii::t('podium/view', 'Home'), 'url' => ['default/index']]];
 
 $podiumModule = PodiumModule::getInstance();
 
 if (Yii::$app->user->isGuest) {
     if (Config::getInstance()->get('members_visible')) {
         $items[] = [
-            'label'  => Yii::t('podium/layout', 'Members'), 
+            'label'  => Yii::t('podium/view', 'Members'), 
             'url'    => ['members/index'],
             'active' => $this->context->id == 'members'
         ];
     }
     if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
         if (!empty($podiumModule->loginUrl)) {
-            $items[] = ['label' => Yii::t('podium/layout', 'Sign in'), 'url' => $podiumModule->loginUrl];
+            $items[] = ['label' => Yii::t('podium/view', 'Sign in'), 'url' => $podiumModule->loginUrl];
         }
         if (!empty($podiumModule->registerUrl)) {
-            $items[] = ['label' => Yii::t('podium/layout', 'Register'), 'url' => $podiumModule->registerUrl];
+            $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }
     }
 }
@@ -44,18 +44,18 @@ else {
     
     if (User::can(Rbac::ROLE_ADMIN)) {
         $items[] = [
-            'label'  => Yii::t('podium/layout', 'Administration'), 
+            'label'  => Yii::t('podium/view', 'Administration'), 
             'url'    => ['admin/index'],
             'active' => $this->context->id == 'admin'
         ];
     }
     $items[] = [
-        'label'  => Yii::t('podium/layout', 'Members'), 
+        'label'  => Yii::t('podium/view', 'Members'), 
         'url'    => ['members/index'],
         'active' => $this->context->id == 'members'
     ];
     $items[] = [
-        'label' => Yii::t('podium/layout', 'Profile') . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Profile') . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
         'url'   => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
@@ -65,7 +65,7 @@ else {
         ]
     ];
     $items[] = [
-        'label' => Yii::t('podium/layout', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
         'url'   => ['messages/inbox'],
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],
@@ -74,7 +74,7 @@ else {
         ]
     ];
     if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
-        $items[] = ['label' => Yii::t('podium/layout', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
+        $items[] = ['label' => Yii::t('podium/view', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
     }
 }
 

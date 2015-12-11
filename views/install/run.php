@@ -21,7 +21,7 @@ $this->registerJs("var nextStep = function(step) { $.ajax({url: '" . Url::to(['i
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
         <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br>
-        <em><?= Yii::t('podium/view', '<strong>Back up your existing database</strong> and then click the button below.') ?></em><br><br>
+        <em><strong><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
         <div class="alert alert-danger">
             <label><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br>
             <?= Yii::t('podium/view', '(all existing Podium data will be deleted)') ?>

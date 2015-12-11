@@ -51,7 +51,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0, 'aria-describedby' => 'help-visible'])->label(Yii::t('podium/view', 'Category visible for anonymous guests')) ?>
+                            <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0, 'aria-describedby' => 'help-visible'])->label(Yii::t('podium/view', 'Category visible for guests')) ?>
                             <small id="help-visible" class="help-block"><?= Yii::t('podium/view', 'You can turn off visibility for each individual forum in the category as well.') ?></small>
                         </div>
                     </div>
@@ -83,7 +83,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . ($model->isNewRecord ? Yii::t('podium/view', 'Create New Category') : Yii::t('podium/view', 'Save Category')), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . ($model->isNewRecord ? Yii::t('podium/view', 'Create new category') : Yii::t('podium/view', 'Save Category')), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
                         </div>
                     </div>
                 </div>

@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <a href="#register" class="list-group-item"><?= Yii::t('podium/view', 'Registration') ?></a>
                 <a href="#posts" class="list-group-item"><?= Yii::t('podium/view', 'Posts') ?></a>
                 <a href="#guests" class="list-group-item"><?= Yii::t('podium/view', 'Guests privileges') ?></a>
-                <a href="#emails" class="list-group-item"><?= Yii::t('podium/view', 'Emails') ?></a>
+                <a href="#emails" class="list-group-item"><?= Yii::t('podium/view', 'E-mails') ?></a>
                 <a href="#tokens" class="list-group-item"><?= Yii::t('podium/view', 'Tokens') ?></a>
                 <a href="#db" class="list-group-item"><?= Yii::t('podium/view', 'Database') ?></a>
             </div>
@@ -94,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= $form->field($model, 'members_visible')->checkBox()->label(Yii::t('podium/view', 'Allow guests to list members')) ?>
                         </div>
                     </div>
-                    <h3 id="emails"><span class="label label-primary"><?= Yii::t('podium/view', 'Emails') ?></span></h3>
+                    <h3 id="emails"><span class="label label-primary"><?= Yii::t('podium/view', 'E-mails') ?></span></h3>
                     <div class="row">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'from_email')->textInput()->label(Yii::t('podium/view', 'Podium "From" email address')) ?>

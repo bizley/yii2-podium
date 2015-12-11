@@ -378,7 +378,6 @@ class Module extends BaseModule implements BootstrapInterface
             'basePath'       => '@podium/messages',
             'fileMap'        => [
                 'podium/flash'  => 'flash.php',
-                'podium/layout' => 'layout.php',
                 'podium/view'   => 'view.php',
             ],
         ];

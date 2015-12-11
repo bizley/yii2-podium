@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $this->registerJs("$('#show-email').click(function (e) { e.preventDefault(); $('#details-email').removeClass('hide'); $('#user-new_email').prop('disabled', false); $(this).addClass('hide'); });");
 if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
-    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-password').prop('disabled', false); $('#user-repeat_password').prop('disabled', false); $(this).closest('.row').addClass('hide'); });");
+    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-password').prop('disabled', false); $('#user-password_repeat').prop('disabled', false); $(this).closest('.row').addClass('hide'); });");
 }
 
 ?>

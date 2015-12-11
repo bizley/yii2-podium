@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <?= Html::label(Yii::t('podium/view', 'Select a thread for this posts to be moved to'), 'newthread') ?>
-                                <p><?= Yii::t('podium/view', '* Forums you can moderate are marked with asterisk.') ?></p>
+                                <p>* <?= Yii::t('podium/view', 'Forums you can moderate are marked with asterisk.') ?></p>
                                 <?= Html::dropDownList('newthread', null, $list, ['id' => 'newthread', 'class' => 'form-control', 'options' => $options, 'encode' => false]) ?>
                             </div>
                         </div>
@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <?= Html::label(Yii::t('podium/view', 'Parent forum of the new thread'), 'newforum') ?>
-                                <p><?= Yii::t('podium/view', '* Forums you can moderate are marked with asterisk.') ?></p>
+                                <p>* <?= Yii::t('podium/view', 'Forums you can moderate are marked with asterisk.') ?></p>
                                 <?= Html::dropDownList('newforum', null, $listforum, ['id' => 'newforum', 'class' => 'form-control', 'encode' => false]) ?>
                             </div>
                         </div>

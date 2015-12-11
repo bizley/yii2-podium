@@ -60,7 +60,7 @@ class BaseController extends YiiController
             else {
                 $user = User::findMe();
                 if ($user && empty($user->email)) {
-                    $this->warning(Yii::t('podium/flash', 'No e-mail address has been set for your account! Go to {link} to add one.', ['link' => Html::a(Yii::t('podium/layout', 'Profile') . ' > ' . 
+                    $this->warning(Yii::t('podium/flash', 'No e-mail address has been set for your account! Go to {link} to add one.', ['link' => Html::a(Yii::t('podium/view', 'Profile') . ' > ' . 
                             Yii::t('podium/view', 'Account Details'), ['profile/details'])]), false);
                 }
             }
@@ -88,7 +88,7 @@ class BaseController extends YiiController
                     $new->role         = User::ROLE_MEMBER;
                     $new->timezone     = User::DEFAULT_TIMEZONE;
                     if ($new->save()) {
-                        $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', ['link' => Html::a(Yii::t('podium/layout', 'Profile'))]));
+                        $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', ['link' => Html::a(Yii::t('podium/view', 'Profile'))]));
                         Cache::clearAfterActivate();
                         Log::info('Inherited account created', $new->id, __METHOD__);
                     }

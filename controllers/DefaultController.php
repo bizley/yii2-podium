@@ -1440,7 +1440,7 @@ class DefaultController extends BaseController
                                                         'receiver_id'     => $mod,
                                                         'topic'           => Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
                                                         'content'         => $model->content . '<hr>' . 
-                                                            Html::a(Yii::t('podium/view', 'Direct link to the post'), ['default/show', 'id' => $post->id]) . '<hr>' .
+                                                            Html::a(Yii::t('podium/view', 'Direct link to this post'), ['default/show', 'id' => $post->id]) . '<hr>' .
                                                             '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><blockquote>' . $post->content . '</blockquote>',
                                                         'sender_status'   => Message::STATUS_REMOVED,
                                                         'receiver_status' => Message::STATUS_NEW,
@@ -1764,7 +1764,7 @@ class DefaultController extends BaseController
                                 elseif ($votes['count'] >= 10) {
                                     return Json::encode([
                                         'error' => 1,
-                                        'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', '10 votes per hour limit reached!'), ['class' => 'text-danger']),
+                                        'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . Yii::t('podium/view', '{max} votes per hour limit reached!', ['max' => 10]), ['class' => 'text-danger']),
                                     ]);
                                 }
                                 else {

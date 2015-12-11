@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="col-sm-12">
         <div class="alert alert-info">
-            <span class="glyphicon glyphicon-info-sign"></span> <?= Yii::t('podium/view', 'Enter new password for your account. Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.') ?>
+            <span class="glyphicon glyphicon-info-sign"></span> <?= Yii::t('podium/view', 'Enter new password for your account. Password must contain uppercase and lowercase letter, digit, and be at least {chars} characters long.', ['chars' => 6]) ?>
         </div>
     </div>
     <div class="col-sm-4 col-sm-offset-4">
