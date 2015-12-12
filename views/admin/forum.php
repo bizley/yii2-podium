@@ -69,7 +69,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0, 'aria-describedby' => 'help-visible'])->label(Yii::t('podium/view', 'Forum visible for anonymous guests')) ?>
+                            <?= $form->field($model, 'visible')->checkbox(['uncheck' => 0, 'aria-describedby' => 'help-visible'])->label(Yii::t('podium/view', 'Forum visible for guests')) ?>
                             <small id="help-visible" class="help-block"><?= Yii::t('podium/view', 'This option works only for category visibility turned on.') ?></small>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-container' => 'body',
                                 'data-toggle'    => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', "Meta keywords tag (leave empty to get category's value)."),
+                                'data-content'   => Yii::t('podium/view', "Meta keywords (leave empty to get category's value)."),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', "Forum's Meta Keywords")) ?>
                         </div>
@@ -92,7 +92,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-container' => 'body',
                                 'data-toggle'    => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', "Meta description tag (leave empty to get category's value)."),
+                                'data-content'   => Yii::t('podium/view', "Meta description (leave empty to get category's value)."),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', "Forum's Meta Description")) ?>
                         </div>

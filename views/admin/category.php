@@ -62,7 +62,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-container' => 'body',
                                 'data-toggle'    => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', 'Meta keywords tag (leave empty to get global value).'),
+                                'data-content'   => Yii::t('podium/view', 'Meta keywords (leave empty to get global value).'),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', "Category's Meta Keywords")) ?>
                         </div>
@@ -74,7 +74,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-container' => 'body',
                                 'data-toggle'    => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', 'Meta description tag (leave empty to get global value).'),
+                                'data-content'   => Yii::t('podium/view', 'Meta description (leave empty to get global value).'),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', "Category's Meta Description")) ?>
                         </div>

@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Report Post'), ['class' => 'btn btn-block btn-danger', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Report post'), ['class' => 'btn btn-block btn-danger', 'name' => 'save-button']) ?>
                         </div>
                     </div>
                 </div>

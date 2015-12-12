@@ -68,7 +68,7 @@ $loggedId = User::loggedId();
                 <p><button class="btn btn-warning" data-toggle="modal" data-target="#podiumModalDemote"><span class="glyphicon glyphicon-save"></span> <?= Yii::t('podium/view', 'Demote {name} to Member', ['name' => Html::encode($model->podiumName)]) ?></button></p>
 <?php endif; ?>
 <?php endif; ?>                
-                <p><?= Yii::t('podium/view', 'Member since {DATE}', ['DATE' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
+                <p><?= Yii::t('podium/view', 'Member since {date}', ['date' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
 <?php if ($model->status == User::STATUS_REGISTERED): ?>
                 <p><em><?= Yii::t('podium/view', 'The account is awaiting activation.') ?></em></p>
 <?php else: ?>

@@ -50,10 +50,10 @@ use yii\helpers\Html;
     <div class="row">
         <div class="form-group">
             <div class="col-sm-4 col-sm-offset-2">
-                <?= $form->field($model, 'type', ['inline' => true])->radioList(['posts' => Yii::t('podium/view', 'posts'), 'topics' => Yii::t('podium/view', 'threads titles')], ['unselect' => 'posts'])->label(Yii::t('podium/view', 'Search in')) ?>
+                <?= $form->field($model, 'type', ['inline' => true])->radioList(['posts' => Yii::t('podium/view', 'posts contents'), 'topics' => Yii::t('podium/view', 'threads titles')], ['unselect' => 'posts'])->label(Yii::t('podium/view', 'Search in')) ?>
             </div>
             <div class="col-sm-4">
-                <?= $form->field($model, 'display', ['inline' => true])->radioList(['posts' => Yii::t('podium/view', 'posts'), 'topics' => Yii::t('podium/view', 'threads')], ['unselect' => 'topics'])->label(Yii::t('podium/view', 'Display as')) ?>
+                <?= $form->field($model, 'display', ['inline' => true])->radioList(['posts' => Yii::t('podium/view', 'as posts'), 'topics' => Yii::t('podium/view', 'as threads')], ['unselect' => 'topics'])->label(Yii::t('podium/view', 'Display as')) ?>
             </div>
         </div>
     </div>

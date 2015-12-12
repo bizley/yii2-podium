@@ -63,7 +63,7 @@ class Avatar extends Widget
             $name = $this->showName ? $this->author->podiumTag : '';
         }
         else {
-            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'User deleted')]);
+            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'user deleted')]);
             $name = $this->showName ? Helper::deletedUserTag(true) : '';
         }
         

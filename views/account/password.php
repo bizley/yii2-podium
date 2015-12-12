@@ -23,13 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'password-form']); ?>
             <div class="form-group">
-                <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'New Password')])->label(false) ?>
+                <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'New password')])->label(false) ?>
             </div>
             <div class="form-group">
-                <?= $form->field($model, 'password_repeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat New Password')])->label(false) ?>
+                <?= $form->field($model, 'password_repeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat new password')])->label(false) ?>
             </div>
             <div class="form-group">
-                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Change Password'), ['class' => 'btn btn-block btn-danger', 'name' => 'password-button']) ?>
+                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Change password'), ['class' => 'btn btn-block btn-danger', 'name' => 'password-button']) ?>
             </div>
         <?php ActiveForm::end(); ?>
     </div>

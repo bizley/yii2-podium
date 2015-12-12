@@ -42,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
         </ul>
     </div>
     <div class="col-sm-9">
-        <h4><?= Yii::t('podium/view', 'List of Forums') ?></h4>
+        <h4><?= Yii::t('podium/view', 'List Forums') ?></h4>
         <?= Html::beginForm(); ?>
 <?php Pjax::begin(); ?>
 <?= PageSizer::widget() ?>

@@ -30,7 +30,7 @@ use yii\helpers\Url;
     </table>
 <?php else: ?>
     <div class="panel-body">
-        <small><?= Yii::t('podium/view', 'No posts have been added yet') ?></small>
+        <small><?= Yii::t('podium/view', 'No posts have been added yet.') ?></small>
     </div>
 <?php endif; ?>
 </div>
