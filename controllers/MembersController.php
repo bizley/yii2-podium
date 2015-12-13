@@ -61,7 +61,7 @@ class MembersController extends BaseController
 
     /**
      * Listing the active users for ajax.
-     * Entering 'member#XX' (or any last part of 'member' with #XX) looks for 
+     * Entering 'forum#XX' (or any last part of 'forum' with #XX) looks for 
      * member of the XX ID without username.
      * Entering integer looks for member with XX in username or empty username 
      * and that ID.
@@ -79,7 +79,7 @@ class MembersController extends BaseController
                     }
                     $users = User::find()->andWhere(['status' => User::STATUS_ACTIVE]);
                     $users->andWhere(['!=', 'id', User::loggedId()]);
-                    if (preg_match('/^(member|ember|mber|ber|er|r)?#([0-9]+)$/', strtolower($q), $matches)) {
+                    if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($q), $matches)) {
                         $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
                     }
                     elseif (preg_match('/^([0-9]+)$/', $q, $matches)) {

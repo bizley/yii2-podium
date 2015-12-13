@@ -85,8 +85,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             'headerOptions'  => ['class' => 'text-right'],
             'template'       => '{view}' . (!Yii::$app->user->isGuest ? ' {pm}' : ''),
             'buttons'        => [
-                'view' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
+                'view' => function($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug], ['class' => 'btn btn-default btn-xs', 'data-pjax' => '0', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => Yii::t('podium/view', 'View Member')]);
                 },
                 'pm' => function($url, $model) {
                     if ($model->id !== User::loggedId()) {

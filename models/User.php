@@ -435,7 +435,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : 'Member#' . $this->id;
+        return $this->username ? $this->username : 'Forum#' . $this->id;
     }
     
     /**
@@ -454,7 +454,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getPodiumSlug()
     {
-        return $this->slug ? $this->slug : 'member-' . $this->id;
+        return $this->slug ? $this->slug : 'forum-' . $this->id;
     }
     
     /**

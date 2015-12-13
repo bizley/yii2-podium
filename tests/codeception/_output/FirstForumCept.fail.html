@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-param" content="_csrf">
+    <meta name="csrf-token" content="MWItWHBoa09fOH4.SDteA0IORwsvKxInBDN9PRQ4Un53LntsCCI6dw==">
+<title>First forum - Podium</title>
+<meta name="keywords" content="yii2, forum, podium">
+<meta name="description" content="Podium - Yii 2 Forum Module">
+<link href="/assets/4f765ccc/css/bootstrap.css" rel="stylesheet">
+<link href="/assets/f89670f3/podium.css" rel="stylesheet">
+<link href="/assets/f2aca1be/toolbar.css" rel="stylesheet"></head>
+<body>
+
+    <div class="container">
+        <nav id="w1" class="navbar-inverse navbar-default navbar" role="navigation"><div class="container-fluid"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w1-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="/podium/home">Podium</a></div><div id="w1-collapse" class="collapse navbar-collapse"><ul id="w2" class="navbar-nav navbar-right nav"><li><a href="/podium/home">Home</a></li>
+<li><a href="/podium/members">Members</a></li>
+<li><a href="/podium/login">Sign in</a></li>
+<li><a href="/podium/register">Register</a></li></ul></div></div></nav>        <div class="row">
+    <div class="col-sm-9">
+        <ul class="breadcrumb"><li><a href="/">Home</a></li>
+<li><a href="/podium/home">Main Forum</a></li>
+<li><a href="/podium/category/1/first-category">First category</a></li>
+<li class="active">First forum</li>
+</ul>    </div>
+    <div class="col-sm-3">
+        <form action="/podium/search" method="get">            <div class="input-group">
+                <input type="text" class="form-control" name="query">                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="glyphicon glyphicon-search"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        <li><a href="/podium/search">Advanced Search Form</a></li>
+                    </ul>
+                </div>
+            </div>
+        </form>    </div>
+</div>
+                
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel-group" role="tablist">
+            <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="forum1">
+        <h4 class="panel-title">
+            <a href="/podium/forum/1/1/first-forum">First forum</a>
+        </h4>
+    </div>
+    <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="forum1">
+        <table class="table table-hover">
+    <tr>
+    <th class="col-sm-7"><small>Thread</small></th>
+    <th class="col-sm-1 text-center"><small>Replies</small></th>
+    <th class="col-sm-1 text-center"><small>Views</small></th>
+    <th class="col-sm-3"><small>Latest Post</small></th>
+</tr>
+    <tbody id="w0">
+<tr class="podium-thread-line" data-key="1"><td class="podium-thread-line">
+    <a href="/podium/show/1" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><p>First post</p>
+...<br><strong>admin</strong> 52 minutes ago</small>" title="First New Post">
+        <span class="glyphicon glyphicon-leaf"></span>
+    </a>
+    <a href="/podium/thread/1/1/1/first-222" class="pull-left btn btn-success" style="margin-right:10px" data-toggle="tooltip" data-placement="top" title="New Posts">
+        <span class="glyphicon glyphicon-leaf"></span>
+    </a>
+    <a href="/podium/thread/1/1/1/first-222" class="center-block">
+        First 222    </a>
+</td>
+<td class="text-center">0</td>
+<td class="text-center">1</td>
+<td>
+    <small><a class="btn btn-xs btn-default" href="/podium/members/view/1/admin" data-pjax="0"><span class="text-danger"><span class="glyphicon glyphicon-user"></span> admin</span></a><br>Dec 13, 2015, 12:02:27 PM</small>
+</td>
+</tr>
+</tbody></table>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body small">
+        <a href="" class="pull-right">RSS</a>
+        <ul class="list-inline">
+    <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-comment"></span></button> No New Posts</li>
+    <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-leaf"></span></button> New Posts</li>
+    <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-fire"></span></button> Hot Thread</li>
+    <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-lock"></span></button> Locked Thread</li>
+    <li class="text-muted"><button class="btn btn-xs"><span class="glyphicon glyphicon-pushpin"></span></button> Pinned Thread</li>
+    <li class="text-muted"><button class="btn btn-success btn-xs">&nbsp;&nbsp;&nbsp;&nbsp;</button> New Posts</li>
+    <li class="text-muted"><button class="btn btn-warning btn-xs">&nbsp;&nbsp;&nbsp;&nbsp;</button> Edited Posts</li>
+</ul>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+        <p class="pull-left">&copy; Podium 2015</p>
+        <p class="pull-right">Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a></p>
+    </div>
+</footer>
+<div id="yii-debug-toolbar" data-url="/debug/default/toolbar?tag=566d6aada20cc" style="display:none" class="yii-debug-toolbar-bottom"></div><script src="/assets/d09f25ff/jquery.js"></script>
+<script src="/assets/c9668850/yii.js"></script>
+<script src="/assets/4f765ccc/js/bootstrap.js"></script>
+<script src="/assets/f2aca1be/toolbar.js"></script>
+<script type="text/javascript">jQuery(document).ready(function () {
+$('[data-toggle="popover"]').popover();
+});</script>    
+    
+</body>
+</html>
