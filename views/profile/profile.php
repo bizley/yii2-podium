@@ -7,9 +7,10 @@
  * @since 0.1
  */
 
-use yii\helpers\Html;
 use bizley\podium\components\Helper;
 use cebe\gravatar\Gravatar;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 $this->title = Yii::t('podium/view', 'My Profile');
 $this->params['breadcrumbs'][] = $this->title;
@@ -43,10 +44,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Helper::roleLabel($model->role) ?>
                     </small>
                 </h2>
+                <p><?= Yii::t('podium/view', 'Whereabouts') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
                 <p><?= Yii::t('podium/view', 'Member since {date}', ['date' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
                 <p>
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all threads started by me') ?></a> 
-                    <a href="" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all posts created by me') ?></a>
+                    <a href="<?= Url::to(['members/threads', 'id' => $model->id, 'slug' => $model->podiumSlug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all threads started by me') ?></a> 
+                    <a href="<?= Url::to(['members/posts', 'id' => $model->id, 'slug' => $model->podiumSlug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Show all posts created by me') ?></a>
                 </p>
             </div>
             <div class="panel-footer">

@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
+use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
-use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -40,8 +40,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'post')->label(false)->widget(CKEditor::className(), [
-                                'clientOptions' => Helper::ckEditorOptions('full'),
+                            <?= $form->field($model, 'post')->label(false)->widget(Widget::className(), [
+                                'settings' => Helper::trumbowygOptions('full'),
                             ]) ?>
                         </div>
                     </div>

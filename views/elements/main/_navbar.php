@@ -28,11 +28,11 @@ if (Yii::$app->user->isGuest) {
         ];
     }
     if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
-        if (!empty($podiumModule->loginUrl)) {
-            $items[] = ['label' => Yii::t('podium/view', 'Sign in'), 'url' => $podiumModule->loginUrl];
-        }
         if (!empty($podiumModule->registerUrl)) {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
+        }
+        if (!empty($podiumModule->loginUrl)) {
+            $items[] = ['label' => Yii::t('podium/view', 'Sign in'), 'url' => $podiumModule->loginUrl];
         }
     }
 }

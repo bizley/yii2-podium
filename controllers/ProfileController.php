@@ -112,7 +112,7 @@ class ProfileController extends BaseController
                                 !empty($model->id) ? $model->id : null
                             )) {
                             Log::info('New email activation link queued', $model->id, __METHOD__);
-                            $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Click the activation link that has been sent to your new e-mail address.'));
+                            $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Click the activation link that will be sent to your new e-mail address in few minutes.'));
                         }
                         else {
                             Log::error('Error while queuing new email activation link', $model->id, __METHOD__);
@@ -144,7 +144,7 @@ class ProfileController extends BaseController
         $model = Meta::find()->where(['user_id' => User::loggedId()])->limit(1)->one();
         
         if (empty($model)) {
-            $model = new Meta();
+            $model = new Meta;
         }
         
         if ($model->load(Yii::$app->request->post())) {

@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
 use bizley\podium\log\Log;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
@@ -73,6 +74,7 @@ class Subscription extends ActiveRecord
         ]);
 
         $dataProvider->sort->defaultOrder = ['post_seen' => SORT_ASC, 'id' => SORT_DESC];
+        $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;

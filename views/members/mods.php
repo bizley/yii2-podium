@@ -12,7 +12,6 @@ use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
@@ -49,9 +48,10 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             'attribute'   => 'role',
             'label'       => Yii::t('podium/view', 'Role') . Helper::sortOrder('role'),
             'encodeLabel' => false,
-            'filter'      => false,
+            'format'      => 'raw',
+            'filter'      => User::getModRoles(),
             'value'       => function ($model) {
-                return ArrayHelper::getValue(User::getRoles(), $model->role);
+                return Helper::roleLabel($model->role);
             },
         ],
         [

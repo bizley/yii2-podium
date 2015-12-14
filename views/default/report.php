@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
+use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
-use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -29,8 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(CKEditor::className(), [
-                                'clientOptions' => Helper::ckEditorOptions(),
+                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Widget::className(), [
+                                'settings' => Helper::trumbowygOptions(),
                             ]) ?>
                         </div>
                     </div>

@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -57,6 +58,7 @@ class UserSearch extends User
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
+        $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;

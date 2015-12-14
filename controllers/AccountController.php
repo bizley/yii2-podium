@@ -262,7 +262,7 @@ class AccountController extends BaseController
             return $this->module->goPodium();
         }
         
-        $model = new User();
+        $model = new User;
         $model->setScenario('register');
         
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
@@ -288,7 +288,7 @@ class AccountController extends BaseController
                         !empty($model->id) ? $model->id : null
                     )) {
                     Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that has been sent to your e-mail address.'));
+                    $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that will be sent to your e-mail address in few minutes.'));
                 }
                 else {
                     Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
@@ -304,6 +304,8 @@ class AccountController extends BaseController
             
             return $this->module->goPodium();
         }
+        
+        $model->captcha = null;
         
         return $this->render('register', ['model' => $model, 'terms' => Content::findOne(['name' => 'terms'])]);
     }

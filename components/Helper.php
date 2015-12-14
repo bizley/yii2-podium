@@ -56,42 +56,32 @@ class Helper
     }
     
     /**
-     * Returns CKEditor toolbars.
+     * Returns Trumbowyg settings.
+     * More options will be available in v2.0.
      * @param string $type name of the set
      * @return array toolbars configuration
      */
-    public static function ckEditorOptions($type = 'minimal', $height = null)
+    public static function trumbowygOptions($type = 'default')
     {
-        $options = [];
+        $options = [
+            'closable'       => false,
+            'fullscreenable' => false,
+            'semantic'       => true,
+            'autogrow'       => true,
+        ];
+        
+        if (Yii::$app->language !== 'en-US') {
+            $options['lang'] = Yii::$app->language;
+        }
         
         switch ($type) {
             case 'full':
-                $options = [
-                    'magicline_color' => '#337AB7',
-                    'toolbar' => [
-                        ['Format', 'FontSize'],
-                        ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
-                        ['NumberedList', 'BulletedList', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-                        ['TextColor', 'BGColor'],
-                        ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
-                        ['Link', 'Unlink'],
-                        ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar'],
-                        ['Source'],
-                    ],
-                ];
+                $options['btnsAdd'] = ['|', 'foreColor', 'backColor'];
+                $options['plugins'] = ['colors'];
                 break;
-            default:
-                $options = [
-                    'toolbar' => [
-                        ['Bold', 'Italic', 'Underline', 'Strike'],
-                        ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
-                        ['Link', 'Unlink'],
-                    ],
-                ];
-        }
-        
-        if ($height) {
-            $options['height'] = $height;
+            case 'minimal':
+                $options['btns'] = ['bold', 'italic', '|', 'link', '|', 'insertImage'];
+                break;
         }
         
         return $options;
@@ -118,6 +108,8 @@ class Helper
     
     /**
      * Returns HTMLPurifier configuration set.
+     * This terrible old html4 tags are just because of Trumbowyg v1.
+     * To be changed when Trumbowyg v2 is ready.
      * @param string $type set name
      * @return array configuration
      */
@@ -128,13 +120,19 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'a[href|target],br,p[style],ul,ol,li[style],b,strong,i,em,u,s,img[src|style|alt],hr,blockquote,pre,sup,sub,h1,h2,h3,h4,h5,h6,table[style],tbody,tr,td[style],small',
+                    'HTML.Allowed' => 'p[align],strong,em,del,a[title|href],ul,li,ol,hr,font[color],span[style],blockquote,h1,h2,h3,h4,br,img[alt|src]',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
                 break;
             case 'minimal':
                 $config = [
-                    'HTML.Allowed' => 'a[href|target],br,p[style],ul,ol,li[style],b,strong,i,em,u,s',
+                    'HTML.Allowed' => 'p,strong,em,a[title|href],br,img[alt|src]',
+                    'Attr.AllowedFrameTargets' => ['_blank']
+                ];
+            case 'default':
+            default:
+                $config = [
+                    'HTML.Allowed' => 'p[align],strong,em,del,a[title|href],ul,li,ol,hr,blockquote,h1,h2,h3,h4,br,img[alt|src]',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
         }
@@ -160,14 +158,14 @@ class Helper
                 $colourClass = 'text-muted';
                 break;
             case User::ROLE_MODERATOR:
-                $colourClass = 'text-primary';
+                $colourClass = 'text-info';
                 break;
             case User::ROLE_ADMIN:
                 $colourClass = 'text-danger';
                 break;
             case User::ROLE_MEMBER:
             default:
-                $colourClass = 'text-success';
+                $colourClass = 'text-warning';
         }
         $encodedName = Html::tag('span', $icon . ' ' . ($id ? Html::encode($name) : Yii::t('podium/view', 'user deleted')), ['class' => $colourClass]);
         
@@ -187,7 +185,7 @@ class Helper
     public static function prepareQuote($post, $quote = '')
     {
         $content = !empty($quote) ? nl2br(HtmlPurifier::process($quote)) : $post->content;
-        return Html::tag('blockquote', Html::tag('small', $post->author->podiumTag . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at)) . $content) . '<br>';
+        return Html::tag('blockquote', $post->author->podiumTag . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at) . $content) . '<br>';
     }
     
     /**
@@ -212,11 +210,11 @@ class Helper
                 $name = ArrayHelper::getValue(User::getRoles(), $role);
                 break;
             case User::ROLE_MODERATOR:
-                $label = 'primary';
+                $label = 'info';
                 $name = ArrayHelper::getValue(User::getRoles(), $role);
                 break;
             default:
-                $label = 'success';
+                $label = 'warning';
                 $name = ArrayHelper::getValue(User::getRoles(), User::ROLE_MEMBER);
         }
         

@@ -7,7 +7,6 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
-use bizley\podium\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -31,11 +30,6 @@ use yii\helpers\HtmlPurifier;
 class Meta extends ActiveRecord
 {
 
-    /**
-     * @var string Current password (write-only)
-     */
-    public $current_password;
-    
     /**
      * @var mixed Avatar image
      */
@@ -63,14 +57,12 @@ class Meta extends ActiveRecord
     public function rules()
     {
         return [
-            ['current_password', 'required'],
-            ['current_password', 'validateCurrentPassword'],
             ['location', 'trim'],        
             ['location', 'validateLocation'],            
             ['gravatar', 'boolean'],
             ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => 500, 'maxHeight' => 500, 'maxSize' => 500 * 1024],
             ['signature', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('minimal'));
             }],
         ];
     }
@@ -88,19 +80,4 @@ class Meta extends ActiveRecord
             }
         }
     }
-    
-    /**
-     * Validates current password.
-     * @param string $attribute
-     */
-    public function validateCurrentPassword($attribute)
-    {
-        if (!empty($this->user_id)) {
-            $user = User::findMe();
-            if (!$user->validatePassword($this->current_password)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Current password is incorrect.'));
-            }
-        }
-    }
-
 }

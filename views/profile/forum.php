@@ -7,9 +7,9 @@
  * @since 0.1
  */
 
+use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
 use cebe\gravatar\Gravatar;
-use dosamigos\ckeditor\CKEditor;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -31,13 +31,13 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'location')->textInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Location')) ?>
+                            <?= $form->field($model, 'location')->textInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Whereabouts')) ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(CKEditor::className(), [
-                                'clientOptions' => Helper::ckEditorOptions('minimal', 100),
+                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Widget::className(), [
+                                'settings' => Helper::trumbowygOptions('minimal'),
                             ]) ?>
                         </div>
                     </div>
@@ -57,11 +57,6 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'current_password')->passwordInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Current password')) ?>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save changes'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>

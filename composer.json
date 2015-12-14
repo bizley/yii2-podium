@@ -15,7 +15,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "2amigos/yii2-ckeditor-widget" : "~1.0",
+        "artkost/yii2-trumbowyg": "dev-master",
         "cebe/yii2-gravatar": "*",
         "kartik-v/yii2-widget-fileinput": "*",
         "kartik-v/yii2-sortable": "*",

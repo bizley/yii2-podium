@@ -10,6 +10,7 @@ use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
 use Exception;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -193,6 +194,7 @@ class MessageReceiver extends ActiveRecord
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];
+        $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
         
         if (!($this->load($params) && $this->validate())) {
             $dataProvider->query->joinWith(['message' => function ($q) {

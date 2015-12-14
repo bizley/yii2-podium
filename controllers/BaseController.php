@@ -45,9 +45,24 @@ class BaseController extends YiiController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-
+            $warnings = Yii::$app->session->getFlash('warning');
             if (Config::getInstance()->get('maintenance_mode') == '1') {
                 if ($action->id !== 'maintenance') {
+                    if ($warnings) {
+                        foreach ($warnings as $warning) {
+                            if ($warning == Yii::t('podium/flash', 'Podium is currently in the Maintenance mode. All users without Administrator privileges are redirected to {maintenancePage}. You can switch the mode off at {settingsPage}.', [
+                                    'maintenancePage' => Html::a(Yii::t('podium/flash', 'Maintenance page'), ['default/maintenance']),
+                                    'settingsPage' => Html::a(Yii::t('podium/flash', 'Settings page'), ['admin/settings']),
+                                ])) {
+                                if (!User::can(Rbac::ROLE_ADMIN)) {
+                                    return $this->redirect(['default/maintenance']);
+                                }
+                                else {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
                     $this->warning(Yii::t('podium/flash', 'Podium is currently in the Maintenance mode. All users without Administrator privileges are redirected to {maintenancePage}. You can switch the mode off at {settingsPage}.', [
                         'maintenancePage' => Html::a(Yii::t('podium/flash', 'Maintenance page'), ['default/maintenance']),
                         'settingsPage' => Html::a(Yii::t('podium/flash', 'Settings page'), ['admin/settings']),
@@ -58,6 +73,15 @@ class BaseController extends YiiController
                 }
             }
             else {
+                if ($warnings) {
+                    foreach ($warnings as $warning) {
+                        if ($warning == Yii::t('podium/flash', 'No e-mail address has been set for your account! Go to {link} to add one.', ['link' => Html::a(Yii::t('podium/view', 'Profile') . ' > ' . 
+                            Yii::t('podium/view', 'Account Details'), ['profile/details'])])) {
+                            return true;
+                        }
+                    }
+                }
+                
                 $user = User::findMe();
                 if ($user && empty($user->email)) {
                     $this->warning(Yii::t('podium/flash', 'No e-mail address has been set for your account! Go to {link} to add one.', ['link' => Html::a(Yii::t('podium/view', 'Profile') . ' > ' . 

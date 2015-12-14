@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $this->registerJs("$('#show-email').click(function (e) { e.preventDefault(); $('#details-email').removeClass('hide'); $('#user-new_email').prop('disabled', false); $(this).addClass('hide'); });");
 if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
-    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-password').prop('disabled', false); $('#user-password_repeat').prop('disabled', false); $(this).closest('.row').addClass('hide'); });");
+    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-new_password').prop('disabled', false); $('#user-new_password_repeat').prop('disabled', false); $(this).addClass('hide'); });");
 }
 
 ?>
@@ -62,32 +62,38 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-12">
-                            <button class="btn btn-success" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Click here to change your e-mail address') ?></button>
-                            <div id="details-email" class="hide">
-                                <?= $form->field($model, 'new_email')->textInput([
-                                    'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
-                                    'data-container' => 'body',
-                                    'data-toggle'    => 'popover',
-                                    'data-placement' => 'right',
-                                    'data-content'   => Yii::t('podium/view', 'New e-mail has to be activated first. Activation link will be sent to the new address.'),
-                                    'data-trigger'   => 'focus',
-                                    'autocomplete'   => 'off',
-                                    'disabled'       => true
-                                ])->label(Yii::t('podium/view', 'New Podium e-mail')) ?>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <button class="btn btn-warning btn-block" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Change e-mail address') ?></button>
                             </div>
+                        </div>
+<?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <button class="btn btn-warning btn-block" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
+                            </div>
+                        </div>
+<?php endif; ?>
+                    </div>
+                    <div class="row hide" id="details-email">
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'new_email')->textInput([
+                                'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
+                                'data-container' => 'body',
+                                'data-toggle'    => 'popover',
+                                'data-placement' => 'right',
+                                'data-content'   => Yii::t('podium/view', 'New e-mail has to be activated first. Activation link will be sent to the new address.'),
+                                'data-trigger'   => 'focus',
+                                'autocomplete'   => 'off',
+                                'disabled'       => true
+                            ])->label(Yii::t('podium/view', 'New Podium e-mail')) ?>
                         </div>
                     </div>
 <?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <button class="btn btn-success" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Click here to change your password') ?></button>
-                        </div>
-                    </div>
                     <div id="details-password" class="hide">
                         <div class="row">
                             <div class="col-sm-12">
-                                <?= $form->field($model, 'password')->passwordInput([
+                                <?= $form->field($model, 'new_password')->passwordInput([
                                     'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                     'data-container' => 'body',
                                     'data-toggle'    => 'popover',
@@ -101,7 +107,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
-                                <?= $form->field($model, 'password_repeat')->passwordInput([
+                                <?= $form->field($model, 'new_password_repeat')->passwordInput([
                                         'autocomplete' => 'off', 
                                         'placeholder'  => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                         'disabled'     => true

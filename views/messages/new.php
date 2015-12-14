@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
+use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
-use dosamigos\ckeditor\CKEditor;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -64,8 +64,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-sm-9">
-                    <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
-                        'clientOptions' => Helper::ckEditorOptions(),
+                    <?= $form->field($model, 'content')->label(false)->widget(Widget::className(), [
+                        'settings' => Helper::trumbowygOptions(),
                     ]) ?>
                 </div>
             </div>

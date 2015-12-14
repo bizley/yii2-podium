@@ -59,7 +59,7 @@ $loggedId = User::loggedId();
                     </small>
                 </h2>
                 
-                <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
+                <p><?= Yii::t('podium/view', 'Whereabouts') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
 
 <?php if ($model->status == User::STATUS_ACTIVE): ?>
 <?php if ($model->role == User::ROLE_MEMBER): ?>

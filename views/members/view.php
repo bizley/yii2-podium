@@ -62,7 +62,7 @@ $loggedId = User::loggedId();
                     <small><?= Helper::roleLabel($model->role) ?></small>
                 </h2>
                 
-                <p><?= Yii::t('podium/view', 'Location') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
+                <p><?= Yii::t('podium/view', 'Whereabouts') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
                 
                 <p><?= Yii::t('podium/view', 'Member since {date}', ['date' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
 <?php if ($model->status != User::STATUS_REGISTERED): ?>

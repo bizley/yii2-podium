@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
+use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
-use dosamigos\ckeditor\CKEditor;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -53,8 +53,8 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'content')->label(false)->widget(CKEditor::className(), [
-                        'clientOptions' => Helper::ckEditorOptions('full'),
+                    <?= $form->field($model, 'content')->label(false)->widget(Widget::className(), [
+                        'settings' => Helper::trumbowygOptions('full'),
                     ]) ?>
                 </div>
             </div>

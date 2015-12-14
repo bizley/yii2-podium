@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\models;
 
+use Yii;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -49,6 +50,7 @@ class MessageSearch extends Message
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];
+        $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
         if (!($this->load($params) && $this->validate())) {
             $dataProvider->query->joinWith(['messageReceivers' => function ($q) {

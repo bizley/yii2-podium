@@ -84,9 +84,19 @@ class User extends ActiveRecord implements IdentityInterface
     public $password;
     
     /**
+     * @var string Unencrypted password for change (write-only).
+     */
+    public $new_password;
+    
+    /**
      * @var string Unencrypted password repeated (write-only).
      */
     public $password_repeat;
+    
+    /**
+     * @var string Unencrypted password repeated for change (write-only).
+     */
+    public $new_password_repeat;
     
     /**
      * @var int Terms of service agreement flag (write-only).
@@ -139,7 +149,7 @@ class User extends ActiveRecord implements IdentityInterface
             'role'           => [],
             'passwordChange' => ['password', 'password_repeat'],
             'register'       => ['email', 'password', 'password_repeat'],
-            'account'        => ['username', 'anonymous', 'new_email', 'password', 'password_repeat', 'timezone', 'current_password'],
+            'account'        => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
             'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
         
@@ -163,8 +173,9 @@ class User extends ActiveRecord implements IdentityInterface
             [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
             ['email', 'unique'],
             ['new_email', 'unique', 'targetAttribute' => 'email'],
-            ['password', 'passwordRequirements'],
+            [['password', 'new_password'], 'passwordRequirements'],
             ['password_repeat', 'compare', 'compareAttribute' => 'password'],
+            ['new_password_repeat', 'compare', 'compareAttribute' => 'new_password'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
             ['anonymous', 'boolean'],
@@ -521,6 +532,18 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Returns list of moderators roles.
+     * @return array
+     */
+    public static function getModRoles()
+    {
+        return [
+            self::ROLE_MODERATOR => Yii::t('podium/view', 'Moderator'),
+            self::ROLE_ADMIN     => Yii::t('podium/view', 'Admin'),
+        ];
+    }
+    
+    /**
      * Returns list of statuses.
      * @return array
      */
@@ -636,14 +659,14 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Finds out if unencrypted password fulfill requirements.
      */
-    public function passwordRequirements()
+    public function passwordRequirements($attribute, $params)
     {
-        if (!preg_match('~\p{Lu}~', $this->password) ||
-                !preg_match('~\p{Ll}~', $this->password) ||
-                !preg_match('~[0-9]~', $this->password) ||
-                mb_strlen($this->password, 'UTF-8') < 6 ||
-                mb_strlen($this->password, 'UTF-8') > 100) {
-            $this->addError('password', Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
+        if (!preg_match('~\p{Lu}~', $this->$attribute) ||
+                !preg_match('~\p{Ll}~', $this->$attribute) ||
+                !preg_match('~[0-9]~', $this->$attribute) ||
+                mb_strlen($this->$attribute, 'UTF-8') < 6 ||
+                mb_strlen($this->$attribute, 'UTF-8') > 100) {
+            $this->addError($attribute, Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
     }
     
@@ -756,14 +779,14 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function saveChanges()
     {
-        if ($this->password) {
-            $this->setPassword($this->password);
+        if ($this->new_password) {
+            $this->setPassword($this->new_password);
         }
         if ($this->new_email) {
             $this->generateEmailToken();
         }
         $updateActivityName = $this->isAttributeChanged('username');
-        if ($this->save()) {
+        if ($this->save(false)) {
             if ($updateActivityName) {
                 Activity::updateName($this->id, $this->podiumName, $this->podiumSlug);
             }

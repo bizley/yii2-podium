@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\models;
 
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
@@ -51,6 +52,7 @@ class LogSearch extends ActiveRecord
         ]);
 
         $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];
+        $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
