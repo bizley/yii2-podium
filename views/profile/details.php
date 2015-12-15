@@ -64,18 +64,18 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <button class="btn btn-warning btn-block" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Change e-mail address') ?></button>
+                                <button class="btn btn-warning btn-block <?= !empty($model->new_email) ? 'hide' : '' ?>" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Change e-mail address') ?></button>
                             </div>
                         </div>
 <?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <button class="btn btn-warning btn-block" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
+                                <button class="btn btn-warning btn-block <?= !empty($model->new_password) ? 'hide' : '' ?>" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
                             </div>
                         </div>
 <?php endif; ?>
                     </div>
-                    <div class="row hide" id="details-email">
+                    <div class="row <?= empty($model->new_email) ? 'hide' : '' ?>" id="details-email">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'new_email')->textInput([
                                 'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
@@ -85,12 +85,12 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                                 'data-content'   => Yii::t('podium/view', 'New e-mail has to be activated first. Activation link will be sent to the new address.'),
                                 'data-trigger'   => 'focus',
                                 'autocomplete'   => 'off',
-                                'disabled'       => true
+                                'disabled'       => empty($model->new_email) ? true : false
                             ])->label(Yii::t('podium/view', 'New Podium e-mail')) ?>
                         </div>
                     </div>
 <?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
-                    <div id="details-password" class="hide">
+                    <div id="details-password" class="<?= empty($model->new_password) ? 'hide' : '' ?>">
                         <div class="row">
                             <div class="col-sm-12">
                                 <?= $form->field($model, 'new_password')->passwordInput([
@@ -101,7 +101,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                                     'data-content'   => Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'),
                                     'data-trigger'   => 'focus',
                                     'autocomplete'   => 'off',
-                                    'disabled'       => true
+                                    'disabled'       => empty($model->new_password) ? true : false
                                 ])->label(Yii::t('podium/view', 'New password')) ?>
                             </div>
                         </div>
@@ -110,7 +110,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                                 <?= $form->field($model, 'new_password_repeat')->passwordInput([
                                         'autocomplete' => 'off', 
                                         'placeholder'  => Yii::t('podium/view', "Leave empty if you don't want to change it"),
-                                        'disabled'     => true
+                                        'disabled'     => empty($model->new_password) ? true : false
                                     ])->label(Yii::t('podium/view', 'Repeat new password')) ?>
                             </div>
                         </div>

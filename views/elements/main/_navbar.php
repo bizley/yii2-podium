@@ -37,7 +37,6 @@ if (Yii::$app->user->isGuest) {
     }
 }
 else {
-    
     $podiumUser        = User::findMe();
     $messageCount      = $podiumUser->newMessagesCount;
     $subscriptionCount = $podiumUser->subscriptionsCount;
@@ -55,7 +54,7 @@ else {
         'active' => $this->context->id == 'members'
     ];
     $items[] = [
-        'label' => Yii::t('podium/view', 'Profile') . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName]) . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
         'url'   => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],

@@ -251,6 +251,7 @@ return [
     'Posts created by {name}' => 'Posty, których autorem jest {name}',
     'Preview' => 'Podgląd',
     'Profile' => 'Profil',
+    'Profile ({name})' => 'Profil ({name})',
     'Promote user' => 'Awansuj użytkownika',
     'Promote {name} to Moderator' => 'Awansuj użytkownika {name} na moderatora',
     'Provided e-mail address is too long.' => 'Podany adres e-mail jest zbyt długi.',

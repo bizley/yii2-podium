@@ -31,27 +31,27 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php if (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])): ?>
 <div class="row">
     <div class="col-sm-12">
-        <div class="panel panel-warning">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <ul class="list-inline">
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
 <?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>                    
-                    <li><a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-pushpin"></span> <?= $thread->pinned ? Yii::t('podium/view', 'Unpin Thread') : Yii::t('podium/view', 'Pin Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pushpin"></span> <?= $thread->pinned ? Yii::t('podium/view', 'Unpin Thread') : Yii::t('podium/view', 'Pin Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-lock"></span> <?= $thread->locked ? Yii::t('podium/view', 'Unlock Thread') : Yii::t('podium/view', 'Lock Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-lock"></span> <?= $thread->locked ? Yii::t('podium/view', 'Unlock Thread') : Yii::t('podium/view', 'Lock Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Delete Thread') ?></a></li>
+                    <li><a href="<?= Url::to(['default/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Delete Thread') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_POST, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-random"></span> <?= Yii::t('podium/view', 'Move Posts') ?></a></li>
+                    <li><a href="<?= Url::to(['default/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-random"></span> <?= Yii::t('podium/view', 'Move Posts') ?></a></li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_POST, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>"><span class="glyphicon glyphicon-remove"></span> <?= Yii::t('podium/view', 'Delete Posts') ?></a></li>
+                    <li><a href="<?= Url::to(['default/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span> <?= Yii::t('podium/view', 'Delete Posts') ?></a></li>
 <?php endif; ?>
                 </ul>
             </div>
@@ -65,6 +65,13 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
     <div class="col-sm-12 text-right">
         <a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary"><?= Yii::t('podium/view', 'Sign in to reply') ?></a>
         <a href="<?= Url::to(['account/register']) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Register new account') ?></a>
+    </div>
+</div>
+<?php elseif (User::can(Rbac::PERM_CREATE_THREAD)): ?>
+<div class="row">
+    <div class="col-sm-12 text-right">
+        <a href="<?= Url::to(['default/new-thread', 'cid' => $category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a>
+        <br><br>
     </div>
 </div>
 <?php endif; ?>
