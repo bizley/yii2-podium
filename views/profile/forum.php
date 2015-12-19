@@ -7,8 +7,8 @@
  * @since 0.1
  */
 
-use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
+use bizley\quill\Quill;
 use cebe\gravatar\Gravatar;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
@@ -36,9 +36,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Widget::className(), [
-                                'settings' => Helper::trumbowygOptions('minimal'),
-                            ]) ?>
+                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
                         </div>
                     </div>
                     <div class="row">

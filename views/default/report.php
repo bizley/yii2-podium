@@ -7,8 +7,7 @@
  * @since 0.1
  */
 
-use artkost\trumbowyg\Widget;
-use bizley\podium\components\Helper;
+use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -29,9 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Widget::className(), [
-                                'settings' => Helper::trumbowygOptions(),
-                            ]) ?>
+                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
                         </div>
                     </div>
                 </div>

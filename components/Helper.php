@@ -56,38 +56,6 @@ class Helper
     }
     
     /**
-     * Returns Trumbowyg settings.
-     * More options will be available in v2.0.
-     * @param string $type name of the set
-     * @return array toolbars configuration
-     */
-    public static function trumbowygOptions($type = 'default')
-    {
-        $options = [
-            'closable'       => false,
-            'fullscreenable' => false,
-            'semantic'       => true,
-            'autogrow'       => true,
-        ];
-        
-        if (Yii::$app->language !== 'en-US') {
-            $options['lang'] = Yii::$app->language;
-        }
-        
-        switch ($type) {
-            case 'full':
-                $options['btnsAdd'] = ['|', 'foreColor', 'backColor'];
-                $options['plugins'] = ['colors'];
-                break;
-            case 'minimal':
-                $options['btns'] = ['bold', 'italic', '|', 'link', '|', 'insertImage'];
-                break;
-        }
-        
-        return $options;
-    }
-    
-    /**
      * Returns image source for default avatar image in base64.
      * @return string image source
      */

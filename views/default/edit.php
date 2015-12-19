@@ -7,8 +7,7 @@
  * @since 0.1
  */
 
-use artkost\trumbowyg\Widget;
-use bizley\podium\components\Helper;
+use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -43,9 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Widget::className(), [
-                                'settings' => Helper::trumbowygOptions('full'),
-                            ]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
                         </div>
                     </div>
                 </div>

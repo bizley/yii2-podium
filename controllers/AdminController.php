@@ -150,7 +150,7 @@ class AdminController extends BaseController
     public function actionContents($name = '')
     {
         $allowed = ['terms', 'email-reg', 'email-new', 'email-react', 'email-pass', 'email-sub'];
-        
+
         if ($name == '' || !in_array($name, $allowed)) {
             $name = 'terms';
         }        

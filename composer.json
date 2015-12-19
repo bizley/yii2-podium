@@ -15,7 +15,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "artkost/yii2-trumbowyg": "dev-master",
+        "bizley/quill": "*",
         "cebe/yii2-gravatar": "*",
         "kartik-v/yii2-widget-fileinput": "*",
         "kartik-v/yii2-sortable": "*",

@@ -7,11 +7,11 @@
  * @since 0.1
  */
 
-use artkost\trumbowyg\Widget;
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
+use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -47,9 +47,7 @@ $loggedId = User::loggedId();
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-sm-9">
-                    <?= $form->field($model, 'content')->label(false)->widget(Widget::className(), [
-                        'settings' => Helper::trumbowygOptions(),
-                    ]) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
                 </div>
             </div>
             <div class="row">

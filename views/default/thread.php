@@ -7,11 +7,10 @@
  * @since 0.1
  */
 
-use artkost\trumbowyg\Widget;
-use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -124,9 +123,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Widget::className(), [
-                                'settings' => Helper::trumbowygOptions(),
-                            ]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
                         </div>
                     </div>
 <?php if (!$thread->subscription): ?>
