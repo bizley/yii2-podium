@@ -160,6 +160,23 @@ class Message extends ActiveRecord
     }
     
     /**
+     * Checks if user is a message receiver.
+     * @param integer $user_id
+     * @return boolean
+     */
+    public function isMessageReceiver($user_id)
+    {
+        if ($this->messageReceivers) {
+            foreach ($this->messageReceivers as $receiver) {
+                if ($receiver->receiver_id == $user_id) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Returns reply Message.
      * @return Message
      */

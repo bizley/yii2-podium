@@ -14,6 +14,7 @@ use bizley\podium\models\MessageSearch;
 use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Json;
 
 /**
  * Podium Messages controller
@@ -329,5 +330,47 @@ class MessagesController extends BaseController
         }
         
         return $this->render('view', ['model' => $model->message, 'type' => 'received', 'id' => $model->id]);
+    }
+    
+    public function actionLoad()
+    {
+        if (Yii::$app->request->isAjax) {
+            $result = [
+                'messages' => '',
+                'more'     => 0
+            ];
+            
+            $loggedId = User::loggedId();
+            
+            if (!Yii::$app->user->isGuest) {
+                $id = Yii::$app->request->post('message');
+                $message = Message::find()->where(['id' => $id])->limit(1)->one();
+                if ($message && ($message->sender_id == $loggedId || $message->isMessageReceiver($loggedId))) {
+                    $stack = 0;
+                    $reply = clone $message;
+                    while ($reply->reply && $stack < 5) {
+                        $result['more'] = 0;
+                        
+                        if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) {
+                            $reply = $reply->reply;
+                            continue;
+                        }
+                        
+                        $result['messages'] .= $this->renderPartial('load', ['reply' => $reply]);
+
+                        $reply = $reply->reply;
+                        if ($reply) {
+                            $result['more'] = $reply->id;
+                        }
+                        $stack++;
+                    }
+                }                
+            }
+            
+            return Json::encode($result);
+        }
+        else {
+            return $this->redirect(['default/index']);
+        }
     }
 }

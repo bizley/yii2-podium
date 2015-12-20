@@ -8,6 +8,7 @@ namespace bizley\podium\models;
 
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
 
 /**
  * MessageSearch model
@@ -40,7 +41,16 @@ class MessageSearch extends Message
      */
     public function search($params)
     {
-        $query = self::find()->where(['sender_id' => User::loggedId(), 'sender_status' => Message::getSentStatuses()]);
+        // not very proud of this query - possibly slow
+        // let me know if it can be done better.
+        $subquery = (new Query)->select(['m2.replyto'])->from(['m1' => Message::tableName()])
+                ->leftJoin(['m2' => Message::tableName()], '`m1`.`replyto` = `m2`.`id`')
+                ->where(['is not', 'm2.replyto', null]);
+        $query = self::find()->where([
+            'and',
+            ['sender_id' => User::loggedId(), 'sender_status' => Message::getSentStatuses()],
+            ['not in', Message::tableName() . '.id', $subquery]
+        ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -60,11 +70,35 @@ class MessageSearch extends Message
         }
 
         $dataProvider->query->andFilterWhere(['like', 'topic', $this->topic]);
-        $dataProvider->query->joinWith(['messageReceivers' => function($q) {
-            $q->joinWith(['receiver' => function ($q) {
-                $q->andFilterWhere(['like', User::tableName() . '.username', $this->receiverName]);
+        
+        if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($this->receiverName), $matches)) {
+            $dataProvider->query->joinWith(['messageReceivers' => function($q) use ($matches) {
+                $q->joinWith(['receiver' => function ($q) use ($matches) {
+                    $q->andFilterWhere(['username' => ['', null], User::tableName() . '.id' => $matches[2]]);
+                }]);
             }]);
-        }]);
+        }
+        elseif (preg_match('/^([0-9]+)$/', $this->receiverName, $matches)) {
+            $dataProvider->query->joinWith(['messageReceivers' => function($q) use ($matches) {
+                $q->joinWith(['receiver' => function ($q) use ($matches) {
+                    $q->andFilterWhere([
+                        'or', 
+                        ['like', 'username', $this->receiverName],
+                        [
+                            'username' => ['', null],
+                            'id'       => $matches[1]
+                        ]
+                    ]);
+                }]);
+            }]);
+        }
+        else {
+            $dataProvider->query->joinWith(['messageReceivers' => function($q) {
+                $q->joinWith(['receiver' => function ($q) {
+                    $q->andFilterWhere(['like', User::tableName() . '.username', $this->receiverName]);
+                }]);
+            }]);
+        }
         
         return $dataProvider;
     }

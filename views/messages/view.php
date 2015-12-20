@@ -26,6 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
+$loadOlder    = '<span class="glyphicon glyphicon-import"></span> ' . Yii::t('podium/view', 'Load older messages');
+$loadingOlder = '<span class="glyphicon glyphicon-hourglass"></span> ' . Yii::t('podium/view', 'Loading messages...');
+$lastOne      = '<span class="glyphicon glyphicon-stop"></span> ' . Yii::t('podium/view', 'Last message in the thread');
+$this->registerJs("var loading = false; $('.load-messages').click(function (e) { e.preventDefault(); if (loading === false) { loading = true; $('.load-messages').html('$loadingOlder').addClass('disabled'); $.post('" . Url::to(['messages/load']) . "', {message:$(this).data('last')}, null, 'json').fail(function(){ console.log('Message Load Error!'); }).done(function(data){ $('#loadedMessages').append(data.messages); if (parseInt(data.more) > 0) { $('.load-messages').html('$loadOlder').removeClass('disabled').data('last', data.more); } else { $('.load-messages').html('$lastOne') } }).always(function(){ loading = false; }); } });");
+
 $loggedId = User::loggedId();
 
 ?>
@@ -61,26 +66,18 @@ $loggedId = User::loggedId();
                 </div>
             </div>
         
-<?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): ?>
+<?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): $more = 0; ?>
 <?php if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) { $reply = $reply->reply; continue; } ?>
+            <?= $this->render('load', ['reply' => $reply]) ?>
+<?php $reply = $reply->reply; if ($reply) { $more = $reply->id; } $stack++; endwhile; ?>
+            
+            <div id="loadedMessages"></div>
+            
+<?php if (!empty($more)): ?>
             <div class="row">
-                <div class="col-sm-2 text-center">
-                    <?= Avatar::widget(['author' => $reply->reply->sender]) ?>
-                </div>
-                <div class="col-sm-10">
-                    <div class="popover right podium">
-                        <div class="arrow"></div>
-                        <div class="popover-title">
-                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($reply->reply->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($reply->reply->created_at) ?></span></small>
-                            <?= Html::encode($reply->reply->topic) ?>
-                        </div>
-                        <div class="popover-content">
-                            <?= $reply->reply->content ?>
-                        </div>
-                    </div>
-                </div>
+                <div class="col-sm-12 text-right"><a href="#" data-last="<?= $more ?>" class="load-messages btn btn-default"><?= $loadOlder ?></a></div>
             </div>
-<?php $reply = $reply->reply; $stack++; endwhile; ?>
+<?php endif; ?>
             
         </div>
     </div>
