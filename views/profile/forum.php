@@ -36,7 +36,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
+                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Quill::className(), ['toolbar' => 'basic', 'options' => ['style' => 'height:100px']]) ?>
                         </div>
                     </div>
                     <div class="row">

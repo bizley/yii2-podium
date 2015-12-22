@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
                         </div>
                     </div>
                 </div>

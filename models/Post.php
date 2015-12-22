@@ -71,10 +71,10 @@ class Post extends ActiveRecord
             ['topic', 'validateTopic', 'on' => ['firstPost']],
             ['subscribe', 'boolean'],
             ['content', 'required'],
-            ['content', 'string', 'min' => 10],
             ['content', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
             }],
+            ['content', 'string', 'min' => 10],
         ];
     }
 

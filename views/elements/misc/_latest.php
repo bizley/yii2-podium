@@ -12,6 +12,9 @@ use yii\helpers\Url;
 ?>
 <div class="panel panel-default">
     <div class="panel-heading">
+<?php if (!Yii::$app->user->isGuest): ?>
+        <a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-xs pull-right"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a>
+<?php endif ?>
         <?= Yii::t('podium/view', 'Latest posts') ?>
     </div>
 <?php if ($latest): ?>

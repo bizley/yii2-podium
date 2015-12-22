@@ -112,12 +112,21 @@ class Thread extends ActiveRecord
     }
 
     /**
-     * ThreadView relation.
+     * ThreadView relation for user.
      * @return ThreadView
      */
     public function getView()
     {
         return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
+    }
+    
+    /**
+     * ThreadView relation general.
+     * @return ThreadView
+     */
+    public function getThreadView()
+    {
+        return $this->hasMany(ThreadView::className(), ['thread_id' => 'id']);
     }
     
     /**

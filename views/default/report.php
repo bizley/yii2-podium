@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
+                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
                         </div>
                     </div>
                 </div>

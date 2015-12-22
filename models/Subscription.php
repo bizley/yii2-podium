@@ -76,10 +76,6 @@ class Subscription extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['post_seen' => SORT_ASC, 'id' => SORT_DESC];
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
-        if (!($this->load($params) && $this->validate())) {
-            return $dataProvider;
-        }
-
         return $dataProvider;
     }
     

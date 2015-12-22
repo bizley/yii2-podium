@@ -18,11 +18,15 @@ $this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url
 $this->params['breadcrumbs'][] = Html::encode($this->title);
 
 ?>
-<?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>
+<?php if (!Yii::$app->user->isGuest): ?>
 <div class="row">
     <div class="col-sm-12 text-right">
-        <a href="<?= Url::to(['default/new-thread', 'cid' => $category->id, 'fid' => $model->id]) ?>" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a>
-        <br><br>
+        <ul class="list-inline">
+<?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>
+            <li><a href="<?= Url::to(['default/new-thread', 'cid' => $category->id, 'fid' => $model->id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
+<?php endif; ?>
+            <li><a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
+        </ul>
     </div>
 </div>
 <?php endif; ?>

@@ -47,7 +47,7 @@ $author = User::findMe();
                 <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
                         </div>
                     </div>
                     <div class="row">

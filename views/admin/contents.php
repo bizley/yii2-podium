@@ -52,7 +52,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:500px']]) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:400px']]) ?>
                 </div>
             </div>
             <div class="row">

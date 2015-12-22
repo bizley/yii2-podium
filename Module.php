@@ -214,6 +214,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'search'                                                        => 'default/search',
                         'show/<id:\d+>'                                                 => 'default/show',
                         'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
+                        'unread-posts'                                                  => 'default/unread-posts',
                         'upgrade'                                                       => 'install/upgrade',
                     ],
                 ])], false);

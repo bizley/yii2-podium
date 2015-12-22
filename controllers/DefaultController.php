@@ -490,7 +490,7 @@ class DefaultController extends BaseController
                     return $this->redirect(['default/index']);
                 }
                 else {
-                    if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {                 
+                    if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))) {
                         $model = Post::find()->where(['id' => (int)$pid, 'thread_id' => $thread->id, 'forum_id' => $forum->id])->limit(1)->one();
 
                         if (!$model) {
@@ -569,7 +569,7 @@ class DefaultController extends BaseController
                     }
                     else {
                         $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-                        return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
+                        return $this->redirect(['thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                     }
                 }
             }
@@ -1208,8 +1208,8 @@ class DefaultController extends BaseController
     }
     
     /**
-     * Creating the post of given category ID, forum ID, thread ID and slug.
-     * This can be reply to selected post.
+     * Creating the post of given category ID, forum ID and thread ID.
+     * This can be reply to selected post of given ID.
      * @param integer $cid
      * @param integer $fid
      * @param integer $tid
@@ -1306,7 +1306,7 @@ class DefaultController extends BaseController
                                                 }
                                             }
                                             else {
-                                                if ($model->save()) {
+                                                if ($model->save(false)) {
                                                     $model->markSeen();
                                                     $forum->updateCounters(['posts' => 1]);
                                                     $thread->updateCounters(['posts' => 1]);
@@ -1363,7 +1363,7 @@ class DefaultController extends BaseController
                         }
                         else {
                             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-                            return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'thread' => $thread->id, 'slug' => $thread->slug]);
+                            return $this->redirect(['default/thread', 'cid' => $category->id, 'fid' => $forum->id, 'id' => $thread->id, 'slug' => $thread->slug]);
                         }
                     }
                 }
@@ -1857,5 +1857,10 @@ class DefaultController extends BaseController
                 'content' => $description
             ]);
         }
+    }
+    
+    public function actionUnreadPosts()
+    {
+        return $this->render('unread-posts');
     }
 }
