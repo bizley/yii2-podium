@@ -41,7 +41,7 @@ class MessageSearch extends Message
      */
     public function search($params)
     {
-        // not very proud of this query - possibly slow
+        // not very proud of this query - slow for sure
         // let me know if it can be done better.
         $subquery = (new Query)->select(['m2.replyto'])->from(['m1' => Message::tableName()])
                 ->leftJoin(['m2' => Message::tableName()], '`m1`.`replyto` = `m2`.`id`')

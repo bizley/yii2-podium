@@ -13,6 +13,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\helpers\HtmlPurifier;
 use Zelenin\yii\behaviors\Slug;
 
@@ -205,13 +206,50 @@ class Thread extends ActiveRecord
      * @param integer $forum_id
      * @return ActiveDataProvider
      */
-    public function search($forum_id = null)
+    public function search($forum_id = null, $filters = null)
     {
         $query = self::find();
         if ($forum_id) {
             $query->where(['forum_id' => (int) $forum_id]);
         }
-
+        if (!empty($filters)) {
+            if (!empty($filters['pin']) && $filters['pin'] == 1) {
+                $query->andWhere(['pinned' => 1]);
+            }
+            if (!empty($filters['lock']) && $filters['lock'] == 1) {
+                $query->andWhere(['locked' => 1]);
+            }
+            if (!empty($filters['hot']) && $filters['hot'] == 1) {
+                $query->andWhere(['>=', 'posts', Config::getInstance()->get('hot_minimum')]);
+            }
+            if (!empty($filters['new']) && $filters['new'] == 1 && !Yii::$app->user->isGuest) {
+                $query->joinWith(['view' => function ($q) {
+                    $q->andWhere([
+                            'or', 
+                            [
+                                'and',
+                                ['user_id' => User::loggedId()],
+                                new Expression('`new_last_seen` < `new_post_at`')
+                            ],
+                            ['user_id' => null]
+                        ]);
+                }]);
+            }
+            if (!empty($filters['edit']) && $filters['edit'] == 1 && !Yii::$app->user->isGuest) {
+                $query->joinWith(['view' => function ($q) {
+                    $q->andWhere([
+                            'or', 
+                            [
+                                'and',
+                                ['user_id' => User::loggedId()],
+                                new Expression('`edited_last_seen` < `edited_post_at`')
+                            ],
+                            ['user_id' => null]
+                        ]);
+                }]);
+            }
+        }
+        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => false,

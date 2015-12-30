@@ -583,7 +583,7 @@ class DefaultController extends BaseController
      * @param string $slug
      * @return string|\yii\web\Response
      */
-    public function actionForum($cid = null, $id = null, $slug = null)
+    public function actionForum($cid = null, $id = null, $slug = null, $toggle = null)
     {
         if (!is_numeric($cid) || $cid < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
@@ -600,12 +600,28 @@ class DefaultController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
             return $this->redirect(['default/index']);
         }
-        else {
-            $conditions = ['id' => (int)$id, 'category_id' => $category->id, 'slug' => $slug];
-            if (Yii::$app->user->isGuest) {
-                $conditions['visible'] = 1;
+
+        $conditions = ['id' => (int)$id, 'category_id' => $category->id, 'slug' => $slug];
+        if (Yii::$app->user->isGuest) {
+            $conditions['visible'] = 1;
+        }
+        
+        $filters = Yii::$app->session->get('forum-filters');
+        if (in_array(strtolower($toggle), ['new', 'edit', 'hot', 'pin', 'lock', 'all'])) {
+            if (strtolower($toggle) == 'all') {
+                $filters = null;
             }
-            $model = Forum::find()->where($conditions)->limit(1)->one();
+            else {
+                $filters[strtolower($toggle)] = empty($filters[strtolower($toggle)]) || $filters[strtolower($toggle)] == 0 ? 1 : 0;
+            }
+            Yii::$app->session->set('forum-filters', $filters);
+        }
+        
+        $model = Forum::find()->where($conditions)->limit(1)->one();
+        
+        if (!$model) {
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
+            return $this->redirect(['default/index']);
         }
 
         $keywords = $model->keywords;
@@ -621,6 +637,7 @@ class DefaultController extends BaseController
         return $this->render('forum', [
                     'model'    => $model,
                     'category' => $category,
+                    'filters'  => $filters
         ]);
     }
     

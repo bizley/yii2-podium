@@ -175,6 +175,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'deleteposts/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'       => 'default/deleteposts',
                         'demote/<id:\d+>'                                               => 'admin/demote',
                         'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'                  => 'default/edit',
+                        'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>/<toggle:\w+>'          => 'default/forum',
                         'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>'                       => 'default/forum',
                         'home'                                                          => 'default/index',
                         'install'                                                       => 'install/run',
