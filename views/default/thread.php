@@ -10,6 +10,7 @@
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use bizley\podium\widgets\Readers;
 use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -174,3 +175,12 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 </div>
 <?php endif; ?>
 <br>
+<div class="panel panel-default">
+    <div class="panel-body small">
+        <ul class="list-inline pull-right">
+            <li><a href="<?= Url::to(['default/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
+            <li><a href="#top" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the top') ?>"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
+        </ul>
+        <?= Readers::widget(['what' => 'topic']) ?>
+    </div>
+</div>

@@ -40,29 +40,21 @@ class ThreadView extends ActiveRecord
      */
     public function search()
     {
+        $loggedId = User::loggedId();
         $query = Thread::find()->joinWith('threadView')
                 ->where([
-                    'and',
+                    'or',
                     [
-                        'or', 
-                        [self::tableName() . '.user_id' => User::loggedId()], 
-                        [self::tableName() . '.user_id' => null]
+                        'and',
+                        ['user_id' => $loggedId],
+                        new Expression('`new_last_seen` < `new_post_at`')
                     ],
                     [
-                        'or',
-                        ['new_last_seen' => null],
-                        [
-                            'and',
-                            ['is not', 'new_last_seen', null],
-                            new Expression('`new_last_seen` < `new_post_at`')
-                        ],
-                        ['edited_last_seen' => null],
-                        [
-                            'and',
-                            ['is not', 'edited_last_seen', null],
-                            new Expression('`edited_last_seen` < `edited_post_at`')
-                        ],
+                        'and',
+                        ['user_id' => $loggedId],
+                        new Expression('`edited_last_seen` < `edited_post_at`')
                     ],
+                    ['user_id' => null],
                 ]);
 
         $dataProvider = new ActiveDataProvider([

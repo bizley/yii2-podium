@@ -48,6 +48,15 @@ class Activity extends ActiveRecord
     }
     
     /**
+     * User relation.
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    
+    /**
      * Adds guest activity.
      * @param string $ip
      * @param string $url

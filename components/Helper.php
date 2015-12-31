@@ -88,19 +88,19 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'p[align],strong,em,del,a[title|href],ul,li,ol,hr,font[color],span[style],blockquote,h1,h2,h3,h4,br,img[alt|src]',
+                    'HTML.Allowed' => 'div[style|class],span[class|style],b,i,u,s,a[title|href|class|style],ul,li,ol,hr,h1,h2,h3,h4,br,p,img[alt|src]',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
                 break;
             case 'minimal':
                 $config = [
-                    'HTML.Allowed' => 'p,strong,em,a[title|href],br,img[alt|src]',
+                    'HTML.Allowed' => 'div[style|class],span[class|style],p,br,b,i,u,s,a[title|href|class|style],img[alt|src]',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
             case 'default':
             default:
                 $config = [
-                    'HTML.Allowed' => 'p[align],strong,em,del,a[title|href],ul,li,ol,hr,blockquote,h1,h2,h3,h4,br,img[alt|src]',
+                    'HTML.Allowed' => 'div[style|class],span[class|style],p,br,b,i,u,s,a[title|href|class|style],ul,li,ol,hr,h1,h2,h3,h4,img[alt|src]',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
         }
@@ -152,8 +152,8 @@ class Helper
      */
     public static function prepareQuote($post, $quote = '')
     {
-        $content = !empty($quote) ? nl2br(HtmlPurifier::process($quote)) : $post->content;
-        return Html::tag('blockquote', $post->author->podiumTag . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at) . $content) . '<br>';
+        $content = !empty($quote) ? '[...] ' . nl2br(HtmlPurifier::process($quote)) . ' [...]' : $post->content;
+        return Html::tag('div', $post->author->podiumTag . ' @ ' . Yii::$app->formatter->asDatetime($post->created_at) . '<br>' . $content, ['class' => 'blockquote']) . '<br>';
     }
     
     /**

@@ -837,7 +837,7 @@ class Installation extends Maintenance
                     'username'   => Schema::TYPE_STRING,
                     'user_slug'  => Schema::TYPE_STRING,
                     'user_role'  => Schema::TYPE_INTEGER,
-                    'url'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'url'        => Schema::TYPE_STRING . '(1024) NOT NULL',
                     'ip'         => Schema::TYPE_STRING . '(15)',
                     'anonymous'  => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -849,6 +849,12 @@ class Installation extends Maintenance
                 'call'  => 'index',
                 'name'  => 'updated_at',
                 'cols'  => ['updated_at'],
+            ],
+            [
+                'table' => 'user_activity',
+                'call'  => 'index',
+                'name'  => 'url',
+                'cols'  => ['url'],
             ],
             [
                 'table' => 'user_activity',

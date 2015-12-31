@@ -184,6 +184,7 @@ class Module extends BaseModule implements BootstrapInterface
                         'login'                                                         => 'account/login',
                         'logout'                                                        => 'profile/logout',
                         'maintenance'                                                   => 'default/maintenance',
+                        'mark-seen'                                                     => 'default/mark-seen',
                         'members/posts/<id:\d+>/<slug:[\w\-]+>'                         => 'members/posts',
                         'members/threads/<id:\d+>/<slug:[\w\-]+>'                       => 'members/threads',
                         'members/view/<id:\d+>/<slug:[\w\-]+>'                          => 'members/view',

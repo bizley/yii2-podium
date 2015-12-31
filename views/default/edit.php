@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php if (!empty($preview)): ?>
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
-        <?= Alert::widget(['body' => '<strong><small>' . Yii::t('podium/view', 'Post Preview') . '</small></strong>:<hr>' . $preview, 'options' => ['class' => 'alert-info']]); ?>
+        <?= Alert::widget(['body' => '<strong><small>' . Yii::t('podium/view', 'Post Preview') . '</small></strong>:<hr>' . $preview, 'options' => ['class' => 'alert alert-warning']]); ?>
     </div>
 </div>
 <?php endif; ?>

@@ -10,6 +10,7 @@
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
 use bizley\podium\widgets\PageSizer;
+use bizley\podium\widgets\Readers;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -84,4 +85,13 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
         ]
     ],
 ]); ?>
-<?php Pjax::end();
+<?php Pjax::end(); ?>
+<div class="panel panel-default">
+    <div class="panel-body small">
+        <ul class="list-inline pull-right">
+            <li><a href="<?= Url::to(['default/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
+            <li><a href="#top" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the top') ?>"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
+        </ul>
+        <?= Readers::widget(['what' => 'members']) ?>
+    </div>
+</div>

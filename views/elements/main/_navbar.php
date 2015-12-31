@@ -80,7 +80,7 @@ else {
 NavBar::begin([
     'brandLabel'            => Config::getInstance()->get('name'),
     'brandUrl'              => ['default/index'],
-    'options'               => ['class' => 'navbar-inverse navbar-default',],
+    'options'               => ['class' => 'navbar-inverse navbar-default', 'id' => 'top'],
     'innerContainerOptions' => ['class' => 'container-fluid',]
 ]);
 echo Nav::widget([

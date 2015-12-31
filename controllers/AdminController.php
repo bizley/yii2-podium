@@ -895,7 +895,7 @@ class AdminController extends BaseController
     {
         $model = User::findOne((int)$id);
 
-        if (empty($model->user)) {
+        if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['admin/members']);
         }

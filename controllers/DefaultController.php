@@ -18,11 +18,13 @@ use bizley\podium\models\PostThumb;
 use bizley\podium\models\SearchForm;
 use bizley\podium\models\Subscription;
 use bizley\podium\models\Thread;
+use bizley\podium\models\ThreadView;
 use bizley\podium\models\User;
 use bizley\podium\models\Vocabulary;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -1876,8 +1878,69 @@ class DefaultController extends BaseController
         }
     }
     
+    /**
+     * Listing all unread posts.
+     * @return string|\yii\web\Response
+     */
     public function actionUnreadPosts()
     {
+        if (Yii::$app->user->isGuest) {
+            $this->info(Yii::t('podium/flash', 'This page is available for registered users only.'));
+            return $this->redirect(['account/login']);
+        }
         return $this->render('unread-posts');
+    }
+    
+    /**
+     * Marking all unread posts as seen.
+     * @return string|\yii\web\Response
+     */
+    public function actionMarkSeen()
+    {
+        if (Yii::$app->user->isGuest) {
+            $this->info(Yii::t('podium/flash', 'This action is available for registered users only.'));
+            return $this->redirect(['account/login']);
+        }
+        
+        try {
+            $loggedId = User::loggedId();
+            $batch = [];
+            $threadsPrevMarked = Thread::find()->joinWith('threadView')
+                    ->where([
+                        'and',
+                        ['user_id' => User::loggedId()],
+                        [
+                            'or',
+                            new Expression('`new_last_seen` < `new_post_at`'),
+                            new Expression('`edited_last_seen` < `edited_post_at`')
+                        ],
+                    ]);
+            $time = time();
+            foreach ($threadsPrevMarked->each() as $thread) {
+                $batch[] = $thread->id;
+            }
+            if (!empty($batch)) {
+                Yii::$app->db->createCommand()->update(ThreadView::tableName(), [
+                        'new_last_seen' => $time, 
+                        'edited_last_seen' => $time
+                    ], ['thread_id' => $batch, 'user_id' => $loggedId])->execute();
+            }
+
+            $batch = [];
+            $threadsNew = Thread::find()->joinWith('threadView')->where(['user_id' => null]);
+            foreach ($threadsNew->each() as $thread) {
+                $batch[] = [$loggedId, $thread->id, $time, $time];
+            }
+            if (!empty($batch)) {
+                Yii::$app->db->createCommand()->batchInsert(ThreadView::tableName(), ['user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'], $batch)->execute();
+            }
+            $this->success(Yii::t('podium/flash', 'All unread threads have been marked as seen.'));
+            return $this->redirect(['default/index']);
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while marking threads as seen. Contact administrator about this problem.'));
+            return $this->redirect(['default/unread-posts']);
+        }
     }
 }

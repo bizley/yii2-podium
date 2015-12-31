@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\widgets\Readers;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -27,7 +28,7 @@ use yii\helpers\Url;
 
 <div class="panel panel-default">
     <div class="panel-body small">
-        <a href="" class="pull-right">RSS</a>
         <?= $this->render('/elements/forum/_icons') ?>
+        <?= Readers::widget(['what' => 'forum']) ?>
     </div>
 </div>
