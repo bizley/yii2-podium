@@ -1,6 +1,8 @@
 Yii 2 Podium
 ============
 
+[![Join the chat at https://gitter.im/bizley/yii2-podium](https://badges.gitter.im/bizley/yii2-podium.svg)](https://gitter.im/bizley/yii2-podium?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat)](http://www.yiiframework.com/)
 [![Latest Stable Version](https://poser.pugx.org/bizley/podium/v/stable)](https://packagist.org/packages/bizley/podium) [![Total Downloads](https://poser.pugx.org/bizley/podium/downloads)](https://packagist.org/packages/bizley/podium) [![Latest Unstable Version](https://poser.pugx.org/bizley/podium/v/unstable)](https://packagist.org/packages/bizley/podium) [![License](https://poser.pugx.org/bizley/podium/license)](https://packagist.org/packages/bizley/podium)
 
