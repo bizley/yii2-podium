@@ -8,9 +8,9 @@
  * @version 0.1 (beta)
  * @license Apache License 2.0
  * 
- * https://github.com/bizley-code/yii2-podium
+ * https://github.com/bizley/yii2-podium
  * Please report all issues at GitHub
- * https://github.com/bizley-code/yii2-podium/issues
+ * https://github.com/bizley/yii2-podium/issues
  * 
  * Podium requires Yii 2
  * http://www.yiiframework.com

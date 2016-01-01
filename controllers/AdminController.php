@@ -233,6 +233,7 @@ class AdminController extends BaseController
                 if ($model->delete()) {
                     Cache::getInstance()->delete('forum.threadscount');
                     Cache::getInstance()->delete('forum.postscount');
+                    Cache::getInstance()->delete('forum.latestposts');
                     Log::info('Category deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Category has been deleted.'));
                 }
@@ -274,6 +275,7 @@ class AdminController extends BaseController
                 if ($model->delete()) {
                     Cache::getInstance()->delete('forum.threadscount');
                     Cache::getInstance()->delete('forum.postscount');
+                    Cache::getInstance()->delete('forum.latestposts');
                     Log::info('Forum deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Forum has been deleted.'));
                 }
@@ -413,7 +415,7 @@ class AdminController extends BaseController
                 else {
                     $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
                 }
-                return $this->redirect(['admin/forums']);
+                return $this->redirect(['admin/forums', 'cid' => $model->category_id]);
             }
 
             return $this->render('forum', [

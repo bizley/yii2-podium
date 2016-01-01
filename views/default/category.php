@@ -7,12 +7,11 @@
  * @since 0.1
  */
 
-use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = Html::encode($this->title);
+$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <?php if (!Yii::$app->user->isGuest): ?>

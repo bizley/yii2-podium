@@ -37,7 +37,7 @@ elseif ($rating < 0) {
 $loggedId = User::loggedId();
 
 ?>
-<div class="row" id="post<?= $model->id ?>">
+<div class="row podium-post" id="post<?= $model->id ?>">
     <div class="col-sm-2 text-center" id="postAvatar<?= $model->id ?>">
         <?= Avatar::widget(['author' => $model->author, 'showName' => false]) ?>
     </div>
@@ -64,6 +64,11 @@ $loggedId = User::loggedId();
                 <a href="<?= Url::to(['default/thread', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'id' => $model->thread_id, 'slug' => $model->thread->slug]) ?>"><span class="glyphicon glyphicon-comment"></span> <?= Html::encode($model->thread->name) ?></a><br><br>
 <?php endif; ?>
                 <?= $model->content ?>
+<?php if (!empty($model->author->meta->signature)): ?>
+                <div class="podium-footer small text-muted">
+                    <hr><?= $model->author->meta->signature ?>
+                </div>
+<?php endif; ?>
                 <div class="podium-action-bar">
                     <?= Html::beginForm(['default/post', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id], 'post', ['class' => 'quick-quote-form']); ?>
                         <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>

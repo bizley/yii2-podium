@@ -15,6 +15,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -68,7 +69,9 @@ class Post extends ActiveRecord
     {
         return [
             ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
-            ['topic', 'validateTopic', 'on' => ['firstPost']],
+            ['topic', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process(Html::encode($value));
+            }, 'on' => ['firstPost']],
             ['subscribe', 'boolean'],
             ['content', 'required'],
             ['content', 'filter', 'filter' => function($value) {
@@ -78,20 +81,6 @@ class Post extends ActiveRecord
         ];
     }
 
-    /**
-     * Validates topic
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
-     */
-    public function validateTopic($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\-\s\p{L}]{1,255}$/u', $this->topic)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, hyphens, underscores and spaces (255 characters max).'));
-            }
-        }
-    }
-    
     /**
      * Author relation.
      * @return User
@@ -133,9 +122,9 @@ class Post extends ActiveRecord
      * @param integer $limit Number of latest posts.
      * @return Post[]
      */
-    public function getLatestPostsForMembers($limit = 5)
+    public static function getLatestPostsForMembers($limit = 5)
     {
-        return self::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
+        return static::find()->orderBy(['created_at' => SORT_DESC])->limit($limit)->all();
     }
     
     /**
@@ -143,9 +132,9 @@ class Post extends ActiveRecord
      * @param integer $limit Number of latest posts.
      * @return Post[]
      */
-    public function getLatestPostsForGuests($limit = 5)
+    public static function getLatestPostsForGuests($limit = 5)
     {
-        return self::find()->joinWith(['forum' => function ($query) {
+        return static::find()->joinWith(['forum' => function ($query) {
             $query->andWhere([Forum::tableName() . '.visible' => 1])->joinWith(['category' => function ($query) {
                 $query->andWhere([Category::tableName() . '.visible' => 1]);
             }]);
@@ -399,14 +388,14 @@ class Post extends ActiveRecord
      * Returns latest post.
      * @return type
      */
-    public function getLatest()
+    public static function getLatest($posts = 5)
     {
         $latest = [];
         
         if (Yii::$app->user->isGuest) {
             $latest = Cache::getInstance()->getElement('forum.latestposts', 'guest');
             if ($latest === false) {
-                $posts = $this->getLatestPostsForGuests(5);
+                $posts = static::getLatestPostsForGuests($posts);
                 foreach ($posts as $post) {
                     $latest[] = [
                         'id'      => $post->id,
@@ -421,7 +410,7 @@ class Post extends ActiveRecord
         else {
             $latest = Cache::getInstance()->getElement('forum.latestposts', 'member');
             if ($latest === false) {
-                $posts = $this->getLatestPostsForMembers(5);
+                $posts = static::getLatestPostsForMembers($posts);
                 foreach ($posts as $post) {
                     $latest[] = [
                         'id'      => $post->id,

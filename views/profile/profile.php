@@ -20,23 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-3">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'profile']) ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-body">
-<?php if (!empty($model->meta->gravatar)): ?>
-                <?= Gravatar::widget([
-                    'email'        => $model->email,
-                    'defaultImage' => 'identicon',
-                    'rating'       => 'r',
-                    'options'      => [
-                        'alt'   => Html::encode($model->podiumName),
-                        'class' => 'podium-avatar img-circle img-responsive pull-right',
-                ]]); ?>
-<?php elseif (!empty($model->meta->avatar)): ?>
-                <img class="podium-avatar img-circle img-responsive pull-right" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Html::encode($model->podiumName) ?>">
-<?php else: ?>
-                <img class="podium-avatar img-circle img-responsive pull-right" src="<?= Helper::defaultAvatar() ?>" alt="<?= Html::encode($model->podiumName) ?>">
-<?php endif; ?>
                 <h2>
                     <?= Html::encode($model->podiumName) ?> 
                     <small>
@@ -58,5 +44,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 </ul>
             </div>
         </div>
+    </div>
+    <div class="col-sm-3">
+<?php if (!empty($model->meta->gravatar)): ?>
+        <?= Gravatar::widget([
+            'email'        => $model->email,
+            'defaultImage' => 'identicon',
+            'rating'       => 'r',
+            'options'      => [
+                'alt'   => Yii::t('podium/view', 'Your Gravatar image'),
+                'class' => 'img-circle img-responsive',
+            ]]); ?>
+<?php elseif (!empty($model->meta->avatar)): ?>
+        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
+<?php else: ?>
+        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
+<?php endif; ?>
     </div>
 </div><br>

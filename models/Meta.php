@@ -7,9 +7,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -30,6 +30,10 @@ use yii\helpers\HtmlPurifier;
 class Meta extends ActiveRecord
 {
 
+    const MAX_WIDTH  = 165;
+    const MAX_HEIGHT = 165;
+    const MAX_SIZE   = 204800;
+    
     /**
      * @var mixed Avatar image
      */
@@ -57,27 +61,16 @@ class Meta extends ActiveRecord
     public function rules()
     {
         return [
-            ['location', 'trim'],        
-            ['location', 'validateLocation'],            
+            [['location', 'signature'], 'trim'],        
+            ['location', 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process(Html::encode($value));
+            }],            
             ['gravatar', 'boolean'],
-            ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => 500, 'maxHeight' => 500, 'maxSize' => 500 * 1024],
+            ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => self::MAX_WIDTH, 'maxHeight' => self::MAX_HEIGHT, 'maxSize' => self::MAX_SIZE],
             ['signature', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig('minimal'));
             }],
+            ['signature', 'string', 'max' => 512],
         ];
-    }
-
-    /**
-     * Validates location
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
-     */
-    public function validateLocation($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\s\p{L}]{0,32}$/u', $this->location)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Location must contain only letters, digits, underscores and spaces (32 characters max).'));
-            }
-        }
     }
 }

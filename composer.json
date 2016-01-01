@@ -2,10 +2,12 @@
     "name": "bizley/podium",
     "type": "yii2-extension",
     "description": "Yii 2 Forum Module.",
-    "keywords": ["forum", "yii2", "extension", "podium"],
+    "keywords": ["forum", "yii2", "extension", "podium", "module", "bootstrap", "bizley"],
     "license": "Apache License 2.0",
     "support": {
-        "source": "https://github.com/bizley-code/yii2-podium"
+        "issues": "https://github.com/bizley/yii2-podium/issues",
+        "wiki": "https://github.com/bizley/yii2-podium/wiki",
+        "source": "https://github.com/bizley/yii2-podium"
     },
     "authors": [
         {
@@ -21,8 +23,8 @@
         "kartik-v/yii2-sortable": "*",
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-datepicker": "*",
-        "zelenin/yii2-rss": "~0.1",
-        "zelenin/yii2-slug-behavior": "~1.0@stable"
+        "zelenin/yii2-rss": "*",
+        "zelenin/yii2-slug-behavior": "*"
     },
     "autoload": {
         "psr-4": {

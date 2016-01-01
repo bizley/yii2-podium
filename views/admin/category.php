@@ -40,13 +40,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->textInput([
-                                'data-container' => 'body',
-                                'data-toggle'    => 'popover',
-                                'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'),
-                                'data-trigger'   => 'focus'
-                            ])->label(Yii::t('podium/view', "Category's Name")) ?>
+                            <?= $form->field($model, 'name')->label(Yii::t('podium/view', "Category's Name")) ?>
                         </div>
                     </div>
                     <div class="row">
@@ -62,7 +56,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                                 'data-container' => 'body',
                                 'data-toggle'    => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', 'Meta keywords (leave empty to get global value).'),
+                                'data-content'   => Yii::t('podium/view', 'Meta keywords (comma separated, leave empty to get global value).'),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', "Category's Meta Keywords")) ?>
                         </div>

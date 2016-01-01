@@ -12,7 +12,7 @@ use yii\helpers\Html;
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
 ?>
-<div class="row" id="post<?= $model->id ?>">
+<div class="row podium-post" id="post<?= $model->id ?>">
     <div class="col-sm-2" id="postAvatar<?= $model->id ?>">
         <?= Html::checkbox('post[]', false, ['value' => $model->id, 'label' => Yii::t('podium/view', 'Select this post')]) ?>
     </div>

@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
+use bizley\podium\models\Meta;
 use bizley\quill\Quill;
 use cebe\gravatar\Gravatar;
 use kartik\file\FileInput;
@@ -49,8 +50,8 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                         <div class="col-sm-12">
                             <?= $form->field($model, 'image')->label(Yii::t('podium/view', 'Or upload your own avatar'))->widget(FileInput::className(), [
                                 'options'       => ['accept' => 'image/*'],
-                                'pluginOptions' => ['allowedFileExtensions' => ['jpg', 'jpeg', 'gif', 'png']]]) ?>
-                            <small><?= Yii::t('podium/view', 'Maximum size is {size}, {width} x {height} pixels, png, jpg and gif images only.', ['size' => '500kB', 'width' => 500, 'height' => 500]) ?></small>
+                                'pluginOptions' => ['allowedFileExtensions' => ['jpg', 'jpeg', 'gif', 'png']]
+                            ])->hint(Yii::t('podium/view', 'Square avatars look best.') . '<br>' . Yii::t('podium/view', 'Maximum size is {size}, {width}x{height} pixels; png, jpg and gif images only.', ['size' => ceil(Meta::MAX_SIZE / 1024) . 'kB', 'width' => Meta::MAX_WIDTH, 'height' => Meta::MAX_HEIGHT])) ?>
                         </div>
                     </div>
                 </div>

@@ -9,13 +9,12 @@
 
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
-use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = Html::encode($this->title);
+$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
+$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <?php if (!Yii::$app->user->isGuest): ?>

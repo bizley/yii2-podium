@@ -20,9 +20,9 @@ use yii\widgets\Pjax;
 
 $this->title = $thread->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => Html::encode($category->name), 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = ['label' => Html::encode($forum->name), 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
-$this->params['breadcrumbs'][] = Html::encode($this->title);
+$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
+$this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 $this->registerJs("$('.add-subscription').click(function (e) { e.preventDefault(); $.post('" . Url::to(['profile/add', 'id' => $thread->id]) . "', {}, null, 'json').fail(function(){ console.log('Subscription Add Error!'); }).done(function(data){ $('#subsription-status').html(data.msg); }); });");

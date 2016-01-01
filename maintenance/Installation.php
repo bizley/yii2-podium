@@ -785,7 +785,7 @@ class Installation extends Maintenance
                     'id'         => Schema::TYPE_PK,
                     'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
                     'location'   => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'signature'  => Schema::TYPE_STRING . ' NOT NULL',
+                    'signature'  => Schema::TYPE_STRING . '(512) NOT NULL',
                     'gravatar'   => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'avatar'     => Schema::TYPE_STRING,
                     'created_at' => Schema::TYPE_INTEGER . ' NOT NULL',

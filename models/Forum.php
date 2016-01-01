@@ -7,11 +7,12 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 use Zelenin\yii\behaviors\Slug;
 
 /**
@@ -65,7 +66,9 @@ class Forum extends ActiveRecord
         return [
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
-            [['name', 'sub'], 'validateName'],
+            [['name', 'sub'], 'filter', 'filter' => function($value) {
+                return HtmlPurifier::process(Html::encode($value));
+            }],
             [['keywords', 'description'], 'string'],
         ];
     }
@@ -153,19 +156,5 @@ class Forum extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider;
-    }
-    
-    /**
-     * Validates name
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
-     */
-    public function validateName($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\w\s\p{L}]{1,255}$/u', $this->$attribute)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Name must contain only letters, digits, underscores and spaces (255 characters max).'));
-            }
-        }
     }
 }

@@ -651,10 +651,7 @@ class DefaultController extends BaseController
     {
         $this->setMetaTags();
         
-        return $this->render('index', [
-            'dataProvider' => (new Category)->search(),
-            'latest'       => (new Post)->getLatest(),
-        ]);
+        return $this->render('index', ['dataProvider' => (new Category)->search()]);
     }
     
     /**
