@@ -5,7 +5,7 @@
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
- * @version 0.1 (beta)
+ * @version 0.2 (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -119,7 +119,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * @var string Module version
      */
-    protected $_version = '0.1';
+    protected $_version = '0.2';
 
     /**
      * Registers user activity after every action.
@@ -133,7 +133,7 @@ class Module extends BaseModule implements BootstrapInterface
     {
         $parentResult = parent::afterAction($action, $result);
 
-        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'upgrade'])) {
+        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'level-up'])) {
             Activity::add();
         }
 
@@ -180,11 +180,13 @@ class Module extends BaseModule implements BootstrapInterface
                         'home'                                                          => 'default/index',
                         'install'                                                       => 'install/run',
                         'last/<id:\d+>'                                                 => 'default/last',
+                        'level-up'                                                      => 'install/level-up',
                         'lock/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'              => 'default/lock',
                         'login'                                                         => 'account/login',
                         'logout'                                                        => 'profile/logout',
                         'maintenance'                                                   => 'default/maintenance',
                         'mark-seen'                                                     => 'default/mark-seen',
+                        'members/friend/<id:\d+>'                                       => 'members/friend',
                         'members/posts/<id:\d+>/<slug:[\w\-]+>'                         => 'members/posts',
                         'members/threads/<id:\d+>/<slug:[\w\-]+>'                       => 'members/threads',
                         'members/view/<id:\d+>/<slug:[\w\-]+>'                          => 'members/view',
@@ -217,7 +219,6 @@ class Module extends BaseModule implements BootstrapInterface
                         'show/<id:\d+>'                                                 => 'default/show',
                         'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'            => 'default/thread',
                         'unread-posts'                                                  => 'default/unread-posts',
-                        'upgrade'                                                       => 'install/upgrade',
                     ],
                 ])], false);
 

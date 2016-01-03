@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\controllers;
 
+use bizley\podium\components\Helper;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
 use bizley\podium\Module as PodiumModule;
@@ -128,22 +129,30 @@ class InstallController extends Controller
     /**
      * Running the upgrade.
      * @return string
+     * @deprecated since 0.2
      */
     public function actionUpgrade()
+    {
+        return $this->actionLevelUp();
+    }
+    
+    /**
+     * Running the upgrade.
+     * @return string
+     * @since 0.2
+     */
+    public function actionLevelUp()
     {
         $error = '';
         $info  = '';
         
         $mdVersion = $this->module->version;
-        $extractMd = explode('.', $mdVersion);
         $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
         if (!isset($dbVersion['value'])) {
             $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
         }
         else {
-            $extractDb = explode('.', $dbVersion['value']);
-            
-            $result = $this->compareVersions($extractMd, $extractDb);
+            $result = Helper::compareVersions(explode('.', $mdVersion), explode('.', $dbVersion['value']));
             if ($result == '=') {
                 $info = Yii::t('podium/flash', 'Module and database versions are the same!');
             }
@@ -152,33 +161,6 @@ class InstallController extends Controller
             }
         }
         
-        return $this->render('upgrade', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
-    }
-    
-    /**
-     * Comparing versions.
-     * @param array $a
-     * @param array $b
-     * @return string
-     */
-    public function compareVersions($a, $b)
-    {
-        $versionPos = max(count($a), count($b));
-        while (count($a) < $versionPos) {
-            $a[] = 0;
-        }
-        while (count($b) < $versionPos) {
-            $b[] = 0;
-        }
-        
-        for ($v = 0; $v < count($a); $v++) {
-            if ((int)$a[$v] < (int)$b[$v]) {
-                return '<';
-            }
-            elseif ((int)$a[$v] > (int)$b[$v]) {
-                return '>';
-            }
-        }
-        return '=';
+        return $this->render('level-up', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
     }
 }

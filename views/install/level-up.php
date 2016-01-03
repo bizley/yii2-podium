@@ -10,7 +10,7 @@
 use yii\bootstrap\Progress;
 use yii\helpers\Url;
 
-$this->title = Yii::t('podium/view', 'Podium Upgrade');
+$this->title = Yii::t('podium/view', 'Podium update');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Installation'), 'url' => ['install/run']];
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
@@ -22,14 +22,23 @@ $this->registerJs("var nextStep = function(step, version) { $.ajax({url: '" . Ur
     <div class="text-center col-sm-12">
 <?php if ($error == '' && $info == ''): ?>
         <em><?= Yii::t('podium/view', 'Podium will attempt to update all database tables to the current version.') ?></em><br>
-        <em><strong><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
-        <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Upgrade Podium Database') ?></button><br><br>
+        <em><strong class="text-danger"><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
+        <div class="alert alert-danger">
+            <span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Seriously - back up your existing database first!') ?><br>
+            <?= Yii::t('podium/view', 'Podium does its best to make sure your data is not corrupted but make a database copy just in case.') ?><br>
+            <?= Yii::t('podium/view', 'You have been warned!') ?>*
+        </div>
+        <button id="installPodium" class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Upgrade Podium Database') ?></button><br><br>
 <?php elseif ($error != ''): ?>
         <div class="alert alert-danger"><?= $error ?></div>
 <?php elseif ($info != ''): ?>
         <div class="alert alert-success"><?= $info ?></div>
 <?php endif; ?>
         <?= Yii::t('podium/view', 'Current database version') ?> <kbd><?= $dbVersion ?></kbd> <span class="glyphicon glyphicon-transfer"></span> <kbd><?= $currentVersion ?></kbd> <?= Yii::t('podium/view', 'Current module version') ?>
+<?php if ($info == ''): ?>
+        <br><br>
+        <small>* <?= Yii::t('podium/view', 'Podium cannot be held liable for any database damages that may result directly or indirectly from the updating process. Back up your data first!') ?></small>
+<?php endif; ?>
     </div>
 </div>
 <div class="row hide" id="installationResults">
@@ -51,7 +60,7 @@ $this->registerJs("var nextStep = function(step, version) { $.ajax({url: '" . Ur
     </div>
     <div class="row hide" id="installationFinishedError">
         <div class="text-center col-sm-12">
-            <button class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Errors during installation') ?></button>
+            <button class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Errors during update') ?></button>
         </div>
     </div><br>
     <div class="col-sm-8 col-sm-offset-2" id="installationProgress">

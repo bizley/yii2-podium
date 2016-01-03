@@ -744,4 +744,32 @@ class Helper
     {
         return $title . ' - ' . Config::getInstance()->get('name');
     }
+    
+    /**
+     * Comparing versions.
+     * @param array $a
+     * @param array $b
+     * @return string
+     * @since 0.2
+     */
+    public static function compareVersions($a, $b)
+    {
+        $versionPos = max(count($a), count($b));
+        while (count($a) < $versionPos) {
+            $a[] = 0;
+        }
+        while (count($b) < $versionPos) {
+            $b[] = 0;
+        }
+        
+        for ($v = 0; $v < count($a); $v++) {
+            if ((int)$a[$v] < (int)$b[$v]) {
+                return '<';
+            }
+            elseif ((int)$a[$v] > (int)$b[$v]) {
+                return '>';
+            }
+        }
+        return '=';
+    }
 }

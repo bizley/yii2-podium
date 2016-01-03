@@ -23,7 +23,7 @@ use yii\db\Query;
 class Config
 {
     
-    const CURRENT_VERSION                     = '0.1';
+    const CURRENT_VERSION                     = '0.2';
     const DEFAULT_FROM_EMAIL                  = 'no-reply@change.me';
     const DEFAULT_FROM_NAME                   = 'Podium';
     const FLAG_USE_CAPTCHA                    = 1;

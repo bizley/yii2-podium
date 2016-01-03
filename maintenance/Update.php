@@ -6,8 +6,12 @@
  */
 namespace bizley\podium\maintenance;
 
+use bizley\podium\components\Cache;
+use bizley\podium\components\Config;
 use Exception;
 use Yii;
+use yii\db\Schema;
+use yii\helpers\Html;
 
 /**
  * Podium Update
@@ -116,6 +120,7 @@ class Update extends Maintenance
                 $this->setPercent(100);
             }
             else {
+                //Cache::getInstance()->flush();
                 $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
                 $this->_proceedStep($this->getPartSteps()[(int)$step]);
             }
@@ -209,12 +214,69 @@ class Update extends Maintenance
     }
     
     /**
+     * Updates database version number.
+     * @param array $data
+     * @return string result message.
+     * @since 0.2
+     */
+    protected function _updateVersion($data)
+    {
+        try {
+            if (empty($data['version'])) {
+                throw new Exception(Yii::t('podium/flash', 'Version number missing.'));
+            }
+            Config::getInstance()->set('version', $data['version']);
+            Cache::getInstance()->flush();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Database version has been updated to {version}.', ['version' => $data['version']]));
+        }
+        catch (Exception $e) {
+            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            $this->setError(true);
+            return $this->outputDanger(Yii::t('podium/flash', 'Error during version updating') . ': ' .
+                            Html::tag('pre', $e->getMessage()));
+        }
+    }
+    
+    /**
      * Installation steps.
      */
     public static function steps()
     {
         return [
-            '0.1' => []
+            '0.2' => [
+                [
+                    'table'  => 'user_friend',
+                    'call'   => 'create',
+                    'schema' => [
+                        'id'        => Schema::TYPE_PK,
+                        'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                        'friend_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                    ],
+                ],
+                [
+                    'table'  => 'user_friend',
+                    'call'   => 'foreign',
+                    'key'    => 'user_id',
+                    'ref'    => 'user',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+                [
+                    'table'  => 'user_friend',
+                    'call'   => 'foreign',
+                    'key'    => 'friend_id',
+                    'ref'    => 'user',
+                    'col'    => 'id',
+                    'delete' => 'CASCADE',
+                    'update' => 'CASCADE',
+                ],
+                [
+                    'table'   => 'config',
+                    'call'    => 'updateVersion',
+                    'version' => '0.2'
+                ]
+            ]
         ];
     }
 }
