@@ -174,38 +174,54 @@ class MessagesController extends BaseController
                 $validated    = [];
                 $errors       = false;
                 
-                foreach ($model->receiversId as $r) {
-                    if ($r == $podiumUser->id) {
-                        $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
-                        $errors = true;
-                    }
-                    elseif ($podiumUser->isIgnoredBy($r)) {
-                        $this->addError('receiver_id', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
-                        $errors = true;
-                    }
-                    else {
-                        $member = User::find()->where(['id' => (int)$r, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
-                        if ($member) {
-                            $validated[] = $member->id;
-                            if (count($validated) > Message::MAX_RECEIVERS) {
-                                $this->addError('receiver_id', Yii::t('podium/view', 'You can send message up to a maximum of 10 receivers at once.'));
-                                $errors = true;
-                                break;
+                if (!empty($model->friendsId)) {
+                    $model->receiversId = array_merge(
+                            is_array($model->receiversId) ? $model->receiversId : [], 
+                            is_array($model->friendsId) ? $model->friendsId : []
+                        );
+                }
+                
+                if (empty($model->receiversId)) {
+                    $this->addError('receiver_id', Yii::t('podium/view', 'You have to select at least one message receiver.'));
+                    $errors = true;
+                }
+                else {
+                    foreach ($model->receiversId as $r) {
+                        if ($r == $podiumUser->id) {
+                            $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
+                            $errors = true;
+                        }
+                        elseif ($podiumUser->isIgnoredBy($r)) {
+                            $this->addError('receiver_id', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
+                            $errors = true;
+                        }
+                        else {
+                            $member = User::find()->where(['id' => (int)$r, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
+                            if ($member) {
+                                $validated[] = $member->id;
+                                if (count($validated) > Message::MAX_RECEIVERS) {
+                                    $this->addError('receiver_id', Yii::t('podium/view', 'You can send message up to a maximum of 10 receivers at once.'));
+                                    $errors = true;
+                                    break;
+                                }
                             }
                         }
                     }
+                    $model->receiversId = $validated;
                 }
-                $model->receiversId = $validated;
                 if (!$errors) {
                     if ($model->send()) {
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                         return $this->redirect(['messages/inbox']);
                     }
+                    else {
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
+                    }
                 }
             }
         }
         
-        return $this->render('new', ['model' => $model, 'to' => $to]);
+        return $this->render('new', ['model' => $model, 'to' => $to, 'friends' => User::friendsList()]);
     }
     
     /**
@@ -236,6 +252,9 @@ class MessagesController extends BaseController
                         if ($model->send()) {
                             $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                             return $this->redirect(['messages/inbox']);
+                        }
+                        else {
+                            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
                         }
                     }
                     else {

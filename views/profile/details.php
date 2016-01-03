@@ -49,6 +49,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                             <?= $form->field($model, 'timezone')->widget(Select2::classname(), [
                                 'data'          => Helper::timeZones(),
                                 'theme'         => Select2::THEME_KRAJEE,
+                                'showToggleAll' => false,
                                 'options'       => ['placeholder' => Yii::t('podium/view', 'Select your time zone for proper dates display...')],
                                 'pluginOptions' => [
                                     'allowClear' => true

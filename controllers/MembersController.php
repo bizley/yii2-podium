@@ -133,6 +133,7 @@ class MembersController extends BaseController
 
                 if (empty($model)) {
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
+                    return $this->redirect(['members/index']);
                 }
                 elseif ($model->id == User::loggedId()) {
                     $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore your own account.'));
@@ -152,14 +153,16 @@ class MembersController extends BaseController
                         $this->success(Yii::t('podium/flash', 'User has been ignored.'));
                     }
                 }
+                return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
             }
             catch (Exception $e) {
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
                 Log::error($e->getMessage(), null, __METHOD__);
+                return $this->redirect(['members/index']);
             }
         }
         
-        return $this->redirect(['members/index']);
+        return $this->redirect(['default/index']);
     }
 
     /**
@@ -254,5 +257,49 @@ class MembersController extends BaseController
         }
         
         return $this->render('view', ['model' => $model]);
+    }
+    
+    /**
+     * Adding or removing user as a friend.
+     * @param integer $id user ID
+     * @return \yii\web\Response
+     * @since 0.2
+     */
+    public function actionFriend($id = null)
+    {
+        if (!Yii::$app->user->isGuest) {
+            try {
+                $model = User::find()->where(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]])->limit(1)->one();
+
+                if (empty($model)) {
+                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
+                    return $this->redirect(['members/index']);
+                }
+                elseif ($model->id == User::loggedId()) {
+                    $this->error(Yii::t('podium/flash', 'Sorry! You can not befriend your own account.'));
+                }
+                else {
+                    if ($model->isBefriendedBy(User::loggedId())) {
+                        Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', 'user_id = :uid AND friend_id = :iid', [':uid' => User::loggedId(), ':iid' => $model->id])->execute();
+                        Log::info('User unfriended', !empty($model->id) ? $model->id : '', __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'User has been unfriended.'));                    
+                    }
+                    else {
+                        Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => User::loggedId(), 'friend_id' => $model->id])->execute();
+                        Log::info('User befriended', !empty($model->id) ? $model->id : '', __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'User has been befriended.'));
+                    }
+                    Cache::getInstance()->deleteElement('user.friends', $this->id);
+                }
+                return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
+            }
+            catch (Exception $e) {
+                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
+                Log::error($e->getMessage(), null, __METHOD__);
+                return $this->redirect(['members/index']);
+            }
+        }
+        
+        return $this->redirect(['default/index']);
     }
 }

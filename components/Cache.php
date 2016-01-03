@@ -29,6 +29,7 @@ use yii\widgets\FragmentCache;
  * forum.threadscount => number of forum threads
  * forum.postscount   => number of forum posts
  * members.fieldlist  => list of active users w/pages
+ * user.friends       => list of users' friends
  * user.newmessages   => list of users' new messages count
  * user.postscount    => list of users' posts count
  * user.subscriptions => list of users' subscribed threads with new posts count

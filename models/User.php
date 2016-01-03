@@ -416,6 +416,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
+     * Friends relation.
+     * @return \yii\db\ActiveQuery
+     * @since 0.2
+     */
+    public function getFriends()
+    {
+        return $this->hasMany(User::className(), ['id' => 'friend_id'])->viaTable('{{%podium_user_friend}}', ['user_id' => 'id']);
+    }
+    
+    /**
      * Meta relation.
      * @return \yii\db\ActiveQuery
      */
@@ -628,6 +638,34 @@ class User extends ActiveRecord implements IdentityInterface
         $parts     = explode('_', $token);
         $timestamp = (int)end($parts);
         return $timestamp + (int)$expire >= time();
+    }
+    
+    /**
+     * Finds out if user is befriended by another.
+     * @param integer $user_id user ID
+     * @return boolean
+     * @since 0.2
+     */
+    public function isBefriendedBy($user_id)
+    {
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where(['user_id' => $user_id, 'friend_id' => $this->id])->exists()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Finds out if user is befriending another.
+     * @param integer $user_id user ID
+     * @return boolean
+     * @since 0.2
+     */
+    public function isFriendOf($user_id)
+    {
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where(['user_id' => $this->id, 'friend_id' => $user_id])->exists()) {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -899,5 +937,29 @@ class User extends ActiveRecord implements IdentityInterface
         else {
             return Yii::$app->user->can($permissionName, $params, $allowCaching);
         }
+    }
+    
+    /**
+     * Returns list of friends for dropdown.
+     * @return array
+     * @since 0.2
+     */
+    public static function friendsList()
+    {
+        if (!Yii::$app->user->isGuest) {
+            $cache = Cache::getInstance()->getElement('user.friends', static::loggedId());
+            if ($cache === false) {
+                $cache = [];
+                $friends = static::findMe()->friends;
+                if ($friends) {
+                    foreach ($friends as $friend) {
+                        $cache[$friend->id] = $friend->getPodiumTag(true);
+                    }
+                }
+                Cache::getInstance()->setElement('user.friends', static::loggedId(), $cache);
+            }
+            return $cache;
+        }
+        return null;
     }
 }

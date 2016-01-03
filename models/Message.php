@@ -48,6 +48,12 @@ class Message extends ActiveRecord
     public $receiversId;
     
     /**
+     * @var integer[] Friends' IDs.
+     * @since 0.2
+     */
+    public $friendsId;
+    
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -83,8 +89,8 @@ class Message extends ActiveRecord
     public function rules()
     {
         return [
-            [['receiversId', 'topic', 'content'], 'required'],
-            ['receiversId', 'each', 'rule' => ['integer', 'min' => 1]],
+            [['topic', 'content'], 'required'],
+            [['receiversId', 'friendsId'], 'each', 'rule' => ['integer', 'min' => 1]],
             ['sender_status', 'in', 'range' => self::getStatuses()],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {

@@ -24,6 +24,11 @@ if (!Yii::$app->user->isGuest) {
 }
 
 $loggedId = User::loggedId();
+$ignored = $friend = false;
+if (!Yii::$app->user->isGuest) {
+    $ignored = $model->isIgnoredBy($loggedId);
+    $friend  = $model->isBefriendedBy($loggedId);
+}
 
 ?>
 <ul class="nav nav-tabs">
@@ -44,7 +49,12 @@ $loggedId = User::loggedId();
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-envelope"></span></a>
 <?php endif; ?>
 <?php if ($model->id !== $loggedId && $model->role !== User::ROLE_ADMIN): ?>
-<?php if (!$model->isIgnoredBy($loggedId)): ?>
+<?php if (!$friend): ?>
+                    <a href="<?= Url::to(['members/friend', 'id' => $model->id]) ?>" class="btn btn-success btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Add as a Friend') ?>"><span class="glyphicon glyphicon-plus-sign"></span></a>
+<?php else: ?>
+                    <a href="<?= Url::to(['members/friend', 'id' => $model->id]) ?>" class="btn btn-warning btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Remove Friend') ?>"><span class="glyphicon glyphicon-minus-sign"></span></a>
+<?php endif; ?>
+<?php if (!$ignored): ?>
                     <span data-toggle="modal" data-target="#podiumModalIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->id]) ?>"><button class="btn btn-danger btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Ignore Member') ?>"><span class="glyphicon glyphicon-ban-circle"></span></button></span>
 <?php else: ?>
                     <span data-toggle="modal" data-target="#podiumModalUnIgnore" data-url="<?= Url::to(['members/ignore', 'id' => $model->id]) ?>"><button class="btn btn-success btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Unignore Member') ?>"><span class="glyphicon glyphicon-ok-circle"></span></button></span>
@@ -53,8 +63,11 @@ $loggedId = User::loggedId();
                     <a href="#" class="btn btn-lg disabled text-muted"><span class="glyphicon glyphicon-ban-circle"></span></a>
 <?php endif; ?>
                 </div>
-<?php if ($model->isIgnoredBy($loggedId)): ?>
+<?php if ($ignored): ?>
                 <h4 class="text-danger"><?= Yii::t('podium/view', 'You are ignoring this user.') ?></h4>
+<?php endif; ?>
+<?php if ($friend): ?>
+                <h4 class="text-success"><?= Yii::t('podium/view', 'You are friends with this user.') ?></h4>
 <?php endif; ?>
 <?php endif; ?>
                 <h2>

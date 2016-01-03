@@ -829,6 +829,33 @@ class Installation extends Maintenance
                 'update' => 'CASCADE',
             ],
             [
+                'table'  => 'user_friend',
+                'call'   => 'create',
+                'schema' => [
+                    'id'        => Schema::TYPE_PK,
+                    'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
+                    'friend_id' => Schema::TYPE_INTEGER . ' NOT NULL',
+                ],
+            ],
+            [
+                'table'  => 'user_friend',
+                'call'   => 'foreign',
+                'key'    => 'user_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
+                'table'  => 'user_friend',
+                'call'   => 'foreign',
+                'key'    => 'friend_id',
+                'ref'    => 'user',
+                'col'    => 'id',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ],
+            [
                 'table'  => 'user_activity',
                 'call'   => 'create',
                 'schema' => [

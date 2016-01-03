@@ -31,11 +31,35 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
+<?php if (!empty($to)): ?>
                 <div class="col-sm-9">
-<?php if (empty($to)): ?>                   
+                    <p class="form-control-static"><?= $to->getPodiumTag(true) ?></p>
+                    <?= $form->field($model, 'receiversId[]')->hiddenInput(['value' => $model->receiversId[0]])->label(false) ?>
+                </div>
+<?php else: ?>
+<?php if (!empty($friends)): ?>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'friendsId[]')->widget(Select2::classname(), [
+                            'options'       => ['placeholder' => Yii::t('podium/view', 'Select a friend...')],
+                            'theme'         => Select2::THEME_KRAJEE,
+                            'showToggleAll' => false,
+                            'data'          => $friends,
+                            'pluginOptions' => [
+                                'allowClear'   => true,
+                                'multiple'     => true,
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            ],
+                        ])->label(false); ?>
+                </div>
+                <div class="col-sm-1"><p class="form-control-static"><?= Yii::t('podium/view', 'and/or') ?></p></div>
+                <div class="col-sm-4">
+<?php else: ?>
+                <div class="col-sm-9">
+<?php endif; ?>
                     <?= $form->field($model, 'receiversId[]')->widget(Select2::classname(), [
                             'options'       => ['placeholder' => Yii::t('podium/view', 'Select a member...')],
                             'theme'         => Select2::THEME_KRAJEE,
+                            'showToggleAll' => false,
                             'pluginOptions' => [
                                 'allowClear'         => true,
                                 'multiple'           => true,
@@ -48,11 +72,8 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
                                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                             ],
                         ])->label(false); ?>
-<?php else: ?>                    
-                    <p class="form-control-static"><?= $to->getPodiumTag(true) ?></p>
-                    <?= $form->field($model, 'receiversId[]')->hiddenInput(['value' => $model->receiversId[0]])->label(false) ?>
-<?php endif; ?>
                 </div>
+<?php endif; ?>
             </div>
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
