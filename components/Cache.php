@@ -97,11 +97,28 @@ class Cache
         }
     }
     
-    public static function clearAfterActivate()
+    /**
+     * Clears several elements at once.
+     * @param string $what action identifier
+     * @since 0.2
+     */
+    public static function clearAfter($what)
     {
         $cache = static::getInstance();
-        $cache->delete('members.fieldlist');
-        $cache->delete('forum.memberscount');
+        
+        switch ($what) {
+            case 'activate':
+                $cache->delete('members.fieldlist');
+                $cache->delete('forum.memberscount');
+                break;
+            case 'threadDelete':
+            case 'postDelete':
+                $cache->delete('forum.threadscount');
+                $cache->delete('forum.postscount');
+                $cache->delete('user.threadscount');
+                $cache->delete('user.postscount');
+                break;
+        }
     }
     
     /**

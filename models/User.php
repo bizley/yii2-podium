@@ -9,7 +9,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
-use bizley\podium\components\UserQuery;
+use bizley\podium\db\UserQuery;
 use bizley\podium\log\Log;
 use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\Rbac;

@@ -425,4 +425,61 @@ class Post extends ActiveRecord
         
         return $latest;
     }
+    
+    /**
+     * Returns the verified post.
+     * @param integer $category_id post's category ID
+     * @param integer $forum_id post's forum ID
+     * @param integer $thread_id post's thread ID
+     * @param integer $id post's ID
+     * @return Post
+     * @since 0.2
+     */
+    public static function verify($category_id = null, $forum_id = null, $thread_id = null, $id = null)
+    {
+        if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($forum_id) || $forum_id < 1 || !is_numeric($thread_id) || $thread_id < 1 || !is_numeric($id) || $id < 1) {
+            return false;
+        }
+        
+        return static::find()->joinWith(['thread', 'forum' => function ($query) use ($category_id) {
+                $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $category_id]);
+            }])->where([
+                    static::tableName() . '.id'        => $id, 
+                    static::tableName() . '.thread_id' => $thread_id,
+                    static::tableName() . '.forum_id'  => $forum_id,
+                ])->limit(1)->one();
+    }
+    
+    /**
+     * Performs post delete with parent forum and thread counters update.
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumDelete()
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if ($this->delete()) {
+                $wholeThread = false;
+                if ($this->thread->postsCount) {
+                    $this->thread->updateCounters(['posts' => -1]);
+                    $this->forum->updateCounters(['posts' => -1]);
+                }
+                else {
+                    $wholeThread = true;
+                    $this->thread->delete();
+                    $this->forum->updateCounters(['posts' => -1, 'threads' => -1]);
+                }
+                $transaction->commit();
+                Cache::clearAfter('postDelete');
+                Log::info('Post deleted', !empty($this->id) ? $this->id : '', __METHOD__);
+                return true;
+            }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
 }

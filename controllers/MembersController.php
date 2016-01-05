@@ -31,32 +31,29 @@ class MembersController extends BaseController
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'access' => [
-                    'class'        => AccessControl::className(),
-                    'denyCallback' => function ($rule, $action) {
-                        return $this->redirect(['account/login']);
-                    },
-                    'rules'  => [
-                        [
-                            'allow'         => false,
-                            'matchCallback' => function ($rule, $action) {
-                                return !$this->module->getInstalled();
-                            },
-                            'denyCallback' => function ($rule, $action) {
-                                return $this->redirect(['install/run']);
-                            }
-                        ],
-                        [
-                            'allow' => true,
-                            'roles' => Config::getInstance()->get('members_visible') ? ['@', '?'] : ['@'],
-                        ],
+        return [
+            'access' => [
+                'class'        => AccessControl::className(),
+                'denyCallback' => function ($rule, $action) {
+                    return $this->redirect(['account/login']);
+                },
+                'rules'  => [
+                    [
+                        'allow'         => false,
+                        'matchCallback' => function ($rule, $action) {
+                            return !$this->module->getInstalled();
+                        },
+                        'denyCallback' => function ($rule, $action) {
+                            return $this->redirect(['install/run']);
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => Config::getInstance()->get('members_visible') ? ['@', '?'] : ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**

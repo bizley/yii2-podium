@@ -48,36 +48,33 @@ class AccountController extends BaseController
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'access' => [
-                    'class' => AccessControl::className(),
-                    'denyCallback' => function ($rule, $action) {
-                        return $this->module->goPodium();
-                    },
-                    'rules' => [
-                        [
-                            'allow'         => false,
-                            'matchCallback' => function ($rule, $action) {
-                                return !$this->module->getInstalled();
-                            },
-                            'denyCallback' => function ($rule, $action) {
-                                return $this->redirect(['install/run']);
-                            }
-                        ],
-                        [
-                            'allow' => true,
-                            'actions' => ['new-email']
-                        ],
-                        [
-                            'allow' => true,
-                            'roles' => ['?']
-                        ],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'denyCallback' => function ($rule, $action) {
+                    return $this->module->goPodium();
+                },
+                'rules' => [
+                    [
+                        'allow'         => false,
+                        'matchCallback' => function ($rule, $action) {
+                            return !$this->module->getInstalled();
+                        },
+                        'denyCallback' => function ($rule, $action) {
+                            return $this->redirect(['install/run']);
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['new-email']
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['?']
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
     
     /**
@@ -97,7 +94,7 @@ class AccountController extends BaseController
         if ($model) {
             $model->setScenario('token');
             if ($model->activate()) {
-                Cache::clearAfterActivate();
+                Cache::clearAfter('activate');
                 Log::info('Account activated', $model->id, __METHOD__);
                 $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
             }

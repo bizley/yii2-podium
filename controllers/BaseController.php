@@ -6,7 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\behaviors\FlashBehavior;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
@@ -14,6 +13,7 @@ use bizley\podium\log\Log;
 use bizley\podium\models\User;
 use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\Rbac;
+use bizley\podium\traits\FlashTrait;
 use Exception;
 use Yii;
 use yii\helpers\Html;
@@ -30,13 +30,7 @@ use yii\web\Controller as YiiController;
 class BaseController extends YiiController
 {
     
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [FlashBehavior::className()];
-    }
+    use FlashTrait;
     
     /**
      * Adds warning for maintenance mode.
@@ -180,7 +174,7 @@ class BaseController extends YiiController
                     $new->timezone     = User::DEFAULT_TIMEZONE;
                     if ($new->save()) {
                         $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', ['link' => Html::a(Yii::t('podium/view', 'Profile'))]));
-                        Cache::clearAfterActivate();
+                        Cache::clearAfter('activate');
                         Log::info('Inherited account created', $new->id, __METHOD__);
                     }
                     else {

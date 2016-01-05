@@ -4,20 +4,20 @@
  * Podium Module
  * Yii 2 Forum Module
  */
-namespace bizley\podium\behaviors;
+namespace bizley\podium\traits;
 
 use Yii;
-use yii\base\Behavior;
 
 /**
- * Podium Flash Behavior
+ * Podium Flash Trait
  * Simplifies flash messages adding. Every message is automatically translated.
  * Prepares messages for \bizley\podium\widgets\Alert widget.
+ * Former FlashBehavior.
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
- * @since 0.1
+ * @since 0.2
  */
-class FlashBehavior extends Behavior
+trait FlashTrait
 {
     /**
      * Alias for warning().

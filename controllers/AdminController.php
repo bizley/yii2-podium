@@ -41,29 +41,26 @@ class AdminController extends BaseController
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'access' => [
-                    'class' => AccessControl::className(),
-                    'rules' => [
-                        [
-                            'allow'         => false,
-                            'matchCallback' => function ($rule, $action) {
-                                return !$this->module->getInstalled();
-                            },
-                            'denyCallback' => function ($rule, $action) {
-                                return $this->redirect(['install/run']);
-                            }
-                        ],
-                        [
-                            'allow' => true,
-                            'roles' => [Rbac::ROLE_ADMIN]
-                        ],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow'         => false,
+                        'matchCallback' => function ($rule, $action) {
+                            return !$this->module->getInstalled();
+                        },
+                        'denyCallback' => function ($rule, $action) {
+                            return $this->redirect(['install/run']);
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => [Rbac::ROLE_ADMIN]
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**

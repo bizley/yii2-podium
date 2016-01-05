@@ -6,9 +6,12 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
+use bizley\podium\log\Log;
 use bizley\podium\rbac\Rbac;
+use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
@@ -46,7 +49,14 @@ class Thread extends ActiveRecord
     const ICON_NO_NEW   = 'comment';
     const ICON_PINNED   = 'pushpin';
 
+    /**
+     * @var string attached post's content
+     */
     public $post;
+    
+    /**
+     * @var boolean thread subscription flag
+     */
     public $subscribe;
 
     /**
@@ -105,14 +115,14 @@ class Thread extends ActiveRecord
      * ThreadView relation for user.
      * @return ThreadView
      */
-    public function getView()
+    public function getUserView()
     {
         return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     /**
      * ThreadView relation general.
-     * @return ThreadView
+     * @return ThreadView[]
      */
     public function getThreadView()
     {
@@ -136,6 +146,16 @@ class Thread extends ActiveRecord
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
+
+    /**
+     * Posts count.
+     * @return integer
+     * @since 0.2
+     */
+    public function getPostsCount()
+    {
+        return Post::find()->where(['thread_id' => $this->id])->count('id');
+    }
     
     /**
      * First post relation.
@@ -152,7 +172,7 @@ class Thread extends ActiveRecord
      */
     public function getFirstNewNotSeen()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'created_at', $this->view ? $this->view->new_last_seen : 0])->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'created_at', $this->userView ? $this->userView->new_last_seen : 0])->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -161,7 +181,7 @@ class Thread extends ActiveRecord
      */
     public function getFirstEditedNotSeen()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'edited_at', $this->view ? $this->view->edited_last_seen : 0])->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->where(['>', 'edited_at', $this->userView ? $this->userView->edited_last_seen : 0])->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -296,13 +316,13 @@ class Thread extends ActiveRecord
             $append = true;
         }
 
-        if ($this->view) {
-            if ($this->new_post_at > $this->view->new_last_seen) {
+        if ($this->userView) {
+            if ($this->new_post_at > $this->userView->new_last_seen) {
                 if (!$append) {
                     $icon = self::ICON_NEW;
                 }
             }
-            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+            elseif ($this->edited_post_at > $this->userView->edited_last_seen) {
                 if (!$append) {
                     $icon = self::ICON_NEW;
                 }
@@ -339,8 +359,8 @@ class Thread extends ActiveRecord
             $append      = true;
         }
 
-        if ($this->view) {
-            if ($this->new_post_at > $this->view->new_last_seen) {
+        if ($this->userView) {
+            if ($this->new_post_at > $this->userView->new_last_seen) {
                 if (!$append) {
                     $description = Yii::t('podium/view', 'New Posts');
                 }
@@ -348,7 +368,7 @@ class Thread extends ActiveRecord
                     $description .= ' (' . Yii::t('podium/view', 'New Posts') . ')';
                 }
             }
-            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+            elseif ($this->edited_post_at > $this->userView->edited_last_seen) {
                 if (!$append) {
                     $description = Yii::t('podium/view', 'Edited Posts');
                 }
@@ -373,15 +393,15 @@ class Thread extends ActiveRecord
      * Returns proper CSS class for thread.
      * @return string
      */
-    public function getClass()
+    public function getCssClass()
     {
         $class = self::CLASS_DEFAULT;
 
-        if ($this->view) {
-            if ($this->new_post_at > $this->view->new_last_seen) {
+        if ($this->userView) {
+            if ($this->new_post_at > $this->userView->new_last_seen) {
                 $class = self::CLASS_NEW;
             }
-            elseif ($this->edited_post_at > $this->view->edited_last_seen) {
+            elseif ($this->edited_post_at > $this->userView->edited_last_seen) {
                 $class = self::CLASS_EDITED;
             }
         }
@@ -408,5 +428,62 @@ class Thread extends ActiveRecord
             }
             return false;
         }
+    }
+    
+    /**
+     * Returns the verified thread.
+     * @param integer $category_id thread's category ID
+     * @param integer $forum_id thread's forum ID
+     * @param integer $id thread's ID
+     * @param string $slug thread's slug
+     * @param boolean $guest whether caller is guest or registered user
+     * @return Thread
+     * @since 0.2
+     */
+    public static function verify($category_id = null, $forum_id = null, $id = null, $slug = null,  $guest = true)
+    {
+        if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($forum_id) || $forum_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
+            return false;
+        }
+        
+        return static::find()->joinWith(['forum' => function ($query) use ($guest) {
+                if ($guest) {
+                    $query->andWhere([Forum::tableName() . '.visible' => 1]);
+                }
+                $query->joinWith(['category' => function ($query) use ($guest) {
+                        if ($guest) {
+                            $query->andWhere([Category::tableName() . '.visible' => 1]);
+                        }
+                    }]);
+            }])->where([
+                    static::tableName() . '.id'          => $id, 
+                    static::tableName() . '.slug'        => $slug,
+                    static::tableName() . '.forum_id'    => $forum_id,
+                    static::tableName() . '.category_id' => $category_id,
+                ])->limit(1)->one();
+    }
+    
+    /**
+     * Performs thread delete with parent forum counters update.
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumDelete()
+    {
+        $transaction = Thread::getDb()->beginTransaction();
+        try {
+            if ($this->delete()) {
+                $this->forum->updateCounters(['threads' => -1, 'posts' => -$this->postsCount]);
+                $transaction->commit();
+                Cache::clearAfter('threadDelete');
+                Log::info('Thread deleted', $this->id, __METHOD__);
+                return true;
+            }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
 }

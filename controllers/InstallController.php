@@ -10,6 +10,7 @@ use bizley\podium\components\Helper;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
 use bizley\podium\Module as PodiumModule;
+use bizley\podium\traits\FlashTrait;
 use Yii;
 use yii\db\Query;
 use yii\helpers\Json;
@@ -24,6 +25,8 @@ use yii\web\Controller;
  */
 class InstallController extends Controller
 {
+    
+    use FlashTrait;
     
     /**
      * @var string Layout name
@@ -92,7 +95,7 @@ class InstallController extends Controller
     public function actionRun()
     {
         if ($this->module->userComponent == PodiumModule::USER_INHERIT && empty($this->module->adminId)) {
-            Yii::$app->session->addFlash('warning', Yii::t(
+            $this->warning(Yii::t(
                     'podium/flash', 
                     "{userComponent} is set to '{inheritParam}' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", 
                     [
@@ -124,16 +127,6 @@ class InstallController extends Controller
         }
 
         return Json::encode($result);
-    }
-    
-    /**
-     * Running the upgrade.
-     * @return string
-     * @deprecated since 0.2
-     */
-    public function actionUpgrade()
-    {
-        return $this->actionLevelUp();
     }
     
     /**
