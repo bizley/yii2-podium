@@ -395,6 +395,7 @@ return [
     'Views' => 'Obejrzany',
     'We will get back to you shortly' => 'Powrócimy za chwilę',
     'What is Gravatar?' => 'Czym jest Gravatar?',
+    'What is my time zone?' => 'Którą strefę czasową mam wybrać?',
     'Whereabouts' => 'Lokacja',
     'Who' => 'Kto',
     'You are already subscribed to this thread.' => 'Subskrybujesz już ten wątek.',

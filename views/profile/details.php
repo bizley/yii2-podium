@@ -54,7 +54,8 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                                 'pluginOptions' => [
                                     'allowClear' => true
                                 ],
-                            ])->label(Yii::t('podium/view', 'Time Zone')); ?>
+                            ])->label(Yii::t('podium/view', 'Time Zone'))
+                            ->hint(Html::a(Yii::t('podium/view', 'What is my time zone?'), 'http://www.timezoneconverter.com/cgi-bin/findzone', ['target' => '_blank'])); ?>
                         </div>
                     </div>
                     <div class="row">
