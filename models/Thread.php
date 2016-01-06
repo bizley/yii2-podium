@@ -443,7 +443,7 @@ class Thread extends ActiveRecord
     public static function verify($category_id = null, $forum_id = null, $id = null, $slug = null,  $guest = true)
     {
         if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($forum_id) || $forum_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
-            return false;
+            return null;
         }
         
         return static::find()->joinWith(['forum' => function ($query) use ($guest) {
@@ -482,6 +482,287 @@ class Thread extends ActiveRecord
         }
         catch (Exception $e) {
             $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs thread posts delete with parent forum counters update.
+     * @param array $posts posts IDs
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public function podiumDeletePosts($posts)
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            foreach ($posts as $post) {
+                if (!is_numeric($post) || $post < 1) {
+                    throw new Exception('Incorrect post ID');
+                }
+                $nPost = Post::find()->where(['id' => $post, 'thread_id' => $this->id, 'forum_id' => $this->forum->id])->limit(1)->one();
+                if (!$nPost) {
+                    throw new Exception('No post of given ID found');
+                }
+                $nPost->delete();
+            }
+            $wholeThread = false;
+            if ($this->postsCount) {
+                $this->updateCounters(['posts' => -count($posts)]);
+                $this->forum->updateCounters(['posts' => -count($posts)]);
+            }
+            else {
+                $wholeThread = true;
+                $this->delete();
+                $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
+            }
+            $transaction->commit();
+            Cache::clearAfter('postDelete');
+            Log::info('Posts deleted', null, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs thread lock / unlock.
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumLock()
+    {
+        $this->locked = !$this->locked;
+        if ($this->save()) {
+            Log::info($this->locked ? 'Thread locked' : 'Thread unlocked', $this->id, __METHOD__);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Performs thread move with counters update.
+     * @param integer $target new parent forum's ID
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumMoveTo($target = null)
+    {
+        $newParent = Forum::find()->where(['id' => $target])->limit(1)->one();
+        if ($newParent) {
+            $postsCount = $this->postsCount;
+            $transaction = Forum::getDb()->beginTransaction();
+            try {
+                $this->forum->updateCounters(['threads' => -1, 'posts' => -$postsCount]);
+                $newParent->updateCounters(['threads' => 1, 'posts' => $postsCount]);
+                $this->forum_id    = $newParent->id;
+                $this->category_id = $newParent->category_id;
+                if ($this->save()) {
+                    Post::updateAll(['forum_id' => $newParent->id], 'thread_id = :tid', [':tid' => $this->id]);
+                }
+                $transaction->commit();
+                Cache::clearAfter('threadMove');
+                Log::info('Thread moved', $this->id, __METHOD__);
+                return true;
+            }
+            catch (Exception $e) {
+                $transaction->rollBack();
+                Log::error($e->getMessage(), null, __METHOD__);
+            }
+        }
+        else {
+            Log::error('No parent forum of given ID found', $this->id, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs thread posts move with counters update.
+     * @param integer $target new parent thread's ID
+     * @param array $posts IDs of posts to move
+     * @param string $name new thread's name if $target = 0
+     * @param type $forum new thread's parent forum if $target = 0
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public function podiumMovePostsTo($target = null, $posts = [], $name = null, $forum = null)
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if ($target == 0) {
+                $parent = Forum::find()->where(['id' => $forum])->limit(1)->one();
+                if (empty($parent)) {
+                    throw new Exception('No parent forum of given ID found');
+                }
+                $newThread = new Thread;
+                $newThread->name        = $name;
+                $newThread->posts       = 0;
+                $newThread->views       = 0;
+                $newThread->category_id = $parent->category_id;
+                $newThread->forum_id    = $parent->id;
+                $newThread->author_id   = User::loggedId();
+                $newThread->save();                
+            }
+            else {
+                $newThread = Thread::find()->where(['id' => $target])->limit(1)->one();
+                if (empty($newThread)) {
+                    throw new Exception('No thread of given ID found');
+                }
+            }
+            if (!empty($newThread)) {
+                foreach ($posts as $post) {
+                    if (!is_numeric($post) || $post < 1) {
+                        throw new Exception('Incorrect post ID');
+                    }
+                    $newPost = Post::find()->where(['id' => $post, 'thread_id' => $this->id, 'forum_id' => $this->forum->id])->limit(1)->one();
+                    if (empty($newPost)) {
+                        throw new Exception('No post of given ID found');
+                    }
+                    $newPost->thread_id = $newThread->id;
+                    $newPost->forum_id  = $newThread->forum_id;
+                    $newPost->save();                    
+                }
+                $wholeThread = false;
+                if ($this->postCount) {
+                    $this->updateCounters(['posts' => -count($posts)]);
+                    $this->forum->updateCounters(['posts' => -count($posts)]);
+                }
+                else {
+                    $wholeThread = true;
+                    $this->delete();
+                    $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
+                }
+                $newThread->updateCounters(['posts' => count($posts)]);
+                $newThread->forum->updateCounters(['posts' => count($posts)]);
+                $transaction->commit();
+                Cache::clearAfter('postMove');
+                Log::info('Posts moved', null, __METHOD__);
+                return true;
+            }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs new thread with first post creation and subscription.
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumNew()
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if ($this->save()) {
+                $this->forum->updateCounters(['threads' => 1]);
+
+                $post = new Post;
+                $post->content   = $this->post;
+                $post->thread_id = $this->id;
+                $post->forum_id  = $this->forum_id;
+                $post->author_id = User::loggedId();
+                $post->likes     = 0;
+                $post->dislikes  = 0;
+
+                if ($post->save()) {
+                    $post->markSeen();
+                    $this->forum->updateCounters(['posts' => 1]);
+                    $this->updateCounters(['posts' => 1]);
+
+                    $this->touch('new_post_at');
+                    $this->touch('edited_post_at');
+
+                    if ($this->subscribe) {
+                        $subscription = new Subscription();
+                        $subscription->user_id   = User::loggedId();
+                        $subscription->thread_id = $this->id;
+                        $subscription->post_seen = Subscription::POST_SEEN;
+                        $subscription->save();
+                    }
+                }
+            }
+            $transaction->commit();
+            Cache::clearAfter('newThread');
+            Log::info('Thread added', $this->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs thread pin / unpin.
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumPin()
+    {
+        $this->pinned = !$this->pinned;
+        if ($this->save()) {
+            Log::info($this->pinned ? 'Thread pinned' : 'Thread unpinned', $this->id, __METHOD__);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Performs marking all unread threads as seen for user.
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public static function podiumMarkAllSeen()
+    {
+        try {
+            $loggedId = User::loggedId();
+            if (empty($loggedId)) {
+                throw new Exception('User ID missing');
+            }
+            $batch = [];
+            $threadsPrevMarked = Thread::find()->joinWith('threadView')
+                    ->where([
+                        'and',
+                        ['user_id' => $loggedId],
+                        [
+                            'or',
+                            new Expression('`new_last_seen` < `new_post_at`'),
+                            new Expression('`edited_last_seen` < `edited_post_at`')
+                        ],
+                    ]);
+            $time = time();
+            foreach ($threadsPrevMarked->each() as $thread) {
+                $batch[] = $thread->id;
+            }
+            if (!empty($batch)) {
+                Yii::$app->db->createCommand()->update(ThreadView::tableName(), [
+                        'new_last_seen' => $time, 
+                        'edited_last_seen' => $time
+                    ], ['thread_id' => $batch, 'user_id' => $loggedId])->execute();
+            }
+
+            $batch = [];
+            $threadsNew = Thread::find()->joinWith('threadView')->where(['user_id' => null]);
+            foreach ($threadsNew->each() as $thread) {
+                $batch[] = [$loggedId, $thread->id, $time, $time];
+            }
+            if (!empty($batch)) {
+                Yii::$app->db->createCommand()->batchInsert(ThreadView::tableName(), ['user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'], $batch)->execute();
+            }
+            return true;
+        }
+        catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

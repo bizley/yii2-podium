@@ -438,7 +438,7 @@ class Post extends ActiveRecord
     public static function verify($category_id = null, $forum_id = null, $thread_id = null, $id = null)
     {
         if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($forum_id) || $forum_id < 1 || !is_numeric($thread_id) || $thread_id < 1 || !is_numeric($id) || $id < 1) {
-            return false;
+            return null;
         }
         
         return static::find()->joinWith(['thread', 'forum' => function ($query) use ($category_id) {
@@ -478,6 +478,148 @@ class Post extends ActiveRecord
         }
         catch (Exception $e) {
             $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs post update with parent thread topic update in case of first post in thread.
+     * @param boolean $isFirstPost whether post is first in thread
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumEdit($isFirstPost = false)
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $this->edited = 1;
+            $this->touch('edited_at');
+
+            if ($this->save()) {
+                if ($isFirstPost) {
+                    $this->thread->name = $this->topic;
+                    $this->thread->save();
+                }
+                $this->markSeen();
+                $this->thread->touch('edited_post_at');
+            }
+            $transaction->commit();
+            Log::info('Post updated', $this->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs new post creation and subscription.
+     * If previous post in thread has got the same author posts are merged.
+     * @param Post $previous previous post
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public function podiumNew($previous = null)
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $id = null;
+            if (!empty($previous) && $previous->author_id == User::loggedId()) {
+                $previous->content .= '<hr>' . $this->content;
+                $previous->edited = 1;
+                $previous->touch('edited_at');
+                if ($previous->save()) {
+                    $previous->markSeen();
+                    $previous->thread->touch('edited_post_at');
+                    $id     = $previous->id;
+                    $thread = $previous->thread;
+                }
+            }
+            else {
+                if ($this->save()) {
+                    $this->markSeen();
+                    $this->forum->updateCounters(['posts' => 1]);
+                    $this->thread->updateCounters(['posts' => 1]);
+                    $this->thread->touch('new_post_at');
+                    $this->thread->touch('edited_post_at');
+                    $id     = $this->id;
+                    $thread = $this->thread;
+                }
+            }
+            if (empty($id)) {
+                throw new Exception('Saved Post ID missing');
+            }
+            Subscription::notify($thread->id);
+            if ($this->subscribe && !$thread->subscription) {
+                $subscription = new Subscription();
+                $subscription->user_id   = User::loggedId();
+                $subscription->thread_id = $thread->id;
+                $subscription->post_seen = Subscription::POST_SEEN;
+                $subscription->save();
+            }
+            $transaction->commit();
+            Cache::clearAfter('newPost');
+            Log::info('Post added', $id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs vote processing.
+     * @param boolean $up whether this is up or downvote
+     * @param integer $count number of user's cached votes
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumThumb($up = true, $count = 0)
+    {
+        try {
+            if ($this->thumb) {
+                if ($this->thumb->thumb == 1 && !$up) {
+                    $this->thumb->thumb = -1;
+                    if ($this->thumb->save()) {
+                        $this->updateCounters(['likes' => -1, 'dislikes' => 1]);
+                    }
+                }
+                elseif ($this->thumb->thumb == -1 && $up) {
+                    $this->thumb->thumb = 1;
+                    if ($this->thumb->save()) {
+                        $this->updateCounters(['likes' => 1, 'dislikes' => -1]);
+                    }
+                }
+            }
+            else {
+                $postThumb = new PostThumb;
+                $postThumb->post_id = $this->id;
+                $postThumb->user_id = User::loggedId();
+                $postThumb->thumb   = $up ? 1 : -1;
+                if ($postThumb->save()) {
+                    if ($postThumb->thumb) {
+                        $this->updateCounters(['likes' => 1]);
+                    }
+                    else {
+                        $this->updateCounters(['dislikes' => 1]);
+                    }
+                }
+            }
+            if ($count == 0) {
+                Cache::getInstance()->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
+            }
+            else {
+                Cache::getInstance()->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
+            }
+            return true;
+        }
+        catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

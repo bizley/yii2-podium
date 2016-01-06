@@ -15,6 +15,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -345,6 +346,49 @@ class Message extends ActiveRecord
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
         
+        return false;
+    }
+    
+    /**
+     * Performs post report sending to moderators.
+     * @param Post $post reported post
+     * @return boolean
+     * @since 0.2
+     */
+    public function podiumReport($post = null)
+    {
+        try {
+            if (empty($post)) {
+                throw new Exception('Reported post missing');
+            }
+            $package = [];
+            $mods    = $post->forum->mods;
+            foreach ($mods as $mod) {
+                if ($mod != User::loggedId()) {
+                    $package[] = [
+                        User::loggedId(), $mod, 
+                        Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
+                        $this->content . '<hr>' . 
+                            Html::a(Yii::t('podium/view', 'Direct link to this post'), ['default/show', 'id' => $post->id]) . '<hr>' .
+                            '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><div class="blockquote">' . $post->content . '</div>',
+                        Message::STATUS_REMOVED, Message::STATUS_NEW, time(), time(),
+                    ];
+                }
+            }
+            if (empty($package)) {
+                throw new Exception('No one to send report to');
+            }
+            Yii::$app->db->createCommand()->batchInsert(Message::tableName(), 
+                ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 'receiver_status', 'created_at', 'updated_at'], 
+                    array_values($package))->execute();
+
+            Cache::getInstance()->delete('user.newmessages');
+            Log::info('Post reported', $post->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
         return false;
     }
 }

@@ -13,13 +13,13 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('podium/view', 'Report Post');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
-$this->params['breadcrumbs'][] = ['label' => $thread->name, 'url' => ['default/thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]];
+$this->params['breadcrumbs'][] = ['label' => $post->forum->category->name, 'url' => ['default/category', 'id' => $post->forum->category->id, 'slug' => $post->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $post->forum->name, 'url' => ['default/forum', 'cid' => $post->forum->category->id, 'id' => $post->forum->id, 'slug' => $post->forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $post->thread->name, 'url' => ['default/thread', 'cid' => $post->forum->category->id, 'fid' => $post->forum->id, 'id' => $post->thread->id, 'slug' => $post->thread->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?= $this->render('/elements/forum/_post', ['model' => $post, 'category' => $category->id, 'slug' => $thread->slug]) ?>
+<?= $this->render('/elements/forum/_post', ['model' => $post, 'category' => $post->forum->category->id, 'slug' => $post->thread->slug]) ?>
 <br>
 <div class="row">
     <div class="col-sm-10 col-sm-offset-2">

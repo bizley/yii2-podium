@@ -157,4 +157,30 @@ class Forum extends ActiveRecord
 
         return $dataProvider;
     }
+    
+    /**
+     * Returns the verified forum.
+     * @param integer $category_id forum's category ID
+     * @param integer $id forum's ID
+     * @param string $slug forum's slug
+     * @param boolean $guest whether caller is guest or registered user
+     * @return Thread
+     * @since 0.2
+     */
+    public static function verify($category_id = null, $id = null, $slug = null,  $guest = true)
+    {
+        if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
+            return null;
+        }
+        
+        return static::find()->joinWith(['category' => function ($query) use ($guest) {
+                if ($guest) {
+                    $query->andWhere([Category::tableName() . '.visible' => 1]);
+                }
+            }])->where([
+                    static::tableName() . '.id'          => $id, 
+                    static::tableName() . '.slug'        => $slug,
+                    static::tableName() . '.category_id' => $category_id,
+                ])->limit(1)->one();
+    }
 }

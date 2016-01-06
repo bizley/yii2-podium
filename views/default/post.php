@@ -16,9 +16,9 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('podium/view', 'New Reply');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
-$this->params['breadcrumbs'][] = ['label' => $thread->name, 'url' => ['default/thread', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->category->name, 'url' => ['default/category', 'id' => $thread->forum->category->id, 'slug' => $thread->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->name, 'url' => ['default/forum', 'cid' => $thread->forum->category->id, 'id' => $thread->forum->id, 'slug' => $thread->forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->name, 'url' => ['default/thread', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'id' => $thread->id, 'slug' => $thread->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 $author = User::findMe();
@@ -44,7 +44,7 @@ $author = User::findMe();
                 <?= $author->podiumTag ?>
             </div>
             <div class="popover-content podium-content">
-                <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'tid' => $thread->id]]); ?>
+                <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
@@ -64,5 +64,5 @@ $author = User::findMe();
     </div>
 </div>
 <br>
-<?= $this->render('/elements/forum/_post', ['model' => $previous, 'category' => $category->id, 'slug' => $thread->slug]) ?>
+<?= $this->render('/elements/forum/_post', ['model' => $previous, 'category' => $thread->forum->category->id, 'slug' => $thread->slug]) ?>
 <br>

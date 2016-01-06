@@ -20,8 +20,8 @@ use yii\widgets\Pjax;
 
 $this->title = $thread->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->category->name, 'url' => ['default/category', 'id' => $thread->forum->category->id, 'slug' => $thread->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->name, 'url' => ['default/forum', 'cid' => $thread->forum->category->id, 'id' => $thread->forum->id, 'slug' => $thread->forum->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
@@ -69,7 +69,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
             <li><a href="<?= Url::to(['account/register']) ?>" class="btn btn-success btn-sm"><?= Yii::t('podium/view', 'Register new account') ?></a></li>
 <?php else: ?>
 <?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>            
-            <li><a href="<?= Url::to(['default/new-thread', 'cid' => $category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
+            <li><a href="<?= Url::to(['default/new-thread', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
 <?php endif; ?>
             <li><a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
 <?php endif; ?>
@@ -110,7 +110,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <br>
 <div class="row">
     <div class="col-sm-12 text-right">
-        <a href="<?= Url::to(['default/post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
+        <a href="<?= Url::to(['default/post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
     </div>
 </div>
 <br>
@@ -126,7 +126,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                 <strong><?= Yii::t('podium/view', 'Post Quick Reply') ?></strong> <?= User::findMe()->podiumTag ?>
             </div>
             <div class="popover-content podium-content">
-                <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $category->id, 'fid' => $forum->id, 'tid' => $thread->id]]); ?>
+                <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['toolbar' => 'basic', 'options' => ['style' => 'height:100px']]) ?>

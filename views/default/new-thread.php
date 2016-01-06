@@ -14,8 +14,8 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('podium/view', 'New Thread');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['default/category', 'id' => $category->id, 'slug' => $category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category_id, 'id' => $forum->id, 'slug' => $forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $forum->category->name, 'url' => ['default/category', 'id' => $forum->category->id, 'slug' => $forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['default/forum', 'cid' => $forum->category->id, 'id' => $forum->id, 'slug' => $forum->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

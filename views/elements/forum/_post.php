@@ -92,7 +92,7 @@ $loggedId = User::loggedId();
 <?php else: ?>
                     <a href="#" class="btn btn-danger btn-xs podium-thumb-down" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb down') ?>"><span class="glyphicon glyphicon-thumbs-down"></span></a>
 <?php endif; ?>
-                    <a href="<?= Url::to(['default/report', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id, 'slug' => $model->thread->slug]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
+                    <a href="<?= Url::to(['default/report', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-warning btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Report post') ?>"><span class="glyphicon glyphicon-flag"></span></a>
 <?php endif; ?>
 <?php if ($model->author_id == $loggedId || User::can(Rbac::PERM_DELETE_POST, ['item' => $model->thread])): ?>
                     <a href="<?= Url::to(['default/deletepost', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete Post') ?>"><span class="glyphicon glyphicon-trash"></span></a>

@@ -6,6 +6,7 @@
  */
 namespace bizley\podium\components;
 
+use bizley\podium\models\User;
 use Exception;
 use yii\caching\Cache as DefaultCache;
 use yii\caching\DummyCache;
@@ -117,6 +118,20 @@ class Cache
                 $cache->delete('forum.postscount');
                 $cache->delete('user.threadscount');
                 $cache->delete('user.postscount');
+                break;
+            case 'threadMove':
+            case 'postMove':
+                $cache->delete('forum.threadscount');
+                $cache->delete('forum.postscount');
+                break;
+            case 'newThread':
+                $cache->delete('forum.threadscount');
+                $cache->deleteElement('user.threadscount', User::loggedId());
+                // no break
+            case 'newPost':
+                $cache->delete('forum.postscount');
+                $cache->delete('forum.latestposts');
+                $cache->deleteElement('user.postscount', User::loggedId());
                 break;
         }
     }
