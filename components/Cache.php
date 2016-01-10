@@ -109,9 +109,12 @@ class Cache
         
         switch ($what) {
             case 'activate':
+            case 'userDelete':
                 $cache->delete('members.fieldlist');
                 $cache->delete('forum.memberscount');
                 break;
+            case 'categoryDelete':
+            case 'forumDelete':
             case 'threadDelete':
             case 'postDelete':
                 $cache->delete('forum.threadscount');

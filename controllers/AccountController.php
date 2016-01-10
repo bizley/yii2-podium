@@ -33,19 +33,6 @@ class AccountController extends BaseController
     /**
      * @inheritdoc
      */
-    public function actions()
-    {
-        return [
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'testLimit' => 1
-            ],
-        ];
-    }
-    
-    /**
-     * @inheritdoc
-     */
     public function behaviors()
     {
         return [
@@ -78,6 +65,19 @@ class AccountController extends BaseController
     }
     
     /**
+     * @inheritdoc
+     */
+    public function actions()
+    {
+        return [
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                'testLimit' => 1
+            ],
+        ];
+    }
+    
+    /**
      * Activating the account based on the provided activation token.
      * @param string $token
      * @return \yii\web\Response
@@ -91,23 +91,22 @@ class AccountController extends BaseController
         
         $model = User::findByActivationToken($token);
 
-        if ($model) {
-            $model->setScenario('token');
-            if ($model->activate()) {
-                Cache::clearAfter('activate');
-                Log::info('Account activated', $model->id, __METHOD__);
-                $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
-            }
-            else {
-                Log::error('Error while activating account', $model->id, __METHOD__);
-                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your account. Contact administrator about this problem.'));
-            }
-            return $this->module->goPodium();
-        }
-        else {
+        if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
             return $this->module->goPodium();
         }
+        
+        $model->scenario = 'token';
+        if ($model->activate()) {
+            Cache::clearAfter('activate');
+            Log::info('Account activated', $model->id, __METHOD__);
+            $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
+        }
+        else {
+            Log::error('Error while activating account', $model->id, __METHOD__);
+            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your account. Contact administrator about this problem.'));
+        }
+        return $this->module->goPodium();
     }
 
     /**
@@ -139,22 +138,21 @@ class AccountController extends BaseController
     {
         $model = User::findByEmailToken($token);
 
-        if ($model) {
-            $model->setScenario('token');
-            if ($model->changeEmail()) {
-                Log::info('Email address changed', $model->id, __METHOD__);
-                $this->success(Yii::t('podium/flash', 'Your new e-mail address has been activated.'));
-            }
-            else {
-                Log::error('Error while activating email', $model->id, __METHOD__);
-                $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.'));
-            }
-            return $this->module->goPodium();
-        }
-        else {
+        if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
             return $this->module->goPodium();
         }
+        
+        $model->setScenario('token');
+        if ($model->changeEmail()) {
+            Log::info('Email address changed', $model->id, __METHOD__);
+            $this->success(Yii::t('podium/flash', 'Your new e-mail address has been activated.'));
+        }
+        else {
+            Log::error('Error while activating email', $model->id, __METHOD__);
+            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while activating your new e-mail address. Contact administrator about this problem.'));
+        }
+        return $this->module->goPodium();
     }
 
     /**
@@ -171,21 +169,19 @@ class AccountController extends BaseController
         
         $model = User::findByPasswordResetToken($token);
 
-        if ($model) {
-            $model->setScenario('passwordChange');
-            if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
-                Log::info('Password changed', $model->id, __METHOD__);
-                $this->success(Yii::t('podium/flash', 'Your account password has been changed.'));
-                return $this->module->goPodium();
-            }
-            else {
-                return $this->render('password', ['model' => $model]);
-            }
-        }
-        else {
+        if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'The provided password reset token is invalid or expired.'));
             return $this->module->goPodium();
         }
+        
+        $model->scenario = 'passwordChange';
+        if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
+            Log::info('Password changed', $model->id, __METHOD__);
+            $this->success(Yii::t('podium/flash', 'Your account password has been changed.'));
+            return $this->module->goPodium();
+        }
+        
+        return $this->render('password', ['model' => $model]);
     }
     
     /**
@@ -204,25 +200,16 @@ class AccountController extends BaseController
         if ($model->load(Yii::$app->request->post())) {
 
             if ($model->reactivate()) {
-                
-                $email = Content::find()->where(['name' => 'email-react'])->limit(1)->one();
-                if ($email) {
-                    $topic   = $email->topic;
-                    $content = $email->content;
-                }
-                else {
-                    $topic   = '{forum} account reactivation';
-                    $content = '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>';
-                }
-                
-                $forum = Config::getInstance()->get('name');
                 if (!empty($model->user->email)) {
-                    if (Email::queue($model->user->email, 
-                            str_replace('{forum}', $forum, $topic),
+                    $forum = Config::getInstance()->get('name');
+                    $email = Content::fill(Content::EMAIL_REACTIVATION);
+                    if ($email !== false && Email::queue(
+                            $model->user->email, 
+                            str_replace('{forum}', $forum, $email->topic),
                             str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                     Url::to(['account/activate', 'token' => $model->user->activation_token], true),
                                     Url::to(['account/activate', 'token' => $model->user->activation_token], true)
-                                ), $content)),
+                                ), $email->content)),
                             !empty($model->user->id) ? $model->user->id : null
                         )) {
                         Log::info('Reactivation link queued', $model->user->id, __METHOD__);
@@ -240,9 +227,8 @@ class AccountController extends BaseController
 
                 return $this->module->goPodium();
             }
-            else {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
-            }
+
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
         }
 
         return $this->render('reactivate', ['model' => $model]);
@@ -260,28 +246,19 @@ class AccountController extends BaseController
         }
         
         $model = new User;
-        $model->setScenario('register');
+        $model->scenario = 'register';
         
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
-            
-            $email = Content::find()->where(['name' => 'email-reg'])->limit(1)->one();
-            if ($email) {
-                $topic   = $email->topic;
-                $content = $email->content;
-            }
-            else {
-                $topic   = 'Welcome to {forum}! This is your activation link';
-                $content = '<p>Thank you for registering at {forum}!</p><p>To activate you account open the following link in your Internet browser:<br>{link}<br></p><p>See you soon!<br>{forum}</p>';
-            }
-
-            $forum = Config::getInstance()->get('name');
             if (!empty($model->email)) {
-                if (Email::queue($model->email, 
-                        str_replace('{forum}', $forum, $topic),
+                $forum = Config::getInstance()->get('name');
+                $email = Content::fill(Content::EMAIL_REGISTRATION);
+                if ($email !== false && Email::queue(
+                        $model->email, 
+                        str_replace('{forum}', $forum, $email->topic),
                         str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                 Url::to(['account/activate', 'token' => $model->activation_token], true),
                                 Url::to(['account/activate', 'token' => $model->activation_token], true)
-                            ), $content)),
+                            ), $email->content)),
                         !empty($model->id) ? $model->id : null
                     )) {
                     Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
@@ -318,30 +295,20 @@ class AccountController extends BaseController
             return $this->module->goPodium();
         }
         
-        $model = new ReForm();
+        $model = new ReForm;
 
         if ($model->load(Yii::$app->request->post())) {
-
             if ($model->reset()) {
-
-                $email = Content::find()->where(['name' => 'email-pass'])->limit(1)->one();
-                if ($email) {
-                    $topic   = $email->topic;
-                    $content = $email->content;
-                }
-                else {
-                    $topic   = '{forum} password reset link';
-                    $content = '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>';
-                }
-
-                $forum = Config::getInstance()->get('name');
                 if (!empty($model->email)) {
-                    if (Email::queue($model->user->email, 
-                            str_replace('{forum}', $forum, $topic),
+                    $forum = Config::getInstance()->get('name');
+                    $email = Content::fill(Content::EMAIL_PASSWORD);
+                    if ($email !== false && Email::queue(
+                            $model->user->email, 
+                            str_replace('{forum}', $forum, $email->topic),
                             str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                     Url::to(['account/password', 'token' => $model->user->password_reset_token], true),
                                     Url::to(['account/password', 'token' => $model->user->password_reset_token], true)
-                                ), $content)),
+                                ), $email->content)),
                             !empty($model->user->id) ? $model->user->id : null
                         )) {
                         Log::info('Password reset link queued', $model->user->id, __METHOD__);
@@ -359,9 +326,8 @@ class AccountController extends BaseController
                 
                 return $this->module->goPodium();
             }
-            else {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
-            }
+
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
         }
 
         return $this->render('reset', ['model' => $model]);

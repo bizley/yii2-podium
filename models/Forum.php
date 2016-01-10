@@ -7,6 +7,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
+use bizley\podium\log\Log;
+use Exception;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -182,5 +185,47 @@ class Forum extends ActiveRecord
                     static::tableName() . '.slug'        => $slug,
                     static::tableName() . '.category_id' => $category_id,
                 ])->limit(1)->one();
+    }
+    
+    /**
+     * Sets new forums order.
+     * @param integer $order new forum sorting order number
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public function newOrder($order)
+    {
+        try {
+            $next    = 0;
+            $newSort = -1;
+            $query   = (new Query)->from(Forum::tableName())->where('id != :id AND category_id = :cid')->
+                params([':id' => $this->id, ':cid' => $this->category_id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+            foreach ($query->each() as $id => $forum) {
+                if ($next == $order) {
+                    $newSort = $next;
+                    $next++;
+                }
+                Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                $next++;
+            }
+            
+            if ($newSort == -1) {
+                $newSort = $next;
+            }
+            
+            $this->sort = $newSort;
+            
+            if (!$this->save()) {
+                throw new Exception('Forums order saving error');
+            }
+            
+            Log::info('Forums orded updated', $this->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
 }

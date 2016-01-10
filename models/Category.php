@@ -6,10 +6,13 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\log\Log;
+use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 use Zelenin\yii\behaviors\Slug;
@@ -105,5 +108,47 @@ class Category extends ActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider->getModels();
+    }
+    
+    /**
+     * Sets new categories order.
+     * @param integer $order new category sorting order number
+     * @return boolean
+     * @throws Exception
+     * @since 0.2
+     */
+    public function newOrder($order)
+    {
+        try {
+            $next    = 0;
+            $newSort = -1;
+            $query   = (new Query)->from(Category::tableName())->where('id != :id')->
+                params([':id' => $this->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+            foreach ($query->each() as $id => $forum) {
+                if ($next == $order) {
+                    $newSort = $next;
+                    $next++;
+                }
+                Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                $next++;
+            }
+            
+            if ($newSort == -1) {
+                $newSort = $next;
+            }
+            
+            $this->sort = $newSort;
+            
+            if (!$this->save()) {
+                throw new Exception('Categories order saving error');
+            }
+            
+            Log::info('Categories orded updated', $this->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
 }

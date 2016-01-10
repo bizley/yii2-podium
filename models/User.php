@@ -734,8 +734,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function ban()
     {
-        $this->setScenario('ban');
-        $this->status = self::STATUS_BANNED;
+        $this->scenario = 'ban';
+        $this->status   = self::STATUS_BANNED;
         return $this->save();
     }
     
@@ -746,9 +746,29 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function demoteTo($role)
     {
-        $this->setScenario('role');
-        $this->role = $role;
-        return $this->save();
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $this->scenario = 'role';
+            $this->role     = $role;            
+            
+            if ($this->save()) {
+                if (Yii::$app->authManager->getRolesByUser($this->id)) {
+                    Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id);
+                }
+                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
+                    Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $this->id])->execute();
+                    Activity::updateRole($this->id, User::ROLE_MEMBER);
+                    $transaction->commit();
+                    Log::info('User demoted', $this->id, __METHOD__);
+                    return true;
+                }
+            }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;        
     }
     
     /**
@@ -758,9 +778,27 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function promoteTo($role)
     {
-        $this->setScenario('role');
-        $this->role = $role;
-        return $this->save();
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $this->scenario = 'role';
+            $this->role     = $role;
+            if ($this->save()) {
+                if (Yii::$app->authManager->getRolesByUser($this->id)) {
+                    Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id);
+                }
+                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
+                    Activity::updateRole($this->id, User::ROLE_MODERATOR);
+                    $transaction->commit();
+                    Log::info('User promoted', $this->id, __METHOD__);
+                    return true;
+                }
+            }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
     
     /**
@@ -961,5 +999,72 @@ class User extends ActiveRecord implements IdentityInterface
             return $cache;
         }
         return null;
+    }
+    
+    /**
+     * Updates moderator assignment for given forum.
+     * @param integer $forum_id forum's ID
+     * @return boolean
+     * @since 0.2
+     */
+    public function updateModeratorForOne($forum_id = null)
+    {
+        try {
+            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum_id, 'user_id' => $this->id])->exists()) {
+                Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $forum_id, 'user_id' => $this->id])->execute();
+            }
+            else {
+                Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum_id, 'user_id' => $this->id])->execute();
+            }
+            Cache::getInstance()->deleteElement('forum.moderators', $forum_id);
+            Log::info('Moderator updated', $this->id, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Updates moderator assignment for given forums.
+     * @param array $newForums new assigned forums' IDs
+     * @param array $oldForums old assigned forums' IDs
+     * @return boolean
+     * @since 0.2
+     */
+    public function updateModeratorMany($newForums = [], $oldForums = [])
+    {
+        try {
+            $add = [];
+            foreach ($newForums as $forum) {
+                if (!in_array($forum, $oldForums)) {
+                    if ((new Query)->from(Forum::tableName())->where(['id' => $forum])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists() === false) {
+                        $add[] = [$forum, $this->id];
+                    }
+                }
+            }
+            $remove = [];
+            foreach ($oldForums as $forum) {
+                if (!in_array($forum, $newForums)) {
+                    if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists()) {
+                        $remove[] = $forum;
+                    }
+                }
+            }
+            if (!empty($add)) {
+                Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
+            }
+            if (!empty($remove)) {
+                Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute();
+            }
+            Cache::getInstance()->delete('forum.moderators');
+            Log::info('Moderators updated', null, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
 }

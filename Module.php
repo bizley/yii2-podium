@@ -114,7 +114,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * @var boolean Installation flag
      */
-    protected $_installed = false;
+    protected $_installed;
     
     /**
      * @var string Module version
@@ -255,6 +255,9 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function getInstalled()
     {
+        if ($this->_installed === null) {
+            $this->_installed = Installation::check();
+        }            
         return $this->_installed;
     }
     
