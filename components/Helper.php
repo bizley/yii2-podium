@@ -107,7 +107,6 @@ class Helper
                 ];
         }
         
-        
         return $config;
     }
     
@@ -203,7 +202,7 @@ class Helper
             if ($sort == $attribute) {
                 return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet']);
             }
-            elseif ($sort == '-' . $attribute) {
+            if ($sort == '-' . $attribute) {
                 return ' ' . Html::tag('span', '', ['class' => 'glyphicon glyphicon-sort-by-alphabet-alt']);
             }
         }

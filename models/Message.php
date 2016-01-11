@@ -279,16 +279,19 @@ class Message extends ActiveRecord
     /**
      * Removes message.
      * @return boolean
+     * @throws Exception
      */
     public function remove()
     {
-        $clearCache = false;
-        if ($this->sender_status == self::STATUS_NEW) {
-            $clearCache = true;
-        }
-        
         $transaction = static::getDb()->beginTransaction();
         try {
+            $clearCache = false;
+            if ($this->sender_status == self::STATUS_NEW) {
+                $clearCache = true;
+            }
+            
+            $this->scenario = 'remove';
+        
             if (empty($this->messageReceivers)) {
                 if ($this->delete()) {
                     if ($clearCache) {
@@ -345,7 +348,6 @@ class Message extends ActiveRecord
             $transaction->rollBack();
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
-        
         return false;
     }
     
@@ -390,5 +392,19 @@ class Message extends ActiveRecord
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
+    }
+    
+    /**
+     * Marks message read.
+     * @since 0.2
+     */
+    public function markRead()
+    {
+        if ($this->sender_status == self::STATUS_NEW) {
+            $this->sender_status = self::STATUS_READ;
+            if ($this->save()) {
+                Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+            }
+        }
     }
 }

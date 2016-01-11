@@ -86,6 +86,7 @@ class Maintenance extends Component
         if (empty($data['type']) || !is_string($data['type'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column type missing.'));
         }
+        
         try {
             $this->db->createCommand()->addColumn($this->getTable(), $data['col'], $data['type'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been added', ['name' => $data['col']]));
@@ -111,6 +112,7 @@ class Maintenance extends Component
         if (empty($data['type']) || !is_string($data['type'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column type missing.'));
         }
+        
         try {
             $this->db->createCommand()->alterColumn($this->getTable(), $data['col'], $data['type'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been updated', ['name' => $data['col']]));
@@ -133,6 +135,7 @@ class Maintenance extends Component
         if (empty($data['schema']) || !is_array($data['schema'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Database schema missing.'));
         }
+        
         try {
             $this->db->createCommand()->createTable($this->getTable(), $data['schema'], $this->getTableOptions())->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been created', ['name' => $this->db->getSchema()->getRawTableName($this->getTable())]));
@@ -178,6 +181,7 @@ class Maintenance extends Component
         if (empty($data['col']) || !is_string($data['col'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column name missing.'));
         }
+        
         try {
             $this->db->createCommand()->dropColumn($this->getTable(), $data['col'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been dropped', ['name' => $data['col']]));
@@ -200,6 +204,7 @@ class Maintenance extends Component
         if (empty($data['name']) || !is_string($data['name'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.'));
         }
+        
         try {
             $this->db->createCommand()->dropForeignKey($this->getForeignName($data['name']), $this->getTable())->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table foreign key {name} has been dropped', ['name' => $this->getForeignName($data['name'])]));
@@ -222,6 +227,7 @@ class Maintenance extends Component
         if (empty($data['name']) || !is_string($data['name'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index name missing.'));
         }
+        
         try {
             $this->db->createCommand()->dropIndex($this->getIndexName($data['name']), $this->getTable())->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table index {name} has been dropped', ['name' => $this->getIndexName($data['name'])]));
@@ -250,6 +256,7 @@ class Maintenance extends Component
         if (empty($data['col']) || (!is_string($data['col']) && !is_array($data['col']))) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Referenced columns missing.'));
         }
+        
         try {
             $this->db->createCommand()->addForeignKey(
                     $this->getForeignName($data['key']), 
@@ -283,6 +290,7 @@ class Maintenance extends Component
         if (empty($data['cols']) || !is_array($data['cols'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index columns missing.'));
         }
+        
         try {
             $this->db->createCommand()->createIndex($this->getIndexName($data['name']), $this->getTable(), $data['cols'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table index {name} has been added', ['name' => $this->getIndexName($data['name'])]));
@@ -305,6 +313,7 @@ class Maintenance extends Component
         if (empty($data['name']) || !is_string($data['name'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! New table name missing.'));
         }
+        
         try {
             $this->db->createCommand()->renameTable($this->getTable(), $this->getTableName($data['name']))->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been renamed to {new}', ['name' => $this->getTable(), 'new' => $this->getTableName($data['name'])]));
@@ -330,6 +339,7 @@ class Maintenance extends Component
         if (empty($data['name']) || !is_string($data['name'])) {
             return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! New column name missing.'));
         }
+        
         try {
             $this->db->createCommand()->renameColumn($this->getTable(), $data['col'], $data['name'])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been renamed to {new}', ['name' => $data['col'], 'new' => $data['name']]));
@@ -356,7 +366,6 @@ class Maintenance extends Component
             // Prepare for installation.
             // No log because table might not be available.
         }
-
         return false;
     }
     

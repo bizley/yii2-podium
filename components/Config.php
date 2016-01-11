@@ -100,17 +100,16 @@ class Config
     {
         try {
             $cache = $this->cache->get('config');
-
             if ($cache === false) {
                 $cache = array_merge($this->_defaults, $this->getFromDb());
                 $this->cache->set('config', $cache);
             }
-
             return $cache;
         }
         catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
+        return false;
     }
     
     /**
@@ -140,7 +139,6 @@ class Config
         catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
-        
         return $config;
     }
     
@@ -167,29 +165,24 @@ class Config
     {
         try {
             if (is_string($name) && is_string($value)) {
-                
                 if ($value == '') {
                     if (array_key_exists($name, $this->_defaults)) {
                         $value = $this->_defaults[$name];
                     }
                 }
-                
                 if ((new Query)->from('{{%podium_config}}')->where(['name' => $name])->exists()) {
                     Yii::$app->db->createCommand()->update('{{%podium_config}}', ['value' => $value], 'name = :name', [':name' => $name])->execute();
                 }
                 else {
                     Yii::$app->db->createCommand()->insert('{{%podium_config}}', ['name' => $name, 'value' => $value])->execute();
                 }
-                
                 $this->cache->set('config', array_merge($this->_defaults, $this->getFromDb()));
-                
                 return true;
             }      
         }
         catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
-        
         return false;
     }
 }

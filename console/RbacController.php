@@ -54,7 +54,6 @@ class RbacController extends Controller
         catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
-        
         return false;
     }
 
@@ -64,16 +63,16 @@ class RbacController extends Controller
      */
     public function actionIndex()
     {
-        $version = $this->module->version;
-        $this->stdout("\nPodium RBAC rules v{$version}\n");
-        $this->stdout("------------------------------\n");
-        
-        $this->stdout("Set of Podium RBAC rules will be added to the authManager storage.\n\n");
-        $this->stdout("* The same rules are added during installation process so if you are\n");
-        $this->stdout("* planning to run Podium installation there is no need to add rules\n");
-        $this->stdout("* now.\n\n");
-        
         try {
+            $version = $this->module->version;
+            $this->stdout("\nPodium RBAC rules v{$version}\n");
+            $this->stdout("------------------------------\n");
+
+            $this->stdout("Set of Podium RBAC rules will be added to the authManager storage.\n\n");
+            $this->stdout("* The same rules are added during installation process so if you are\n");
+            $this->stdout("* planning to run Podium installation there is no need to add rules\n");
+            $this->stdout("* now.\n\n");
+        
             if ($this->confirm("Are you sure you want to add Podium RBAC rules?", true)) {
                 $this->stdout("Adding RBAC rules... ");
                 $this->addRules();

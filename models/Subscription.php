@@ -6,8 +6,10 @@
  */
 namespace bizley\podium\models;
 
+use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\log\Log;
+use Exception;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
@@ -86,7 +88,11 @@ class Subscription extends ActiveRecord
     public function seen()
     {
         $this->post_seen = self::POST_SEEN;
-        return $this->save();
+        if ($this->save()) {
+            Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -96,7 +102,11 @@ class Subscription extends ActiveRecord
     public function unseen()
     {
         $this->post_seen = self::POST_NEW;
-        return $this->save();
+        if ($this->save()) {
+            Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -105,32 +115,22 @@ class Subscription extends ActiveRecord
      */
     public static function notify($thread)
     {
-        if (is_numeric($thread) && $thread > 0) {
-            
-            $email = Content::find()->where(['name' => 'email-sub'])->limit(1)->one();
-            if ($email) {
-                $topic   = $email->topic;
-                $content = $email->content;
-            }
-            else {
-                $topic   = 'New post in subscribed thread at {forum}';
-                $content = '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br>{forum}</p>';
-            }
-
+        if (is_numeric($thread) && $thread > 0) {            
             $forum = Config::getInstance()->get('name');
+            $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
             
-            $subs = static::find()->where(['thread_id' => (int)$thread, 'post_seen' => self::POST_SEEN]);
+            $subs = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {
-
                 $sub->post_seen = self::POST_NEW;
                 if ($sub->save()) {
-                    if (!empty($sub->user->email)) {
-                        if (Email::queue($sub->user->email, 
-                                str_replace('{forum}', $forum, $topic),
+                    if ($email !== false && !empty($sub->user->email)) {
+                        if (Email::queue(
+                                $sub->user->email, 
+                                str_replace('{forum}', $forum, $email->topic),
                                 str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                         Url::to(['default/last', 'id' => $sub->thread_id], true),
                                         Url::to(['default/last', 'id' => $sub->thread_id], true)
-                                    ), $content)),
+                                    ), $email->content)),
                                 $sub->user_id
                             )) {
                             Log::info('Subscription notice link queued', $sub->user_id, __METHOD__);
@@ -145,5 +145,45 @@ class Subscription extends ActiveRecord
                 }
             }
         }
+    }
+    
+    /**
+     * Removes threads' subscriptions of given IDs.
+     * @param array $threads threads' IDs
+     * @return boolean
+     * @since 0.2
+     */
+    public static function remove($threads = [])
+    {
+        try {
+            if (!empty($threads)) {
+                Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()])->execute();
+                return true;
+            }
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Adds subscription for thread.
+     * @param integer $thread thread's ID
+     * @return boolean
+     * @since 0.2
+     */
+    public static function add($thread)
+    {
+        if (!Yii::$app->user->isGuest) {
+            $sub = new Subscription;
+            $sub->thread_id = $thread;
+            $sub->user_id   = User::loggedId();
+            $sub->post_seen = self::POST_SEEN;
+            if ($sub->save()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

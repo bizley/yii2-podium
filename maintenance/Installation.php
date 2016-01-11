@@ -7,6 +7,7 @@
 namespace bizley\podium\maintenance;
 
 use bizley\podium\components\Config;
+use bizley\podium\models\Content;
 use bizley\podium\models\User;
 use bizley\podium\Module as PodiumModule;
 use bizley\podium\rbac\Rbac;
@@ -39,32 +40,29 @@ class Installation extends Maintenance
         try {
             $podium = PodiumModule::getInstance();
             if ($podium->userComponent == PodiumModule::USER_INHERIT) {
-                
-                if (!empty($podium->adminId)) {
-                    $admin = new User;
-                    $admin->setScenario('installation');
-                    $admin->inherited_id = $podium->adminId;
-                    $admin->username     = self::DEFAULT_USERNAME;
-                    $admin->status       = User::STATUS_ACTIVE;
-                    $admin->role         = User::ROLE_ADMIN;
-                    $admin->timezone     = User::DEFAULT_TIMEZONE;
-                    if ($admin->save()) {
-                        $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
-                        return $this->outputSuccess(Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', ['id' => $podium->adminId]));
-                    }
-                    else {
-                        $this->setError(true);
-                        return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                        Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
-                    }
-                }
-                else {
+                if (empty($podium->adminId)) {
                     return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set.'));
                 }
+                    
+                $admin = new User;
+                $admin->scenario     = 'installation';
+                $admin->inherited_id = $podium->adminId;
+                $admin->username     = self::DEFAULT_USERNAME;
+                $admin->status       = User::STATUS_ACTIVE;
+                $admin->role         = User::ROLE_ADMIN;
+                $admin->timezone     = User::DEFAULT_TIMEZONE;
+                if ($admin->save()) {
+                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
+                    return $this->outputSuccess(Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', ['id' => $podium->adminId]));
+                }
+
+                $this->setError(true);
+                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
+                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
             else {
                 $admin = new User;
-                $admin->setScenario('installation');
+                $admin->scenario = 'installation';
                 $admin->username = self::DEFAULT_USERNAME;
                 $admin->status   = User::STATUS_ACTIVE;
                 $admin->role     = User::ROLE_ADMIN;
@@ -79,11 +77,10 @@ class Installation extends Maintenance
                                     ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
                                     ' ' . Html::tag('kbd', self::DEFAULT_USERNAME));
                 }
-                else {
-                    $this->setError(true);
-                    return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                    Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
-                }
+
+                $this->setError(true);
+                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
+                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
             }
         }
         catch (Exception $e) {
@@ -135,13 +132,14 @@ class Installation extends Maintenance
     protected function _addContent()
     {
         try {
+            $default = Content::defaultContent();
             $this->db->createCommand()->batchInsert('{{%podium_content}}', ['name', 'topic', 'content'], [
-                    ['terms', 'Forum Terms and Conditions', 'Please remember that we are not responsible for any messages posted. We do not vouch for or warrant the accuracy, completeness or usefulness of any post, and are not responsible for the contents of any post.<br><br>The posts express the views of the author of the post, not necessarily the views of this forum. Any user who feels that a posted message is objectionable is encouraged to contact us immediately by email. We have the ability to remove objectionable posts and we will make every effort to do so, within a reasonable time frame, if we determine that removal is necessary.<br><br>You agree, through your use of this service, that you will not use this forum to post any material which is knowingly false and/or defamatory, inaccurate, abusive, vulgar, hateful, harassing, obscene, profane, sexually oriented, threatening, invasive of a person\'s privacy, or otherwise violative of any law.<br><br>You agree not to post any copyrighted material unless the copyright is owned by you or by this forum.'],
-                    ['email-reg', 'Welcome to {forum}! This is your activation link', '<p>Thank you for registering at {forum}!</p><p>To activate you account open the following link in your Internet browser:<br>{link}<br></p><p>See you soon!<br>{forum}</p>'],
-                    ['email-pass', '{forum} password reset link', '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>'],
-                    ['email-react', '{forum} account reactivation', '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>'],
-                    ['email-new', 'New e-mail activation link at {forum}', '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br>{forum}</p>'],
-                    ['email-sub', 'New post in subscribed thread at {forum}', '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br>{forum}</p>'],
+                    [Content::TERMS_AND_CONDS, $default[Content::TERMS_AND_CONDS]['topic'], $default[Content::TERMS_AND_CONDS]['content']],
+                    [Content::EMAIL_REGISTRATION, $default[Content::EMAIL_REGISTRATION]['topic'], $default[Content::EMAIL_REGISTRATION]['content']],
+                    [Content::EMAIL_PASSWORD, $default[Content::EMAIL_PASSWORD]['topic'], $default[Content::EMAIL_PASSWORD]['content']],
+                    [Content::EMAIL_REACTIVATION, $default[Content::EMAIL_REACTIVATION]['topic'], $default[Content::EMAIL_REACTIVATION]['content']],
+                    [Content::EMAIL_NEW, $default[Content::EMAIL_NEW]['topic'], $default[Content::EMAIL_NEW]['content']],
+                    [Content::EMAIL_SUBSCRIPTION, $default[Content::EMAIL_SUBSCRIPTION]['topic'], $default[Content::EMAIL_SUBSCRIPTION]['content']],
                 ])->execute();
             return $this->outputSuccess(Yii::t('podium/flash', 'Default Content has been added.'));
         }
@@ -204,32 +202,30 @@ class Installation extends Maintenance
         if (empty($data['table'])) {
             throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
         }
-        else {
-            $this->setTable($data['table']);
-            if (empty($data['call'])) {
-                throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
-            }
-            else {
-                $this->setError(false);
-                switch ($data['call']) {
-                    case 'create':
-                        $result = call_user_func([$this, '_create'], $data);
-                        break;
-                    case 'index':
-                        $result = call_user_func([$this, '_index'], $data);
-                        break;
-                    case 'foreign':
-                        $result = call_user_func([$this, '_foreign'], $data);
-                        break;
-                    default:
-                        $result = call_user_func([$this, '_' . $data['call']], $data);
-                }
-                
-                $this->setResult($result);
-                if ($this->getError()) {
-                    $this->setPercent(100);
-                }
-            }
+
+        $this->setTable($data['table']);
+        if (empty($data['call'])) {
+            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
+        }
+
+        $this->setError(false);
+        switch ($data['call']) {
+            case 'create':
+                $result = call_user_func([$this, '_create'], $data);
+                break;
+            case 'index':
+                $result = call_user_func([$this, '_index'], $data);
+                break;
+            case 'foreign':
+                $result = call_user_func([$this, '_foreign'], $data);
+                break;
+            default:
+                $result = call_user_func([$this, '_' . $data['call']], $data);
+        }
+
+        $this->setResult($result);
+        if ($this->getError()) {
+            $this->setPercent(100);
         }
     }
 

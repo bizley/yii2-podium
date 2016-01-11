@@ -93,9 +93,8 @@ class Cache
         if ($cache->getCachedContent() !== false) {
             $this->endCache();
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
     
     /**
@@ -170,7 +169,7 @@ class Cache
      */
     public function endCache()
     {
-        FragmentCache::end();
+        return FragmentCache::end();
     }
     
     /**

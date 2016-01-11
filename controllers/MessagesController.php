@@ -67,15 +67,12 @@ class MessagesController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
         }
         else {
-            $model = Message::find()->where(['and', 
-                [
-                    'id'        => (int)$id,
-                    'sender_id' => User::loggedId()
-                ],
-                ['!=', 'sender_status', Message::STATUS_DELETED]
-            ])->limit(1)->one();
-            if ($model) {
-                $model->setScenario('remove');
+            $model = Message::find()->where(['and', ['id' => $id, 'sender_id' => User::loggedId()], ['!=', 'sender_status', Message::STATUS_DELETED]])->limit(1)->one();
+            
+            if (empty($model)) {
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
+            }
+            else {
                 if ($model->remove()) {
                     $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
                 }
@@ -83,9 +80,6 @@ class MessagesController extends BaseController
                     Log::error('Error while deleting sent message', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
-            }
-            else {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             }
         }
         return $this->redirect(['messages/sent']);
@@ -102,15 +96,11 @@ class MessagesController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
         }
         else {
-            $model = MessageReceiver::find()->where(['and',
-                [
-                    'id'          => (int)$id,
-                    'receiver_id' => User::loggedId()
-                ],
-                ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]
-            ])->limit(1)->one();
-            if ($model) {
-                $model->setScenario('remove');
+            $model = MessageReceiver::find()->where(['and', ['id' => $id, 'receiver_id' => User::loggedId()], ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]])->limit(1)->one();
+            if (empty($model)) {
+                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
+            }
+            else {
                 if ($model->remove()) {
                     $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
                 }
@@ -118,9 +108,6 @@ class MessagesController extends BaseController
                     Log::error('Error while deleting received message', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
-            }
-            else {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             }
         }
         return $this->redirect(['messages/inbox']);
@@ -132,11 +119,10 @@ class MessagesController extends BaseController
      */
     public function actionInbox()
     {
-        $searchModel  = new MessageReceiver;
-        $dataProvider = $searchModel->search(Yii::$app->request->get());
+        $searchModel = new MessageReceiver;
         
         return $this->render('inbox', [
-                'dataProvider' => $dataProvider,
+                'dataProvider' => $searchModel->search(Yii::$app->request->get()),
                 'searchModel'  => $searchModel
         ]);
     }
@@ -239,38 +225,34 @@ class MessagesController extends BaseController
             $q->where(['receiver_id' => $podiumUser->id]);
         }])->limit(1)->one();
         
-        if ($reply) {
-            $model = new Message;
-            $model->topic = Message::re() . ' ' . $reply->topic;
-            if ($model->load(Yii::$app->request->post())) {
-                if ($model->validate()) {
-                    if (!$podiumUser->isIgnoredBy($model->receiversId[0])) {
-                        $model->replyto = $reply->id;
-                        if ($model->send()) {
-                            $this->success(Yii::t('podium/flash', 'Message has been sent.'));
-                            return $this->redirect(['messages/inbox']);
-                        }
-                        else {
-                            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
-                        }
-                    }
-                    else {
-                        $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
-                    }
-                }
-            }
-            
-            $model->receiversId = [$reply->sender_id];
-            
-            return $this->render('reply', [
-                    'model' => $model,
-                    'reply' => $reply,
-            ]);
-        }
-        else {
+        if (empty($reply)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['messages/inbox']);
         }
+        
+        $model = new Message;
+        $model->topic = Message::re() . ' ' . $reply->topic;
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate()) {
+                if (!$podiumUser->isIgnoredBy($model->receiversId[0])) {
+                    $model->replyto = $reply->id;
+                    if ($model->send()) {
+                        $this->success(Yii::t('podium/flash', 'Message has been sent.'));
+                        return $this->redirect(['messages/inbox']);
+                    }
+                    else {
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
+                    }
+                }
+                else {
+                    $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
+                }
+            }
+        }
+
+        $model->receiversId = [$reply->sender_id];
+
+        return $this->render('reply', ['model' => $model, 'reply' => $reply]);
     }
     
     /**
@@ -280,10 +262,9 @@ class MessagesController extends BaseController
     public function actionSent()
     {
         $searchModel  = new MessageSearch;
-        $dataProvider = $searchModel->search(Yii::$app->request->get());
         
         return $this->render('sent', [
-                'dataProvider' => $dataProvider,
+                'dataProvider' => $searchModel->search(Yii::$app->request->get()),
                 'searchModel'  => $searchModel
         ]);
     }
@@ -295,25 +276,14 @@ class MessagesController extends BaseController
      */  
     public function actionViewSent($id = null)
     {
-        $model = Message::find()->where(['and',
-            [
-                'id' => $id, 
-                'sender_id' => User::loggedId(),
-            ],
-            ['!=', 'sender_status', Message::STATUS_DELETED]
-        ])->limit(1)->one();
+        $model = Message::find()->where(['and', ['id' => $id, 'sender_id' => User::loggedId()], ['!=', 'sender_status', Message::STATUS_DELETED]])->limit(1)->one();
         
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['messages/inbox']);
         }
         
-        if ($model->sender_status == Message::STATUS_NEW) {
-            $model->sender_status = Message::STATUS_READ;
-            if ($model->save()) {
-                Cache::getInstance()->deleteElement('user.newmessages', $model->sender_id);
-            }
-        }
+        $model->markRead();
         
         return $this->render('view', ['model' => $model, 'type' => 'sent', 'id' => $model->id]);
     }
@@ -325,68 +295,56 @@ class MessagesController extends BaseController
      */  
     public function actionViewReceived($id = null)
     {
-        $model = MessageReceiver::find()->where(['and',
-            [
-                'id' => $id, 
-                'receiver_id' => User::loggedId(),
-            ],
-            ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]
-        ])->limit(1)->one();
+        $model = MessageReceiver::find()->where(['and', ['id' => $id, 'receiver_id' => User::loggedId()], ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]])->limit(1)->one();
         
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['messages/inbox']);
         }
         
-        if ($model->receiver_status == Message::STATUS_NEW) {
-            $model->receiver_status = Message::STATUS_READ;
-            if ($model->save()) {
-                Cache::getInstance()->deleteElement('user.newmessages', $model->receiver_id);
-            }
-        }
+        $model->markRead();
         
         return $this->render('view', ['model' => $model->message, 'type' => 'received', 'id' => $model->id]);
     }
     
+    /**
+     * Loads older messages in thread.
+     * @return string
+     */
     public function actionLoad()
     {
-        if (Yii::$app->request->isAjax) {
-            $result = [
-                'messages' => '',
-                'more'     => 0
-            ];
-            
-            $loggedId = User::loggedId();
-            
-            if (!Yii::$app->user->isGuest) {
-                $id = Yii::$app->request->post('message');
-                $message = Message::find()->where(['id' => $id])->limit(1)->one();
-                if ($message && ($message->sender_id == $loggedId || $message->isMessageReceiver($loggedId))) {
-                    $stack = 0;
-                    $reply = clone $message;
-                    while ($reply->reply && $stack < 5) {
-                        $result['more'] = 0;
-                        
-                        if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) {
-                            $reply = $reply->reply;
-                            continue;
-                        }
-                        
-                        $result['messages'] .= $this->renderPartial('load', ['reply' => $reply]);
-
-                        $reply = $reply->reply;
-                        if ($reply) {
-                            $result['more'] = $reply->id;
-                        }
-                        $stack++;
-                    }
-                }                
-            }
-            
-            return Json::encode($result);
-        }
-        else {
+        if (!Yii::$app->request->isAjax) {
             return $this->redirect(['default/index']);
         }
+            
+        $result = ['messages' => '', 'more' => 0];
+
+        if (!Yii::$app->user->isGuest) {
+            $loggedId = User::loggedId();
+            $id       = Yii::$app->request->post('message');
+            $message  = Message::find()->where(['id' => $id])->limit(1)->one();
+            if ($message && ($message->sender_id == $loggedId || $message->isMessageReceiver($loggedId))) {
+                $stack = 0;
+                $reply = clone $message;
+                while ($reply->reply && $stack < 5) {
+                    $result['more'] = 0;
+
+                    if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) {
+                        $reply = $reply->reply;
+                        continue;
+                    }
+
+                    $result['messages'] .= $this->renderPartial('load', ['reply' => $reply]);
+
+                    $reply = $reply->reply;
+                    if ($reply) {
+                        $result['more'] = $reply->id;
+                    }
+                    $stack++;
+                }
+            }                
+        }
+
+        return Json::encode($result);
     }
 }

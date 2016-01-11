@@ -6,12 +6,9 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
-use bizley\podium\log\Log;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
-use Exception;
 use Yii;
 use yii\filters\AccessControl;
 
@@ -68,10 +65,6 @@ class MembersController extends BaseController
     {
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(['default/index']);
-        }
-            
-        if (is_null($q) || !is_string($q)) {
-            return Json::encode(['results' => []]);
         }
             
         return User::getMembersList($q);

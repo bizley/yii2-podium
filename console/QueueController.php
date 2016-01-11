@@ -87,7 +87,6 @@ class QueueController extends Controller
         catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
-        
         return false;
     }
 
@@ -148,20 +147,19 @@ class QueueController extends Controller
                 $this->db->createCommand()->update($this->queueTable, ['status' => Email::STATUS_SENT], ['id' => $email['id']])->execute();
                 return true;
             }
+
+            $attempt = $email['attempt'] + 1;
+            if ($attempt <= $maxAttempts) {
+                $this->db->createCommand()->update($this->queueTable, ['attempt' => $attempt], ['id' => $email['id']])->execute();
+            }
             else {
-                $attempt = $email['attempt'] + 1;
-                if ($attempt <= $maxAttempts) {
-                    $this->db->createCommand()->update($this->queueTable, ['attempt' => $attempt], ['id' => $email['id']])->execute();
-                }
-                else {
-                    $this->db->createCommand()->update($this->queueTable, ['status' => Email::STATUS_GAVEUP], ['id' => $email['id']])->execute();
-                }
-                return false;
+                $this->db->createCommand()->update($this->queueTable, ['status' => Email::STATUS_GAVEUP], ['id' => $email['id']])->execute();
             }
         }
         catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
-        }    
+        }
+        return false;
     }
 
     /**
@@ -178,7 +176,6 @@ class QueueController extends Controller
         $emails = $this->getNewBatch($limit);
         if (empty($emails)) {
             $this->stdout("No pending emails in the queue found.\n\n", Console::FG_GREEN);
-
             return self::EXIT_CODE_NORMAL;
         }
 

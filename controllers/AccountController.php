@@ -198,7 +198,6 @@ class AccountController extends BaseController
         $model = new ReForm();
 
         if ($model->load(Yii::$app->request->post())) {
-
             if ($model->reactivate()) {
                 if (!empty($model->user->email)) {
                     $forum = Config::getInstance()->get('name');
@@ -224,13 +223,10 @@ class AccountController extends BaseController
                     Log::error('Error while queuing reactivation link - no email set', $model->user->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about reactivating.'));
                 }
-
                 return $this->module->goPodium();
             }
-
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
         }
-
         return $this->render('reactivate', ['model' => $model]);
     }
     
@@ -275,13 +271,12 @@ class AccountController extends BaseController
                 Log::error('Error while queuing activation link - no email set', $model->id, __METHOD__);
                 $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about activating.'));
             }
-            
             return $this->module->goPodium();
         }
         
         $model->captcha = null;
         
-        return $this->render('register', ['model' => $model, 'terms' => Content::findOne(['name' => 'terms'])]);
+        return $this->render('register', ['model' => $model, 'terms' => Content::fill(Content::TERMS_AND_CONDS)]);
     }
 
     /**
@@ -323,13 +318,11 @@ class AccountController extends BaseController
                     Log::error('Error while queuing password reset link - no email set', $model->user->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about resetting password.'));
                 }
-                
                 return $this->module->goPodium();
             }
 
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
         }
-
         return $this->render('reset', ['model' => $model]);
     }
 }

@@ -120,14 +120,16 @@ class MessageReceiver extends ActiveRecord
      */
     public function remove()
     {
-        $clearCache = false;
-        if ($this->receiver_status == self::STATUS_NEW) {
-            $clearCache = true;
-        }
-        
-        $deleteParent = null;
         $transaction = static::getDb()->beginTransaction();
         try {
+            $clearCache = false;
+            if ($this->receiver_status == self::STATUS_NEW) {
+                $clearCache = true;
+            }
+            $deleteParent = null;
+            
+            $this->scenario = 'remove';
+            
             if ($this->message->sender_status != Message::STATUS_DELETED) {
                 $this->receiver_status = self::STATUS_DELETED;
                 if ($this->save()) {
@@ -242,5 +244,19 @@ class MessageReceiver extends ActiveRecord
         }
 
         return $dataProvider;
+    }
+    
+    /**
+     * Marks message read.
+     * @since 0.2
+     */
+    public function markRead()
+    {
+        if ($this->receiver_status == Message::STATUS_NEW) {
+            $this->receiver_status = Message::STATUS_READ;
+            if ($this->save()) {
+                Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+            }
+        }
     }
 }

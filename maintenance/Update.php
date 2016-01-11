@@ -45,56 +45,54 @@ class Update extends Maintenance
         if (empty($data['table'])) {
             throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
         }
-        else {
-            $this->setTable($data['table']);
-            if (empty($data['call'])) {
-                throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
-            }
-            else {
-                $this->setError(false);
-                switch ($data['call']) {
-                    case 'create':
-                        $result = call_user_func([$this, '_create'], $data);
-                        break;
-                    case 'addColumn':
-                        $result = call_user_func([$this, '_addColumn'], $data);
-                        break;
-                    case 'alterColumn':
-                        $result = call_user_func([$this, '_alterColumn'], $data);
-                        break;
-                    case 'drop':
-                        $result = call_user_func([$this, '_drop'], $data);
-                        break;
-                    case 'dropColumn':
-                        $result = call_user_func([$this, '_dropColumn'], $data);
-                        break;
-                    case 'dropIndex':
-                        $result = call_user_func([$this, '_dropIndex'], $data);
-                        break;
-                    case 'dropForeign':
-                        $result = call_user_func([$this, '_dropForeign'], $data);
-                        break;
-                    case 'index':
-                        $result = call_user_func([$this, '_index'], $data);
-                        break;
-                    case 'foreign':
-                        $result = call_user_func([$this, '_foreign'], $data);
-                        break;
-                    case 'rename':
-                        $result = call_user_func([$this, '_rename'], $data);
-                        break;
-                    case 'renameColumn':
-                        $result = call_user_func([$this, '_renameColumn'], $data);
-                        break;
-                    default:
-                        $result = call_user_func([$this, '_' . $data['call']], $data);
-                }
-                
-                $this->setResult($result);
-                if ($this->getError()) {
-                    $this->setPercent(100);
-                }
-            }
+
+        $this->setTable($data['table']);
+        if (empty($data['call'])) {
+            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
+        }
+
+        $this->setError(false);
+        switch ($data['call']) {
+            case 'create':
+                $result = call_user_func([$this, '_create'], $data);
+                break;
+            case 'addColumn':
+                $result = call_user_func([$this, '_addColumn'], $data);
+                break;
+            case 'alterColumn':
+                $result = call_user_func([$this, '_alterColumn'], $data);
+                break;
+            case 'drop':
+                $result = call_user_func([$this, '_drop'], $data);
+                break;
+            case 'dropColumn':
+                $result = call_user_func([$this, '_dropColumn'], $data);
+                break;
+            case 'dropIndex':
+                $result = call_user_func([$this, '_dropIndex'], $data);
+                break;
+            case 'dropForeign':
+                $result = call_user_func([$this, '_dropForeign'], $data);
+                break;
+            case 'index':
+                $result = call_user_func([$this, '_index'], $data);
+                break;
+            case 'foreign':
+                $result = call_user_func([$this, '_foreign'], $data);
+                break;
+            case 'rename':
+                $result = call_user_func([$this, '_rename'], $data);
+                break;
+            case 'renameColumn':
+                $result = call_user_func([$this, '_renameColumn'], $data);
+                break;
+            default:
+                $result = call_user_func([$this, '_' . $data['call']], $data);
+        }
+
+        $this->setResult($result);
+        if ($this->getError()) {
+            $this->setPercent(100);
         }
     }
     
@@ -120,7 +118,6 @@ class Update extends Maintenance
                 $this->setPercent(100);
             }
             else {
-                //Cache::getInstance()->flush();
                 $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
                 $this->_proceedStep($this->getPartSteps()[(int)$step]);
             }

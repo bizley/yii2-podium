@@ -1076,18 +1076,25 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function createInheritedAccount()
     {
-        if (!Yii::$app->user->isGuest) {
-            $new = new User;
-            $new->scenario     = 'installation';
-            $new->inherited_id = Yii::$app->user->id;
-            $new->status       = self::STATUS_ACTIVE;
-            $new->role         = self::ROLE_MEMBER;
-            $new->timezone     = self::DEFAULT_TIMEZONE;
-            if ($new->save()) {
+        try {
+            if (!Yii::$app->user->isGuest) {
+                $new = new User;
+                $new->scenario     = 'installation';
+                $new->inherited_id = Yii::$app->user->id;
+                $new->status       = self::STATUS_ACTIVE;
+                $new->role         = self::ROLE_MEMBER;
+                $new->timezone     = self::DEFAULT_TIMEZONE;
+                if (!$new->save()) {
+                    throw new Exception('Account creating error');
+                }
+                Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $new->id);
                 Cache::clearAfter('activate');
                 Log::info('Inherited account created', $new->id, __METHOD__);
                 return true;
             }
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
     }
@@ -1098,8 +1105,12 @@ class User extends ActiveRecord implements IdentityInterface
      * @return string
      * @since 0.2
      */
-    public static function getMembersList($query)
+    public static function getMembersList($query = null)
     {
+        if (is_null($query) || !is_string($query)) {
+            return Json::encode(['results' => []]);
+        }
+        
         $cache = Cache::getInstance()->get('members.fieldlist');
         if ($cache === false || empty($cache[$query])) {
             if ($cache === false) {

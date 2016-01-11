@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\models\Content;
 use bizley\quill\Quill;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -23,12 +24,12 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
 <div class="row">
     <div class="col-sm-3">
         <ul class="nav nav-pills nav-stacked">
-            <li role="presentation" class="<?= $model->name == 'terms' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'terms']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Forum Terms and Conditions') ?></a></li>
-            <li role="presentation" class="<?= $model->name == 'email-reg' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-reg']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Registration e-mail') ?></a></li>
-            <li role="presentation" class="<?= $model->name == 'email-new' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-new']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New address activation e-mail') ?></a></li>
-            <li role="presentation" class="<?= $model->name == 'email-react' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-react']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Account reactivation e-mail') ?></a></li>
-            <li role="presentation" class="<?= $model->name == 'email-pass' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-pass']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Password reset e-mail') ?></a></li>
-            <li role="presentation" class="<?= $model->name == 'email-sub' ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => 'email-sub']) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New post in subscribed thread') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::TERMS_AND_CONDS ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::TERMS_AND_CONDS]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Forum Terms and Conditions') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::EMAIL_REGISTRATION ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_REGISTRATION]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Registration e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::EMAIL_NEW ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_NEW]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New address activation e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::EMAIL_REACTIVATION ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_REACTIVATION]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Account reactivation e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::EMAIL_PASSWORD ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_PASSWORD]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Password reset e-mail') ?></a></li>
+            <li role="presentation" class="<?= $model->name == Content::EMAIL_SUBSCRIPTION ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_SUBSCRIPTION]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'New post in subscribed thread') ?></a></li>
         </ul>
 <?php if (substr($model->name, 0, 6) == 'email-'): ?>
         <br>
