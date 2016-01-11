@@ -157,6 +157,7 @@ class BaseController extends YiiController
     
     /**
      * Creates inherited user account.
+     * @throws Exception
      */
     public function init()
     {
@@ -166,27 +167,19 @@ class BaseController extends YiiController
             if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
                 $user = User::findMe();
                 if (empty($user)) {
-                    $new = new User;
-                    $new->setScenario('installation');
-                    $new->inherited_id = Yii::$app->user->id;
-                    $new->status       = User::STATUS_ACTIVE;
-                    $new->role         = User::ROLE_MEMBER;
-                    $new->timezone     = User::DEFAULT_TIMEZONE;
-                    if ($new->save()) {
+                    if (User::createInheritedAccount()) {
                         $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', ['link' => Html::a(Yii::t('podium/view', 'Profile'))]));
-                        Cache::clearAfter('activate');
-                        Log::info('Inherited account created', $new->id, __METHOD__);
                     }
                     else {
                         throw new Exception(Yii::t('podium/view', 'There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.'));
                     }
                 }
-                elseif ($user->status == User::STATUS_BANNED) {
-                    return $this->redirect(['default/ban']);
-                }
             }
             else {
                 $user = Yii::$app->user->identity;
+            }
+            if ($user->status == User::STATUS_BANNED) {
+                return $this->redirect(['default/ban']);
             }
             if ($user && !empty($user->timezone)) {
                 Yii::$app->formatter->timeZone = $user->timezone;

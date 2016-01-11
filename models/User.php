@@ -19,6 +19,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\helpers\Json;
 use yii\web\IdentityInterface;
 use Zelenin\yii\behaviors\Slug;
 use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
@@ -1033,7 +1034,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @return boolean
      * @since 0.2
      */
-    public function updateModeratorMany($newForums = [], $oldForums = [])
+    public function updateModeratorForMany($newForums = [], $oldForums = [])
     {
         try {
             $add = [];
@@ -1060,6 +1061,126 @@ class User extends ActiveRecord implements IdentityInterface
             }
             Cache::getInstance()->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Creates inherited account.
+     * @return boolean
+     * @since 0.2
+     */
+    public static function createInheritedAccount()
+    {
+        if (!Yii::$app->user->isGuest) {
+            $new = new User;
+            $new->scenario     = 'installation';
+            $new->inherited_id = Yii::$app->user->id;
+            $new->status       = self::STATUS_ACTIVE;
+            $new->role         = self::ROLE_MEMBER;
+            $new->timezone     = self::DEFAULT_TIMEZONE;
+            if ($new->save()) {
+                Cache::clearAfter('activate');
+                Log::info('Inherited account created', $new->id, __METHOD__);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Returns JSON list of members matching query.
+     * @param string $query
+     * @return string
+     * @since 0.2
+     */
+    public static function getMembersList($query)
+    {
+        $cache = Cache::getInstance()->get('members.fieldlist');
+        if ($cache === false || empty($cache[$query])) {
+            if ($cache === false) {
+                $cache = [];
+            }
+            $users = static::find()->andWhere(['status' => self::STATUS_ACTIVE]);
+            $users->andWhere(['!=', 'id', self::loggedId()]);
+            if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
+                $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
+            }
+            elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
+                $users->andWhere([
+                    'or', 
+                    ['like', 'username', $query],
+                    [
+                        'username' => ['', null],
+                        'id'       => $matches[1]
+                    ]
+                ]);
+            }
+            else {
+                $users->andWhere(['like', 'username', $query]);
+            }
+            $users->orderBy(['username' => SORT_ASC, 'id' => SORT_ASC]);
+            $results = ['results' => []];
+            foreach ($users->each() as $user) {
+                $results['results'][] = ['id' => $user->id, 'text' => $user->getPodiumTag(true)];
+            }
+            if (!empty($results['results'])) {
+                $cache[$query] = Json::encode($results);
+                Cache::getInstance()->set('members.fieldlist', $cache);
+            }
+            else {
+                return Json::encode(['results' => []]);
+            }
+        }
+
+        return $cache[$query];
+    }
+    
+    /**
+     * Updates ignore status for the user.
+     * @return boolean
+     * @since 0.2
+     */
+    public function updateIgnore()
+    {
+        try {
+            if ($this->isIgnoredBy(User::loggedId())) {
+                Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => User::loggedId(), ':iid' => $this->id])->execute();
+                Log::info('User unignored', $this->id, __METHOD__);
+            }
+            else {
+                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => User::loggedId(), 'ignored_id' => $this->id])->execute();
+                Log::info('User ignored', $this->id, __METHOD__);
+            }
+            return true;
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Updates friend status for the user.
+     * @return boolean
+     * @since 0.2
+     */
+    public function updateFriend()
+    {
+        try {
+            if ($this->isBefriendedBy(User::loggedId())) {
+                Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', 'user_id = :uid AND friend_id = :iid', [':uid' => User::loggedId(), ':iid' => $this->id])->execute();
+                Log::info('User unfriended', $this->id, __METHOD__);
+            }
+            else {
+                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => User::loggedId(), 'friend_id' => $this->id])->execute();
+                Log::info('User befriended', $this->id, __METHOD__);
+            }
+            Cache::getInstance()->deleteElement('user.friends', $this->id);
             return true;
         }
         catch (Exception $e) {
