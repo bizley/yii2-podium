@@ -53,10 +53,7 @@ class UserSearch extends User
             $query->andWhere(['role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]]);
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 

@@ -47,10 +47,7 @@ class LogSearch extends ActiveRecord
     {
         $query = static::find();
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['id' => SORT_DESC];
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 

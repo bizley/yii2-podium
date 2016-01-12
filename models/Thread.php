@@ -263,7 +263,6 @@ class Thread extends ActiveRecord
             'query' => $query,
             'pagination' => false,
         ]);
-
         $dataProvider->sort->defaultOrder = ['pinned' => SORT_DESC, 'updated_at' => SORT_DESC, 'id' => SORT_ASC];
 
         return $dataProvider;
@@ -288,7 +287,6 @@ class Thread extends ActiveRecord
             'query' => $query,
             'pagination' => false,
         ]);
-
         $dataProvider->sort->defaultOrder = ['updated_at' => SORT_DESC, 'id' => SORT_ASC];
 
         return $dataProvider;
@@ -426,8 +424,8 @@ class Thread extends ActiveRecord
             if (in_array($user_id, $this->forum->getMods())) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
     
     /**

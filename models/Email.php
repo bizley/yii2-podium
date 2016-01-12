@@ -88,7 +88,6 @@ class Email extends ActiveRecord
         catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
-        
         return false;
     }
 }

@@ -31,8 +31,8 @@ use yii\db\Query;
 class MessageReceiver extends ActiveRecord
 {
 
-    const STATUS_NEW = 1;
-    const STATUS_READ = 10;
+    const STATUS_NEW     = 1;
+    const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
     
     /**

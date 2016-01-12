@@ -261,9 +261,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
             return self::$_identity;
         }
-        else {
-            return Yii::$app->user->identity;
-        }
+        return Yii::$app->user->identity;
     }
     
     /**
@@ -286,7 +284,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['email' => $email, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
     
     /**
@@ -299,7 +297,7 @@ class User extends ActiveRecord implements IdentityInterface
         if (!static::isEmailTokenValid($token)) {
             return null;
         }
-        return static::findOne(['email_token' => $token, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['email_token' => $token, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
     
     /**
@@ -328,9 +326,9 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
         if ($status == null) {
-            return static::findOne(['password_reset_token' => $token]);
+            return static::find()->where(['password_reset_token' => $token])->limit(1)->one();
         }
-        return static::findOne(['password_reset_token' => $token, 'status' => $status]);
+        return static::find()->where(['password_reset_token' => $token, 'status' => $status])->limit(1)->one();
     }
     
     /**
@@ -340,7 +338,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['username' => $username, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
     
     /**
@@ -348,7 +346,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['id' => $id, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
     
     /**
@@ -715,18 +713,20 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function loggedId()
     {
-        if (!Yii::$app->user->isGuest) {
-            if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
-                $user = static::findMe();
-                if ($user) {
-                    return $user->id;
-                }
-            }
-            else {
-                return Yii::$app->user->id;
-            }
+        if (Yii::$app->user->isGuest) {
+            return null;
         }
-        return null;
+        
+        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            $user = static::findMe();
+            if ($user) {
+                return $user->id;
+            }
+            return null;
+        }
+        else {
+            return Yii::$app->user->id;
+        }
     }
 
     /**
@@ -751,7 +751,6 @@ class User extends ActiveRecord implements IdentityInterface
         try {
             $this->scenario = 'role';
             $this->role     = $role;            
-            
             if ($this->save()) {
                 if (Yii::$app->authManager->getRolesByUser($this->id)) {
                     Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id);
@@ -923,13 +922,9 @@ class User extends ActiveRecord implements IdentityInterface
             if (!empty(Yii::$app->user->identity->$password_hash)) {
                 return Yii::$app->security->validatePassword($password, Yii::$app->user->identity->$password_hash);
             }
-            else {
-                return false;
-            }
+            return false;
         }
-        else {
-            return Yii::$app->security->validatePassword($password, $this->password_hash);
-        }
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
     
     /**
@@ -973,9 +968,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
             return $access;
         }
-        else {
-            return Yii::$app->user->can($permissionName, $params, $allowCaching);
-        }
+        return Yii::$app->user->can($permissionName, $params, $allowCaching);
     }
     
     /**
@@ -985,21 +978,22 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function friendsList()
     {
-        if (!Yii::$app->user->isGuest) {
-            $cache = Cache::getInstance()->getElement('user.friends', static::loggedId());
-            if ($cache === false) {
-                $cache = [];
-                $friends = static::findMe()->friends;
-                if ($friends) {
-                    foreach ($friends as $friend) {
-                        $cache[$friend->id] = $friend->getPodiumTag(true);
-                    }
-                }
-                Cache::getInstance()->setElement('user.friends', static::loggedId(), $cache);
-            }
-            return $cache;
+        if (Yii::$app->user->isGuest) {
+            return null;
         }
-        return null;
+
+        $cache = Cache::getInstance()->getElement('user.friends', static::loggedId());
+        if ($cache === false) {
+            $cache = [];
+            $friends = static::findMe()->friends;
+            if ($friends) {
+                foreach ($friends as $friend) {
+                    $cache[$friend->id] = $friend->getPodiumTag(true);
+                }
+            }
+            Cache::getInstance()->setElement('user.friends', static::loggedId(), $cache);
+        }
+        return $cache;
     }
     
     /**

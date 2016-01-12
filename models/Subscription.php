@@ -60,21 +60,17 @@ class Subscription extends ActiveRecord
     
     /**
      * Searches for subscription
-     * @param array $params
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search()
     {
-        $query = self::find()->where(['user_id' => User::loggedId()]);
-
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => self::find()->where(['user_id' => User::loggedId()]),
             'pagination' => [
                 'defaultPageSize' => 10,
                 'forcePageParam' => false
             ],
         ]);
-
         $dataProvider->sort->defaultOrder = ['post_seen' => SORT_ASC, 'id' => SORT_DESC];
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
 
@@ -118,8 +114,7 @@ class Subscription extends ActiveRecord
         if (is_numeric($thread) && $thread > 0) {            
             $forum = Config::getInstance()->get('name');
             $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
-            
-            $subs = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
+            $subs  = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {
                 $sub->post_seen = self::POST_NEW;
                 if ($sub->save()) {

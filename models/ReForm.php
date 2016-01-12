@@ -45,7 +45,6 @@ class ReForm extends Model
         if ($this->_user === false) {
             $this->_user = User::findByKeyfield($this->username, $status);
         }
-
         return $this->_user;
     }
 
@@ -57,13 +56,13 @@ class ReForm extends Model
     {
         $user = $this->getUser();
         
-        if ($user) {
-            $user->setScenario('token');
-            $user->generatePasswordResetToken();
-            return $user->save();
+        if (empty($user)) {
+            return false;
         }
-        
-        return false;
+
+        $user->scenario = 'token';
+        $user->generatePasswordResetToken();
+        return $user->save();
     }
     
     /**
@@ -74,12 +73,12 @@ class ReForm extends Model
     {
         $user = $this->getUser(User::STATUS_REGISTERED);
         
-        if ($user) {
-            $user->setScenario('token');
-            $user->generateActivationToken();
-            return $user->save();
+        if (empty($user)) {
+            return false;
         }
         
-        return false;
+        $user->scenario = 'token';
+        $user->generateActivationToken();
+        return $user->save();
     }
 }

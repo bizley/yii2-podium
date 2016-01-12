@@ -223,7 +223,6 @@ class Activity extends ActiveRecord
             }
             Cache::getInstance()->set('forum.lastactive', $last, 60);
         }
-        
         return $last;
     }
     
@@ -235,11 +234,9 @@ class Activity extends ActiveRecord
     {
         $members = Cache::getInstance()->get('forum.memberscount');
         if ($members === false) {
-            
             $members = User::find()->where(['!=', 'status', User::STATUS_REGISTERED])->count();
             Cache::getInstance()->set('forum.memberscount', $members);
         }
-        
         return $members;
     }
     
@@ -251,11 +248,9 @@ class Activity extends ActiveRecord
     {
         $posts = Cache::getInstance()->get('forum.postscount');
         if ($posts === false) {
-            
             $posts = Post::find()->count();
             Cache::getInstance()->set('forum.postscount', $posts);
         }
-        
         return $posts;
     }
     
@@ -267,11 +262,9 @@ class Activity extends ActiveRecord
     {
         $threads = Cache::getInstance()->get('forum.threadscount');
         if ($threads === false) {
-            
             $threads = Thread::find()->count();
             Cache::getInstance()->set('forum.threadscount', $threads);
         }
-        
         return $threads;
     }
 }

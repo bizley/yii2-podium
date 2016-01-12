@@ -35,8 +35,8 @@ use yii\helpers\HtmlPurifier;
 class Message extends ActiveRecord
 {
 
-    const STATUS_NEW = 1;
-    const STATUS_READ = 10;
+    const STATUS_NEW     = 1;
+    const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
     
     const MAX_RECEIVERS = 10;

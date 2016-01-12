@@ -80,14 +80,12 @@ class Category extends ActiveRecord
     public function search()
     {
         $query = self::find();
+        
         if (Yii::$app->user->isGuest) {
             $query->andWhere(['visible' => 1]);
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider;
@@ -99,12 +97,7 @@ class Category extends ActiveRecord
      */
     public function show()
     {
-        $query = self::find();
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
+        $dataProvider = new ActiveDataProvider(['query' => self::find()]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider->getModels();

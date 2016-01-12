@@ -117,7 +117,6 @@ class Forum extends ActiveRecord
             }
             Cache::getInstance()->setElement('forum.moderators', $this->id, $mods);
         }
-        
         return $mods;        
     }
     
@@ -152,10 +151,7 @@ class Forum extends ActiveRecord
             $query->andWhere([static::tableName() . '.visible' => 1]);
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
 
         return $dataProvider;

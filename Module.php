@@ -291,37 +291,34 @@ class Module extends BaseModule implements BootstrapInterface
     {
         parent::init();
         
-        if (in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
-            if (in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
-
-                $this->setAliases(['@podium' => '@vendor/bizley/podium']);
-
-                if (Yii::$app instanceof WebApplication) {
-
-                    if ($this->userComponent == self::USER_OWN) {
-                        $this->registerIdentity();
-                    }
-                    if ($this->rbacComponent == self::RBAC_OWN) {
-                        $this->registerAuthorization();
-                    }
-                    $this->registerTranslations();
-                    $this->registerFormatter();
-
-                    $this->layout     = self::MAIN_LAYOUT;
-                    $this->_installed = Installation::check();
-                }
-                elseif (Yii::$app instanceof ConsoleApplication) {
-                    if ($this->rbacComponent == self::RBAC_OWN) {
-                        $this->registerAuthorization();
-                    }
-                }
-            }
-            else {
-                throw InvalidConfigException('Invalid value for the rbac parameter.');
-            }
-        }
-        else {
+        if (!in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
             throw InvalidConfigException('Invalid value for the user parameter.');
+        }
+            
+        if (!in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
+            throw InvalidConfigException('Invalid value for the rbac parameter.');
+        }
+
+        $this->setAliases(['@podium' => '@vendor/bizley/podium']);
+
+        if (Yii::$app instanceof WebApplication) {
+
+            if ($this->userComponent == self::USER_OWN) {
+                $this->registerIdentity();
+            }
+            if ($this->rbacComponent == self::RBAC_OWN) {
+                $this->registerAuthorization();
+            }
+            $this->registerTranslations();
+            $this->registerFormatter();
+
+            $this->layout     = self::MAIN_LAYOUT;
+            $this->_installed = Installation::check();
+        }
+        elseif (Yii::$app instanceof ConsoleApplication) {
+            if ($this->rbacComponent == self::RBAC_OWN) {
+                $this->registerAuthorization();
+            }
         }
     }
 

@@ -41,8 +41,7 @@ class ThreadView extends ActiveRecord
     public function search()
     {
         $loggedId = User::loggedId();
-        $query = Thread::find()->joinWith('threadView')
-                ->where([
+        $query = Thread::find()->joinWith('threadView')->where([
                     'or',
                     [
                         'and',

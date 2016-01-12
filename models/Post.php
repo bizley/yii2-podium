@@ -190,7 +190,6 @@ class Post extends ActiveRecord
     {
         try {
             $newWords = $allWords;
-
             $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyFound) {
                 if (($key = array_search($vocabularyFound['word'], $allWords)) !== false) {
@@ -220,9 +219,7 @@ class Post extends ActiveRecord
         try {
             $vocabulary = [];
             $allWords   = $this->_prepareWords();
-            
             $this->_addNewWords($allWords);
-
             $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
@@ -246,9 +243,7 @@ class Post extends ActiveRecord
         try {
             $vocabulary = [];
             $allWords   = $this->_prepareWords();
-            
             $this->_addNewWords($allWords);
-
             $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
@@ -256,7 +251,6 @@ class Post extends ActiveRecord
             if (!empty($vocabulary)) {
                 Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], array_values($vocabulary))->execute();
             }
-            
             $query = (new Query)->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
             foreach ($query->each() as $junk) {
                 if (!array_key_exists($junk['word_id'], $vocabulary)) {
@@ -288,19 +282,15 @@ class Post extends ActiveRecord
      */
     public function search($forum_id, $thread_id)
     {
-        $query = self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]);
-
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]),
             'pagination' => [
                 'defaultPageSize' => 10,
                 'pageSizeLimit' => false,
                 'forcePageParam' => false
             ],
         ]);
-
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
-
         return $dataProvider;
     }
     
@@ -327,7 +317,6 @@ class Post extends ActiveRecord
                 'forcePageParam' => false
             ],
         ]);
-
         $dataProvider->sort->defaultOrder = ['id' => SORT_ASC];
 
         return $dataProvider;
@@ -339,10 +328,9 @@ class Post extends ActiveRecord
     public function markSeen()
     {
         if (!Yii::$app->user->isGuest) {
-            $threadView = ThreadView::findOne(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id]);
-            
-            if (!$threadView) {
-                $threadView                   = new ThreadView;
+            $threadView = ThreadView::find()->where(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id])->limit(1)->one();
+            if (empty($threadView)) {
+                $threadView = new ThreadView;
                 $threadView->user_id          = User::loggedId();
                 $threadView->thread_id        = $this->thread_id;
                 $threadView->new_last_seen    = $this->created_at;
@@ -374,7 +362,6 @@ class Post extends ActiveRecord
                     }
                 }
             }
-            
             if ($this->thread->subscription) {
                 if ($this->thread->subscription->post_seen == Subscription::POST_NEW) {
                     $this->thread->subscription->post_seen = Subscription::POST_SEEN;
