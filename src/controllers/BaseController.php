@@ -1,15 +1,10 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
-use bizley\podium\Module as PodiumModule;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\traits\FlashTrait;
 use Exception;
@@ -23,7 +18,7 @@ use yii\web\Controller as YiiController;
  * Prepares account in case of new inheritet identity user.
  * Redirects users in case of maintenance.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class BaseController extends YiiController
@@ -77,7 +72,7 @@ class BaseController extends YiiController
                     'settingsPage'    => Html::a(Yii::t('podium/flash', 'Settings page'), ['admin/settings']),
                 ]
             ),
-            'email'       => Yii::t(
+            'email' => Yii::t(
                 'podium/flash', 
                 'No e-mail address has been set for your account! Go to {link} to add one.', 
                 [
@@ -109,7 +104,7 @@ class BaseController extends YiiController
      */
     public function maintenanceCheck($action, $warnings)
     {
-        if (Config::getInstance()->get('maintenance_mode') == '1') {
+        if ($this->module->config->get('maintenance_mode') == '1') {
             if ($action->id !== 'maintenance') {
                 if ($warnings) {
                     foreach ($warnings as $warning) {
@@ -173,7 +168,7 @@ class BaseController extends YiiController
         
         $result = Helper::compareVersions(
                         explode('.', $this->module->version), 
-                        explode('.', Config::getInstance()->get('version'))
+                        explode('.', $this->module->config->get('version'))
                     );
         if ($result == '>') {
             $this->warning(static::warnings()['old_version'], false);
@@ -193,7 +188,7 @@ class BaseController extends YiiController
         parent::init();
         
         if (!Yii::$app->user->isGuest) {
-            if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+            if ($this->module->userComponent == Podium::USER_INHERIT) {
                 $user = User::findMe();
                 if (empty($user)) {
                     if (User::createInheritedAccount()) {

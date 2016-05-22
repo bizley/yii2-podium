@@ -1,13 +1,11 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
 use Exception;
+use yii\base\Object;
+use yii\base\View;
 use yii\caching\Cache as DefaultCache;
 use yii\caching\DummyCache;
 use yii\di\Instance;
@@ -37,16 +35,13 @@ use yii\widgets\FragmentCache;
  * user.threadscount  => list of users' threads count
  * user.votes.ID      => user's votes per hour
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
+ * @property DefaultCache $engine
  */
-class Cache
+class Cache extends Object
 {
-    /**
-     * @var string name of the cache component
-     */
-    public $cache = 'cache';
-    
     /**
      * @var string Podium cache element prefix.
      * This prefix is automatically added to every element.
@@ -54,44 +49,49 @@ class Cache
     protected $_cachePrefix = 'podium.';
     
     /**
-     * @var boolean|Cache instance of Cache object
+     * @var DefaultCache cache engine.
      */
-    protected static $_instance = false;
-    
+    protected $_engine;
+
     /**
-     * Singleton construct.
+     * Returns cache engine.
+     * @return DefaultCache
+     * @since 0.2
      */
-    protected function __construct()
+    public function getEngine()
     {
-        try {
-            $this->cache = Instance::ensure($this->cache, DefaultCache::className());
+        if ($this->_engine === null) {
+            try {
+                $this->_engine = Instance::ensure('cache', DefaultCache::className());
+            } catch (Exception $e) {
+                $this->_engine = new DummyCache;
+            }
         }
-        catch (Exception $e) {
-            $this->cache = new DummyCache();
-        }
+        return $this->_engine;
     }
     
     /**
      * Begins FragmentCache widget.
      * Usage:
-     * if (Cache::getInstance()->beginCache('key', $this)) {
+     * if (Podium::getInstance()->cache->beginCache('key', $this)) {
      *      $this->endCache();
      * }
      * @param string $key the key identifying the content to be cached.
-     * @param \yii\base\View $view view object
+     * @param View $view view object
      * @param integer $duration number of seconds that the data can remain valid in cache.
      * Use 0 to indicate that the cached data will never expire.
      * @return boolean
+     * @since 0.2
      */
-    public function beginCache($key, $view, $duration = 60)
+    public function begin($key, $view, $duration = 60)
     {
-        $properties['id']       = $this->_cachePrefix . $key;
-        $properties['view']     = $view;
+        $properties['id'] = $this->_cachePrefix . $key;
+        $properties['view'] = $view;
         $properties['duration'] = $duration;
 
         $cache = FragmentCache::begin($properties);
         if ($cache->getCachedContent() !== false) {
-            $this->endCache();
+            $this->end();
             return false;
         }
         return true;
@@ -104,7 +104,7 @@ class Cache
      */
     public static function clearAfter($what)
     {
-        $cache = static::getInstance();
+        $cache = new static;
         
         switch ($what) {
             case 'activate':
@@ -145,7 +145,7 @@ class Cache
      */
     public function delete($key)
     {
-        return $this->cache->delete($this->_cachePrefix . $key);
+        return $this->engine->delete($this->_cachePrefix . $key);
     }
     
     /**
@@ -167,7 +167,7 @@ class Cache
     /**
      * Ends FragmentCache widget.
      */
-    public function endCache()
+    public function end()
     {
         return FragmentCache::end();
     }
@@ -177,7 +177,7 @@ class Cache
      */
     public function flush()
     {
-        return $this->cache->flush();
+        return $this->engine->flush();
     }
     
     /**
@@ -188,7 +188,7 @@ class Cache
      */
     public function get($key)
     {
-        return $this->cache->get($this->_cachePrefix . $key);
+        return $this->engine->get($this->_cachePrefix . $key);
     }
     
     /**
@@ -208,18 +208,6 @@ class Cache
     }
     
     /**
-     * Calls for Cache instance.
-     * @return Cache
-     */
-    public static function getInstance()
-    {
-        if (self::$_instance === false) {
-            self::$_instance = new self;
-        }
-        return self::$_instance;
-    }
-
-    /**
      * Stores the value identified by the key into cache.
      * @param string $key the key identifying the value to be cached.
      * @param mixed $value the value to be cached
@@ -228,7 +216,7 @@ class Cache
      */
     public function set($key, $value, $duration = 0)
     {
-        return $this->cache->set($this->_cachePrefix . $key, $value, $duration);
+        return $this->engine->set($this->_cachePrefix . $key, $value, $duration);
     }
     
     /**

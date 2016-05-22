@@ -6,17 +6,17 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Config;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use Yii;
 use yii\filters\AccessControl;
+use yii\web\Response;
 
 /**
  * Podium Members controller
  * All actions concerning forum members.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class MembersController extends BaseController
@@ -37,7 +37,7 @@ class MembersController extends BaseController
                     [
                         'allow'         => false,
                         'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
+                            return !$this->module->installed;
                         },
                         'denyCallback' => function ($rule, $action) {
                             return $this->redirect(['install/run']);
@@ -45,7 +45,7 @@ class MembersController extends BaseController
                     ],
                     [
                         'allow' => true,
-                        'roles' => Config::getInstance()->get('members_visible') ? ['@', '?'] : ['@'],
+                        'roles' => $this->module->config->get('members_visible') ? ['@', '?'] : ['@'],
                     ],
                 ],
             ],
@@ -59,7 +59,7 @@ class MembersController extends BaseController
      * Entering integer looks for member with XX in username or empty username 
      * and that ID.
      * @param string $q Username query
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionFieldlist($q = null)
     {
@@ -73,7 +73,7 @@ class MembersController extends BaseController
     /**
      * Ignoring the user of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionIgnore($id = null)
     {
@@ -145,7 +145,7 @@ class MembersController extends BaseController
      * Listing posts created by user of given ID and slug.
      * @param integer $id
      * @param string $slug
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionPosts($id = null, $slug = null)
     {
@@ -168,7 +168,7 @@ class MembersController extends BaseController
      * Listing threads started by user of given ID and slug.
      * @param integer $id
      * @param string $slug
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionThreads($id = null, $slug = null)
     {
@@ -191,7 +191,7 @@ class MembersController extends BaseController
      * Viewing profile of user of given ID and slug.
      * @param integer $id
      * @param string $slug
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionView($id = null, $slug = null)
     {
@@ -208,7 +208,7 @@ class MembersController extends BaseController
     /**
      * Adding or removing user as a friend.
      * @param integer $id user ID
-     * @return \yii\web\Response
+     * @return Response
      * @since 0.2
      */
     public function actionFriend($id = null)

@@ -2,7 +2,7 @@
 
 namespace bizley\podium\maintenance;
 
-use bizley\podium\components\Config;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\db\Schema;
@@ -11,7 +11,7 @@ use yii\helpers\Html;
 /**
  * Podium Update
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
  */
@@ -218,7 +218,7 @@ class Update extends Maintenance
             if (empty($data['version'])) {
                 throw new Exception(Yii::t('podium/flash', 'Version number missing.'));
             }
-            Config::getInstance()->set('version', $data['version']);
+            Podium::getInstance()->config->set('version', $data['version']);
             return $this->outputSuccess(
                 Yii::t(
                     'podium/flash', 

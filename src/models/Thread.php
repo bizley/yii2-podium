@@ -3,9 +3,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
-use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
@@ -20,7 +20,7 @@ use Zelenin\yii\behaviors\Slug;
 /**
  * Thread model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property string $name
@@ -272,7 +272,7 @@ class Thread extends ActiveRecord
                 $query->andWhere([
                     '>=', 
                     'posts', 
-                    Config::getInstance()->get('hot_minimum')
+                    Podium::getInstance()->config->get('hot_minimum')
                 ]);
             }
             if (!empty($filters['new']) 
@@ -362,7 +362,7 @@ class Thread extends ActiveRecord
         } elseif ($this->pinned) {
             $icon   = self::ICON_PINNED;
             $append = true;
-        } elseif ($this->posts >= Config::getInstance()->get('hot_minimum')) {
+        } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
             $icon   = self::ICON_HOT;
             $append = true;
         }
@@ -401,7 +401,7 @@ class Thread extends ActiveRecord
         } elseif ($this->pinned) {
             $description = Yii::t('podium/view', 'Pinned Thread');
             $append      = true;
-        } elseif ($this->posts >= Config::getInstance()->get('hot_minimum')) {
+        } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
             $description = Yii::t('podium/view', 'Hot Thread');
             $append      = true;
         }

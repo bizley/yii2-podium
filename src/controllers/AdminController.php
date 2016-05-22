@@ -15,22 +15,20 @@ use bizley\podium\models\Content;
 use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
 use bizley\podium\models\LogSearch;
-use bizley\podium\models\Mod;
 use bizley\podium\models\Post;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use bizley\podium\rbac\Rbac;
-use Exception;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
+use yii\web\Response;
 
 /**
  * Podium Admin controller
  * All actions concerning module administration.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class AdminController extends BaseController
@@ -66,7 +64,7 @@ class AdminController extends BaseController
     /**
      * Banning the user of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionBan($id = null)
     {
@@ -85,7 +83,7 @@ class AdminController extends BaseController
             else {
                 if ($model->status == User::STATUS_ACTIVE) {
                     if ($model->ban()) {
-                        Cache::getInstance()->delete('members.fieldlist');
+                        $this->module->cache->delete('members.fieldlist');
                         Log::info('User banned', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'User has been banned.'));
                     }
@@ -96,7 +94,7 @@ class AdminController extends BaseController
                 }
                 elseif ($model->status == User::STATUS_BANNED) {
                     if ($model->unban()) {
-                        Cache::getInstance()->delete('members.fieldlist');
+                        $this->module->cache->delete('members.fieldlist');
                         Log::info('User unbanned', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'User has been unbanned.'));
                     }
@@ -129,7 +127,7 @@ class AdminController extends BaseController
      */
     public function actionClear()
     {
-        if (Cache::getInstance()->flush()) {
+        if ($this->module->cache->flush()) {
             $this->success(Yii::t('podium/flash', 'Cache has been cleared.'));
         }
         else {
@@ -142,7 +140,7 @@ class AdminController extends BaseController
     /**
      * Listing the contents.
      * @param string $name content name
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionContents($name = '')
     {
@@ -174,7 +172,7 @@ class AdminController extends BaseController
     /**
      * Deleting the user of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionDelete($id = null)
     {
@@ -210,7 +208,7 @@ class AdminController extends BaseController
     /**
      * Deleting the category of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionDeleteCategory($id = null)
     {
@@ -243,7 +241,7 @@ class AdminController extends BaseController
      * Deleting the forum of given ID.
      * @param integer $cid parent category ID
      * @param integer $id forum ID
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionDeleteForum($cid = null, $id = null)
     {
@@ -275,7 +273,7 @@ class AdminController extends BaseController
     /**
      * Demoting the user of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionDemote($id = null)
     {
@@ -309,7 +307,7 @@ class AdminController extends BaseController
     /**
      * Editing the category of given ID.
      * @param integer $id
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionEditCategory($id = null)
     {
@@ -345,7 +343,7 @@ class AdminController extends BaseController
      * Editing the forum of given ID.
      * @param integer $cid parent category ID
      * @param integer $id forum ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionEditForum($cid = null, $id = null)
     {
@@ -381,7 +379,7 @@ class AdminController extends BaseController
     /**
      * Listing the forums of given category ID.
      * @param integer $cid parent category ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionForums($cid = null)
     {
@@ -443,7 +441,7 @@ class AdminController extends BaseController
      * Adding/removing forum from the moderation list for user of given ID.
      * @param integer $uid user ID
      * @param integer $fid forum ID
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionMod($uid = null, $fid = null)
     {
@@ -483,7 +481,7 @@ class AdminController extends BaseController
     /**
      * Listing and updating moderation list for the forum of given ID.
      * @param integer $id forum ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionMods($id = null)
     {
@@ -538,7 +536,7 @@ class AdminController extends BaseController
     
     /**
      * Adding new category.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionNewCategory()
     {
@@ -566,7 +564,7 @@ class AdminController extends BaseController
     /**
      * Adding new forum.
      * @param integer $cid parent category ID
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionNewForum($cid = null)
     {
@@ -603,7 +601,7 @@ class AdminController extends BaseController
     /**
      * Promoting the user of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionPromote($id = null)
     {
@@ -637,7 +635,7 @@ class AdminController extends BaseController
     
     /**
      * Updating the module configuration.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionSettings()
     {
@@ -665,7 +663,7 @@ class AdminController extends BaseController
     
     /**
      * Updating the categories order.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionSortCategory()
     {
@@ -699,7 +697,7 @@ class AdminController extends BaseController
     
     /**
      * Updating the forums order.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionSortForum()
     {
@@ -735,7 +733,7 @@ class AdminController extends BaseController
     /**
      * Listing the details of user of given ID.
      * @param integer $id
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionView($id = null)
     {

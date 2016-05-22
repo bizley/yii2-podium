@@ -20,7 +20,7 @@ use yii\web\Controller;
  * Podium Install controller
  * All actions concerning module installation.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class InstallController extends Controller

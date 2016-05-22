@@ -11,7 +11,7 @@ use yii\rbac\Rule;
 /**
  * Checks if authorID matches user passed via params
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class AuthorRule extends Rule

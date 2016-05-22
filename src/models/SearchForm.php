@@ -15,7 +15,7 @@ use yii\helpers\HtmlPurifier;
  * SearchForm model
  * Advanced forum search.
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class SearchForm extends Model

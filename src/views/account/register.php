@@ -3,11 +3,11 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 
-use bizley\podium\components\Config;
+use bizley\podium\Module as Podium;
 use yii\bootstrap\ActiveForm;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
@@ -41,12 +41,12 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
             <div class="form-group">
                 <?= $form->field($model, 'tos')->checkBox()->label('<small>' . Yii::t('podium/view', 'I have read and agree to the Terms and Conditions') . ' <span class="glyphicon glyphicon-circle-arrow-right"></span></small>') ?>
             </div>
-<?php if (Config::getInstance()->get('use_captcha')): ?>
-<?php if (Config::getInstance()->get('recaptcha_sitekey') !== '' && Config::getInstance()->get('recaptcha_secretkey') !== ''): ?>
+<?php if (Podium::getInstance()->config->get('use_captcha')): ?>
+<?php if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== ''): ?>
             <div class="form-group">
                 <?= $form->field($model, 'captcha')->widget(Recaptcha::className(), [
                     'clientOptions' => [
-                        'data-sitekey' => Config::getInstance()->get('recaptcha_sitekey')
+                        'data-sitekey' => Podium::getInstance()->config->get('recaptcha_sitekey')
                     ]
                 ]) ?>
             </div>

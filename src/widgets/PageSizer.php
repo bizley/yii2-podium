@@ -14,7 +14,7 @@ use yii\helpers\Html;
  * Podium Page Sizer widget
  * Renders dropdown  list with acceptable page sizes.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class PageSizer extends Widget

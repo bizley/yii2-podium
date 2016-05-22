@@ -2,8 +2,8 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -14,7 +14,7 @@ use yii\db\ActiveRecord;
  * Podium Activity model
  * Members tracking and counting.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
  * @property integer $id
@@ -147,7 +147,7 @@ class Activity extends ActiveRecord
     {
         $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity && $activity->delete()) {
-            Cache::getInstance()->delete('forum.lastactive');
+            Podium::getInstance()->cache->delete('forum.lastactive');
         } else {
             Log::error('Cannot delete user activity', $id, __METHOD__);
         }
@@ -166,7 +166,7 @@ class Activity extends ActiveRecord
             $activity->username = $username;
             $activity->user_slug = $slug;
             if ($activity->save()) {
-                Cache::getInstance()->delete('forum.lastactive');
+                Podium::getInstance()->cache->delete('forum.lastactive');
             } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
@@ -186,7 +186,7 @@ class Activity extends ActiveRecord
         if ($activity) {
             $activity->role = $role;
             if ($activity->save()) {
-                Cache::getInstance()->delete('forum.lastactive');
+                Podium::getInstance()->cache->delete('forum.lastactive');
             } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
@@ -201,7 +201,7 @@ class Activity extends ActiveRecord
      */
     public static function lastActive()
     {
-        $last = Cache::getInstance()->get('forum.lastactive');
+        $last = Podium::getInstance()->cache->get('forum.lastactive');
         if ($last === false) {
             $last = [
                 'count'     => self::find()
@@ -246,7 +246,7 @@ class Activity extends ActiveRecord
                     'slug' => $member->user_slug,
                 ];
             }
-            Cache::getInstance()->set('forum.lastactive', $last, 60);
+            Podium::getInstance()->cache->set('forum.lastactive', $last, 60);
         }
         return $last;
     }
@@ -257,12 +257,12 @@ class Activity extends ActiveRecord
      */
     public static function totalMembers()
     {
-        $members = Cache::getInstance()->get('forum.memberscount');
+        $members = Podium::getInstance()->cache->get('forum.memberscount');
         if ($members === false) {
             $members = User::find()
                         ->where(['!=', 'status', User::STATUS_REGISTERED])
                         ->count();
-            Cache::getInstance()->set('forum.memberscount', $members);
+            Podium::getInstance()->cache->set('forum.memberscount', $members);
         }
         return $members;
     }
@@ -273,10 +273,10 @@ class Activity extends ActiveRecord
      */
     public static function totalPosts()
     {
-        $posts = Cache::getInstance()->get('forum.postscount');
+        $posts = Podium::getInstance()->cache->get('forum.postscount');
         if ($posts === false) {
             $posts = Post::find()->count();
-            Cache::getInstance()->set('forum.postscount', $posts);
+            Podium::getInstance()->cache->set('forum.postscount', $posts);
         }
         return $posts;
     }
@@ -287,10 +287,10 @@ class Activity extends ActiveRecord
      */
     public static function totalThreads()
     {
-        $threads = Cache::getInstance()->get('forum.threadscount');
+        $threads = Podium::getInstance()->cache->get('forum.threadscount');
         if ($threads === false) {
             $threads = Thread::find()->count();
-            Cache::getInstance()->set('forum.threadscount', $threads);
+            Podium::getInstance()->cache->set('forum.threadscount', $threads);
         }
         return $threads;
     }

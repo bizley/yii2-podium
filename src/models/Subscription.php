@@ -6,9 +6,8 @@
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Config;
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -19,7 +18,7 @@ use yii\helpers\Url;
 /**
  * Subscription model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property integer $user_id
@@ -85,7 +84,7 @@ class Subscription extends ActiveRecord
     {
         $this->post_seen = self::POST_SEEN;
         if ($this->save()) {
-            Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
+            Podium::getInstance()->cache->deleteElement('user.subscriptions', User::loggedId());
             return true;
         }
         return false;
@@ -99,7 +98,7 @@ class Subscription extends ActiveRecord
     {
         $this->post_seen = self::POST_NEW;
         if ($this->save()) {
-            Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
+            Podium::getInstance()->cache->deleteElement('user.subscriptions', User::loggedId());
             return true;
         }
         return false;
@@ -112,7 +111,7 @@ class Subscription extends ActiveRecord
     public static function notify($thread)
     {
         if (is_numeric($thread) && $thread > 0) {            
-            $forum = Config::getInstance()->get('name');
+            $forum = Podium::getInstance()->config->get('name');
             $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
             $subs  = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {

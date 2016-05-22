@@ -3,13 +3,12 @@
 /**
  * Podium Module
  * Yii 2 Forum Module
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 
-use bizley\podium\components\Config;
 use bizley\podium\models\User;
-use bizley\podium\Module as PodiumModule;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
@@ -17,17 +16,17 @@ use yii\helpers\Html;
 
 $items = [['label' => Yii::t('podium/view', 'Home'), 'url' => ['default/index']]];
 
-$podiumModule = PodiumModule::getInstance();
+$podiumModule = Podium::getInstance();
 
 if (Yii::$app->user->isGuest) {
-    if (Config::getInstance()->get('members_visible')) {
+    if (Podium::getInstance()->config->get('members_visible')) {
         $items[] = [
             'label'  => Yii::t('podium/view', 'Members'), 
             'url'    => ['members/index'],
             'active' => $this->context->id == 'members'
         ];
     }
-    if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
+    if ($podiumModule->userComponent == Podium::USER_OWN) {
         if (!empty($podiumModule->registerUrl)) {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }
@@ -72,13 +71,13 @@ else {
             ['label' => Yii::t('podium/view', 'New Message'), 'url' => ['messages/new']],
         ]
     ];
-    if ($podiumModule->userComponent == PodiumModule::USER_OWN) {
+    if ($podiumModule->userComponent == Podium::USER_OWN) {
         $items[] = ['label' => Yii::t('podium/view', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
     }
 }
 
 NavBar::begin([
-    'brandLabel'            => Config::getInstance()->get('name'),
+    'brandLabel'            => $podiumModule->config->get('name'),
     'brandUrl'              => ['default/index'],
     'options'               => ['class' => 'navbar-inverse navbar-default', 'id' => 'top'],
     'innerContainerOptions' => ['class' => 'container-fluid',]

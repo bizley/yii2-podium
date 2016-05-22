@@ -12,7 +12,7 @@ use yii\base\Model;
  * ReForm model
  * Calls for password reset and new activation link.
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class ReForm extends Model

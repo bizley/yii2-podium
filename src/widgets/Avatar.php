@@ -17,7 +17,7 @@ use yii\helpers\Html;
  * Podium Avatar widget
  * Renders user avatar image for each post.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class Avatar extends Widget

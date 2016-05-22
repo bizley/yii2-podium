@@ -20,7 +20,7 @@ use yii\helpers\Json;
  * Podium Messages controller
  * All actions concerning members messages.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class MessagesController extends BaseController

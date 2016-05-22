@@ -6,8 +6,6 @@
  */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Config;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
@@ -21,13 +19,14 @@ use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 /**
  * Podium Profile controller
  * All actions concerning member profile.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class ProfileController extends BaseController
@@ -65,7 +64,7 @@ class ProfileController extends BaseController
     
     /**
      * Updating the profile details.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionDetails()
     {
@@ -83,7 +82,7 @@ class ProfileController extends BaseController
             if ($model->validate()) {
                 if ($model->saveChanges()) {
                     if ($previous_new_email != $model->new_email) {
-                        $forum = Config::getInstance()->get('name');
+                        $forum = $this->module->config->get('name');
                         $email = Content::fill(Content::EMAIL_NEW);
                         if ($email !== false && Email::queue(
                                 $model->new_email, 
@@ -118,7 +117,7 @@ class ProfileController extends BaseController
     
     /**
      * Updating the forum details.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionForum()
     {
@@ -175,7 +174,7 @@ class ProfileController extends BaseController
 
     /**
      * Showing the profile card.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionIndex()
     {
@@ -193,7 +192,7 @@ class ProfileController extends BaseController
     
     /**
      * Signing out.
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionLogout()
     {
@@ -204,7 +203,7 @@ class ProfileController extends BaseController
     
     /**
      * Showing the subscriptions.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
     public function actionSubscriptions()
     {
@@ -225,7 +224,7 @@ class ProfileController extends BaseController
     /**
      * Marking the subscription of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionMark($id = null)
     {
@@ -264,7 +263,7 @@ class ProfileController extends BaseController
     /**
      * Deleting the subscription of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionDelete($id = null)
     {
@@ -275,7 +274,7 @@ class ProfileController extends BaseController
         }
         else {
             if ($model->delete()) {
-                Cache::getInstance()->deleteElement('user.subscriptions', User::loggedId());
+                $this->module->cache->deleteElement('user.subscriptions', User::loggedId());
                 $this->success(Yii::t('podium/flash', 'Thread has been unsubscribed.'));
             }
             else {
@@ -290,7 +289,7 @@ class ProfileController extends BaseController
     /**
      * Subscribing the thread of given ID.
      * @param integer $id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionAdd($id = null)
     {

@@ -14,7 +14,7 @@ use Yii;
  * Prepares messages for \bizley\podium\widgets\Alert widget.
  * Former FlashBehavior.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
  */
 trait FlashTrait

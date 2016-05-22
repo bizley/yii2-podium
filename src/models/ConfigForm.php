@@ -7,13 +7,14 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
+use bizley\podium\Module as Podium;
 use yii\base\Model;
 use yii\validators\StringValidator;
 
 /**
  * ConfigForm model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class ConfigForm extends Model
@@ -41,7 +42,7 @@ class ConfigForm extends Model
     {
         parent::init();
 
-        $this->config   = Config::getInstance();
+        $this->config   = Podium::getInstance()->config;
         $this->settings = $this->config->all();
     }
     

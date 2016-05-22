@@ -6,9 +6,9 @@
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -19,7 +19,7 @@ use yii\db\Query;
 /**
  * MessageReceive rmodel
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property integer $message_id
@@ -134,7 +134,7 @@ class MessageReceiver extends ActiveRecord
                 $this->receiver_status = self::STATUS_DELETED;
                 if ($this->save()) {
                     if ($clearCache) {
-                        Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
                     }
                     $transaction->commit();
                     return true;
@@ -149,7 +149,7 @@ class MessageReceiver extends ActiveRecord
                 }
                 if ($this->delete()) {
                     if ($clearCache) {
-                        Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
                     }
                     if ($deleteParent) {
                         if (!$deleteParent->delete()) {
@@ -255,7 +255,7 @@ class MessageReceiver extends ActiveRecord
         if ($this->receiver_status == Message::STATUS_NEW) {
             $this->receiver_status = Message::STATUS_READ;
             if ($this->save()) {
-                Cache::getInstance()->deleteElement('user.newmessages', $this->receiver_id);
+                Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
             }
         }
     }

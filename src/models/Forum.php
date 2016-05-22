@@ -6,12 +6,13 @@
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Html;
@@ -21,7 +22,7 @@ use Zelenin\yii\behaviors\Slug;
 /**
  * Forum model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property integer $category_id
@@ -78,7 +79,7 @@ class Forum extends ActiveRecord
     
     /**
      * Category relation.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getCategory()
     {
@@ -87,7 +88,7 @@ class Forum extends ActiveRecord
     
     /**
      * Post relation. One latest post.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getLatest()
     {
@@ -100,7 +101,7 @@ class Forum extends ActiveRecord
      */
     public function getMods()
     {
-        $mods = Cache::getInstance()->getElement('forum.moderators', $this->id);
+        $mods = Podium::getInstance()->cache->getElement('forum.moderators', $this->id);
         if ($mods === false) {
             $mods    = [];
             $modteam = User::find()->select(['id', 'role'])->where(['status' => User::STATUS_ACTIVE, 'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]])->asArray()->all();
@@ -115,7 +116,7 @@ class Forum extends ActiveRecord
                     }
                 }
             }
-            Cache::getInstance()->setElement('forum.moderators', $this->id, $mods);
+            Podium::getInstance()->cache->setElement('forum.moderators', $this->id, $mods);
         }
         return $mods;        
     }

@@ -20,7 +20,7 @@ use Zelenin\yii\behaviors\Slug;
 /**
  * Category model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property string $name

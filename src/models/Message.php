@@ -6,10 +6,10 @@
  */
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -21,7 +21,7 @@ use yii\helpers\HtmlPurifier;
 /**
  * Message model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property integer $sender_id
@@ -219,7 +219,7 @@ class Message extends ActiveRecord
                     $message->receiver_id     = $receiver;
                     $message->receiver_status = self::STATUS_NEW;
                     if ($message->save()) {
-                        Cache::getInstance()->deleteElement('user.newmessages', $receiver);
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $receiver);
                     }
                     else {
                         throw new Exception('MessageReceiver saving error!');
@@ -295,7 +295,7 @@ class Message extends ActiveRecord
             if (empty($this->messageReceivers)) {
                 if ($this->delete()) {
                     if ($clearCache) {
-                        Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
                     }
                     $transaction->commit();
                     return true;
@@ -320,7 +320,7 @@ class Message extends ActiveRecord
                     }
                     if ($this->delete()) {
                         if ($clearCache) {
-                            Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                            Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
                         }
                         $transaction->commit();
                         return true;
@@ -333,7 +333,7 @@ class Message extends ActiveRecord
                     $this->sender_status = self::STATUS_DELETED;
                     if ($this->save()) {
                         if ($clearCache) {
-                            Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                            Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
                         }
                         $transaction->commit();
                         return true;
@@ -384,7 +384,7 @@ class Message extends ActiveRecord
                 ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 'receiver_status', 'created_at', 'updated_at'], 
                     array_values($package))->execute();
 
-            Cache::getInstance()->delete('user.newmessages');
+            Podium::getInstance()->cache->delete('user.newmessages');
             Log::info('Post reported', $post->id, __METHOD__);
             return true;
         }
@@ -403,7 +403,7 @@ class Message extends ActiveRecord
         if ($this->sender_status == self::STATUS_NEW) {
             $this->sender_status = self::STATUS_READ;
             if ($this->save()) {
-                Cache::getInstance()->deleteElement('user.newmessages', $this->sender_id);
+                Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
             }
         }
     }

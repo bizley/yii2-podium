@@ -2,8 +2,8 @@
 
 namespace bizley\podium\maintenance;
 
-use bizley\podium\components\Cache;
 use bizley\podium\models\Post;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\base\Component;
@@ -16,7 +16,7 @@ use yii\rbac\DbManager;
  * Podium Maintenance module
  * Maintenance requires database connection to be configured first.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
  * @property boolean $error
@@ -710,7 +710,7 @@ class Maintenance extends Component
      */
     public function clearCache()
     {
-        Cache::getInstance()->flush();
+        Podium::getInstance()->cache->flush();
     }
     
     /**

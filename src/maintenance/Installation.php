@@ -16,7 +16,7 @@ use yii\helpers\VarDumper;
 /**
  * Podium Installation
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
  */

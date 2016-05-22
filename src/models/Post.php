@@ -9,6 +9,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -21,7 +22,7 @@ use yii\helpers\HtmlPurifier;
 /**
  * Post model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property string $content
@@ -380,7 +381,7 @@ class Post extends ActiveRecord
         $latest = [];
         
         if (Yii::$app->user->isGuest) {
-            $latest = Cache::getInstance()->getElement('forum.latestposts', 'guest');
+            $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'guest');
             if ($latest === false) {
                 $posts = static::getLatestPostsForGuests($posts);
                 foreach ($posts as $post) {
@@ -391,11 +392,11 @@ class Post extends ActiveRecord
                         'author'  => $post->author->podiumTag
                     ];
                 }
-                Cache::getInstance()->setElement('forum.latestposts', 'guest', $latest);
+                Podium::getInstance()->cache->setElement('forum.latestposts', 'guest', $latest);
             }
         }
         else {
-            $latest = Cache::getInstance()->getElement('forum.latestposts', 'member');
+            $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'member');
             if ($latest === false) {
                 $posts = static::getLatestPostsForMembers($posts);
                 foreach ($posts as $post) {
@@ -406,7 +407,7 @@ class Post extends ActiveRecord
                         'author'  => $post->author->podiumTag
                     ];
                 }
-                Cache::getInstance()->setElement('forum.latestposts', 'member', $latest);
+                Podium::getInstance()->cache->setElement('forum.latestposts', 'member', $latest);
             }
         }
         
@@ -599,10 +600,10 @@ class Post extends ActiveRecord
                 }
             }
             if ($count == 0) {
-                Cache::getInstance()->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
+                Podium::getInstance()->cache->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
             }
             else {
-                Cache::getInstance()->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
+                Podium::getInstance()->cache->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
             }
             return true;
         }

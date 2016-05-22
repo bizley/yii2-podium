@@ -7,16 +7,16 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
-use bizley\podium\components\Config;
 use bizley\podium\components\Helper;
 use bizley\podium\db\UserQuery;
 use bizley\podium\log\Log;
-use bizley\podium\Module as PodiumModule;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Json;
@@ -27,7 +27,7 @@ use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 /**
  * User model
  *
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * @property integer $id
  * @property integer $inherited_id
@@ -154,7 +154,7 @@ class User extends ActiveRecord implements IdentityInterface
             'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
         
-        if (Config::getInstance()->get('use_captcha')) {
+        if (Podium::getInstance()->config->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
         }
         
@@ -187,8 +187,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
         ];
         
-        if (Config::getInstance()->get('recaptcha_sitekey') !== '' && Config::getInstance()->get('recaptcha_secretkey') !== '') {
-            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Config::getInstance()->get('recaptcha_secretkey')];
+        if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
+            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
         }
         else {
             $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
@@ -255,7 +255,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findMe()
     {
-        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
             if (self::$_identity === null) {
                 self::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
             }
@@ -416,7 +416,7 @@ class User extends ActiveRecord implements IdentityInterface
     
     /**
      * Friends relation.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      * @since 0.2
      */
     public function getFriends()
@@ -426,7 +426,7 @@ class User extends ActiveRecord implements IdentityInterface
     
     /**
      * Meta relation.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getMeta()
     {
@@ -439,11 +439,11 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getNewMessagesCount()
     {
-        $cache = Cache::getInstance()->getElement('user.newmessages', $this->id);
+        $cache = Podium::getInstance()->cache->getElement('user.newmessages', $this->id);
         if ($cache === false) {
             $cache = (new Query)->from(MessageReceiver::tableName())->where(['receiver_id' => $this->id,
                         'receiver_status' => Message::STATUS_NEW])->count();
-            Cache::getInstance()->setElement('user.newmessages', $this->id, $cache);
+            Podium::getInstance()->cache->setElement('user.newmessages', $this->id, $cache);
         }
 
         return $cache;
@@ -478,7 +478,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Gets number of active posts added by user.
+     * Returns number of active posts added by user.
      * @return integer
      */
     public function getPostsCount()
@@ -487,23 +487,23 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Gets number of active posts added by user of given ID.
+     * Returns number of active posts added by user of given ID.
      * @param integer $id
      * @return integer
      */
     public static function findPostsCount($id)
     {
-        $cache = Cache::getInstance()->getElement('user.postscount', $id);
+        $cache = Podium::getInstance()->cache->getElement('user.postscount', $id);
         if ($cache === false) {
             $cache = (new Query)->from(Post::tableName())->where(['author_id' => $id])->count();
-            Cache::getInstance()->setElement('user.postscount', $id, $cache);
+            Podium::getInstance()->cache->setElement('user.postscount', $id, $cache);
         }
 
         return $cache;
     }
     
     /**
-     * Gets number of active threads added by user.
+     * Returns number of active threads added by user.
      * @return integer
      */
     public function getThreadsCount()
@@ -512,16 +512,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Gets number of active threads added by user of given ID.
+     * Returns number of active threads added by user of given ID.
      * @param integer $id
      * @return integer
      */
     public static function findThreadsCount($id)
     {
-        $cache = Cache::getInstance()->getElement('user.threadscount', $id);
+        $cache = Podium::getInstance()->cache->getElement('user.threadscount', $id);
         if ($cache === false) {
             $cache = (new Query)->from(Thread::tableName())->where(['author_id' => $id])->count();
-            Cache::getInstance()->setElement('user.threadscount', $id, $cache);
+            Podium::getInstance()->cache->setElement('user.threadscount', $id, $cache);
         }
 
         return $cache;
@@ -566,16 +566,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Gets number of user subscribed threads with new posts.
+     * Returns number of user subscribed threads with new posts.
      * @return integer
      */
     public function getSubscriptionsCount()
     {
-        $cache = Cache::getInstance()->getElement('user.subscriptions', $this->id);
+        $cache = Podium::getInstance()->cache->getElement('user.subscriptions', $this->id);
         if ($cache === false) {
             $cache = (new Query)->from(Subscription::tableName())->where(['user_id' => $this->id,
                         'post_seen' => Subscription::POST_NEW])->count();
-            Cache::getInstance()->setElement('user.subscriptions', $this->id, $cache);
+            Podium::getInstance()->cache->setElement('user.subscriptions', $this->id, $cache);
         }
 
         return $cache;
@@ -588,7 +588,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function isActivationTokenValid($token)
     {
-        $expire = Config::getInstance()->get('activation_token_expire');
+        $expire = Podium::getInstance()->config->get('activation_token_expire');
         if ($expire === null) {
             $expire = 3 * 24 * 60 * 60;
         }
@@ -602,7 +602,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function isEmailTokenValid($token)
     {
-        $expire = Config::getInstance()->get('email_token_expire');
+        $expire = Podium::getInstance()->config->get('email_token_expire');
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }
@@ -616,7 +616,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function isPasswordResetTokenValid($token)
     {
-        $expire = Config::getInstance()->get('password_reset_token_expire');
+        $expire = Podium::getInstance()->config->get('password_reset_token_expire');
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }
@@ -717,7 +717,7 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
         
-        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
             $user = static::findMe();
             if ($user) {
                 return $user->id;
@@ -913,9 +913,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
-        $podium = PodiumModule::getInstance();
-        if ($podium->userComponent == PodiumModule::USER_INHERIT) {
-            $password_hash = PodiumModule::FIELD_PASSWORD;
+        $podium = Podium::getInstance();
+        if ($podium->userComponent == Podium::USER_INHERIT) {
+            $password_hash = Podium::FIELD_PASSWORD;
             if (!empty($podium->userPasswordField)) {
                 $password_hash = $podium->userPasswordField;
             }
@@ -957,7 +957,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
-        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
             $user = static::findMe();
             if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
                 return $user->_access[$permissionName];
@@ -982,7 +982,7 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
 
-        $cache = Cache::getInstance()->getElement('user.friends', static::loggedId());
+        $cache = Podium::getInstance()->cache->getElement('user.friends', static::loggedId());
         if ($cache === false) {
             $cache = [];
             $friends = static::findMe()->friends;
@@ -991,7 +991,7 @@ class User extends ActiveRecord implements IdentityInterface
                     $cache[$friend->id] = $friend->getPodiumTag(true);
                 }
             }
-            Cache::getInstance()->setElement('user.friends', static::loggedId(), $cache);
+            Podium::getInstance()->cache->setElement('user.friends', static::loggedId(), $cache);
         }
         return $cache;
     }
@@ -1011,7 +1011,7 @@ class User extends ActiveRecord implements IdentityInterface
             else {
                 Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum_id, 'user_id' => $this->id])->execute();
             }
-            Cache::getInstance()->deleteElement('forum.moderators', $forum_id);
+            Podium::getInstance()->cache->deleteElement('forum.moderators', $forum_id);
             Log::info('Moderator updated', $this->id, __METHOD__);
             return true;
         }
@@ -1053,7 +1053,7 @@ class User extends ActiveRecord implements IdentityInterface
             if (!empty($remove)) {
                 Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute();
             }
-            Cache::getInstance()->delete('forum.moderators');
+            Podium::getInstance()->cache->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
             return true;
         }
@@ -1105,7 +1105,7 @@ class User extends ActiveRecord implements IdentityInterface
             return Json::encode(['results' => []]);
         }
         
-        $cache = Cache::getInstance()->get('members.fieldlist');
+        $cache = Podium::getInstance()->cache->get('members.fieldlist');
         if ($cache === false || empty($cache[$query])) {
             if ($cache === false) {
                 $cache = [];
@@ -1135,7 +1135,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
             if (!empty($results['results'])) {
                 $cache[$query] = Json::encode($results);
-                Cache::getInstance()->set('members.fieldlist', $cache);
+                Podium::getInstance()->cache->set('members.fieldlist', $cache);
             }
             else {
                 return Json::encode(['results' => []]);
@@ -1185,7 +1185,7 @@ class User extends ActiveRecord implements IdentityInterface
                 Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => User::loggedId(), 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
-            Cache::getInstance()->deleteElement('user.friends', $this->id);
+            Podium::getInstance()->cache->deleteElement('user.friends', $this->id);
             return true;
         }
         catch (Exception $e) {

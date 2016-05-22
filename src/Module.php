@@ -7,19 +7,23 @@ use bizley\podium\components\Config;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\models\Activity;
+use bizley\podium\models\User;
 use Yii;
+use yii\base\Action;
+use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;
 use yii\base\Module as BaseModule;
 use yii\console\Application as ConsoleApplication;
 use yii\web\Application as WebApplication;
 use yii\web\GroupUrlRule;
+use yii\web\Response;
 
 /**
  * Podium Module
  * Yii 2 Forum Module
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @version 0.2 (beta)
  * @license Apache License 2.0
  * 
@@ -32,6 +36,11 @@ use yii\web\GroupUrlRule;
  * https://github.com/yiisoft/yii2
  * Podium requires PECL intl >= 2.0.0
  * http://php.net/manual/en/intro.intl.php
+ * 
+ * @property Cache $cache
+ * @property Config $config
+ * @property boolean $installed
+ * @property string $version
  */
 class Module extends BaseModule implements BootstrapInterface
 {
@@ -102,6 +111,12 @@ class Module extends BaseModule implements BootstrapInterface
     public $userPasswordField = self::FIELD_PASSWORD;
 
     /**
+     * @var Cache Module cache instance
+     * @since 0.2
+     */
+    protected $_cache;
+    
+    /**
      * @var Config Module configuration instance
      */
     protected $_config;
@@ -118,134 +133,92 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Registers user activity after every action.
-     * @see \bizley\podium\models\Activity
-     * 
-     * @param \yii\base\Action $action the action just executed.
+     * @see Activity::add()
+     * @param Action $action the action just executed.
      * @param mixed $result the action return result.
      * @return mixed the processed action result.
      */
     public function afterAction($action, $result)
     {
         $parentResult = parent::afterAction($action, $result);
-
         if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'level-up'])) {
             Activity::add();
         }
-
         return $parentResult;
     }
 
     /**
      * Bootstrap method to be called during application bootstrap stage.
      * Adding routing rules and log target.
-     * 
-     * @param \yii\base\Application $app the application currently running
+     * @param Application $app the application currently running
      */
     public function bootstrap($app)
     {
         if ($app instanceof WebApplication) {
-            $app->getUrlManager()->addRules([
-                new GroupUrlRule([
-                    'prefix' => 'podium',
-                    'rules'  => [
-                        'activate/<token:[\w\-]+>' => 'account/activate',
-                        'admin/ban/<id:\d+>' => 'admin/ban',
-                        'admin/contents/<name:[\w\-]+>' => 'admin/contents',
-                        'admin/delete/<id:\d+>' => 'admin/delete',
-                        'admin/delete-category/<id:\d+>' => 'admin/delete-category',
-                        'admin/delete-forum/<cid:\d+>/<id:\d+>' => 'admin/delete-forum',
-                        'admin/edit-category/<id:\d+>' => 'admin/edit-category',
-                        'admin/edit-forum/<cid:\d+>/<id:\d+>' => 'admin/edit-forum',
-                        'admin/forums/<cid:\d+>' => 'admin/forums',
-                        'admin/mod/<uid:\d+>/<fid:\d+>' => 'admin/mod',
-                        'admin/mods/<id:\d+>' => 'admin/mods',
-                        'admin/new-forum/<cid:\d+>' => 'admin/new-forum',
-                        'admin/pm/<id:\d+>' => 'admin/pm',
-                        'admin/update/<id:\d+>' => 'admin/update',
-                        'admin/view/<id:\d+>' => 'admin/view',
-                        'admin' => 'admin/index',
-                        'category/<id:\d+>/<slug:[\w\-]+>' => 'default/category',
-                        'delete/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/delete',
-                        'deletepost/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>' => 'default/deletepost',
-                        'deleteposts/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/deleteposts',
-                        'demote/<id:\d+>' => 'admin/demote',
-                        'edit/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>' => 'default/edit',
-                        'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>/<toggle:\w+>' => 'default/forum',
-                        'forum/<cid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/forum',
-                        'home' => 'default/index',
-                        'install' => 'install/run',
-                        'last/<id:\d+>' => 'default/last',
-                        'level-up' => 'install/level-up',
-                        'lock/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/lock',
-                        'login' => 'account/login',
-                        'logout' => 'profile/logout',
-                        'maintenance' => 'default/maintenance',
-                        'mark-seen' => 'default/mark-seen',
-                        'members/friend/<id:\d+>' => 'members/friend',
-                        'members/posts/<id:\d+>/<slug:[\w\-]+>' => 'members/posts',
-                        'members/threads/<id:\d+>/<slug:[\w\-]+>' => 'members/threads',
-                        'members/view/<id:\d+>/<slug:[\w\-]+>' => 'members/view',
-                        'members' => 'members/index',
-                        'members/ignore/<id:\d+>' => 'members/ignore',
-                        'messages/delete-received/<id:\d+>' => 'messages/delete-received',
-                        'messages/delete-sent/<id:\d+>' => 'messages/delete-sent',
-                        'messages/new/<user:\d+>' => 'messages/new',
-                        'messages/reply/<id:\d+>' => 'messages/reply',
-                        'messages/view-received/<id:\d+>' => 'messages/view-received',
-                        'messages/view-sent/<id:\d+>' => 'messages/view-sent',
-                        'move/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/move',
-                        'moveposts/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/moveposts',
-                        'new-email/<token:[\w\-]+>' => 'account/new-email',
-                        'new-thread/<cid:\d+>/<fid:\d+>' => 'default/new-thread',
-                        'pin/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/pin',
-                        'post/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>' => 'default/post',
-                        'post/<cid:\d+>/<fid:\d+>/<tid:\d+>' => 'default/post',
-                        'profile' => 'profile/index',
-                        'profile/add/<id:\d+>' => 'profile/add',
-                        'profile/delete/<id:\d+>' => 'profile/delete',
-                        'profile/mark/<id:\d+>' => 'profile/mark',
-                        'promote/<id:\d+>' => 'admin/promote',
-                        'reactivate' => 'account/reactivate',
-                        'register' => 'account/register',
-                        'report/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>' => 'default/report',
-                        'reset' => 'account/reset',
-                        'rss' => 'default/rss',
-                        'search' => 'default/search',
-                        'show/<id:\d+>' => 'default/show',
-                        'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>' => 'default/thread',
-                        'unread-posts' => 'default/unread-posts',
-                    ],
-                ])], false);
-
-            $dbTarget = new DbTarget;
-            $dbTarget->logTable   = '{{%podium_log}}';
-            $dbTarget->categories = ['bizley\podium\*'];
-            $dbTarget->logVars    = [];
-
-            $app->getLog()->targets['podium'] = $dbTarget;
-        }
-        elseif ($app instanceof ConsoleApplication) {
+            $this->_addUrlManagerRules($app);
+            $this->_setPodiumLogTarget($app);            
+        } elseif ($app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'bizley\podium\console';
         }
     }
+    
+    /**
+     * Adds UrlManager rules.
+     * @param Application $app the application currently running
+     * @since 0.2
+     */
+    protected function _addUrlManagerRules($app)
+    {
+        $app->urlManager->addRules(
+                            [new GroupUrlRule([
+                                'prefix' => 'podium',
+                                'rules'  => require(__DIR__ . '/url-rules.php'),
+                            ])], 
+                            false
+                        );
+    }
+    
+    /**
+     * Sets Podium log target.
+     * @param Application $app the application currently running
+     * @since 0.2
+     */
+    protected function _setPodiumLogTarget($app)
+    {
+        $dbTarget = new DbTarget;
+        $dbTarget->logTable = '{{%podium_log}}';
+        $dbTarget->categories = ['bizley\podium\*'];
+        $dbTarget->logVars = [];
+
+        $app->log->targets['podium'] = $dbTarget;
+    }
 
     /**
+     * Returns Podium cache instance.
+     * @return Cache
+     */
+    public function getCache()
+    {
+        if (!$this->_cache) {
+            $this->_cache = new Cache;
+        }
+        return $this->_cache;
+    }
+    
+    /**
      * Returns Podium configuration instance.
-     * 
-     * @return Config configuration instance
+     * @return Config
      */
     public function getConfig()
     {
         if (!$this->_config) {
-            $this->_config = Config::getInstance();
+            $this->_config = new Config(['cache' => $this->cache]);
         }
-
         return $this->_config;
     }
 
     /**
      * Returns Podium installation flag.
-     * 
      * @return boolean
      */
     public function getInstalled()
@@ -269,7 +242,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * Redirects to Podium main controller's action.
      * 
-     * @return \yii\web\Response
+     * @return Response
      */
     public function goPodium()
     {
@@ -319,7 +292,7 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Registers user authorization.
-     * @see \bizley\podium\maintenance\Installation
+     * @see Installation
      */
     public function registerAuthorization()
     {
@@ -330,7 +303,7 @@ class Module extends BaseModule implements BootstrapInterface
                 'itemChildTable'  => '{{%podium_auth_item_child}}',
                 'assignmentTable' => '{{%podium_auth_assignment}}',
                 'ruleTable'       => '{{%podium_auth_rule}}',
-                'cache'           => Cache::getInstance()->cache
+                'cache'           => $this->cache->engine
             ],
         ]);
     }
@@ -350,7 +323,7 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Registers user identity.
-     * @see \bizley\podium\models\User
+     * @see User
      */
     public function registerIdentity()
     {

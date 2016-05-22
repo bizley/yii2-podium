@@ -7,6 +7,7 @@
 namespace bizley\podium\components;
 
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use DateTime;
 use DateTimeZone;
 use Yii;
@@ -19,7 +20,7 @@ use yii\helpers\Url;
  * Podium Helper
  * Static methods for html output and other little things.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class Helper
@@ -268,7 +269,7 @@ class Helper
      */
     public static function title($title)
     {
-        return $title . ' - ' . Config::getInstance()->get('name');
+        return $title . ' - ' . Podium::getInstance()->config->get('name');
     }
     
     /**

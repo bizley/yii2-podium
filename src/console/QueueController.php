@@ -1,16 +1,12 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\console;
 
-use bizley\podium\components\Config;
 use bizley\podium\log\Log;
 use bizley\podium\models\Email;
 use Exception;
 use Yii;
+use yii\base\Action;
 use yii\console\Controller;
 use yii\db\Connection;
 use yii\db\Query;
@@ -21,7 +17,7 @@ use yii\mail\BaseMailer;
 /**
  * Podium command line tool to send emails.
  * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class QueueController extends Controller
@@ -30,9 +26,9 @@ class QueueController extends Controller
     const DEFAULT_BATCH_LIMIT = 100;
     
     /**
-     * @var Connection|array|string the DB connection object or the application component ID of the DB connection to use
-     * when applying migrations. Starting from version 2.0.3, this can also be a configuration array
-     * for creating the object.
+     * @var Connection|array|string the DB connection object (or its 
+     * configuration array) or the application component ID of the DB connection 
+     * to use when reading emails queue.
      */
     public $db = 'db';
     
@@ -47,9 +43,9 @@ class QueueController extends Controller
     public $limit = self::DEFAULT_BATCH_LIMIT;
     
     /**
-     * @var Connection|array|string the DB connection object or the application component ID of the DB connection to use
-     * when applying migrations. Starting from version 2.0.3, this can also be a configuration array
-     * for creating the object.
+     * @var BaseMailer|array|string the BaseMailer object (or its configuration 
+     * array) or the application component ID of the mailer to use when sending 
+     * emails.
      */
     public $mailer = 'mailer';
     
@@ -70,9 +66,8 @@ class QueueController extends Controller
     }
     
     /**
-     * This method is invoked right before an action is to be executed (after all possible filters.)
-     * It checks the existence of the db and mailer components.
-     * @param \yii\base\Action $action the action to be executed.
+     * Checks the existence of the db and mailer components.
+     * @param Action $action the action to be executed.
      * @return boolean whether the action should continue to be executed.
      */
     public function beforeAction($action)
@@ -83,8 +78,7 @@ class QueueController extends Controller
                 $this->mailer = Instance::ensure($this->mailer, BaseMailer::className());
                 return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
         return false;
@@ -101,9 +95,13 @@ class QueueController extends Controller
             if (!is_numeric($limit) || $limit <= 0) {
                 $limit = $this->limit;
             }
-            return (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_PENDING])->orderBy(['id' => SORT_ASC])->limit((int)$limit)->all();
-        }
-        catch (Exception $e) {
+            return (new Query)
+                    ->from($this->queueTable)
+                    ->where(['status' => Email::STATUS_PENDING])
+                    ->orderBy(['id' => SORT_ASC])
+                    ->limit((int)$limit)
+                    ->all();
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
     }
@@ -123,11 +121,17 @@ class QueueController extends Controller
             $mailer->setTo($email['email']);
             $mailer->setSubject($email['subject']);
             $mailer->setHtmlBody($email['content']);
-            $mailer->setTextBody(strip_tags(str_replace(['<br>', '<br/>', '<br />', '</p>'], "\n", $email['content'])));
-
+            $mailer->setTextBody(
+                strip_tags(
+                    str_replace(
+                        ['<br>', '<br/>', '<br />', '</p>'], 
+                        "\n", 
+                        $email['content']
+                    )
+                )
+            );
             return $mailer->send();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
     }
@@ -144,19 +148,41 @@ class QueueController extends Controller
     {
         try {
             if ($this->send($email, $fromName, $fromEmail)) {
-                $this->db->createCommand()->update($this->queueTable, ['status' => Email::STATUS_SENT], ['id' => $email['id']])->execute();
+                $this
+                    ->db
+                    ->createCommand()
+                    ->update(
+                        $this->queueTable, 
+                        ['status' => Email::STATUS_SENT], 
+                        ['id' => $email['id']]
+                    )
+                    ->execute();
                 return true;
             }
 
             $attempt = $email['attempt'] + 1;
             if ($attempt <= $maxAttempts) {
-                $this->db->createCommand()->update($this->queueTable, ['attempt' => $attempt], ['id' => $email['id']])->execute();
+                $this
+                    ->db
+                    ->createCommand()
+                    ->update(
+                        $this->queueTable, 
+                        ['attempt' => $attempt], 
+                        ['id' => $email['id']]
+                    )
+                    ->execute();
+            } else {
+                $this
+                    ->db
+                    ->createCommand()
+                    ->update(
+                        $this->queueTable, 
+                        ['status' => Email::STATUS_GAVEUP], 
+                        ['id' => $email['id']]
+                    )
+                    ->execute();
             }
-            else {
-                $this->db->createCommand()->update($this->queueTable, ['status' => Email::STATUS_GAVEUP], ['id' => $email['id']])->execute();
-            }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
@@ -180,19 +206,28 @@ class QueueController extends Controller
         }
 
         $total = count($emails);
-        $this->stdout("\n$total pending " . ($total === 1 ? 'email' : 'emails') . " to be sent now:\n", Console::FG_YELLOW);
+        $this->stdout(
+            "\n$total pending " 
+                . ($total === 1 ? 'email' : 'emails') 
+                . " to be sent now:\n", 
+            Console::FG_YELLOW
+        );
 
         $errors = false;
         foreach ($emails as $email) {
-            if (!$this->process($email, Config::getInstance()->get('from_name'), Config::getInstance()->get('from_email'), Config::getInstance()->get('max_attempts'))) {
+            if (!$this->process(
+                    $email, 
+                    $this->module->config->get('from_name'), 
+                    $this->module->config->get('from_email'), 
+                    $this->module->config->get('max_attempts')
+                )) {
                 $errors = true;
             }
         }
 
         if ($errors) {
             $this->stdout("\nBatch sent with errors.\n\n", Console::FG_RED);
-        }
-        else {
+        } else {
             $this->stdout("\nBatch sent successfully.\n\n", Console::FG_GREEN);
         }
     }
@@ -208,13 +243,22 @@ class QueueController extends Controller
         $this->stdout(" EMAILS  | COUNT\n");
         $this->stdout("------------------------------\n");
         
-        $pending = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_PENDING])->count();
-        $sent    = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_SENT])->count();
-        $gaveup  = (new Query)->from($this->queueTable)->where(['status' => Email::STATUS_GAVEUP])->count();
+        $pending = (new Query)
+                    ->from($this->queueTable)
+                    ->where(['status' => Email::STATUS_PENDING])
+                    ->count();
+        $sent = (new Query)
+                    ->from($this->queueTable)
+                    ->where(['status' => Email::STATUS_SENT])
+                    ->count();
+        $gaveup = (new Query)
+                    ->from($this->queueTable)
+                    ->where(['status' => Email::STATUS_GAVEUP])
+                    ->count();
         
         $showPending = $this->ansiFormat($pending, Console::FG_YELLOW);
-        $showSent    = $this->ansiFormat($sent, Console::FG_GREEN);
-        $showGaveup  = $this->ansiFormat($gaveup, Console::FG_RED);
+        $showSent = $this->ansiFormat($sent, Console::FG_GREEN);
+        $showGaveup = $this->ansiFormat($gaveup, Console::FG_RED);
         
         $this->stdout(" pending | $showPending\n");
         $this->stdout(" sent    | $showSent\n");
