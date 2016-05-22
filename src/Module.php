@@ -294,7 +294,7 @@ class Module extends BaseModule implements BootstrapInterface
             throw InvalidConfigException('Invalid value for the rbac parameter.');
         }
 
-        $this->setAliases(['@podium' => '@vendor/bizley/podium']);
+        $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
 
         if (Yii::$app instanceof WebApplication) {
 
