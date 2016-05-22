@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "bizley\\podium\\": ""
+            "bizley\\podium\\": "src/"
         }
     }
 }

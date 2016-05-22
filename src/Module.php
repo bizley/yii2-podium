@@ -1,23 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- * 
- * @author Paweł Bizley Brzozowski <pb@human-device.com>
- * @version 0.2 (beta)
- * @license Apache License 2.0
- * 
- * https://github.com/bizley/yii2-podium
- * Please report all issues at GitHub
- * https://github.com/bizley/yii2-podium/issues
- * 
- * Podium requires Yii 2
- * http://www.yiiframework.com
- * https://github.com/yiisoft/yii2
- * Podium requires PECL intl >= 2.0.0
- * http://php.net/manual/en/intro.intl.php
- */
 namespace bizley\podium;
 
 use bizley\podium\components\Cache;
@@ -35,8 +17,21 @@ use yii\web\GroupUrlRule;
 
 /**
  * Podium Module
+ * Yii 2 Forum Module
+ * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
- * @since 0.1
+ * @version 0.2 (beta)
+ * @license Apache License 2.0
+ * 
+ * https://github.com/bizley/yii2-podium
+ * Please report all issues at GitHub
+ * https://github.com/bizley/yii2-podium/issues
+ * 
+ * Podium requires Yii 2
+ * http://www.yiiframework.com
+ * https://github.com/yiisoft/yii2
+ * Podium requires PECL intl >= 2.0.0
+ * http://php.net/manual/en/intro.intl.php
  */
 class Module extends BaseModule implements BootstrapInterface
 {
