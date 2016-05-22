@@ -12,9 +12,7 @@ use yii\helpers\StringHelper;
 use yii\helpers\Url;
 
 $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
-
 $firstToSee = $model->firstToSee();
-
 ?>
 <td class="podium-thread-line">
     <a href="<?= Url::to(['default/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-pjax="0" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($firstToSee->content, 20, '...', true)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Yii::$app->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">

@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -11,6 +7,7 @@ use bizley\podium\log\Log;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -19,6 +16,7 @@ use yii\db\ActiveRecord;
  * 
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property string $username
@@ -27,10 +25,11 @@ use yii\db\ActiveRecord;
  * @property string $ip
  * @property integer $created_at
  * @property integer $updated_at
+ * 
+ * @property User $user
  */
 class Activity extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -49,7 +48,7 @@ class Activity extends ActiveRecord
     
     /**
      * User relation.
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getUser()
     {
@@ -64,14 +63,16 @@ class Activity extends ActiveRecord
      */
     protected static function _addGuest($ip, $url)
     {
-        $activity = self::find()->where(['ip' => $ip, 'user_id' => null])->limit(1)->one();
+        $activity = self::find()
+                        ->where(['ip' => $ip, 'user_id' => null])
+                        ->limit(1)
+                        ->one();
         if ($activity) {
             $activity->url = $url;
-        }
-        else {
-            $activity = new Activity();
+        } else {
+            $activity = new Activity;
             $activity->url = $url;
-            $activity->ip  = $ip;
+            $activity->ip = $ip;
         }
         return $activity->save();
     }
@@ -86,17 +87,20 @@ class Activity extends ActiveRecord
     {
         $user = User::findMe();
         if ($user) {
-            $activity = self::find()->where(['user_id' => $user->id])->limit(1)->one();
+            $activity = self::find()
+                            ->where(['user_id' => $user->id])
+                            ->limit(1)
+                            ->one();
             if (!$activity) {
-                $activity          = new Activity();
+                $activity = new Activity;
                 $activity->user_id = $user->id;
             }
 
-            $activity->username  = $user->podiumName;
+            $activity->username = $user->podiumName;
             $activity->user_role = $user->role;
             $activity->user_slug = $user->podiumSlug;
-            $activity->url       = $url;
-            $activity->ip        = $ip;
+            $activity->url = $url;
+            $activity->ip = $ip;
             $activity->anonymous = $user->anonymous;
 
             return $activity->save();
@@ -120,20 +124,17 @@ class Activity extends ActiveRecord
 
             if (Yii::$app->user->isGuest) {
                 $result = self::_addGuest($ip, $url);
-            }
-            else {
+            } else {
                 $result = self::_addUser($ip, $url);
             }
             
             if ($result) {
                 return true;
-            }
-            else {
+            } else {
                 Log::error('Cannot log user activity', null, __METHOD__);
                 return false;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
     }
@@ -147,8 +148,7 @@ class Activity extends ActiveRecord
         $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity && $activity->delete()) {
             Cache::getInstance()->delete('forum.lastactive');
-        }
-        else {
+        } else {
             Log::error('Cannot delete user activity', $id, __METHOD__);
         }
     }
@@ -163,16 +163,14 @@ class Activity extends ActiveRecord
     {
         $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity) {
-            $activity->username  = $username;
+            $activity->username = $username;
             $activity->user_slug = $slug;
             if ($activity->save()) {
                 Cache::getInstance()->delete('forum.lastactive');
-            }
-            else {
+            } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
-        }
-        else {
+        } else {
             Log::error('Cannot update user activity', $id, __METHOD__);
         }
     }
@@ -189,12 +187,10 @@ class Activity extends ActiveRecord
             $activity->role = $role;
             if ($activity->save()) {
                 Cache::getInstance()->delete('forum.lastactive');
-            }
-            else {
+            } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
-        }
-        else {
+        } else {
             Log::error('Cannot update user activity', $id, __METHOD__);
         }
     }
@@ -207,13 +203,42 @@ class Activity extends ActiveRecord
     {
         $last = Cache::getInstance()->get('forum.lastactive');
         if ($last === false) {
-            $last              = [];
-            $last['count']     = self::find()->where(['>', 'updated_at', time() - 15 * 60])->count();
-            $last['members']   = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]])->count();
-            $last['anonymous'] = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 1]])->count();
-            $last['guests']    = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['user_id' => null]])->count();
-            $last['names']     = [];
-            $members           = self::find()->where(['and', ['>', 'updated_at', time() - 15 * 60], ['is not', 'user_id', null], ['anonymous' => 0]]);
+            $last = [
+                'count'     => self::find()
+                                ->where(['>', 'updated_at', time() - 15 * 60])
+                                ->count(),
+                'members'   => self::find()
+                                ->where([
+                                    'and', 
+                                    ['>', 'updated_at', time() - 15 * 60], 
+                                    ['is not', 'user_id', null], 
+                                    ['anonymous' => 0]
+                                ])
+                                ->count(),
+                'anonymous' => self::find()
+                                ->where([
+                                    'and', 
+                                    ['>', 'updated_at', time() - 15 * 60], 
+                                    ['is not', 'user_id', null], 
+                                    ['anonymous' => 1]
+                                ])
+                                ->count(),
+                'guests'    => self::find()
+                                ->where([
+                                    'and', 
+                                    ['>', 'updated_at', time() - 15 * 60], 
+                                    ['user_id' => null]
+                                ])
+                                ->count(),
+                'names'     => [],
+            ];
+            $members = self::find()
+                        ->where([
+                            'and', 
+                            ['>', 'updated_at', time() - 15 * 60], 
+                            ['is not', 'user_id', null], 
+                            ['anonymous' => 0]
+                        ]);
             foreach ($members->each() as $member) {
                 $last['names'][$member->user_id] = [
                     'name' => $member->username,
@@ -234,7 +259,9 @@ class Activity extends ActiveRecord
     {
         $members = Cache::getInstance()->get('forum.memberscount');
         if ($members === false) {
-            $members = User::find()->where(['!=', 'status', User::STATUS_REGISTERED])->count();
+            $members = User::find()
+                        ->where(['!=', 'status', User::STATUS_REGISTERED])
+                        ->count();
             Cache::getInstance()->set('forum.memberscount', $members);
         }
         return $members;

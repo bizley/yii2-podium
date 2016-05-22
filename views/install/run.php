@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 
 $this->registerJs("var nextStep = function(step) { $.ajax({url: '" . Url::to(['install/import']) . "', method: 'POST', data: {step: step}, dataType: 'json'}).fail(function(){ $('#progressBar').addClass('hide'); $('#installationError').removeClass('hide'); }).done(function(data){ $('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%'); $('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>' + data.table + '</strong> ' + data.result + '</li>'); if (data.percent < 100) nextStep(++step); else { $('#progressBar .progress-bar').removeClass('active progress-bar-striped'); if (data.error) $('#installationFinishedError').removeClass('hide'); else $('#installationFinished').removeClass('hide'); }}); }; $('#installPodium').click(function(e){ e.preventDefault(); $('#startInstallation').addClass('hide'); $('#installationResults').removeClass('hide'); $('#progressBar .progress-bar').css('width', '10px'); var firstStep = $('#drop')[0].checked == true ? -1 : 0; nextStep(firstStep); });");
-
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
@@ -40,7 +39,7 @@ $this->registerJs("var nextStep = function(step) { $.ajax({url: '" . Url::to(['i
         ]) ?>      
     </div>
     <div class="col-sm-8 col-sm-offset-2 hide" id="installationError">
-        <div class="alert alert-danger" role="alert"><?= Yii::t('podium/view', 'There was a major error during installation...') ?></div>
+        <div class="alert alert-danger" role="alert"><?= Yii::t('podium/view', 'There was a major error during installation! Check your runtime log for details.') ?></div>
     </div>
     <div class="row hide" id="installationFinished">
         <div class="text-center col-sm-12">

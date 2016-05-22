@@ -29,7 +29,7 @@ class Avatar extends Widget
     public $author;
     
     /**
-     * @var boolean Wheter user name should appear underneath the image.
+     * @var boolean Whether user name should appear underneath the image.
      */
     public $showName = true;
 

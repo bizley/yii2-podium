@@ -68,7 +68,7 @@ class Helper
     
     /**
      * Returns user tag for deleted user.
-     * @param boolean $simple wheter to return simple tag instead of full
+     * @param boolean $simple whether to return simple tag instead of full
      * @return string tag
      */
     public static function deletedUserTag($simple = false)
@@ -115,7 +115,7 @@ class Helper
      * @param string $name user name
      * @param integer $role user role
      * @param integer|null $id user ID
-     * @param boolean $simple wheter to return simple tag instead of full
+     * @param boolean $simple whether to return simple tag instead of full
      * @return string tag
      */
     public static function podiumUserTag($name, $role, $id = null, $slug = null, $simple = false)

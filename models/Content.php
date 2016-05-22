@@ -7,6 +7,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
+use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
 
@@ -99,7 +100,7 @@ class Content extends ActiveRecord
     /**
      * Returns default content object.
      * @param string $name content's name
-     * @return boolean|\bizley\podium\models\Content
+     * @return boolean|Content
      * @since 0.2
      */
     public static function prepareDefault($name)

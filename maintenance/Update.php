@@ -1,12 +1,7 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\maintenance;
 
-use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use Exception;
 use Yii;
@@ -19,12 +14,9 @@ use yii\helpers\Html;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\BaseManager $authManager Authorization Manager
- * @property \yii\db\Connection $db Database connection
  */
 class Update extends Maintenance
 {
-
     /**
      * @var array list of steps for update.
      */
@@ -108,21 +100,30 @@ class Update extends Maintenance
         $this->setVersion($version);
         try {
             if (!isset($this->getPartSteps()[(int)$step])) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
+                $this->setResult(
+                    $this->outputDanger(
+                        Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
+                    )
+                );
                 $this->setError(true);
                 $this->setPercent(100);
-            }
-            elseif ($this->getNumberOfSteps() == 0) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
+            } elseif ($this->getNumberOfSteps() == 0) {
+                $this->setResult(
+                    $this->outputDanger(
+                        Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
+                    )
+                );
                 $this->setError(true);
                 $this->setPercent(100);
-            }
-            else {
-                $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
+            } else {
+                $this->setPercent(
+                        $this->getNumberOfSteps() == (int)$step + 1 
+                            ? 100 
+                            : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps())
+                );
                 $this->_proceedStep($this->getPartSteps()[(int)$step]);
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->setResult($this->outputDanger($e->getMessage()));
             $this->setError(true);
             $this->setPercent(100);
@@ -161,16 +162,11 @@ class Update extends Maintenance
                 foreach (static::steps() as $version => $data) {
                     $this->_partSteps = array_merge($this->_partSteps, $data);
                 }
-            }
-            else {
-                $found = false;
+            } else {
                 $index = 1;
                 foreach (static::steps() as $version => $data) {
-                    if ($version == $v) {
-                        $found = true;
-                    }
                     $index++;
-                    if ($found) {
+                    if ($version == $v) {
                         break;
                     }
                 }
@@ -185,7 +181,7 @@ class Update extends Maintenance
     }
     
     /**
-     * Gets version.
+     * Returns version.
      * @return string
      */
     public function getVersion()
@@ -223,14 +219,24 @@ class Update extends Maintenance
                 throw new Exception(Yii::t('podium/flash', 'Version number missing.'));
             }
             Config::getInstance()->set('version', $data['version']);
-            Cache::getInstance()->flush();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Database version has been updated to {version}.', ['version' => $data['version']]));
-        }
-        catch (Exception $e) {
+            return $this->outputSuccess(
+                Yii::t(
+                    'podium/flash', 
+                    'Database version has been updated to {version}.', 
+                    ['version' => $data['version']]
+                )
+            );
+        } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during version updating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(
+                Yii::t(
+                    'podium/flash', 
+                    'Error during version updating'
+                ) 
+                . ': ' 
+                . Html::tag('pre', $e->getMessage())
+            );
         }
     }
     

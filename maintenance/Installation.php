@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\maintenance;
 
 use bizley\podium\components\Config;
@@ -23,12 +19,9 @@ use yii\helpers\VarDumper;
  * @author Paweł Bizley Brzozowski <pb@human-device.com>
  * @since 0.1
  * 
- * @property \yii\rbac\BaseManager $authManager Authorization Manager
- * @property \yii\db\Connection $db Database connection
  */
 class Installation extends Maintenance
 {
-
     const DEFAULT_USERNAME = 'admin';
     
     /**
@@ -37,13 +30,13 @@ class Installation extends Maintenance
      */
     protected function _addAdmin()
     {
+        $transaction = $this->db->beginTransaction();
         try {
             $podium = PodiumModule::getInstance();
             if ($podium->userComponent == PodiumModule::USER_INHERIT) {
                 if (empty($podium->adminId)) {
                     return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set.'));
                 }
-                    
                 $admin = new User;
                 $admin->scenario     = 'installation';
                 $admin->inherited_id = $podium->adminId;
@@ -51,16 +44,24 @@ class Installation extends Maintenance
                 $admin->status       = User::STATUS_ACTIVE;
                 $admin->role         = User::ROLE_ADMIN;
                 $admin->timezone     = User::DEFAULT_TIMEZONE;
-                if ($admin->save()) {
-                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $podium->adminId);
-                    return $this->outputSuccess(Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', ['id' => $podium->adminId]));
+                if (!$admin->save()) {
+                    throw new Exception(VarDumper::dumpAsString($admin->getErrors()));
                 }
-
-                $this->setError(true);
-                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
-            }
-            else {
+                if (!$this->authManager->assign(
+                        $this->authManager->getRole(Rbac::ROLE_ADMIN), 
+                        $podium->adminId
+                )) {
+                    throw new Exception(Yii::t('podium/flash', 'Error during Administrator privileges setting'));
+                }
+                $transaction->commit();
+                return $this->outputSuccess(
+                    Yii::t(
+                        'podium/flash', 
+                        'Administrator privileges have been set for the user of ID {id}.', 
+                        ['id' => $podium->adminId]
+                    )
+                );
+            } else {
                 $admin = new User;
                 $admin->scenario = 'installation';
                 $admin->username = self::DEFAULT_USERNAME;
@@ -69,25 +70,39 @@ class Installation extends Maintenance
                 $admin->timezone = User::DEFAULT_TIMEZONE;
                 $admin->generateAuthKey();
                 $admin->setPassword(self::DEFAULT_USERNAME);
-                if ($admin->save()) {
-                    $this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $admin->getId());
-                    return $this->outputSuccess(Yii::t('podium/flash', 'Administrator account has been created.') .
-                                    ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') .
-                                    ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) .
-                                    ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') .
-                                    ' ' . Html::tag('kbd', self::DEFAULT_USERNAME));
+                if (!$admin->save()) {
+                    throw new Exception(VarDumper::dumpAsString($admin->getErrors()));
                 }
-
-                $this->setError(true);
-                return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                                Html::tag('pre', VarDumper::dumpAsString($admin->getErrors())));
+                if (!$this->authManager->assign(
+                        $this->authManager->getRole(Rbac::ROLE_ADMIN), 
+                        $podium->adminId
+                )) {
+                    throw new Exception(Yii::t('podium/flash', 'Error during Administrator privileges setting'));
+                }
+                $transaction->commit();
+                return $this->outputSuccess(
+                    Yii::t(
+                        'podium/flash', 
+                        'Administrator account has been created.'
+                    ) 
+                    . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') 
+                    . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) 
+                    . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') 
+                    . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME)
+                );
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
+            $transaction->rollBack();
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during account creating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(
+                Yii::t(
+                    'podium/flash', 
+                    'Error during account creating'
+                ) 
+                . ': ' 
+                . Html::tag('pre', $e->getMessage())
+            );
         }
     }
 
@@ -98,30 +113,45 @@ class Installation extends Maintenance
     protected function _addConfig()
     {
         try {
-            $this->db->createCommand()->batchInsert('{{%podium_config}}', ['name', 'value'], [
-                    ['name', Config::PODIUM_NAME], 
-                    ['version', Config::CURRENT_VERSION], 
-                    ['hot_minimum', Config::HOT_MINIMUM], 
-                    ['members_visible', Config::FLAG_MEMBERS_VISIBLE],
-                    ['from_email', Config::DEFAULT_FROM_EMAIL],
-                    ['from_name', Config::DEFAULT_FROM_NAME],
-                    ['maintenance_mode', Config::MAINTENANCE_MODE],
-                    ['max_attempts', Config::MAX_SEND_ATTEMPTS],
-                    ['use_captcha', Config::FLAG_USE_CAPTCHA],
-                    ['recaptcha_sitekey', ''],
-                    ['recaptcha_secretkey', ''],
-                    ['password_reset_token_expire', Config::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],
-                    ['email_token_expire', Config::SECONDS_EMAIL_TOKEN_EXPIRE],
-                    ['activation_token_expire', Config::SECONDS_ACTIVATION_TOKEN_EXPIRE],
-                    ['meta_keywords', Config::META_KEYWORDS],
-                    ['meta_description', Config::META_DESCRIPTION],
-                ])->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
-        }
-        catch (Exception $e) {
+            $this->db
+                    ->createCommand()
+                    ->batchInsert(
+                        '{{%podium_config}}', 
+                        ['name', 'value'], 
+                        [
+                            ['name', Config::PODIUM_NAME], 
+                            ['version', Config::CURRENT_VERSION], 
+                            ['hot_minimum', Config::HOT_MINIMUM], 
+                            ['members_visible', Config::FLAG_MEMBERS_VISIBLE],
+                            ['from_email', Config::DEFAULT_FROM_EMAIL],
+                            ['from_name', Config::DEFAULT_FROM_NAME],
+                            ['maintenance_mode', Config::MAINTENANCE_MODE],
+                            ['max_attempts', Config::MAX_SEND_ATTEMPTS],
+                            ['use_captcha', Config::FLAG_USE_CAPTCHA],
+                            ['recaptcha_sitekey', ''],
+                            ['recaptcha_secretkey', ''],
+                            ['password_reset_token_expire', Config::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],
+                            ['email_token_expire', Config::SECONDS_EMAIL_TOKEN_EXPIRE],
+                            ['activation_token_expire', Config::SECONDS_ACTIVATION_TOKEN_EXPIRE],
+                            ['meta_keywords', Config::META_KEYWORDS],
+                            ['meta_description', Config::META_DESCRIPTION],
+                        ]
+                    )
+                    ->execute();
+            return $this->outputSuccess(
+                Yii::t('podium/flash', 'Default Config settings have been added.')
+            );
+        } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during settings adding') . ': ' . Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(
+                Yii::t(
+                    'podium/flash', 
+                    'Error during settings adding'
+                ) 
+                . ': ' 
+                . Html::tag('pre', $e->getMessage())
+            );
         }
     }
 
@@ -133,20 +163,59 @@ class Installation extends Maintenance
     {
         try {
             $default = Content::defaultContent();
-            $this->db->createCommand()->batchInsert('{{%podium_content}}', ['name', 'topic', 'content'], [
-                    [Content::TERMS_AND_CONDS, $default[Content::TERMS_AND_CONDS]['topic'], $default[Content::TERMS_AND_CONDS]['content']],
-                    [Content::EMAIL_REGISTRATION, $default[Content::EMAIL_REGISTRATION]['topic'], $default[Content::EMAIL_REGISTRATION]['content']],
-                    [Content::EMAIL_PASSWORD, $default[Content::EMAIL_PASSWORD]['topic'], $default[Content::EMAIL_PASSWORD]['content']],
-                    [Content::EMAIL_REACTIVATION, $default[Content::EMAIL_REACTIVATION]['topic'], $default[Content::EMAIL_REACTIVATION]['content']],
-                    [Content::EMAIL_NEW, $default[Content::EMAIL_NEW]['topic'], $default[Content::EMAIL_NEW]['content']],
-                    [Content::EMAIL_SUBSCRIPTION, $default[Content::EMAIL_SUBSCRIPTION]['topic'], $default[Content::EMAIL_SUBSCRIPTION]['content']],
-                ])->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Default Content has been added.'));
-        }
-        catch (Exception $e) {
+            $this->db
+                    ->createCommand()
+                    ->batchInsert(
+                        '{{%podium_content}}', 
+                        ['name', 'topic', 'content'], 
+                        [
+                            [
+                                Content::TERMS_AND_CONDS, 
+                                $default[Content::TERMS_AND_CONDS]['topic'], 
+                                $default[Content::TERMS_AND_CONDS]['content']
+                            ],
+                            [
+                                Content::EMAIL_REGISTRATION, 
+                                $default[Content::EMAIL_REGISTRATION]['topic'], 
+                                $default[Content::EMAIL_REGISTRATION]['content']
+                            ],
+                            [
+                                Content::EMAIL_PASSWORD, 
+                                $default[Content::EMAIL_PASSWORD]['topic'], 
+                                $default[Content::EMAIL_PASSWORD]['content']
+                            ],
+                            [
+                                Content::EMAIL_REACTIVATION, 
+                                $default[Content::EMAIL_REACTIVATION]['topic'], 
+                                $default[Content::EMAIL_REACTIVATION]['content']
+                            ],
+                            [
+                                Content::EMAIL_NEW, 
+                                $default[Content::EMAIL_NEW]['topic'], 
+                                $default[Content::EMAIL_NEW]['content']
+                            ],
+                            [
+                                Content::EMAIL_SUBSCRIPTION, 
+                                $default[Content::EMAIL_SUBSCRIPTION]['topic'], 
+                                $default[Content::EMAIL_SUBSCRIPTION]['content']
+                            ],
+                        ]
+                    )
+                    ->execute();
+            return $this->outputSuccess(
+                Yii::t('podium/flash', 'Default Content has been added.')
+            );
+        } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during content adding') . ': ' . Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(
+                Yii::t(
+                    'podium/flash', 
+                    'Error during content adding'
+                ) 
+                . ': ' 
+                . Html::tag('pre', $e->getMessage())
+            );
         }
     }
     
@@ -158,13 +227,20 @@ class Installation extends Maintenance
     {
         try {
             (new Rbac)->add($this->authManager);
-            return $this->outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
-        }
-        catch (Exception $e) {
+            return $this->outputSuccess(
+                Yii::t('podium/flash', 'Access roles have been created.')
+            );
+        } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
-            return $this->outputDanger(Yii::t('podium/flash', 'Error during access roles creating') . ': ' .
-                            Html::tag('pre', $e->getMessage()));
+            return $this->outputDanger(
+                Yii::t(
+                    'podium/flash', 
+                    'Error during access roles creating'
+                ) 
+                . ': ' 
+                . Html::tag('pre', $e->getMessage())
+            );
         }
     }
 
@@ -173,10 +249,9 @@ class Installation extends Maintenance
      */
     protected function _proceedDrops()
     {
-        $drops   = array_reverse($this->steps());
-        $results = '';
+        $drops = array_reverse($this->steps());
         $this->setError(false);
-        $results .= $this->outputSuccess(Yii::t('podium/flash', 'Please wait... Dropping tables.'));
+        $results = $this->outputSuccess(Yii::t('podium/flash', 'Please wait... Dropping tables.'));
         foreach ($drops as $drop) {
             if (isset($drop['call']) && $drop['call'] == 'create') {
                 $result = '';
@@ -232,7 +307,7 @@ class Installation extends Maintenance
     /**
      * Starts next step of installation.
      * @param integer $step step number.
-     * @param boolean $drop wheter to drop table prior to creating it.
+     * @param boolean $drop whether to drop table prior to creating it.
      * @return array installation step result.
      */
     public function step($step, $drop = false)
@@ -240,26 +315,34 @@ class Installation extends Maintenance
         $this->setTable('...');
         try {
             if (!isset(static::steps()[(int)$step])) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')));
+                $this->setResult(
+                    $this->outputDanger(
+                        Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
+                    )
+                );
                 $this->setError(true);
                 $this->setPercent(100);
-            }
-            elseif ($this->getNumberOfSteps() == 0) {
-                $this->setResult($this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')));
+            } elseif ($this->getNumberOfSteps() == 0) {
+                $this->setResult(
+                    $this->outputDanger(
+                        Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
+                    )
+                );
                 $this->setError(true);
                 $this->setPercent(100);
-            }
-            else {
-                $this->setPercent($this->getNumberOfSteps() == (int)$step + 1 ? 100 : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps()));
+            } else {
+                $this->setPercent(
+                    $this->getNumberOfSteps() == (int)$step + 1 
+                        ? 100 
+                        : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps())
+                );
                 if ($drop) {
                     $this->_proceedDrops();    
-                }
-                else {
+                } else {
                     $this->_proceedStep(static::steps()[(int)$step]);
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->setResult($this->outputDanger($e->getMessage()));
             $this->setError(true);
             $this->setPercent(100);
