@@ -957,16 +957,19 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT 
+                && !Yii::$app->user->isGuest) {
             $user = static::findMe();
-            if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
-                return $user->_access[$permissionName];
+            if ($user) {
+                if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
+                    return $user->_access[$permissionName];
+                }
+                $access = Yii::$app->authManager->checkAccess($user->id, $permissionName, $params);
+                if ($allowCaching && empty($params)) {
+                    $user->_access[$permissionName] = $access;
+                }
+                return $access;
             }
-            $access = Yii::$app->authManager->checkAccess($user->id, $permissionName, $params);
-            if ($allowCaching && empty($params)) {
-                $user->_access[$permissionName] = $access;
-            }
-            return $access;
         }
         return Yii::$app->user->can($permissionName, $params, $allowCaching);
     }
