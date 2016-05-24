@@ -18,6 +18,7 @@ use yii\db\Query;
  * @since 0.1
  * 
  * @property array $defaults
+ * @property array $fromDb
  */
 class Config extends Object
 {
@@ -100,7 +101,7 @@ class Config extends Object
         try {
             $cache = $this->cache->get('config');
             if ($cache === false) {
-                $cache = array_merge($this->_defaults, $this->getFromDb());
+                $cache = array_merge($this->defaults, $this->fromDb);
                 $this->cache->set('config', $cache);
             }
             return $cache;
@@ -178,7 +179,7 @@ class Config extends Object
                 }
                 $this->cache->set(
                                 'config', 
-                                array_merge($this->_defaults, $this->getFromDb())
+                                array_merge($this->defaults, $this->fromDb)
                             );
                 return true;
             }      
