@@ -207,7 +207,7 @@ class User extends ActiveRecord implements IdentityInterface
             $this->removeActivationToken();
             $this->status = self::STATUS_ACTIVE;
 
-            $transaction = self::getDb()->beginTransaction();
+            $transaction = static::getDb()->beginTransaction();
             try {
                 if ($this->save()) {
                     if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
@@ -256,10 +256,10 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findMe()
     {
         if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
-            if (self::$_identity === null) {
-                self::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            if (static::$_identity === null) {
+                static::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
             }
-            return self::$_identity;
+            return static::$_identity;
         }
         return Yii::$app->user->identity;
     }
@@ -592,7 +592,7 @@ class User extends ActiveRecord implements IdentityInterface
         if ($expire === null) {
             $expire = 3 * 24 * 60 * 60;
         }
-        return self::isTokenValid($token, $expire);
+        return static::isTokenValid($token, $expire);
     }
     
     /**
@@ -606,7 +606,7 @@ class User extends ActiveRecord implements IdentityInterface
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }
-        return self::isTokenValid($token, $expire);
+        return static::isTokenValid($token, $expire);
     }
     
     /**
@@ -620,7 +620,7 @@ class User extends ActiveRecord implements IdentityInterface
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }
-        return self::isTokenValid($token, $expire);
+        return static::isTokenValid($token, $expire);
     }
     
     /**
@@ -1111,7 +1111,7 @@ class User extends ActiveRecord implements IdentityInterface
                 $cache = [];
             }
             $users = static::find()->andWhere(['status' => self::STATUS_ACTIVE]);
-            $users->andWhere(['!=', 'id', self::loggedId()]);
+            $users->andWhere(['!=', 'id', static::loggedId()]);
             if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
                 $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
             }

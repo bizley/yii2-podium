@@ -190,7 +190,7 @@ class BaseController extends YiiController
         if (!Yii::$app->user->isGuest) {
             if ($this->module->userComponent == Podium::USER_INHERIT) {
                 $user = User::findMe();
-                if (empty($user)) {
+                if (!$user) {
                     if (User::createInheritedAccount()) {
                         $this->success(
                                 Yii::t(
@@ -206,7 +206,7 @@ class BaseController extends YiiController
             } else {
                 $user = Yii::$app->user->identity;
             }
-            if ($user->status == User::STATUS_BANNED) {
+            if ($user && $user->status == User::STATUS_BANNED) {
                 return $this->redirect(['default/ban']);
             }
             if ($user && !empty($user->timezone)) {
