@@ -37,6 +37,13 @@ class Installation extends Maintenance
                 if (empty($podium->adminId)) {
                     return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set.'));
                 }
+                
+//                $identity = Yii::$app->user->identity;
+//                $inheritedUser = $identity::findIdentity($podium->adminId);
+//                if (!$inheritedUser) {
+//                    return $this->outputWarning(Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.'));
+//                }
+                
                 $admin = new User;
                 $admin->scenario     = 'installation';
                 $admin->inherited_id = $podium->adminId;
@@ -782,12 +789,12 @@ class Installation extends Maintenance
                     'inherited_id'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
                     'username'             => Schema::TYPE_STRING . ' NOT NULL',
                     'slug'                 => Schema::TYPE_STRING . ' NOT NULL',
-                    'auth_key'             => Schema::TYPE_STRING . '(32) NOT NULL',
-                    'password_hash'        => Schema::TYPE_STRING . ' NOT NULL',
+                    'auth_key'             => Schema::TYPE_STRING . '(32)',
+                    'password_hash'        => Schema::TYPE_STRING,
                     'password_reset_token' => Schema::TYPE_STRING,
                     'activation_token'     => Schema::TYPE_STRING,
                     'email_token'          => Schema::TYPE_STRING,
-                    'email'                => Schema::TYPE_STRING . ' NOT NULL',
+                    'email'                => Schema::TYPE_STRING,
                     'new_email'            => Schema::TYPE_STRING,
                     'anonymous'            => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
                     'status'               => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 1',
