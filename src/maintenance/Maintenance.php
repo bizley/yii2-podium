@@ -22,6 +22,7 @@ use yii\rbac\DbManager;
  * @property boolean $error
  * @property string $foreignName
  * @property string $indexName
+ * @property Podium $module
  * @property integer $numberOfSteps
  * @property integer $percent
  * @property string $result
@@ -80,72 +81,57 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _addColumn($data)
+    protected function addColumn($data)
     {
         if (empty($data['col']) || !is_string($data['col'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column name missing.'));
         }
         if (empty($data['type']) || !is_string($data['type'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column type missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column type missing.'));
         }
         
         try {
-            $this->db->createCommand()->addColumn($this->getTable(), $data['col'], $data['type'])->execute();
-            return $this->outputSuccess(
-                Yii::t('podium/flash', 'Table column {name} has been added', ['name' => $data['col']])
-            );
+            $this->db->createCommand()->addColumn($this->table, $data['col'], $data['type'])->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been added', [
+                'name' => $data['col']
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during table column {name} adding', ['name' => $data['col']]) 
-                    . ': ' 
-                    . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table column {name} adding', [
+                    'name' => $data['col']
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
     
     /**
-     * Updates database table column.
+     * Modifies database table column.
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _alterColumn($data)
+    protected function alterColumn($data)
     {
         if (empty($data['col']) || !is_string($data['col'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column name missing.'));
         }
         if (empty($data['type']) || !is_string($data['type'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column type missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column type missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->alterColumn(
-                        $this->getTable(), 
-                        $data['col'], 
-                        $data['type']
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t('podium/flash', 'Table column {name} has been updated', ['name' => $data['col']])
-            );
+            $this->db->createCommand()->alterColumn($this->table, $data['col'], $data['type'])->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been updated', [
+                'name' => $data['col']
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during table column {name} updating', ['name' => $data['col']]) 
-                    . ': ' 
-                    . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table column {name} updating', [
+                    'name' => $data['col']
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -155,30 +141,17 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _create($data)
+    protected function create($data)
     {
         if (empty($data['schema']) || !is_array($data['schema'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Database schema missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Database schema missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->createTable(
-                        $this->getTable(), 
-                        $data['schema'], 
-                        $this->getTableOptions()
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table {name} has been created', 
-                    ['name' => $this->db->getSchema()->getRawTableName($this->getTable())]
-                )
-            );
+            $this->db->createCommand()->createTable($this->table, $data['schema'], $this->getTableOptions())->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been created', [
+                'name' => $this->db->schema->getRawTableName($this->table)
+            ]));
         } catch (Exception $e) {
             if ($this->_table != 'log') {
                 // in case of creating log table don't try to log error in it if it's not available
@@ -186,33 +159,33 @@ class Maintenance extends Component
             }
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during table {name} creating', ['name' => $this->getTable()]) 
-                    . ': ' 
-                    . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table {name} creating', [
+                    'name' => $this->table
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
     
     /**
-     * Drops database table if it exists.
+     * Drops current database table if it exists.
      * @return string result message.
      */
-    protected function _drop()
+    protected function drop()
     {
         try {
-            if ($this->db->schema->getTableSchema($this->getTable(), true) !== null) {
-                $this->db->createCommand()->dropTable($this->getTable())->execute();
-                return $this->outputSuccess(
-                    Yii::t('podium/flash', 'Table {name} has been dropped', ['name' => $this->getTable()])
-                );
+            if ($this->db->schema->getTableSchema($this->table, true) !== null) {
+                $this->db->createCommand()->dropTable($this->table)->execute();
+                return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been dropped', [
+                    'name' => $this->table
+                ]));
             }
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during table {name} dropping', ['name' => $this->getTable()]) 
-                    . ': ' 
-                    . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table {name} dropping', [
+                    'name' => $this->table
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -222,32 +195,24 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _dropColumn($data)
+    protected function dropColumn($data)
     {
         if (empty($data['col']) || !is_string($data['col'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column name missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->dropColumn(
-                        $this->getTable(), 
-                        $data['col']
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t('podium/flash', 'Table column {name} has been dropped', ['name' => $data['col']])
-            );
+            $this->db->createCommand()->dropColumn($this->table, $data['col'])->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been dropped', [
+                'name' => $data['col']
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during table column {name} dropping', ['name' => $data['col']]) 
-                    . ': ' 
-                    . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table column {name} dropping', [
+                    'name' => $data['col']
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -257,40 +222,24 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _dropForeign($data)
+    protected function dropForeign($data)
     {
         if (empty($data['name']) || !is_string($data['name'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->dropForeignKey(
-                        $this->getForeignName($data['name']), 
-                        $this->getTable()
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table foreign key {name} has been dropped', 
-                    ['name' => $this->getForeignName($data['name'])]
-                )
-            );
+            $this->db->createCommand()->dropForeignKey($this->getForeignName($data['name']), $this->table)->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table foreign key {name} has been dropped', [
+                'name' => $this->getForeignName($data['name'])
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table foreign key {name} dropping', 
-                    ['name' => $this->getForeignName($data['name'])]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table foreign key {name} dropping', [
+                    'name' => $this->getForeignName($data['name'])
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -300,40 +249,24 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _dropIndex($data)
+    protected function dropIndex($data)
     {
         if (empty($data['name']) || !is_string($data['name'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Index name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index name missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->dropIndex(
-                        $this->getIndexName($data['name']), 
-                        $this->getTable()
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table index {name} has been dropped', 
-                    ['name' => $this->getIndexName($data['name'])]
-                )
-            );
+            $this->db->createCommand()->dropIndex($this->getIndexName($data['name']), $this->table)->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table index {name} has been dropped', [
+                'name' => $this->getIndexName($data['name'])
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table index {name} dropping', 
-                    ['name' => $this->getIndexName($data['name'])]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table index {name} dropping', [
+                    'name' => $this->getIndexName($data['name'])
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -343,55 +276,39 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _foreign($data)
+    protected function foreign($data)
     {
         if (empty($data['key']) || (!is_string($data['key']) && !is_array($data['key']))) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.'));
         }
         if (empty($data['ref']) || !is_string($data['ref'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Foreign key reference missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Foreign key reference missing.'));
         }
         if (empty($data['col']) || (!is_string($data['col']) && !is_array($data['col']))) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Referenced columns missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Referenced columns missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->addForeignKey(
-                        $this->getForeignName($data['key']), 
-                        $this->getTable(), 
-                        $data['key'], 
-                        $this->getTableName($data['ref']), 
-                        $data['col'],
-                        !empty($data['delete']) ? $data['delete'] : null,
-                        !empty($data['update']) ? $data['update'] : null
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table foreign key {name} has been added', 
-                    ['name' => $this->getForeignName($data['key'])]
+            $this->db->createCommand()->addForeignKey(
+                    $this->getForeignName($data['key']), 
+                    $this->table, 
+                    $data['key'], 
+                    $this->getTableName($data['ref']), 
+                    $data['col'],
+                    !empty($data['delete']) ? $data['delete'] : null,
+                    !empty($data['update']) ? $data['update'] : null
                 )
-            );
+                ->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table foreign key {name} has been added', [
+                'name' => $this->getForeignName($data['key'])
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table foreign key {name} adding', 
-                    ['name' => $this->getForeignName($data['key'])]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table foreign key {name} adding', [
+                    'name' => $this->getForeignName($data['key'])
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -401,46 +318,27 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _index($data)
+    protected function index($data)
     {
         if (empty($data['name']) || !is_string($data['name'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Index name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index name missing.'));
         }
         if (empty($data['cols']) || !is_array($data['cols'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Index columns missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Index columns missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->createIndex(
-                        $this->getIndexName($data['name']), 
-                        $this->getTable(), 
-                        $data['cols']
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table index {name} has been added', 
-                    ['name' => $this->getIndexName($data['name'])]
-                )
-            );
+            $this->db->createCommand()->createIndex($this->getIndexName($data['name']), $this->table, $data['cols'])->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table index {name} has been added', [
+                'name' => $this->getIndexName($data['name'])
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table index {name} adding', 
-                    ['name' => $this->getIndexName($data['name'])]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table index {name} adding', [
+                    'name' => $this->getIndexName($data['name'])
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -450,46 +348,26 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _rename($data)
+    protected function rename($data)
     {
         if (empty($data['name']) || !is_string($data['name'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! New table name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! New table name missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->renameTable(
-                        $this->getTable(), 
-                        $this->getTableName($data['name'])
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table {name} has been renamed to {new}', 
-                    [
-                        'name' => $this->getTable(), 
-                        'new'  => $this->getTableName($data['name'])
-                    ]
-                )
-            );
+            $this->db->createCommand()->renameTable($this->table, $this->getTableName($data['name']))->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table {name} has been renamed to {new}', [
+                'name' => $this->table, 
+                'new'  => $this->getTableName($data['name'])
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table {name} renaming to {new}', 
-                    [
-                        'name' => $this->getTable(), 
-                        'new'  => $this->getTableName($data['name'])
-                    ]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table {name} renaming to {new}', [
+                    'name' => $this->table, 
+                    'new'  => $this->getTableName($data['name'])
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
@@ -499,64 +377,42 @@ class Maintenance extends Component
      * @param array $data installation step data.
      * @return string result message.
      */
-    protected function _renameColumn($data)
+    protected function renameColumn($data)
     {
         if (empty($data['col']) || !is_string($data['col'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! Column name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! Column name missing.'));
         }
         if (empty($data['name']) || !is_string($data['name'])) {
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Installation aborted! New column name missing.')
-            );
+            return $this->outputDanger(Yii::t('podium/flash', 'Installation aborted! New column name missing.'));
         }
         
         try {
-            $this->db
-                    ->createCommand()
-                    ->renameColumn(
-                        $this->getTable(), 
-                        $data['col'], 
-                        $data['name']
-                    )
-                    ->execute();
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Table column {name} has been renamed to {new}', 
-                    [
-                        'name' => $data['col'], 
-                        'new'  => $data['name']
-                    ]
-                )
-            );
+            $this->db->createCommand()->renameColumn($this->table, $data['col'], $data['name'])->execute();
+            return $this->outputSuccess(Yii::t('podium/flash', 'Table column {name} has been renamed to {new}', [
+                'name' => $data['col'], 
+                'new'  => $data['name']
+            ]));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->setError(true);
             return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during table column {name} renaming to {new}', 
-                    [
-                        'name' => $data['col'], 
-                        'new'  => $data['name']
-                    ]
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
+                Yii::t('podium/flash', 'Error during table column {name} renaming to {new}', [
+                    'name' => $data['col'], 
+                    'new'  => $data['name']
+                ]) . ': ' . Html::tag('pre', $e->getMessage())
             );
         }
     }
     
     /**
      * Checks if Post database table exists.
+     * This is taken as verification of Podium installation.
      * @return boolean whether Post database table exists.
      */
     public static function check()
     {
         try {
-            (new Post)->getTableSchema();
+            (new Post)->tableSchema;
         } catch (Exception $e) {
             // Prepare for installation.
             // No log because table might not be available.
@@ -597,6 +453,15 @@ class Maintenance extends Component
     }
     
     /**
+     * Returns Podium instance.
+     * @return Podium
+     */
+    public function getModule()
+    {
+        return Podium::getInstance();
+    }
+    
+    /**
      * Counts number of installation steps.
      * @return integer
      */
@@ -633,8 +498,7 @@ class Maintenance extends Component
     public function getTable()
     {
         return $this->_table == '...' 
-            ? '...' 
-            : $this->getTableName($this->_table);
+            ? '...' : $this->getTableName($this->_table);
     }
     
     /**
@@ -710,7 +574,7 @@ class Maintenance extends Component
      */
     public function clearCache()
     {
-        Podium::getInstance()->cache->flush();
+        $this->module->cache->flush();
     }
     
     /**
