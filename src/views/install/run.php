@@ -15,7 +15,39 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Insta
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 
-$this->registerJs("var nextStep = function(step) { $.ajax({url: '" . Url::to(['install/import']) . "', method: 'POST', data: {step: step}, dataType: 'json'}).fail(function(){ $('#progressBar').addClass('hide'); $('#installationError').removeClass('hide'); }).done(function(data){ $('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%'); $('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>' + data.table + '</strong> ' + data.result + '</li>'); if (data.percent < 100) nextStep(++step); else { $('#progressBar .progress-bar').removeClass('active progress-bar-striped'); if (data.error) $('#installationFinishedError').removeClass('hide'); else $('#installationFinished').removeClass('hide'); }}); }; $('#installPodium').click(function(e){ e.preventDefault(); $('#startInstallation').addClass('hide'); $('#installationResults').removeClass('hide'); $('#progressBar .progress-bar').css('width', '10px'); var firstStep = $('#drop')[0].checked == true ? -1 : 0; nextStep(firstStep); });");
+$url = Url::to(['install/import']);
+$this->registerJs(<<<JS
+var nextStep = function(drop) {
+    jQuery.post('$url', {drop: drop}, null, 'json')
+        .fail(function() {
+            jQuery('#progressBar').addClass('hide');
+            jQuery('#installationError').removeClass('hide');
+        })
+        .done(function(data) {
+            jQuery('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%');
+            jQuery('#installationProgress .list-group').prepend('<li class="list-group-item"><strong>' + data.table + '</strong> ' + data.result + '</li>');
+            if (data.error) {
+                jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
+                jQuery('#installationFinishedError').removeClass('hide');
+            } else {
+                if (data.percent < 100) {
+                    nextStep(data.drop);
+                } else {
+                    jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
+                    jQuery('#installationFinished').removeClass('hide');
+                }
+            }
+        });
+};
+jQuery('#installPodium').click(function(e) {
+    e.preventDefault();
+    jQuery('#startInstallation').addClass('hide');
+    jQuery('#installationResults').removeClass('hide');
+    jQuery('#progressBar .progress-bar').css('width', '10px');
+    nextStep(jQuery('#drop')[0].checked);
+});
+JS
+);        
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
@@ -23,7 +55,7 @@ $this->registerJs("var nextStep = function(step) { $.ajax({url: '" . Url::to(['i
         <em><strong><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
         <div class="alert alert-danger">
             <label><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br>
-            <?= Yii::t('podium/view', '(all existing Podium data will be deleted)') ?>
+            <?= Yii::t('podium/view', '(all existing Podium data will be deleted!)') ?>
         </div>
         <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Start Podium Installation') ?></button><br><br>
         <?= Yii::t('podium/view', 'Version to install') ?> <kbd><?= $version ?></kbd>

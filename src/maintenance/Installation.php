@@ -18,10 +18,13 @@ use yii\helpers\VarDumper;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
+ * @property array $steps
  */
 class Installation extends Maintenance
 {
     const DEFAULT_USERNAME = 'admin';
+    const SESSION_KEY = 'podium-installation';
+    const SESSION_STEPS = 'steps';
     
     /**
      * Adds Administrator account.
@@ -61,7 +64,7 @@ class Installation extends Maintenance
         } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
+            $this->error = true;
             return $this->outputDanger(
                 Yii::t('podium/flash', 'Error during account creating') 
                 . ': ' . Html::tag('pre', $e->getMessage())
@@ -79,11 +82,16 @@ class Installation extends Maintenance
         if (empty($this->module->adminId)) {
             return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set!'));
         }
-        $identity = Yii::$app->user->identityClass;
-        $inheritedUser = $identity::findIdentity($this->module->adminId);
-        if (!$inheritedUser) {
+        try {
+            $identity = Yii::$app->user->identityClass;
+            $inheritedUser = $identity::findIdentity($this->module->adminId);
+            if (!$inheritedUser) {
+                throw new Exception;
+            }
+        } catch (Exception $e) {
             return $this->outputWarning(Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.'));
         }
+        
         $transaction = $this->db->beginTransaction();
         try {
             $admin = new User;
@@ -110,7 +118,7 @@ class Installation extends Maintenance
         } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
+            $this->error = true;
             return $this->outputDanger(
                 Yii::t('podium/flash', 'Error during account creating') 
                 . ': ' . Html::tag('pre', $e->getMessage())
@@ -126,7 +134,7 @@ class Installation extends Maintenance
     {
         try {
             $this->db->createCommand()->batchInsert(
-                    '{{%podium_config}}', 
+                    Config::tableName(), 
                     ['name', 'value'], 
                     [
                         ['name', Config::PODIUM_NAME], 
@@ -151,7 +159,7 @@ class Installation extends Maintenance
             return $this->outputSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
+            $this->error = true;
             return $this->outputDanger(
                 Yii::t('podium/flash', 'Error during settings adding') 
                 . ': ' . Html::tag('pre', $e->getMessage())
@@ -168,7 +176,7 @@ class Installation extends Maintenance
         try {
             $default = Content::defaultContent();
             $this->db->createCommand()->batchInsert(
-                    '{{%podium_content}}', 
+                    Content::tableName(), 
                     ['name', 'topic', 'content'], 
                     [
                         [
@@ -207,7 +215,7 @@ class Installation extends Maintenance
             return $this->outputSuccess(Yii::t('podium/flash', 'Default Content has been added.'));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
+            $this->error = true;
             return $this->outputDanger(
                 Yii::t('podium/flash', 'Error during content adding') 
                 . ': ' . Html::tag('pre', $e->getMessage())
@@ -226,7 +234,7 @@ class Installation extends Maintenance
             return $this->outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
+            $this->error = true;
             return $this->outputDanger(
                 Yii::t('podium/flash', 'Error during access roles creating') 
                 . ': ' . Html::tag('pre', $e->getMessage())
@@ -237,99 +245,196 @@ class Installation extends Maintenance
     /**
      * Proceeds multiple installation drops.
      */
-    protected function proceedDrops()
-    {
-        $drops = array_reverse($this->steps());
-        $this->setError(false);
-        $results = $this->outputSuccess(Yii::t('podium/flash', 'Please wait, dropping tables...'));
-        foreach ($drops as $drop) {
-            if (isset($drop['call']) && $drop['call'] === 'create') {
-                $result = '';
-                $this->setTable($drop['table']);
-                $result .= '<br>' . call_user_func([$this, 'drop']);
-                $results .= $result;
-                $this->setResult($results);
-                if ($this->error) {
-                    $this->setPercent(100);
-                    break;
-                }
-            }
-        }
-    }
+//    protected function proceedDrops()
+//    {
+//        $drops = array_reverse($this->steps());
+//        $this->setError(false);
+//        $results = $this->outputSuccess(Yii::t('podium/flash', 'Please wait, dropping tables...'));
+//        foreach ($drops as $drop) {
+//            if (isset($drop['call']) && $drop['call'] === 'create') {
+//                $result = '';
+//                $this->setTable($drop['table']);
+//                $result .= '<br>' . call_user_func([$this, 'drop']);
+//                $results .= $result;
+//                $this->setResult($results);
+//                if ($this->error) {
+//                    $this->setPercent(100);
+//                    break;
+//                }
+//            }
+//        }
+//    }
     
     /**
      * Proceeds next installation step.
      * @param array $data step data.
      * @throws Exception
      */
-    protected function proceedStep($data)
+//    protected function proceedStep($data)
+//    {
+//        if (empty($data['table'])) {
+//            throw new Exception('Installation aborted! Database table name missing.');
+//        }
+//        $this->setTable($data['table']);
+//        if (empty($data['call'])) {
+//            throw new Exception('Installation aborted! Action call missing.');
+//        }
+//
+//        $this->setError(false);
+//        $this->setResult(call_user_func([$this, $data['call']], $data));
+//        if ($this->error) {
+//            $this->setPercent(100);
+//        }
+//    }
+
+    /**
+     * Proceeds next installation step.
+     * @return array
+     * @since 0.2
+     */
+    public function nextStep()
     {
-        if (empty($data['table'])) {
-            throw new Exception('Installation aborted! Database table name missing.');
+        $currentStep = Yii::$app->session->get(self::SESSION_KEY, 0);
+        if ($currentStep === 0) {
+            Yii::$app->session->set(self::SESSION_STEPS, count($this->steps));
         }
-        $this->setTable($data['table']);
-        if (empty($data['call'])) {
-            throw new Exception('Installation aborted! Action call missing.');
+        $maxStep = Yii::$app->session->get(self::SESSION_STEPS, 0);
+        if ($currentStep < $maxStep) {
+            $this->table = '...';
+            if (!isset($this->steps[$currentStep])) {
+                return [
+                    'error'   => true,
+                    'result'  => $this->outputDanger(
+                        Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
+                    ),
+                    'percent' => 100,
+                ];
+            }
+            $this->error = false;
+            $this->table = $this->steps[$currentStep]['table'];
+            $result = call_user_func([$this, $this->steps[$currentStep]['call']], $this->steps[$currentStep]);
+            Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
+            return [
+                'drop'    => false,
+                'error'   => $this->error,
+                'result'  => $result,
+                'table'   => $this->table,
+                'percent' => $this->countPercent($currentStep, $maxStep),
+            ];
         }
-
-        $this->setError(false);
-        $this->setResult(call_user_func([$this, $data['call']], $data));
-        if ($this->error) {
-            $this->setPercent(100);
-        }
+        return ['error' => true, 'percent' => 100];
     }
-
+    
+    /**
+     * Proceeds next drop step.
+     * @return array
+     * @since 0.2
+     */
+    public function nextDrop()
+    {
+        $drops = $this->countDrops();
+        if (count($drops)) {
+            $currentStep = Yii::$app->session->get(self::SESSION_KEY, 0);
+            $maxStep = Yii::$app->session->get(self::SESSION_STEPS, 0);
+            if ($currentStep < $maxStep) {
+                $this->table = '...';
+                if (!isset($drops[$currentStep])) {
+                    return [
+                        'error'   => true,
+                        'result'  => $this->outputDanger(
+                            Yii::t('podium/flash', 'Installation aborted! Can not find the requested drop step.')
+                        ),
+                        'percent' => 100,
+                    ];
+                }
+                $this->error = false;
+                $this->table = $drops[$currentStep]['table'];
+                $result = call_user_func([$this, 'dropTable'], $drops[$currentStep]);
+                Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
+                return [
+                    'drop'    => true,
+                    'error'   => $this->error,
+                    'result'  => $result,
+                    'table'   => $this->table,
+                    'percent' => $this->countPercent($currentStep, $maxStep),
+                ];
+            }
+        }
+        Yii::$app->session->set(self::SESSION_KEY, 0);
+        return $this->nextStep();
+    }
+    
+    /**
+     * Returns list of drops.
+     * @return array
+     */
+    protected function countDrops()
+    {
+        $steps = array_reverse($this->steps);
+        $drops = [];
+        foreach ($steps as $step) {
+            if (isset($step['call']) && $step['call'] === 'createTable') {
+                $drops[] = $step;
+            }
+        }
+        if (Yii::$app->session->get(self::SESSION_KEY, 0) === 0) {
+            Yii::$app->session->set(self::SESSION_STEPS, count($drops));
+        }
+        return $drops;
+    }
+    
     /**
      * Starts next step of installation.
      * @param integer $number step number.
      * @param boolean $drop whether to drop table prior to creating it.
      * @return array installation step result.
      */
-    public function step($number, $drop = false)
-    {
-        $this->setTable('...');
-        try {
-            $step = (int)$number;
-            if (!isset(static::steps()[$step])) {
-                $this->setResult($this->outputDanger(
-                    Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
-                ));
-                $this->setError(true);
-                $this->setPercent(100);
-            } elseif ($this->numberOfSteps == 0) {
-                $this->setResult($this->outputDanger(
-                    Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
-                ));
-                $this->setError(true);
-                $this->setPercent(100);
-            } else {
-                $this->setPercent($this->numberOfSteps == $step + 1 
-                    ? 100 : floor(100 * ($step + 1) / $this->numberOfSteps)
-                );
-                if ($drop) {
-                    $this->proceedDrops();
-                } else {
-                    $this->proceedStep(static::steps()[$step]);
-                }
-            }
-        } catch (Exception $e) {
-            $this->setResult($this->outputDanger($e->getMessage()));
-            $this->setError(true);
-            $this->setPercent(100);
-        }
-        
-        return [
-            'table'   => $this->table,
-            'percent' => $this->percent,
-            'result'  => $this->result,
-            'error'   => $this->error,
-        ];
-    }
+//    public function step($number, $drop = false)
+//    {
+//        $this->setTable('...');
+//        try {
+//            $step = (int)$number;
+//            if (!isset(static::steps()[$step])) {
+//                $this->setResult($this->outputDanger(
+//                    Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
+//                ));
+//                $this->error = true;
+//                $this->setPercent(100);
+//            } elseif ($this->numberOfSteps == 0) {
+//                $this->setResult($this->outputDanger(
+//                    Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
+//                ));
+//                $this->error = true;
+//                $this->setPercent(100);
+//            } else {
+//                $this->setPercent($this->numberOfSteps == $step + 1 
+//                    ? 100 : floor(100 * ($step + 1) / $this->numberOfSteps)
+//                );
+//                if ($drop) {
+//                    $this->proceedDrops();
+//                } else {
+//                    $this->proceedStep(static::steps()[$step]);
+//                }
+//            }
+//        } catch (Exception $e) {
+//            $this->setResult($this->outputDanger($e->getMessage()));
+//            $this->error = true;
+//            $this->setPercent(100);
+//        }
+//        
+//        return [
+//            'table'   => $this->table,
+//            'percent' => $this->percent,
+//            'result'  => $this->result,
+//            'error'   => $this->error,
+//        ];
+//    }
     
     /**
      * Installation steps.
+     * @since 0.2
      */
-    public static function steps()
+    public function getSteps()
     {
         return require(__DIR__ . '/steps/install.php');
     }

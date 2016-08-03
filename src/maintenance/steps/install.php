@@ -5,7 +5,7 @@ use yii\db\Schema;
 return [
     [
         'table'  => 'log',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'       => Schema::TYPE_BIGPK,
             'level'    => Schema::TYPE_INTEGER,
@@ -18,8 +18,32 @@ return [
         ],
     ],
     [
+        'table' => 'log',
+        'call'  => 'addIndex',
+        'name'  => 'level',
+        'cols'  => ['level'],
+    ],
+    [
+        'table' => 'log',
+        'call'  => 'addIndex',
+        'name'  => 'category',
+        'cols'  => ['category'],
+    ],
+    [
+        'table' => 'log',
+        'call'  => 'addIndex',
+        'name'  => 'model',
+        'cols'  => ['model'],
+    ],
+    [
+        'table' => 'log',
+        'call'  => 'addIndex',
+        'name'  => 'blame',
+        'cols'  => ['blame'],
+    ],
+    [
         'table'  => 'config',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'name'  => Schema::TYPE_STRING . ' NOT NULL',
             'value' => Schema::TYPE_STRING . ' NOT NULL',
@@ -31,32 +55,8 @@ return [
         'call'  => 'addConfig',
     ],
     [
-        'table' => 'log',
-        'call'  => 'index',
-        'name'  => 'level',
-        'cols'  => ['level'],
-    ],
-    [
-        'table' => 'log',
-        'call'  => 'index',
-        'name'  => 'category',
-        'cols'  => ['category'],
-    ],
-    [
-        'table' => 'log',
-        'call'  => 'index',
-        'name'  => 'model',
-        'cols'  => ['model'],
-    ],
-    [
-        'table' => 'log',
-        'call'  => 'index',
-        'name'  => 'blame',
-        'cols'  => ['blame'],
-    ],
-    [
         'table'  => 'category',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'          => Schema::TYPE_PK,
             'name'        => Schema::TYPE_STRING . ' NOT NULL',
@@ -71,31 +71,31 @@ return [
     ],
     [
         'table' => 'category',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'sort',
         'cols'  => ['sort', 'id'],
     ],
     [
         'table' => 'category',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'name',
         'cols'  => ['name'],
     ],
     [
         'table' => 'category',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display',
         'cols'  => ['id', 'slug'],
     ],
     [
         'table' => 'category',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display_guest',
         'cols'  => ['id', 'slug', 'visible'],
     ],
     [
         'table'  => 'forum',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'          => Schema::TYPE_PK,
             'category_id' => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -114,37 +114,37 @@ return [
     ],
     [
         'table' => 'forum',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'sort',
         'cols'  => ['sort', 'id'],
     ],
     [
         'table' => 'forum',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'name',
         'cols'  => ['name'],
     ],
     [
         'table' => 'forum',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display',
         'cols'  => ['id', 'category_id'],
     ],
     [
         'table' => 'forum',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display_slug',
         'cols'  => ['id', 'category_id', 'slug'],
     ],
     [
         'table' => 'forum',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display_guest_slug',
         'cols'  => ['id', 'category_id', 'slug', 'visible'],
     ],
     [
         'table'  => 'forum',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'category_id',
         'ref'    => 'category',
         'col'    => 'id',
@@ -153,7 +153,7 @@ return [
     ],
     [
         'table'  => 'thread',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'             => Schema::TYPE_PK,
             'name'           => Schema::TYPE_STRING . ' NOT NULL',
@@ -173,43 +173,43 @@ return [
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'name',
         'cols'  => ['name'],
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'created_at',
         'cols'  => ['created_at'],
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display',
         'cols'  => ['id', 'category_id', 'forum_id'],
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'display_slug',
         'cols'  => ['id', 'category_id', 'forum_id', 'slug'],
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'sort',
         'cols'  => ['pinned', 'updated_at', 'id'],
     ],
     [
         'table' => 'thread',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'sort_author',
         'cols'  => ['updated_at', 'id'],
     ],
     [
         'table'  => 'thread',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'category_id',
         'ref'    => 'category',
         'col'    => 'id',
@@ -218,7 +218,7 @@ return [
     ],
     [
         'table'  => 'thread',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'forum_id',
         'ref'    => 'forum',
         'col'    => 'id',
@@ -227,7 +227,7 @@ return [
     ],
     [
         'table'  => 'post',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'content'    => Schema::TYPE_TEXT . ' NOT NULL',
@@ -244,31 +244,31 @@ return [
     ],
     [
         'table' => 'post',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'updated_at',
         'cols'  => ['updated_at'],
     ],
     [
         'table' => 'post',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'created_at',
         'cols'  => ['created_at'],
     ],
     [
         'table' => 'post',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'edited_at',
         'cols'  => ['edited_at'],
     ],
     [
         'table' => 'post',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'identify',
         'cols'  => ['id', 'thread_id', 'forum_id'],
     ],
     [
         'table'  => 'post',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'thread_id',
         'ref'    => 'thread',
         'col'    => 'id',
@@ -277,7 +277,7 @@ return [
     ],
     [
         'table'  => 'post',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'forum_id',
         'ref'    => 'forum',
         'col'    => 'id',
@@ -286,7 +286,7 @@ return [
     ],
     [
         'table'  => 'vocabulary',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'   => Schema::TYPE_PK,
             'word' => Schema::TYPE_STRING . ' NOT NULL',
@@ -294,13 +294,13 @@ return [
     ],
     [
         'table' => 'vocabulary',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'word',
         'cols'  => ['word'],
     ],
     [
         'table'  => 'vocabulary_junction',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'      => Schema::TYPE_PK,
             'word_id' => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -309,7 +309,7 @@ return [
     ],
     [
         'table'  => 'vocabulary_junction',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'word_id',
         'ref'    => 'vocabulary',
         'col'    => 'id',
@@ -318,7 +318,7 @@ return [
     ],
     [
         'table'  => 'vocabulary_junction',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'post_id',
         'ref'    => 'post',
         'col'    => 'id',
@@ -327,7 +327,7 @@ return [
     ],
     [
         'table'  => 'auth_rule',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'name'       => Schema::TYPE_STRING . '(64) NOT NULL',
             'data'       => Schema::TYPE_TEXT,
@@ -338,7 +338,7 @@ return [
     ],
     [
         'table'  => 'auth_item',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'name'        => Schema::TYPE_STRING . '(64) NOT NULL',
             'type'        => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -352,7 +352,7 @@ return [
     ],
     [
         'table'  => 'auth_item',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'rule_name',
         'ref'    => 'auth_rule',
         'col'    => 'name',
@@ -361,13 +361,13 @@ return [
     ],
     [
         'table' => 'auth_item',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'type',
         'cols'  => ['type'],
     ],
     [
         'table'  => 'auth_item_child',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'parent' => Schema::TYPE_STRING . '(64) NOT NULL',
             'child'  => Schema::TYPE_STRING . '(64) NOT NULL',
@@ -376,7 +376,7 @@ return [
     ],
     [
         'table'  => 'auth_item_child',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'parent',
         'ref'    => 'auth_item',
         'col'    => 'name',
@@ -385,7 +385,7 @@ return [
     ],
     [
         'table'  => 'auth_item_child',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'child',
         'ref'    => 'auth_item',
         'col'    => 'name',
@@ -394,7 +394,7 @@ return [
     ],
     [
         'table'  => 'auth_assignment',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'item_name'  => Schema::TYPE_STRING . '(64) NOT NULL',
             'user_id'    => Schema::TYPE_STRING . '(64) NOT NULL',
@@ -404,7 +404,7 @@ return [
     ],
     [
         'table'  => 'auth_assignment',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'item_name',
         'ref'    => 'auth_item',
         'col'    => 'name',
@@ -417,7 +417,7 @@ return [
     ],
     [
         'table'  => 'user',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'                   => Schema::TYPE_PK,
             'inherited_id'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
@@ -440,67 +440,67 @@ return [
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'username',
         'cols'  => ['username'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'status',
         'cols'  => ['status'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'role',
         'cols'  => ['role'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'email',
         'cols'  => ['email'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'mod',
         'cols'  => ['status', 'role'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'find_email',
         'cols'  => ['status', 'email'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'find_username',
         'cols'  => ['status', 'username'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'password_reset_token',
         'cols'  => ['password_reset_token'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'activation_token',
         'cols'  => ['activation_token'],
     ],
     [
         'table' => 'user',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'email_token',
         'cols'  => ['email_token'],
     ],
     [
         'table'  => 'user_meta',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -514,7 +514,7 @@ return [
     ],
     [
         'table'  => 'user_meta',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -523,7 +523,7 @@ return [
     ],
     [
         'table'  => 'user_ignore',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -532,7 +532,7 @@ return [
     ],
     [
         'table'  => 'user_ignore',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -541,7 +541,7 @@ return [
     ],
     [
         'table'  => 'user_ignore',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'ignored_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -550,7 +550,7 @@ return [
     ],
     [
         'table'  => 'user_friend',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'        => Schema::TYPE_PK,
             'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -559,7 +559,7 @@ return [
     ],
     [
         'table'  => 'user_friend',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -568,7 +568,7 @@ return [
     ],
     [
         'table'  => 'user_friend',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'friend_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -577,7 +577,7 @@ return [
     ],
     [
         'table'  => 'user_activity',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'user_id'    => Schema::TYPE_INTEGER,
@@ -593,31 +593,31 @@ return [
     ],
     [
         'table' => 'user_activity',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'updated_at',
         'cols'  => ['updated_at'],
     ],
     [
         'table' => 'user_activity',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'url',
         'cols'  => ['url'],
     ],
     [
         'table' => 'user_activity',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'members',
         'cols'  => ['updated_at', 'user_id', 'anonymous'],
     ],
     [
         'table' => 'user_activity',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'guests',
         'cols'  => ['updated_at', 'user_id'],
     ],
     [
         'table'  => 'user_activity',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -626,7 +626,7 @@ return [
     ],
     [
         'table'  => 'message',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'              => Schema::TYPE_PK,
             'sender_id'       => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -640,25 +640,25 @@ return [
     ],
     [
         'table' => 'message',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'topic',
         'cols'  => ['topic'],
     ],
     [
         'table' => 'message',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'replyto',
         'cols'  => ['replyto'],
     ],
     [
         'table' => 'message',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'sent',
         'cols'  => ['sender_id', 'sender_status'],
     ],
     [
         'table'  => 'message',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'sender_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -666,7 +666,7 @@ return [
     ],
     [
         'table'  => 'message_receiver',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'              => Schema::TYPE_PK,
             'message_id'      => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -678,13 +678,13 @@ return [
     ],
     [
         'table' => 'message_receiver',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'inbox',
         'cols'  => ['receiver_id', 'receiver_status'],
     ],
     [
         'table'  => 'message_receiver',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'message_id',
         'ref'    => 'message',
         'col'    => 'id',
@@ -692,7 +692,7 @@ return [
     ],
     [
         'table'  => 'message_receiver',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'receiver_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -700,7 +700,7 @@ return [
     ],
     [
         'table'  => 'email',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'user_id'    => Schema::TYPE_INTEGER,
@@ -715,13 +715,13 @@ return [
     ],
     [
         'table' => 'email',
-        'call'  => 'index',
+        'call'  => 'addIndex',
         'name'  => 'status',
         'cols'  => ['status'],
     ],
     [
         'table'  => 'email',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -730,7 +730,7 @@ return [
     ],
     [
         'table'  => 'thread_view',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'               => Schema::TYPE_PK,
             'user_id'          => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -741,7 +741,7 @@ return [
     ],
     [
         'table'  => 'thread_view',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -750,7 +750,7 @@ return [
     ],
     [
         'table'  => 'thread_view',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'thread_id',
         'ref'    => 'thread',
         'col'    => 'id',
@@ -759,7 +759,7 @@ return [
     ],
     [
         'table'  => 'post_thumb',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'         => Schema::TYPE_PK,
             'user_id'    => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -771,7 +771,7 @@ return [
     ],
     [
         'table'  => 'post_thumb',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -780,7 +780,7 @@ return [
     ],
     [
         'table'  => 'post_thumb',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'post_id',
         'ref'    => 'post',
         'col'    => 'id',
@@ -789,7 +789,7 @@ return [
     ],
     [
         'table'  => 'subscription',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'        => Schema::TYPE_PK,
             'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -799,7 +799,7 @@ return [
     ],
     [
         'table'  => 'subscription',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -808,7 +808,7 @@ return [
     ],
     [
         'table'  => 'subscription',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'thread_id',
         'ref'    => 'thread',
         'col'    => 'id',
@@ -817,7 +817,7 @@ return [
     ],
     [
         'table'   => 'moderator',
-        'call'    => 'create',
+        'call'    => 'createTable',
         'schema' => [
             'id'       => Schema::TYPE_PK,
             'user_id'  => Schema::TYPE_INTEGER . ' NOT NULL',
@@ -826,7 +826,7 @@ return [
     ],
     [
         'table'  => 'moderator',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'user_id',
         'ref'    => 'user',
         'col'    => 'id',
@@ -835,7 +835,7 @@ return [
     ],
     [
         'table'  => 'moderator',
-        'call'   => 'foreign',
+        'call'   => 'addForeign',
         'key'    => 'forum_id',
         'ref'    => 'forum',
         'col'    => 'id',
@@ -844,7 +844,7 @@ return [
     ],
     [
         'table'  => 'content',
-        'call'   => 'create',
+        'call'   => 'createTable',
         'schema' => [
             'id'      => Schema::TYPE_PK,
             'name'    => Schema::TYPE_STRING . ' NOT NULL',

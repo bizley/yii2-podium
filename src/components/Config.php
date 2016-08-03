@@ -5,7 +5,7 @@ namespace bizley\podium\components;
 use bizley\podium\log\Log;
 use Exception;
 use Yii;
-use yii\base\Object;
+use yii\base\Component;
 use yii\db\Query;
 
 /**
@@ -20,7 +20,7 @@ use yii\db\Query;
  * @property array $defaults
  * @property array $fromDb
  */
-class Config extends Object
+class Config extends Component
 {
     const CURRENT_VERSION = '0.2';
     const DEFAULT_FROM_EMAIL = 'no-reply@change.me';

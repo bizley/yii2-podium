@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\controllers;
 
 use bizley\podium\components\Helper;
@@ -25,7 +21,6 @@ use yii\web\Controller;
  */
 class InstallController extends Controller
 {
-    
     use FlashTrait;
     
     /**
@@ -39,12 +34,11 @@ class InstallController extends Controller
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            if (!empty(Yii::$app->getLog()->targets['podium'])) {
-                Yii::$app->getLog()->targets['podium']->enabled = false;
+            if (!empty(Yii::$app->log->targets['podium'])) {
+                Yii::$app->log->targets['podium']->enabled = false;
             }
             return $this->checkAccess();
         }
-
         return false;
     }
     
@@ -57,13 +51,12 @@ class InstallController extends Controller
      */
     public function checkAccess()
     {
-        $ip = Yii::$app->getRequest()->getUserIP();
+        $ip = Yii::$app->request->getUserIP();
         foreach ($this->module->allowedIPs as $filter) {
             if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip, $filter, $pos))) {
                 return true;
             }
         }
-        
         echo Yii::t('podium/view', 'Access to Podium installation is denied due to IP address restriction.');
         Yii::warning('Access to Podium installation is denied due to IP address restriction. The requested IP is ' . $ip, __METHOD__);
         return false;
@@ -78,10 +71,14 @@ class InstallController extends Controller
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
-            $step = Yii::$app->request->post('step');
-            
-            if (is_numeric($step)) {
-                $result = (new Installation)->step($step == -1 ? 0 : $step, $step == -1 ? true : false);
+            $drop = Yii::$app->request->post('drop');
+            if ($drop !== null) {
+                $installation = new Installation;
+                if ((is_bool($drop) && $drop) || $drop === 'true') {
+                    $result = $installation->nextDrop();
+                } else {
+                    $result = $installation->nextStep();
+                }
             }
         }
 
@@ -94,18 +91,17 @@ class InstallController extends Controller
      */
     public function actionRun()
     {
-        if ($this->module->userComponent == PodiumModule::USER_INHERIT && empty($this->module->adminId)) {
-            $this->warning(Yii::t(
-                    'podium/flash', 
-                    "{userComponent} is set to '{inheritParam}' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", 
-                    [
-                        'userComponent' => '$userComponent',
-                        'inheritParam'  => PodiumModule::USER_INHERIT,
-                        'adminId'       => '$adminId'
-                    ]
-                ));
-        }
+        Yii::$app->session->set(Installation::SESSION_KEY, 0);
         
+        if ($this->module->userComponent == PodiumModule::USER_INHERIT && empty($this->module->adminId)) {
+            $this->warning(
+                Yii::t('podium/flash', "{userComponent} is set to '{inheritParam}' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", [
+                    'userComponent' => '$userComponent',
+                    'inheritParam'  => PodiumModule::USER_INHERIT,
+                    'adminId'       => '$adminId'
+                ])
+            );
+        }
         return $this->render('run', ['version' => $this->module->version]);
     }
     
@@ -143,17 +139,20 @@ class InstallController extends Controller
         $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
         if (!isset($dbVersion['value'])) {
             $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
-        }
-        else {
+        } else {
             $result = Helper::compareVersions(explode('.', $mdVersion), explode('.', $dbVersion['value']));
             if ($result == '=') {
                 $info = Yii::t('podium/flash', 'Module and database versions are the same!');
-            }
-            elseif ($result == '<') {
+            } elseif ($result == '<') {
                 $error = Yii::t('podium/flash', 'Module version appears to be older than database! Please verify your database.');
             }
         }
         
-        return $this->render('level-up', ['currentVersion' => $mdVersion, 'dbVersion' => $dbVersion['value'], 'error' => $error, 'info' => $info]);
+        return $this->render('level-up', [
+            'currentVersion' => $mdVersion, 
+            'dbVersion'      => $dbVersion['value'], 
+            'error'          => $error, 
+            'info'           => $info
+        ]);
     }
 }
