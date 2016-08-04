@@ -114,12 +114,7 @@ class InstallController extends Controller
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
-            $step    = Yii::$app->request->post('step');
-            $version = Yii::$app->request->post('version');
-            
-            if (is_numeric($step)) {
-                $result = (new Update)->step($step, $version);
-            }
+            $result = (new Update)->nextStep();
         }
 
         return Json::encode($result);
@@ -132,15 +127,19 @@ class InstallController extends Controller
      */
     public function actionLevelUp()
     {
+        Yii::$app->session->set(Update::SESSION_KEY, 0);
+        
         $error = '';
         $info  = '';
         
+        $dbVersion = 0;
         $mdVersion = $this->module->version;
-        $dbVersion = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
-        if (!isset($dbVersion['value'])) {
+        $dbQuery = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
+        if (!isset($dbQuery['value'])) {
             $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
         } else {
-            $result = Helper::compareVersions(explode('.', $mdVersion), explode('.', $dbVersion['value']));
+            $dbVersion = $dbQuery['value'];
+            $result = Helper::compareVersions(explode('.', $mdVersion), explode('.', $dbVersion));
             if ($result == '=') {
                 $info = Yii::t('podium/flash', 'Module and database versions are the same!');
             } elseif ($result == '<') {
@@ -148,9 +147,11 @@ class InstallController extends Controller
             }
         }
         
+        Yii::$app->session->set(Update::SESSION_VERSION, $dbVersion);
+        
         return $this->render('level-up', [
             'currentVersion' => $mdVersion, 
-            'dbVersion'      => $dbVersion['value'], 
+            'dbVersion'      => $dbVersion, 
             'error'          => $error, 
             'info'           => $info
         ]);

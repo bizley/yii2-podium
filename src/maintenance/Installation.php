@@ -27,6 +27,11 @@ class Installation extends Maintenance
     const SESSION_STEPS = 'steps';
     
     /**
+     * @var array Installation steps
+     */
+    private $_steps;
+    
+    /**
      * Adds Administrator account.
      * @return string result message.
      */
@@ -44,31 +49,29 @@ class Installation extends Maintenance
                 'status'   => User::STATUS_ACTIVE,
                 'role'     => User::ROLE_ADMIN,
                 'timezone' => User::DEFAULT_TIMEZONE
-            ]);
+            ], false);
             $admin->generateAuthKey();
             $admin->setPassword(self::DEFAULT_USERNAME);
             if (!$admin->save()) {
                 throw new Exception(VarDumper::dumpAsString($admin->errors));
             }
-            if (!$this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $this->module->adminId)) {
+            if (!$this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $admin->id)) {
                 throw new Exception('Error during Administrator privileges setting!');
             }
             $transaction->commit();
-            return $this->outputSuccess(
-                Yii::t('podium/flash', 'Administrator account has been created.') 
+            return Yii::t('podium/flash', 'Administrator account has been created.') 
                 . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') 
                 . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) 
                 . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') 
                 . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME)
-            );
+                . '<br>' 
+                . Html::tag('strong', Yii::t('podium/flash', 'Remember to change these credentials after first login!'), ['class' => 'text-danger']) ;
         } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->error = true;
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during account creating') 
-                . ': ' . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during account creating') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
     
@@ -80,7 +83,8 @@ class Installation extends Maintenance
     protected function addInheritedAdmin()
     {
         if (empty($this->module->adminId)) {
-            return $this->outputWarning(Yii::t('podium/flash', 'No administrator privileges have been set!'));
+            $this->type = self::TYPE_WARNING;
+            return Yii::t('podium/flash', 'No administrator privileges have been set!');
         }
         try {
             $identity = Yii::$app->user->identityClass;
@@ -89,7 +93,8 @@ class Installation extends Maintenance
                 throw new Exception;
             }
         } catch (Exception $e) {
-            return $this->outputWarning(Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.'));
+            $this->type = self::TYPE_WARNING;
+            return Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.');
         }
         
         $transaction = $this->db->beginTransaction();
@@ -102,7 +107,7 @@ class Installation extends Maintenance
                 'status'       => User::STATUS_ACTIVE,
                 'role'         => User::ROLE_ADMIN,
                 'timezone'     => User::DEFAULT_TIMEZONE
-            ]);
+            ], false);
             if (!$admin->save()) {
                 throw new Exception(VarDumper::dumpAsString($admin->errors));
             }
@@ -110,19 +115,15 @@ class Installation extends Maintenance
                 throw new Exception('Error during Administrator privileges setting!');
             }
             $transaction->commit();
-            return $this->outputSuccess(
-                Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', [
+            return Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', [
                     'id' => $this->module->adminId
-                ])
-            );
+                ]);
         } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->error = true;
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during account creating') 
-                . ': ' . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during account creating') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
 
@@ -156,14 +157,12 @@ class Installation extends Maintenance
                     ]
                 )
                 ->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
+            return Yii::t('podium/flash', 'Default Config settings have been added.');
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->error = true;
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during settings adding') 
-                . ': ' . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during settings adding') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
 
@@ -212,14 +211,12 @@ class Installation extends Maintenance
                     ]
                 )
                 ->execute();
-            return $this->outputSuccess(Yii::t('podium/flash', 'Default Content has been added.'));
+            return Yii::t('podium/flash', 'Default Content has been added.');
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->error = true;
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during content adding') 
-                . ': ' . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during content adding') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
     
@@ -231,61 +228,14 @@ class Installation extends Maintenance
     {
         try {
             (new Rbac)->add($this->authManager);
-            return $this->outputSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
+            return Yii::t('podium/flash', 'Access roles have been created.');
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->error = true;
-            return $this->outputDanger(
-                Yii::t('podium/flash', 'Error during access roles creating') 
-                . ': ' . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during access roles creating') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
-
-    /**
-     * Proceeds multiple installation drops.
-     */
-//    protected function proceedDrops()
-//    {
-//        $drops = array_reverse($this->steps());
-//        $this->setError(false);
-//        $results = $this->outputSuccess(Yii::t('podium/flash', 'Please wait, dropping tables...'));
-//        foreach ($drops as $drop) {
-//            if (isset($drop['call']) && $drop['call'] === 'create') {
-//                $result = '';
-//                $this->setTable($drop['table']);
-//                $result .= '<br>' . call_user_func([$this, 'drop']);
-//                $results .= $result;
-//                $this->setResult($results);
-//                if ($this->error) {
-//                    $this->setPercent(100);
-//                    break;
-//                }
-//            }
-//        }
-//    }
-    
-    /**
-     * Proceeds next installation step.
-     * @param array $data step data.
-     * @throws Exception
-     */
-//    protected function proceedStep($data)
-//    {
-//        if (empty($data['table'])) {
-//            throw new Exception('Installation aborted! Database table name missing.');
-//        }
-//        $this->setTable($data['table']);
-//        if (empty($data['call'])) {
-//            throw new Exception('Installation aborted! Action call missing.');
-//        }
-//
-//        $this->setError(false);
-//        $this->setResult(call_user_func([$this, $data['call']], $data));
-//        if ($this->error) {
-//            $this->setPercent(100);
-//        }
-//    }
 
     /**
      * Proceeds next installation step.
@@ -303,26 +253,30 @@ class Installation extends Maintenance
             $this->table = '...';
             if (!isset($this->steps[$currentStep])) {
                 return [
-                    'error'   => true,
-                    'result'  => $this->outputDanger(
-                        Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
-                    ),
+                    'drop'    => false,
+                    'type'    => self::TYPE_ERROR,
+                    'result'  => Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.'),
                     'percent' => 100,
                 ];
             }
-            $this->error = false;
+            $this->type = self::TYPE_SUCCESS;
             $this->table = $this->steps[$currentStep]['table'];
             $result = call_user_func([$this, $this->steps[$currentStep]['call']], $this->steps[$currentStep]);
             Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
             return [
                 'drop'    => false,
-                'error'   => $this->error,
+                'type'    => $this->type,
                 'result'  => $result,
-                'table'   => $this->table,
+                'table'   => $this->getTable(true),
                 'percent' => $this->countPercent($currentStep, $maxStep),
             ];
         }
-        return ['error' => true, 'percent' => 100];
+        return [
+            'drop'    => false,
+            'type'    => self::TYPE_ERROR,
+            'result'  => Yii::t('podium/flash', 'Weird... Installation should already complete...'),
+            'percent' => 100
+        ];
     }
     
     /**
@@ -340,22 +294,25 @@ class Installation extends Maintenance
                 $this->table = '...';
                 if (!isset($drops[$currentStep])) {
                     return [
-                        'error'   => true,
-                        'result'  => $this->outputDanger(
-                            Yii::t('podium/flash', 'Installation aborted! Can not find the requested drop step.')
-                        ),
+                        'drop'    => false,
+                        'type'    => self::TYPE_ERROR,
+                        'result'  => Yii::t('podium/flash', 'Installation aborted! Can not find the requested drop step.'),
                         'percent' => 100,
                     ];
                 }
-                $this->error = false;
+                $this->type = self::TYPE_SUCCESS;
                 $this->table = $drops[$currentStep]['table'];
                 $result = call_user_func([$this, 'dropTable'], $drops[$currentStep]);
+                if ($result === true) {
+                    Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
+                    return $this->nextDrop();
+                }
                 Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
                 return [
                     'drop'    => true,
-                    'error'   => $this->error,
+                    'type'    => $this->type,
                     'result'  => $result,
-                    'table'   => $this->table,
+                    'table'   => $this->getTable(true),
                     'percent' => $this->countPercent($currentStep, $maxStep),
                 ];
             }
@@ -384,58 +341,14 @@ class Installation extends Maintenance
     }
     
     /**
-     * Starts next step of installation.
-     * @param integer $number step number.
-     * @param boolean $drop whether to drop table prior to creating it.
-     * @return array installation step result.
-     */
-//    public function step($number, $drop = false)
-//    {
-//        $this->setTable('...');
-//        try {
-//            $step = (int)$number;
-//            if (!isset(static::steps()[$step])) {
-//                $this->setResult($this->outputDanger(
-//                    Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
-//                ));
-//                $this->error = true;
-//                $this->setPercent(100);
-//            } elseif ($this->numberOfSteps == 0) {
-//                $this->setResult($this->outputDanger(
-//                    Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
-//                ));
-//                $this->error = true;
-//                $this->setPercent(100);
-//            } else {
-//                $this->setPercent($this->numberOfSteps == $step + 1 
-//                    ? 100 : floor(100 * ($step + 1) / $this->numberOfSteps)
-//                );
-//                if ($drop) {
-//                    $this->proceedDrops();
-//                } else {
-//                    $this->proceedStep(static::steps()[$step]);
-//                }
-//            }
-//        } catch (Exception $e) {
-//            $this->setResult($this->outputDanger($e->getMessage()));
-//            $this->error = true;
-//            $this->setPercent(100);
-//        }
-//        
-//        return [
-//            'table'   => $this->table,
-//            'percent' => $this->percent,
-//            'result'  => $this->result,
-//            'error'   => $this->error,
-//        ];
-//    }
-    
-    /**
      * Installation steps.
      * @since 0.2
      */
     public function getSteps()
     {
-        return require(__DIR__ . '/steps/install.php');
+        if ($this->_steps === null) {
+            $this->_steps = require(__DIR__ . '/steps/install.php');
+        }
+        return $this->_steps;
     }
 }

@@ -18,19 +18,40 @@ $this->params['no-search']     = true;
 $url = Url::to(['install/import']);
 $this->registerJs(<<<JS
 var nextStep = function(drop) {
+    var label = 'success';
+    var bg = '';
     jQuery.post('$url', {drop: drop}, null, 'json')
+        .always(function() {
+            if (drop !== true) {
+                jQuery('#progressBar .progress-bar').removeClass('progress-bar-warning');
+            }
+        })
         .fail(function() {
             jQuery('#progressBar').addClass('hide');
             jQuery('#installationError').removeClass('hide');
         })
         .done(function(data) {
-            jQuery('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%');
-            jQuery('#installationProgress .list-group').prepend('<li class="list-group-item"><strong>' + data.table + '</strong> ' + data.result + '</li>');
-            if (data.error) {
+            if (data.type == 2) {
+                label = 'danger';
+                bg = 'list-group-item-danger';
+            } else if (data.type == 1) {
+                label = 'warning';
+                bg = 'list-group-item-warning';
+            }
+            jQuery('#progressBar .progress-bar')
+                .css('width', data.percent + '%')
+                .attr('aria-valuenow', data.percent)
+                .html(data.percent + '%');
+            var row = '<li class="list-group-item ' + bg + '">'
+                + '<span class="pull-right label label-' + label + '">' + data.table + '</span> '
+                + data.result
+                + '</li>';
+            jQuery('#installationProgress .list-group').prepend(row);
+            if (data.type == 2) {
                 jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
                 jQuery('#installationFinishedError').removeClass('hide');
             } else {
-                if (data.percent < 100) {
+                if (data.percent < 100 || data.drop === true) {
                     nextStep(data.drop);
                 } else {
                     jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
@@ -66,7 +87,7 @@ JS
         <?= Progress::widget([
             'percent'    => 0,
             'label'      => '0%',
-            'barOptions' => ['class' => 'progress-bar progress-bar-striped active'],
+            'barOptions' => ['class' => 'progress-bar progress-bar-warning progress-bar-striped active', 'style' => 'min-width: 2em;'],
             'options'    => ['class' => 'progress']
         ]) ?>      
     </div>

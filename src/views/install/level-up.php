@@ -15,8 +15,55 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Podium Insta
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['no-search']     = true;
 
-$this->registerJs("var nextStep = function(step, version) { $.ajax({url: '" . Url::to(['install/update']) . "', method: 'POST', data: {step: step, from: version}, dataType: 'json'}).fail(function(){ $('#progressBar').addClass('hide'); $('#installationError').removeClass('hide'); }).done(function(data){ $('#progressBar .progress-bar').css('width', data.percent + '%').attr('aria-valuenow', data.percent).html(data.percent + '%'); $('#installationProgress .list-group').prepend('<li class=\"list-group-item\"><strong>' + data.table + '</strong> ' + data.result + '</li>'); if (data.percent < 100) nextStep(++step, version); else { $('#progressBar .progress-bar').removeClass('active progress-bar-striped'); if (data.error) $('#installationFinishedError').removeClass('hide'); else $('#installationFinished').removeClass('hide'); }}); }; $('#installPodium').click(function(e){ e.preventDefault(); $('#startInstallation').addClass('hide'); $('#installationResults').removeClass('hide'); $('#progressBar .progress-bar').css('width', '10px'); nextStep(0, '$dbVersion'); });");
-
+$url = Url::to(['install/update']);
+$this->registerJs(<<<JS
+var nextStep = function() {
+    var label = 'success';
+    var bg = '';
+    jQuery.post('$url', null, null, 'json')
+        .fail(function() {
+            jQuery('#progressBar').addClass('hide');
+            jQuery('#installationError').removeClass('hide');
+        })
+        .done(function(data) {
+            if (data.type == 2) {
+                label = 'danger';
+                bg = 'list-group-item-danger';
+            } else if (data.type == 1) {
+                label = 'warning';
+                bg = 'list-group-item-warning';
+            }
+            jQuery('#progressBar .progress-bar')
+                .css('width', data.percent + '%')
+                .attr('aria-valuenow', data.percent)
+                .html(data.percent + '%');
+            var row = '<li class="list-group-item ' + bg + '">'
+                + '<span class="pull-right label label-' + label + '">' + data.table + '</span> '
+                + data.result
+                + '</li>';
+            jQuery('#installationProgress .list-group').prepend(row);
+            if (data.type == 2) {
+                jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
+                jQuery('#installationFinishedError').removeClass('hide');
+            } else {
+                if (data.percent < 100) {
+                    nextStep();
+                } else {
+                    jQuery('#progressBar .progress-bar').removeClass('active progress-bar-striped');
+                    jQuery('#installationFinished').removeClass('hide');
+                }
+            }
+        });
+};
+jQuery('#installPodium').click(function(e) {
+    e.preventDefault();
+    jQuery('#startInstallation').addClass('hide');
+    jQuery('#installationResults').removeClass('hide');
+    jQuery('#progressBar .progress-bar').css('width', '10px');
+    nextStep();
+});
+JS
+);
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
@@ -46,16 +93,16 @@ $this->registerJs("var nextStep = function(step, version) { $.ajax({url: '" . Ur
         <?= Progress::widget([
             'percent'    => 0,
             'label'      => '0%',
-            'barOptions' => ['class' => 'progress-bar progress-bar-striped active'],
+            'barOptions' => ['class' => 'progress-bar progress-bar-striped active', 'style' => 'min-width: 2em;'],
             'options'    => ['class' => 'progress']
         ]) ?>      
     </div>
     <div class="col-sm-8 col-sm-offset-2 hide" id="installationError">
-        <div class="alert alert-danger" role="alert"><?= Yii::t('podium/view', 'There was a major error during installation...') ?></div>
+        <div class="alert alert-danger" role="alert"><?= Yii::t('podium/view', 'There was a major error during update...') ?></div>
     </div>
     <div class="row hide" id="installationFinished">
         <div class="text-center col-sm-12">
-            <a href="<?= Url::to(['default/index']) ?>" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Installation finished') ?></a>
+            <a href="<?= Url::to(['default/index']) ?>" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Update finished') ?></a>
         </div>
     </div>
     <div class="row hide" id="installationFinishedError">

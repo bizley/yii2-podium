@@ -189,8 +189,7 @@ class User extends ActiveRecord implements IdentityInterface
         
         if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
             $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
-        }
-        else {
+        } else {
             $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
         }
         
@@ -1076,7 +1075,7 @@ class User extends ActiveRecord implements IdentityInterface
         try {
             if (!Yii::$app->user->isGuest) {
                 $new = new User;
-                $new->scenario     = 'installation';
+                $new->setScenario('installation');
                 $new->inherited_id = Yii::$app->user->id;
                 $new->status       = self::STATUS_ACTIVE;
                 $new->role         = self::ROLE_MEMBER;

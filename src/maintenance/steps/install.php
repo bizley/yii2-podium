@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Podium installation steps.
+ * v0.2
+ * @author Paweł Bizley Brzozowski <pawel@positive.codes>
+ */
+
 use yii\db\Schema;
 
 return [
@@ -421,7 +427,7 @@ return [
         'schema' => [
             'id'                   => Schema::TYPE_PK,
             'inherited_id'         => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-            'username'             => Schema::TYPE_STRING . ' NOT NULL',
+            'username'             => Schema::TYPE_STRING,
             'slug'                 => Schema::TYPE_STRING . ' NOT NULL',
             'auth_key'             => Schema::TYPE_STRING . '(32)',
             'password_hash'        => Schema::TYPE_STRING,

@@ -2,10 +2,10 @@
 
 namespace bizley\podium\maintenance;
 
+use bizley\podium\components\Helper;
 use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
-use yii\db\Schema;
 use yii\helpers\Html;
 
 /**
@@ -14,196 +14,82 @@ use yii\helpers\Html;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
+ * @property array $versionSteps
+ * @property array $steps
  */
 class Update extends Maintenance
 {
-    /**
-     * @var array list of steps for update.
-     */
-    protected $_partSteps;
+    const SESSION_KEY = 'podium-update';
+    const SESSION_STEPS = 'steps';
+    const SESSION_VERSION = 'version';
     
     /**
-     * @var string starting version.
+     * @var array Update steps
      */
-    protected $_version;
+    private $_steps;
     
     /**
-     * Proceeds next installation step.
-     * @param array $data step data.
-     * @throws Exception
+     * @var array Version steps
      */
-    protected function _proceedStep($data)
+    private $_versionSteps;
+    
+    /**
+     * Proceeds next update step.
+     * @return array
+     * @since 0.2
+     */
+    public function nextStep()
     {
-        if (empty($data['table'])) {
-            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Database table name missing.'));
+        $currentStep = Yii::$app->session->get(self::SESSION_KEY, 0);
+        if ($currentStep === 0) {
+            Yii::$app->session->set(self::SESSION_STEPS, count($this->versionSteps));
         }
-
-        $this->setTable($data['table']);
-        if (empty($data['call'])) {
-            throw new Exception(Yii::t('podium/flash', 'Installation aborted! Action call missing.'));
-        }
-
-        $this->setError(false);
-        switch ($data['call']) {
-            case 'create':
-                $result = call_user_func([$this, '_create'], $data);
-                break;
-            case 'addColumn':
-                $result = call_user_func([$this, '_addColumn'], $data);
-                break;
-            case 'alterColumn':
-                $result = call_user_func([$this, '_alterColumn'], $data);
-                break;
-            case 'drop':
-                $result = call_user_func([$this, '_drop'], $data);
-                break;
-            case 'dropColumn':
-                $result = call_user_func([$this, '_dropColumn'], $data);
-                break;
-            case 'dropIndex':
-                $result = call_user_func([$this, '_dropIndex'], $data);
-                break;
-            case 'dropForeign':
-                $result = call_user_func([$this, '_dropForeign'], $data);
-                break;
-            case 'index':
-                $result = call_user_func([$this, '_index'], $data);
-                break;
-            case 'foreign':
-                $result = call_user_func([$this, '_foreign'], $data);
-                break;
-            case 'rename':
-                $result = call_user_func([$this, '_rename'], $data);
-                break;
-            case 'renameColumn':
-                $result = call_user_func([$this, '_renameColumn'], $data);
-                break;
-            default:
-                $result = call_user_func([$this, '_' . $data['call']], $data);
-        }
-
-        $this->setResult($result);
-        if ($this->getError()) {
-            $this->setPercent(100);
-        }
-    }
-    
-    /**
-     * Starts next step of installation.
-     * @param integer $step step number.
-     * @param string|null $version starting version number.
-     * @return array installation step result.
-     */
-    public function step($step, $version = null)
-    {
-        $this->setTable('...');
-        $this->setVersion($version);
-        try {
-            if (!isset($this->getPartSteps()[(int)$step])) {
-                $this->setResult(
-                    $this->outputDanger(
-                        Yii::t('podium/flash', 'Installation aborted! Can not find the requested installation step.')
-                    )
-                );
-                $this->setError(true);
-                $this->setPercent(100);
-            } elseif ($this->getNumberOfSteps() == 0) {
-                $this->setResult(
-                    $this->outputDanger(
-                        Yii::t('podium/flash', 'Installation aborted! Can not find the installation steps.')
-                    )
-                );
-                $this->setError(true);
-                $this->setPercent(100);
-            } else {
-                $this->setPercent(
-                        $this->getNumberOfSteps() == (int)$step + 1 
-                            ? 100 
-                            : floor(100 * ((int)$step + 1) / $this->getNumberOfSteps())
-                );
-                $this->_proceedStep($this->getPartSteps()[(int)$step]);
+        $maxStep = Yii::$app->session->get(self::SESSION_STEPS, 0);
+        if ($currentStep < $maxStep) {
+            $this->table = '...';
+            if (!isset($this->versionSteps[$currentStep])) {
+                return [
+                    'type'    => self::TYPE_ERROR,
+                    'result'  => Yii::t('podium/flash', 'Update aborted! Can not find the requested update step.'),
+                    'percent' => 100,
+                ];
             }
-        } catch (Exception $e) {
-            $this->setResult($this->outputDanger($e->getMessage()));
-            $this->setError(true);
-            $this->setPercent(100);
+            $this->type = self::TYPE_SUCCESS;
+            $this->table = $this->versionSteps[$currentStep]['table'];
+            $result = call_user_func([$this, $this->versionSteps[$currentStep]['call']], $this->versionSteps[$currentStep]);
+            Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
+            return [
+                'type'    => $this->type,
+                'result'  => $result,
+                'table'   => $this->getTable(true),
+                'percent' => $this->countPercent($currentStep, $maxStep),
+            ];
         }
-        
         return [
-            'table'   => $this->getTable(),
-            'percent' => $this->getPercent(),
-            'result'  => $this->getResult(),
-            'error'   => $this->getError(),
+            'type'    => self::TYPE_ERROR,
+            'result'  => Yii::t('podium/flash', 'Weird... Update should already complete...'),
+            'percent' => 100
         ];
     }
     
     /**
-     * Counts number of installation steps.
-     * @return int
+     * Returns update steps from next new version.
+     * @return array
+     * @since 0.2
      */
-    public function getNumberOfSteps()
+    public function getVersionSteps()
     {
-        if ($this->_numberOfSteps === null) {
-            $this->_numberOfSteps = count($this->getPartSteps());
-        }
-        return $this->_numberOfSteps;
-    }
-    
-    /**
-     * Counts number of installation steps.
-     * @return int
-     */
-    public function getPartSteps()
-    {
-        if ($this->_partSteps === null) {
-            $v = $this->getVersion();
-            if ($v === null) {
-                $this->_partSteps = [];
-                foreach (static::steps() as $version => $data) {
-                    $this->_partSteps = array_merge($this->_partSteps, $data);
-                }
-            } else {
-                $index = 1;
-                foreach (static::steps() as $version => $data) {
-                    $index++;
-                    if ($version == $v) {
-                        break;
-                    }
-                }
-                $part = array_slice(static::steps(), $index);
-                $this->_partSteps  = [];
-                foreach ($part as $version => $data) {
-                    $this->_partSteps = array_merge($this->_partSteps, $data);
+        if ($this->_versionSteps === null) {
+            $currentVersion = Yii::$app->session->get(self::SESSION_VERSION, 0);
+            $versionSteps = [];
+            foreach ($this->steps as $version => $steps) {
+                if (Helper::compareVersions(explode('.', $currentVersion), explode('.', $version)) == '<') {
+                    $versionSteps += $steps;
                 }
             }
+            $this->_versionSteps = $versionSteps;
         }
-        return $this->_partSteps;
-    }
-    
-    /**
-     * Returns version.
-     * @return string
-     */
-    public function getVersion()
-    {
-        return $this->_version;
-    }
-    
-    /**
-     * @throws Exception
-     */
-    public function setPartSteps()
-    {
-        throw new Exception('Don\'t set update steps array directly!');
-    }
-    
-    /**
-     * Sets version.
-     * @param string $value
-     */
-    public function setVersion($value)
-    {
-        $this->_version = $value;
+        return $this->_versionSteps;
     }
     
     /**
@@ -212,74 +98,35 @@ class Update extends Maintenance
      * @return string result message.
      * @since 0.2
      */
-    protected function _updateVersion($data)
+    protected function updateVersion($data)
     {
+        if (empty($data['version'])) {
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Version number missing.');
+        }
+        
         try {
-            if (empty($data['version'])) {
-                throw new Exception(Yii::t('podium/flash', 'Version number missing.'));
-            }
             Podium::getInstance()->config->set('version', $data['version']);
-            return $this->outputSuccess(
-                Yii::t(
-                    'podium/flash', 
-                    'Database version has been updated to {version}.', 
-                    ['version' => $data['version']]
-                )
-            );
+            return Yii::t('podium/flash', 'Database version has been updated to {version}.', [
+                'version' => $data['version']
+            ]);
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
-            $this->setError(true);
-            return $this->outputDanger(
-                Yii::t(
-                    'podium/flash', 
-                    'Error during version updating'
-                ) 
-                . ': ' 
-                . Html::tag('pre', $e->getMessage())
-            );
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Error during version updating') 
+                . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
     
     /**
-     * Installation steps.
+     * Update steps.
+     * @since 0.2
      */
-    public static function steps()
+    public function getSteps()
     {
-        return [
-            '0.2' => [
-                [
-                    'table'  => 'user_friend',
-                    'call'   => 'create',
-                    'schema' => [
-                        'id'        => Schema::TYPE_PK,
-                        'user_id'   => Schema::TYPE_INTEGER . ' NOT NULL',
-                        'friend_id' => Schema::TYPE_INTEGER . ' NOT NULL',
-                    ],
-                ],
-                [
-                    'table'  => 'user_friend',
-                    'call'   => 'foreign',
-                    'key'    => 'user_id',
-                    'ref'    => 'user',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-                [
-                    'table'  => 'user_friend',
-                    'call'   => 'foreign',
-                    'key'    => 'friend_id',
-                    'ref'    => 'user',
-                    'col'    => 'id',
-                    'delete' => 'CASCADE',
-                    'update' => 'CASCADE',
-                ],
-                [
-                    'table'   => 'config',
-                    'call'    => 'updateVersion',
-                    'version' => '0.2'
-                ]
-            ]
-        ];
+        if ($this->_steps === null) {
+            $this->_steps = require(__DIR__ . '/steps/update.php');
+        }
+        return $this->_steps;
     }
 }
