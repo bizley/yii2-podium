@@ -20,7 +20,6 @@ use yii\rbac\DbManager;
  */
 class RbacController extends Controller
 {
-
     /**
      * @var DbManager authorization manager.
      */
@@ -50,8 +49,7 @@ class RbacController extends Controller
                 $this->authManager = Instance::ensure($this->authManager, DbManager::className());
                 return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
         return false;
@@ -77,12 +75,10 @@ class RbacController extends Controller
                 $this->stdout("Adding RBAC rules... ");
                 $this->addRules();
                 $this->stdout("DONE\n");
-            }
-            else {
+            } else {
                 $this->stdout("RBAC rules have not been added.\n");
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
     }
