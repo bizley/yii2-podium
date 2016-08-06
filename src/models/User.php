@@ -8,58 +8,30 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
-use bizley\podium\db\UserQuery;
 use bizley\podium\log\Log;
 use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
+use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use Yii;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Json;
-use yii\web\IdentityInterface;
 use Zelenin\yii\behaviors\Slug;
-use Zelenin\yii\widgets\Recaptcha\validators\RecaptchaValidator;
 
 /**
  * User model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * @property integer $id
- * @property integer $inherited_id
- * @property string $username
- * @property string $slug
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $activation_token
- * @property string $email
- * @property string $new_email
- * @property string $auth_key
- * @property integer $status
- * @property integer $role
- * @property integer $anonymous
- * @property string $timezone
- * @property integer $created_at
- * @property integer $updated_at
+ * 
  * @property string $current_password write-only password
  * @property string $password write-only password
  * @property string $password_repeat write-only password repeated
  * @property integer $tos write-only terms of service agreement
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends BaseUser
 {
-
-    /**
-     * Statuses.
-     */
-    const STATUS_REGISTERED = 1;
-    const STATUS_BANNED     = 9;
-    const STATUS_ACTIVE     = 10;
-    
     /**
      * Roles.
      */
@@ -105,22 +77,40 @@ class User extends ActiveRecord implements IdentityInterface
     public $tos;
     
     private $_access = [];
-    private static $_identity;
     
     /**
      * @inheritdoc
      */
-    public static function tableName()
+    public function rules()
     {
-        return '{{%podium_user}}';
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public static function find()
-    {
-        return new UserQuery(get_called_class());
+        $rules = [
+            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
+            ['current_password', 'required'],
+            ['current_password', 'validateCurrentPassword'],
+            [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
+            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
+            ['email', 'unique'],
+            ['new_email', 'unique', 'targetAttribute' => 'email'],
+            [['password', 'new_password'], 'passwordRequirements'],
+            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
+            ['new_password_repeat', 'compare', 'compareAttribute' => 'new_password'],
+            ['username', 'unique'],
+            ['username', 'validateUsername'],
+            ['anonymous', 'boolean'],
+            ['inherited_id', 'integer'],
+            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
+            ['status', 'default', 'value' => self::STATUS_REGISTERED],
+            ['role', 'default', 'value' => self::ROLE_MEMBER],
+            ['tos', 'compare', 'compareValue' => 1, 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
+        ];
+        
+        if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
+            $rules[] = ['captcha', ReCaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
+        } else {
+            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
+        }
+        
+        return $rules;
     }
     
     /**
@@ -153,7 +143,6 @@ class User extends ActiveRecord implements IdentityInterface
             'account'        => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
             'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
-        
         if (Podium::getInstance()->config->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
         }
@@ -162,52 +151,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        $rules = [
-            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
-            ['current_password', 'required'],
-            ['current_password', 'validateCurrentPassword'],
-            [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
-            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
-            ['email', 'unique'],
-            ['new_email', 'unique', 'targetAttribute' => 'email'],
-            [['password', 'new_password'], 'passwordRequirements'],
-            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
-            ['new_password_repeat', 'compare', 'compareAttribute' => 'new_password'],
-            ['username', 'unique'],
-            ['username', 'validateUsername'],
-            ['anonymous', 'boolean'],
-            ['inherited_id', 'integer'],
-            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
-            ['status', 'default', 'value' => self::STATUS_REGISTERED],
-            ['role', 'default', 'value' => self::ROLE_MEMBER],
-            ['tos', 'in', 'range' => [1], 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
-        ];
-        
-        if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
-            $rules[] = ['captcha', RecaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
-        } else {
-            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
-        }
-        
-        return $rules;
-    }
-    
-    /**
      * Activates account.
      * @return boolean
      */
     public function activate()
     {
-        if ($this->status == self::STATUS_REGISTERED) {
-            $this->removeActivationToken();
-            $this->status = self::STATUS_ACTIVE;
-
-            $transaction = static::getDb()->beginTransaction();
-            try {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if ($this->status == self::STATUS_REGISTERED) {
+                $this->removeActivationToken();
+                $this->status = self::STATUS_ACTIVE;
                 if ($this->save()) {
                     if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
                         $transaction->commit();
@@ -215,12 +168,10 @@ class User extends ActiveRecord implements IdentityInterface
                     }
                 }
             }
-            catch (Exception $e) {
-                $transaction->rollBack();
-                Log::error($e->getMessage(), null, __METHOD__);
-            }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
         }
-
         return false;
     }
     
@@ -230,7 +181,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function changeEmail()
     {
-        $this->email     = $this->new_email;
+        $this->email = $this->new_email;
         $this->new_email = null;
         $this->removeEmailToken();
         return $this->save();
@@ -249,190 +200,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Returns current user based on module configuration.
-     * @return mixed
-     */
-    public static function findMe()
-    {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
-            if (static::$_identity === null) {
-                static::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
-            }
-            return static::$_identity;
-        }
-        return Yii::$app->user->identity;
-    }
-    
-    /**
-     * Finds registered user by activation token.
-     * @param string $token activation token
-     * @return static|null
-     */
-    public static function findByActivationToken($token)
-    {
-        if (!static::isActivationTokenValid($token)) {
-            return null;
-        }
-        return static::findOne(['activation_token' => $token, 'status' => self::STATUS_REGISTERED]);
-    }
-    
-    /**
-     * Finds active user by email.
-     * @param string $email
-     * @return static|null
-     */
-    public static function findByEmail($email)
-    {
-        return static::find()->where(['email' => $email, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
-    }
-    
-    /**
-     * Finds active user by email token.
-     * @param string $token activation token
-     * @return static|null
-     */
-    public static function findByEmailToken($token)
-    {
-        if (!static::isEmailTokenValid($token)) {
-            return null;
-        }
-        return static::find()->where(['email_token' => $token, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
-    }
-    
-    /**
-     * Finds user of given status by username or email.
-     * @param string $keyfield value to compare
-     * @param integer $status
-     * @return static|null
-     */
-    public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
-    {
-        if ($status === null) {
-            return static::find()->where(['or', ['email' => $keyfield], ['username' => $keyfield]])->limit(1)->one();
-        }
-        return static::find()->where(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]])->limit(1)->one();
-    }
-    
-    /**
-     * Finds user of given status by password reset token
-     * @param string $token password reset token
-     * @param string|null $status user status or null
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token, $status = self::STATUS_ACTIVE)
-    {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-        if ($status == null) {
-            return static::find()->where(['password_reset_token' => $token])->limit(1)->one();
-        }
-        return static::find()->where(['password_reset_token' => $token, 'status' => $status])->limit(1)->one();
-    }
-    
-    /**
-     * Finds active user by username.
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        return static::find()->where(['username' => $username, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentity($id)
-    {
-        return static::find()->where(['id' => $id, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-    }
-    
-    /**
-     * Generates new activation token.
-     */
-    public function generateActivationToken()
-    {
-        $this->activation_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-    
-    /**
-     * Generates "remember me" authentication key.
-     */
-    public function generateAuthKey()
-    {
-        $this->auth_key = Yii::$app->security->generateRandomString();
-    }
-    
-    /**
-     * Generates new email token.
-     */
-    public function generateEmailToken()
-    {
-        $this->email_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-    
-    /**
-     * Generates new password reset token.
-     */
-    public function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getId()
-    {
-        return $this->getPrimaryKey();
-    }
-    
-    /**
-     * Activity relation.
-     * @return Activity
-     */
-    public function getActivity()
-    {
-        return $this->hasOne(Activity::className(), ['user_id' => 'id']);
-    }
-    
-    /**
-     * Friends relation.
-     * @return ActiveQuery
-     * @since 0.2
-     */
-    public function getFriends()
-    {
-        return $this->hasMany(User::className(), ['id' => 'friend_id'])->viaTable('{{%podium_user_friend}}', ['user_id' => 'id']);
-    }
-    
-    /**
-     * Meta relation.
-     * @return ActiveQuery
-     */
-    public function getMeta()
-    {
-        return $this->hasOne(Meta::className(), ['user_id' => 'id']);
-    }
-    
-    /**
      * Returns number of new user messages.
      * @return integer
      */
@@ -440,8 +207,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $cache = Podium::getInstance()->cache->getElement('user.newmessages', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from(MessageReceiver::tableName())->where(['receiver_id' => $this->id,
-                        'receiver_status' => Message::STATUS_NEW])->count();
+            $cache = (new Query)->from(MessageReceiver::tableName())->where([
+                'receiver_id'     => $this->id,
+                'receiver_status' => Message::STATUS_NEW
+            ])->count();
             Podium::getInstance()->cache->setElement('user.newmessages', $this->id, $cache);
         }
 
@@ -572,70 +341,14 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $cache = Podium::getInstance()->cache->getElement('user.subscriptions', $this->id);
         if ($cache === false) {
-            $cache = (new Query)->from(Subscription::tableName())->where(['user_id' => $this->id,
-                        'post_seen' => Subscription::POST_NEW])->count();
+            $cache = (new Query)->from(Subscription::tableName())->where([
+                'user_id'   => $this->id,
+                'post_seen' => Subscription::POST_NEW
+            ])->count();
             Podium::getInstance()->cache->setElement('user.subscriptions', $this->id, $cache);
         }
 
         return $cache;
-    }
-    
-    /**
-     * Finds out if activation token is valid.
-     * @param string $token activation token
-     * @return boolean
-     */
-    public static function isActivationTokenValid($token)
-    {
-        $expire = Podium::getInstance()->config->get('activation_token_expire');
-        if ($expire === null) {
-            $expire = 3 * 24 * 60 * 60;
-        }
-        return static::isTokenValid($token, $expire);
-    }
-    
-    /**
-     * Finds out if email token is valid.
-     * @param string $token activation token
-     * @return boolean
-     */
-    public static function isEmailTokenValid($token)
-    {
-        $expire = Podium::getInstance()->config->get('email_token_expire');
-        if ($expire === null) {
-            $expire = 24 * 60 * 60;
-        }
-        return static::isTokenValid($token, $expire);
-    }
-    
-    /**
-     * Finds out if password reset token is valid.
-     * @param string $token password reset token
-     * @return boolean
-     */
-    public static function isPasswordResetTokenValid($token)
-    {
-        $expire = Podium::getInstance()->config->get('password_reset_token_expire');
-        if ($expire === null) {
-            $expire = 24 * 60 * 60;
-        }
-        return static::isTokenValid($token, $expire);
-    }
-    
-    /**
-     * Finds out if given token type is valid.
-     * @param string $token activation token
-     * @param integer $expire expire time
-     * @return boolean
-     */
-    public static function isTokenValid($token, $expire)
-    {
-        if (empty($token) || empty($expire)) {
-            return false;
-        }
-        $parts     = explode('_', $token);
-        $timestamp = (int)end($parts);
-        return $timestamp + (int)$expire >= time();
     }
     
     /**
@@ -646,7 +359,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function isBefriendedBy($user_id)
     {
-        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where(['user_id' => $user_id, 'friend_id' => $this->id])->exists()) {
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where([
+                'user_id'   => $user_id, 
+                'friend_id' => $this->id
+            ])->exists()) {
             return true;
         }
         return false;
@@ -660,7 +376,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function isFriendOf($user_id)
     {
-        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where(['user_id' => $this->id, 'friend_id' => $user_id])->exists()) {
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where([
+                'user_id'   => $this->id, 
+                'friend_id' => $user_id
+            ])->exists()) {
             return true;
         }
         return false;
@@ -673,7 +392,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function isIgnoredBy($user_id)
     {
-        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $user_id, 'ignored_id' => $this->id])->exists()) {
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where([
+                'user_id'    => $user_id, 
+                'ignored_id' => $this->id
+            ])->exists()) {
             return true;
         }
         return false;
@@ -686,24 +408,13 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function isIgnoring($user_id)
     {
-        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where(['user_id' => $this->id, 'ignored_id' => $user_id])->exists()) {
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where([
+                'user_id'    => $this->id, 
+                'ignored_id' => $user_id
+            ])->exists()) {
             return true;
         }
         return false;
-    }
-    
-    /**
-     * Finds out if unencrypted password fulfill requirements.
-     */
-    public function passwordRequirements($attribute, $params)
-    {
-        if (!preg_match('~\p{Lu}~', $this->$attribute) ||
-                !preg_match('~\p{Ll}~', $this->$attribute) ||
-                !preg_match('~[0-9]~', $this->$attribute) ||
-                mb_strlen($this->$attribute, 'UTF-8') < 6 ||
-                mb_strlen($this->$attribute, 'UTF-8') > 100) {
-            $this->addError($attribute, Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
-        }
     }
     
     /**
@@ -722,8 +433,7 @@ class User extends ActiveRecord implements IdentityInterface
                 return $user->id;
             }
             return null;
-        }
-        else {
+        } else {
             return Yii::$app->user->id;
         }
     }
@@ -762,8 +472,7 @@ class User extends ActiveRecord implements IdentityInterface
                     return true;
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -792,8 +501,7 @@ class User extends ActiveRecord implements IdentityInterface
                     return true;
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -825,30 +533,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Removes activation token.
-     */
-    public function removeActivationToken()
-    {
-        $this->activation_token = null;
-    }
-    
-    /**
-     * Removes email token.
-     */
-    public function removeEmailToken()
-    {
-        $this->email_token = null;
-    }
-    
-    /**
-     * Removes password reset token.
-     */
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
-    
-    /**
      * Saves user account details changes.
      * @return boolean
      */
@@ -867,77 +551,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
             return true;
         }
-        else {
-            return false;
-        }
-    }
-    
-    /**
-     * Generates password hash from unencrypted password.
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->getAuthKey() === $authKey;
-    }
-    
-    /**
-     * Validates current password.
-     * @param string $attribute
-     */
-    public function validateCurrentPassword($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!$this->validatePassword($this->current_password)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Current password is incorrect.'));
-            }
-        }
-    }
-    
-    /**
-     * Validates password.
-     * In case of inherited user component password hash is compared to 
-     * password hash stored in Yii::$app->user->identity so this method should 
-     * not be used with User instance other than currently logged in one.
-     * @param string $password password to validate
-     * @return boolean if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        $podium = Podium::getInstance();
-        if ($podium->userComponent == Podium::USER_INHERIT) {
-            $password_hash = Podium::FIELD_PASSWORD;
-            if (!empty($podium->userPasswordField)) {
-                $password_hash = $podium->userPasswordField;
-            }
-            if (!empty(Yii::$app->user->identity->$password_hash)) {
-                return Yii::$app->security->validatePassword($password, Yii::$app->user->identity->$password_hash);
-            }
-            return false;
-        }
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
-    }
-    
-    /**
-     * Validates username.
-     * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.
-     * @param string $attribute
-     */
-    public function validateUsername($attribute)
-    {
-        if (!$this->hasErrors()) {
-            if (!preg_match('/^[\p{L}][\w\p{L}]{2,254}$/u', $this->username)) {
-                $this->addError($attribute, Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'));
-            }
-        }
+        return false;
     }
     
     /**
@@ -956,8 +570,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT 
-                && !Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT && !Yii::$app->user->isGuest) {
             $user = static::findMe();
             if ($user) {
                 if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
@@ -1007,17 +620,24 @@ class User extends ActiveRecord implements IdentityInterface
     public function updateModeratorForOne($forum_id = null)
     {
         try {
-            if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum_id, 'user_id' => $this->id])->exists()) {
-                Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $forum_id, 'user_id' => $this->id])->execute();
-            }
-            else {
-                Yii::$app->db->createCommand()->insert(Mod::tableName(), ['forum_id' => $forum_id, 'user_id' => $this->id])->execute();
+            if ((new Query)->from(Mod::tableName())->where([
+                    'forum_id' => $forum_id, 
+                    'user_id'  => $this->id
+                ])->exists()) {
+                Yii::$app->db->createCommand()->delete(Mod::tableName(), [
+                    'forum_id' => $forum_id, 
+                    'user_id'  => $this->id
+                ])->execute();
+            } else {
+                Yii::$app->db->createCommand()->insert(Mod::tableName(), [
+                    'forum_id' => $forum_id, 
+                    'user_id'  => $this->id
+                ])->execute();
             }
             Podium::getInstance()->cache->deleteElement('forum.moderators', $forum_id);
             Log::info('Moderator updated', $this->id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
@@ -1036,7 +656,12 @@ class User extends ActiveRecord implements IdentityInterface
             $add = [];
             foreach ($newForums as $forum) {
                 if (!in_array($forum, $oldForums)) {
-                    if ((new Query)->from(Forum::tableName())->where(['id' => $forum])->exists() && (new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists() === false) {
+                    if ((new Query)->from(Forum::tableName())
+                            ->where(['id' => $forum])
+                            ->exists() 
+                            && (new Query)->from(Mod::tableName())
+                                ->where(['forum_id' => $forum, 'user_id' => $this->id])
+                                ->exists() === false) {
                         $add[] = [$forum, $this->id];
                     }
                 }
@@ -1058,8 +683,7 @@ class User extends ActiveRecord implements IdentityInterface
             Podium::getInstance()->cache->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
@@ -1088,8 +712,7 @@ class User extends ActiveRecord implements IdentityInterface
                 Log::info('Inherited account created', $new->id, __METHOD__);
                 return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
@@ -1116,8 +739,7 @@ class User extends ActiveRecord implements IdentityInterface
             $users->andWhere(['!=', 'id', static::loggedId()]);
             if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
                 $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
-            }
-            elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
+            } elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
                 $users->andWhere([
                     'or', 
                     ['like', 'username', $query],
@@ -1126,8 +748,7 @@ class User extends ActiveRecord implements IdentityInterface
                         'id'       => $matches[1]
                     ]
                 ]);
-            }
-            else {
+            } else {
                 $users->andWhere(['like', 'username', $query]);
             }
             $users->orderBy(['username' => SORT_ASC, 'id' => SORT_ASC]);
@@ -1135,13 +756,11 @@ class User extends ActiveRecord implements IdentityInterface
             foreach ($users->each() as $user) {
                 $results['results'][] = ['id' => $user->id, 'text' => $user->getPodiumTag(true)];
             }
-            if (!empty($results['results'])) {
-                $cache[$query] = Json::encode($results);
-                Podium::getInstance()->cache->set('members.fieldlist', $cache);
-            }
-            else {
+            if (empty($results['results'])) {
                 return Json::encode(['results' => []]);
             }
+            $cache[$query] = Json::encode($results);
+            Podium::getInstance()->cache->set('members.fieldlist', $cache);
         }
 
         return $cache[$query];
@@ -1156,16 +775,18 @@ class User extends ActiveRecord implements IdentityInterface
     {
         try {
             if ($this->isIgnoredBy(User::loggedId())) {
-                Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', 'user_id = :uid AND ignored_id = :iid', [':uid' => User::loggedId(), ':iid' => $this->id])->execute();
+                Yii::$app->db->createCommand()->delete(
+                        '{{%podium_user_ignore}}', 
+                        'user_id = :uid AND ignored_id = :iid', 
+                        [':uid' => User::loggedId(), ':iid' => $this->id]
+                    )->execute();
                 Log::info('User unignored', $this->id, __METHOD__);
-            }
-            else {
+            } else {
                 Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => User::loggedId(), 'ignored_id' => $this->id])->execute();
                 Log::info('User ignored', $this->id, __METHOD__);
             }
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
@@ -1180,17 +801,19 @@ class User extends ActiveRecord implements IdentityInterface
     {
         try {
             if ($this->isBefriendedBy(User::loggedId())) {
-                Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', 'user_id = :uid AND friend_id = :iid', [':uid' => User::loggedId(), ':iid' => $this->id])->execute();
+                Yii::$app->db->createCommand()->delete(
+                        '{{%podium_user_friend}}', 
+                        'user_id = :uid AND friend_id = :iid', 
+                        [':uid' => User::loggedId(), ':iid' => $this->id]
+                    )->execute();
                 Log::info('User unfriended', $this->id, __METHOD__);
-            }
-            else {
+            } else {
                 Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => User::loggedId(), 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
             Podium::getInstance()->cache->deleteElement('user.friends', $this->id);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

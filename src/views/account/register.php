@@ -8,10 +8,10 @@
  */
 
 use bizley\podium\Module as Podium;
+use himiklab\yii2\recaptcha\ReCaptcha;
 use yii\bootstrap\ActiveForm;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
-use Zelenin\yii\widgets\Recaptcha\widgets\Recaptcha;
 
 $this->title = Yii::t('podium/view', 'Registration');
 $this->params['breadcrumbs'][] = $this->title;
@@ -44,10 +44,8 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 <?php if (Podium::getInstance()->config->get('use_captcha')): ?>
 <?php if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== ''): ?>
             <div class="form-group">
-                <?= $form->field($model, 'captcha')->widget(Recaptcha::className(), [
-                    'clientOptions' => [
-                        'data-sitekey' => Podium::getInstance()->config->get('recaptcha_sitekey')
-                    ]
+                <?= $form->field($model, 'captcha')->widget(ReCaptcha::className(), [
+                    'siteKey' => Podium::getInstance()->config->get('recaptcha_sitekey'),
                 ]) ?>
             </div>
 <?php else: ?>
