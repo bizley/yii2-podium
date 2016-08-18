@@ -44,7 +44,6 @@ use yii\web\Response;
  */
 class Module extends BaseModule implements BootstrapInterface
 {
-
     const USER_INHERIT = 'inherit';
     const USER_OWN     = 'own';
     
@@ -155,8 +154,8 @@ class Module extends BaseModule implements BootstrapInterface
     public function bootstrap($app)
     {
         if ($app instanceof WebApplication) {
-            $this->_addUrlManagerRules($app);
-            $this->_setPodiumLogTarget($app);            
+            $this->addUrlManagerRules($app);
+            $this->setPodiumLogTarget($app);            
         } elseif ($app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'bizley\podium\console';
         }
@@ -167,15 +166,14 @@ class Module extends BaseModule implements BootstrapInterface
      * @param Application $app the application currently running
      * @since 0.2
      */
-    protected function _addUrlManagerRules($app)
+    protected function addUrlManagerRules($app)
     {
-        $app->urlManager->addRules(
-                            [new GroupUrlRule([
-                                'prefix' => 'podium',
-                                'rules'  => require(__DIR__ . '/url-rules.php'),
-                            ])], 
-                            false
-                        );
+        $app->urlManager->addRules([
+                new GroupUrlRule([
+                    'prefix' => 'podium',
+                    'rules'  => require(__DIR__ . '/url-rules.php'),
+                ])
+            ], false);
     }
     
     /**
@@ -183,7 +181,7 @@ class Module extends BaseModule implements BootstrapInterface
      * @param Application $app the application currently running
      * @since 0.2
      */
-    protected function _setPodiumLogTarget($app)
+    protected function setPodiumLogTarget($app)
     {
         $dbTarget = new DbTarget;
         $dbTarget->logTable = '{{%podium_log}}';
@@ -241,17 +239,16 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Redirects to Podium main controller's action.
-     * 
      * @return Response
      */
     public function goPodium()
     {
-        return Yii::$app->getResponse()->redirect([self::ROUTE_DEFAULT]);
+        return Yii::$app->response->redirect([self::ROUTE_DEFAULT]);
     }
 
     /**
      * Initializes the module for web app.
-     * Sets Podium alias and layout.
+     * Sets Podium alias (@podium) and layout.
      * Registers user identity, authorization, translations and formatter.
      * Verifies the installation.
      */
@@ -262,7 +259,6 @@ class Module extends BaseModule implements BootstrapInterface
         if (!in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
             throw InvalidConfigException('Invalid value for the user parameter.');
         }
-            
         if (!in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
             throw InvalidConfigException('Invalid value for the rbac parameter.');
         }
@@ -270,7 +266,6 @@ class Module extends BaseModule implements BootstrapInterface
         $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
 
         if (Yii::$app instanceof WebApplication) {
-
             if ($this->userComponent == self::USER_OWN) {
                 $this->registerIdentity();
             }
@@ -280,10 +275,9 @@ class Module extends BaseModule implements BootstrapInterface
             $this->registerTranslations();
             $this->registerFormatter();
 
-            $this->layout     = self::MAIN_LAYOUT;
+            $this->layout = self::MAIN_LAYOUT;
             $this->_installed = Installation::check();
-        }
-        elseif (Yii::$app instanceof ConsoleApplication) {
+        } elseif (Yii::$app instanceof ConsoleApplication) {
             if ($this->rbacComponent == self::RBAC_OWN) {
                 $this->registerAuthorization();
             }
