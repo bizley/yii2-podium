@@ -22,6 +22,7 @@ use Zelenin\yii\behaviors\Slug;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property string $name
  * @property string $slug
@@ -86,23 +87,14 @@ class Thread extends ActiveRecord
             ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
             ['post', 'required', 'on' => ['new']],
             ['post', 'string', 'min' => 10, 'on' => ['new']],
-            [
-                'post', 
-                'filter', 
-                'filter' => function($value) {
+            ['post', 'filter', 'filter' => function($value) {
                     return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
-                }, 
-                'on' => ['new']
-            ],
+                }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['subscribe', 'boolean'],
-            [
-                'name', 
-                'filter', 
-                'filter' => function($value) {
+            ['name', 'filter', 'filter' => function($value) {
                     return HtmlPurifier::process(Html::encode($value));
-                }
-            ],
+                }],
         ];
     }
 
@@ -121,11 +113,8 @@ class Thread extends ActiveRecord
      */
     public function getUserView()
     {
-        return $this->hasOne(
-                ThreadView::className(), 
-                ['thread_id' => 'id']
-            )
-            ->where(['user_id' => User::loggedId()]);
+        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])
+                        ->where(['user_id' => User::loggedId()]);
     }
     
     /**
@@ -143,11 +132,8 @@ class Thread extends ActiveRecord
      */
     public function getSubscription()
     {
-        return $this->hasOne(
-                Subscription::className(), 
-                ['thread_id' => 'id']
-            )
-            ->where(['user_id' => User::loggedId()]);
+        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])
+                        ->where(['user_id' => User::loggedId()]);
     }
     
     /**
@@ -156,11 +142,8 @@ class Thread extends ActiveRecord
      */
     public function getLatest()
     {
-        return $this->hasOne(
-                Post::className(), 
-                ['thread_id' => 'id']
-            )
-            ->orderBy(['id' => SORT_DESC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
+                        ->orderBy(['id' => SORT_DESC]);
     }
 
     /**
@@ -179,11 +162,8 @@ class Thread extends ActiveRecord
      */
     public function getPostData()
     {
-        return $this->hasOne(
-                Post::className(), 
-                ['thread_id' => 'id']
-            )
-            ->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
+                        ->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -192,18 +172,12 @@ class Thread extends ActiveRecord
      */
     public function getFirstNewNotSeen()
     {
-        return $this->hasOne(
-                Post::className(), 
-                ['thread_id' => 'id']
-            )
-            ->where([
-                '>', 
-                'created_at', 
-                $this->userView 
-                    ? $this->userView->new_last_seen 
-                    : 0
-            ])
-            ->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
+                        ->where(['>', 'created_at', $this->userView 
+                                    ? $this->userView->new_last_seen 
+                                    : 0
+                                ])
+                        ->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -212,18 +186,12 @@ class Thread extends ActiveRecord
      */
     public function getFirstEditedNotSeen()
     {
-        return $this->hasOne(
-                Post::className(), 
-                ['thread_id' => 'id']
-            )
-            ->where([
-                '>', 
-                'edited_at', 
-                $this->userView 
-                    ? $this->userView->edited_last_seen 
-                    : 0
-            ])
-            ->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
+                        ->where(['>', 'edited_at', $this->userView 
+                                    ? $this->userView->edited_last_seen 
+                                    : 0
+                                ])
+                        ->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -269,40 +237,24 @@ class Thread extends ActiveRecord
                 $query->andWhere(['locked' => 1]);
             }
             if (!empty($filters['hot']) && $filters['hot'] == 1) {
-                $query->andWhere([
-                    '>=', 
-                    'posts', 
-                    Podium::getInstance()->config->get('hot_minimum')
-                ]);
+                $query->andWhere(['>=', 'posts', Podium::getInstance()->config->get('hot_minimum')]);
             }
             if (!empty($filters['new']) 
                     && $filters['new'] == 1 
                     && !Yii::$app->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
-                    $q->andWhere([
-                            'or', 
-                            [
-                                'and',
-                                ['user_id' => User::loggedId()],
-                                new Expression('`new_last_seen` < `new_post_at`')
-                            ],
-                            ['user_id' => null]
-                        ]);
+                    $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
+                            new Expression('`new_last_seen` < `new_post_at`')
+                        ], ['user_id' => null]]);
                 }]);
             }
             if (!empty($filters['edit']) 
                     && $filters['edit'] == 1 
                     && !Yii::$app->user->isGuest) {
-                $query->joinWith(['view' => function ($q) {
-                    $q->andWhere([
-                            'or', 
-                            [
-                                'and',
-                                ['user_id' => User::loggedId()],
-                                new Expression('`edited_last_seen` < `edited_post_at`')
-                            ],
-                            ['user_id' => null]
-                        ]);
+                $query->joinWith(['threadView' => function ($q) {
+                    $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
+                            new Expression('`edited_last_seen` < `edited_post_at`')
+                        ], ['user_id' => null]]);
                 }]);
             }
         }
