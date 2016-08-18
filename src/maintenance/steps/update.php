@@ -38,6 +38,18 @@ return [
             'update' => 'CASCADE',
         ],
         [
+            'table' => 'thread',
+            'call'  => 'alterColumn',
+            'col'   => 'new_post_at',
+            'type'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+        ],
+        [
+            'table' => 'thread',
+            'call'  => 'alterColumn',
+            'col'   => 'edited_post_at',
+            'type'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+        ],
+        [
             'table'   => 'config',
             'call'    => 'updateVersion',
             'version' => '0.2'

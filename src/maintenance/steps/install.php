@@ -173,8 +173,8 @@ return [
             'views'          => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
             'created_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
             'updated_at'     => Schema::TYPE_INTEGER . ' NOT NULL',
-            'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL',
-            'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL',
+            'new_post_at'    => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+            'edited_post_at' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
         ],
     ],
     [
