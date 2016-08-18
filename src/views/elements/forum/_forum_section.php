@@ -21,7 +21,7 @@ use yii\helpers\Url;
         <small class="text-muted"><?= Html::encode($model->sub) ?></small>
 <?php endif; ?>
     </div>
-    <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="forum<?= $model->id ?>">
+    <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in table-responsive" role="tabpanel" aria-labelledby="forum<?= $model->id ?>">
         <?= $this->render('/elements/forum/_threads', ['forum' => $model->id, 'category' => $model->category_id, 'slug' => $model->slug, 'filters' => $filters]) ?>
     </div>
 </div>

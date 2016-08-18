@@ -16,10 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php if (!Yii::$app->user->isGuest): ?>
 <div class="row">
-    <div class="col-sm-12 text-right">
-        <ul class="list-inline">
-            <li><a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
-        </ul>
+    <div class="col-sm-3 col-sm-offset-9">
+        <div class="form-group">
+            <a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-xs btn-block"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a>
+        </div>
     </div>
 </div>
 <?php endif; ?>

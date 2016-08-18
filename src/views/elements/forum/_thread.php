@@ -18,7 +18,10 @@ $firstToSee = $model->firstToSee();
     <a href="<?= Url::to(['default/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-pjax="0" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($firstToSee->content, 20, '...', true)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Yii::$app->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
         <span class="glyphicon glyphicon-leaf"></span>
     </a>
-    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="pull-left btn btn-<?= $model->getCssClass() ?>" style="margin-right:10px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
+    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-xs pull-left btn btn-<?= $model->getCssClass() ?>" style="margin-right:10px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
+        <span class="glyphicon glyphicon-<?= $model->getIcon() ?>"></span>
+    </a>
+    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-lg hidden-md hidden-sm pull-left btn btn-<?= $model->getCssClass() ?> btn-xs" style="margin-right:5px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
         <span class="glyphicon glyphicon-<?= $model->getIcon() ?>"></span>
     </a>
     <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block" data-pjax="0">
@@ -29,6 +32,10 @@ $firstToSee = $model->firstToSee();
 <td class="text-center"><?= $model->views ?></td>
 <td>
 <?php if (!empty($model->latest) && !empty($model->latest->author)): ?>
-    <small><?= $model->latest->author->podiumTag ?><br><?= Yii::$app->formatter->asDatetime($model->latest->created_at) ?></small>
+    <small>
+        <?= $model->latest->author->podiumTag ?>
+        <span class="clearfix hidden-xs"><?= Yii::$app->formatter->asDatetime($model->latest->created_at, 'medium') ?></span>
+        <span class="clearfix hidden-sm hidden-md hidden-lg"><?= Yii::$app->formatter->asDatetime($model->latest->created_at, 'short') ?></span>
+    </small>
 <?php endif; ?>
 </td>

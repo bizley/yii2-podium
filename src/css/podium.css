@@ -17,3 +17,4 @@ body { padding-top:20px; padding-bottom:20px; }
 .podium-thread-line:hover .podium-go-to-new { display:inline }
 @media (max-width: 767px) { .podium-avatar { display:none !important }}
 .select2-container--krajee .select2-results__option--highlighted[aria-selected] { background-color: #d9edf7 !important }
+@-moz-document url-prefix() { fieldset { display: table-cell }}

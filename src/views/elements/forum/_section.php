@@ -20,7 +20,7 @@ use yii\helpers\Url;
             <a href="<?= Url::to(['default/category', 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
         </h4>
     </div>
-    <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="category<?= $model->id ?>">
+    <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in table-responsive" role="tabpanel" aria-labelledby="category<?= $model->id ?>">
         <?= $this->render('/elements/forum/_forums', ['category' => $model->id]) ?>
     </div>
 </div>
