@@ -69,7 +69,7 @@ class DefaultController extends BaseController
     
     /**
      * Displaying the category of given ID and slug.
-     * @param integer $id
+     * @param int $id
      * @param string $slug
      * @return string|Response
      */
@@ -108,9 +108,9 @@ class DefaultController extends BaseController
     
     /**
      * Deleting the thread of given category ID, forum ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return string|Response
      */
@@ -177,10 +177,10 @@ class DefaultController extends BaseController
     
     /**
      * Deleting the post of given category ID, forum ID, thread ID and ID.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $tid thread's ID
-     * @param integer $pid post's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $tid thread's ID
+     * @param int $pid post's ID
      * @return string|Response
      */
     public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
@@ -268,9 +268,9 @@ class DefaultController extends BaseController
     
     /**
      * Deleting the posts of given category ID, forum ID, thread ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return string|Response
      */
@@ -348,10 +348,10 @@ class DefaultController extends BaseController
     /**
      * Editing the post of given category ID, forum ID, thread ID and own ID.
      * If this is the first post in thread user can change the thread's name.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $tid thread's ID
-     * @param integer $pid post's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $tid thread's ID
+     * @param int $pid post's ID
      * @return string|Response
      */
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
@@ -445,8 +445,8 @@ class DefaultController extends BaseController
 
     /**
      * Displaying the forum of given category ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $id forum's ID
+     * @param int $cid category's ID
+     * @param int $id forum's ID
      * @param string $slug forum's slug
      * @return string|Response
      */
@@ -508,7 +508,7 @@ class DefaultController extends BaseController
     
     /**
      * Direct link for the last post in thread of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionLast($id = null)
@@ -552,9 +552,9 @@ class DefaultController extends BaseController
     
     /**
      * Locking / unlocking the thread of given category ID, forum ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return Response
      */
@@ -617,9 +617,9 @@ class DefaultController extends BaseController
     
     /**
      * Moving the thread of given category ID, forum ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return string|Response
      */
@@ -713,9 +713,9 @@ class DefaultController extends BaseController
     
     /**
      * Moving the posts of given category ID, forum ID, thread ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return string|Response
      */
@@ -872,8 +872,8 @@ class DefaultController extends BaseController
 
     /**
      * Creating the thread of given category ID and forum ID.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
      * @return string|Response
      */
     public function actionNewThread($cid = null, $fid = null)
@@ -954,9 +954,9 @@ class DefaultController extends BaseController
     
     /**
      * Pinning the thread of given category ID, forum ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return Response
      */
@@ -1016,10 +1016,10 @@ class DefaultController extends BaseController
     /**
      * Creating the post of given category ID, forum ID and thread ID.
      * This can be reply to selected post of given ID.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $tid thread's ID
-     * @param integer $pid ID of post to reply to
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $tid thread's ID
+     * @param int $pid ID of post to reply to
      * @return string|Response
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
@@ -1133,10 +1133,10 @@ class DefaultController extends BaseController
     
     /**
      * Reporting the post of given category ID, forum ID, thread ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $tid thread's ID
-     * @param integer $pid post's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $tid thread's ID
+     * @param int $pid post's ID
      * @return string|Response
      */
     public function actionReport($cid = null, $fid = null, $tid = null, $pid = null)
@@ -1391,7 +1391,7 @@ class DefaultController extends BaseController
     
     /**
      * Direct link for the post of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionShow($id = null)
@@ -1455,9 +1455,9 @@ class DefaultController extends BaseController
 
     /**
      * Displaying the thread of given category ID, forum ID, own ID and slug.
-     * @param integer $cid category's ID
-     * @param integer $fid forum's ID
-     * @param integer $id thread's ID
+     * @param int $cid category's ID
+     * @param int $fid forum's ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
      * @return string|Response
      */

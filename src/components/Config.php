@@ -145,7 +145,7 @@ class Config extends Component
      * Every change automatically updates the cache.
      * @param string $name configuration name
      * @param string $value configuration value
-     * @return boolean
+     * @return bool
      */
     public function set($name, $value)
     {

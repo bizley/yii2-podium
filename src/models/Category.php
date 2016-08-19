@@ -105,8 +105,8 @@ class Category extends ActiveRecord
     
     /**
      * Sets new categories order.
-     * @param integer $order new category sorting order number
-     * @return boolean
+     * @param int $order new category sorting order number
+     * @return bool
      * @throws Exception
      * @since 0.2
      */

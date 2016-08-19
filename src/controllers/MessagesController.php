@@ -1,12 +1,7 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageReceiver;
@@ -15,6 +10,7 @@ use bizley\podium\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * Podium Messages controller
@@ -58,25 +54,22 @@ class MessagesController extends BaseController
 
     /**
      * Deleting the sent message of given ID.
-     * @param integer $id
-     * @return \yii\web\Response
+     * @param int $id
+     * @return Response
      */
     public function actionDeleteSent($id = null)
     {
         if (!is_numeric($id) || $id < 1) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
-        }
-        else {
+        } else {
             $model = Message::find()->where(['and', ['id' => $id, 'sender_id' => User::loggedId()], ['!=', 'sender_status', Message::STATUS_DELETED]])->limit(1)->one();
             
             if (empty($model)) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            }
-            else {
+            } else {
                 if ($model->remove()) {
                     $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
-                }
-                else {
+                } else {
                     Log::error('Error while deleting sent message', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
@@ -87,24 +80,21 @@ class MessagesController extends BaseController
     
     /**
      * Deleting the received message of given ID.
-     * @param integer $id
-     * @return \yii\web\Response
+     * @param int $id
+     * @return Response
      */
     public function actionDeleteReceived($id = null)
     {
         if (!is_numeric($id) || $id < 1) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
-        }
-        else {
+        } else {
             $model = MessageReceiver::find()->where(['and', ['id' => $id, 'receiver_id' => User::loggedId()], ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]])->limit(1)->one();
             if (empty($model)) {
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            }
-            else {
+            } else {
                 if ($model->remove()) {
                     $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
-                }
-                else {
+                } else {
                     Log::error('Error while deleting received message', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
                 }            
@@ -120,7 +110,6 @@ class MessagesController extends BaseController
     public function actionInbox()
     {
         $searchModel = new MessageReceiver;
-        
         return $this->render('inbox', [
                 'dataProvider' => $searchModel->search(Yii::$app->request->get()),
                 'searchModel'  => $searchModel
@@ -129,8 +118,8 @@ class MessagesController extends BaseController
     
     /**
      * Adding a new message.
-     * @param integer $user message receiver's ID
-     * @return string|\yii\web\Response
+     * @param int $user message receiver's ID
+     * @return string|Response
      */
     public function actionNew($user = null)
     {
@@ -167,18 +156,15 @@ class MessagesController extends BaseController
                 if (empty($model->receiversId)) {
                     $this->addError('receiver_id', Yii::t('podium/view', 'You have to select at least one message receiver.'));
                     $errors = true;
-                }
-                else {
+                } else {
                     foreach ($model->receiversId as $r) {
                         if ($r == $podiumUser->id) {
                             $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
                             $errors = true;
-                        }
-                        elseif ($podiumUser->isIgnoredBy($r)) {
+                        } elseif ($podiumUser->isIgnoredBy($r)) {
                             $this->addError('receiver_id', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
                             $errors = true;
-                        }
-                        else {
+                        } else {
                             $member = User::find()->where(['id' => (int)$r, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
                             if ($member) {
                                 $validated[] = $member->id;
@@ -196,8 +182,7 @@ class MessagesController extends BaseController
                     if ($model->send()) {
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                         return $this->redirect(['messages/inbox']);
-                    }
-                    else {
+                    } else {
                         $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
                     }
                 }
@@ -209,8 +194,8 @@ class MessagesController extends BaseController
     
     /**
      * Replying to the message of given ID.
-     * @param integer $id
-     * @return string|\yii\web\Response
+     * @param int $id
+     * @return string|Response
      */
     public function actionReply($id = null)
     {
@@ -240,11 +225,8 @@ class MessagesController extends BaseController
                         $this->success(Yii::t('podium/flash', 'Message has been sent.'));
                         return $this->redirect(['messages/inbox']);
                     }
-                    else {
-                        $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
-                    }
-                }
-                else {
+                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending your message.'));
+                } else {
                     $this->error(Yii::t('podium/flash', 'Sorry! This member ignores you so you can not send the message.'));
                 }
             }
@@ -262,7 +244,6 @@ class MessagesController extends BaseController
     public function actionSent()
     {
         $searchModel  = new MessageSearch;
-        
         return $this->render('sent', [
                 'dataProvider' => $searchModel->search(Yii::$app->request->get()),
                 'searchModel'  => $searchModel
@@ -271,8 +252,8 @@ class MessagesController extends BaseController
     
     /**
      * Viewing the sent message of given ID.
-     * @param integer $id
-     * @return string|\yii\web\Response
+     * @param int $id
+     * @return string|Response
      */  
     public function actionViewSent($id = null)
     {
@@ -290,8 +271,8 @@ class MessagesController extends BaseController
     
     /**
      * Viewing the received message of given ID.
-     * @param integer $id
-     * @return string|\yii\web\Response
+     * @param int $id
+     * @return string|Response
      */  
     public function actionViewReceived($id = null)
     {

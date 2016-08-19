@@ -38,7 +38,7 @@ class Post extends ActiveRecord
 {
 
     /**
-     * @var boolean Subscription flag.
+     * @var bool Subscription flag.
      */
     public $subscribe;
     
@@ -120,7 +120,7 @@ class Post extends ActiveRecord
     
     /**
      * Returns latest posts for registered users.
-     * @param integer $limit Number of latest posts.
+     * @param int $limit Number of latest posts.
      * @return Post[]
      */
     public static function getLatestPostsForMembers($limit = 5)
@@ -130,7 +130,7 @@ class Post extends ActiveRecord
     
     /**
      * Returns latest visible posts for guests.
-     * @param integer $limit Number of latest posts.
+     * @param int $limit Number of latest posts.
      * @return Post[]
      */
     public static function getLatestPostsForGuests($limit = 5)
@@ -144,7 +144,7 @@ class Post extends ActiveRecord
     
     /**
      * Updates post tag words.
-     * @param boolean $insert
+     * @param bool $insert
      * @param array $changedAttributes
      * @throws Exception
      */
@@ -267,8 +267,8 @@ class Post extends ActiveRecord
     
     /**
      * Verifies if user is this forum's moderator.
-     * @param integer|null $user_id User's ID or null for current signed in.
-     * @return boolean
+     * @param int|null $user_id User's ID or null for current signed in.
+     * @return bool
      */
     public function isMod($user_id = null)
     {
@@ -277,8 +277,8 @@ class Post extends ActiveRecord
     
     /**
      * Searches for posts.
-     * @param integer $forum_id
-     * @param integer $thread_id
+     * @param int $forum_id
+     * @param int $thread_id
      * @return ActiveDataProvider
      */
     public function search($forum_id, $thread_id)
@@ -297,7 +297,7 @@ class Post extends ActiveRecord
     
     /**
      * Searches for posts added by given user.
-     * @param integer $user_id
+     * @param int $user_id
      * @return ActiveDataProvider
      */
     public function searchByUser($user_id)
@@ -416,10 +416,10 @@ class Post extends ActiveRecord
     
     /**
      * Returns the verified post.
-     * @param integer $category_id post's category ID
-     * @param integer $forum_id post's forum ID
-     * @param integer $thread_id post's thread ID
-     * @param integer $id post's ID
+     * @param int $category_id post's category ID
+     * @param int $forum_id post's forum ID
+     * @param int $thread_id post's thread ID
+     * @param int $id post's ID
      * @return Post
      * @since 0.2
      */
@@ -440,7 +440,7 @@ class Post extends ActiveRecord
     
     /**
      * Performs post delete with parent forum and thread counters update.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumDelete()
@@ -473,8 +473,8 @@ class Post extends ActiveRecord
     
     /**
      * Performs post update with parent thread topic update in case of first post in thread.
-     * @param boolean $isFirstPost whether post is first in thread
-     * @return boolean
+     * @param bool $isFirstPost whether post is first in thread
+     * @return bool
      * @since 0.2
      */
     public function podiumEdit($isFirstPost = false)
@@ -507,7 +507,7 @@ class Post extends ActiveRecord
      * Performs new post creation and subscription.
      * If previous post in thread has got the same author posts are merged.
      * @param Post $previous previous post
-     * @return boolean
+     * @return bool
      * @throws Exception
      * @since 0.2
      */
@@ -563,9 +563,9 @@ class Post extends ActiveRecord
     
     /**
      * Performs vote processing.
-     * @param boolean $up whether this is up or downvote
-     * @param integer $count number of user's cached votes
-     * @return boolean
+     * @param bool $up whether this is up or downvote
+     * @param int $count number of user's cached votes
+     * @return bool
      * @since 0.2
      */
     public function podiumThumb($up = true, $count = 0)

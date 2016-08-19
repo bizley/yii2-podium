@@ -29,12 +29,12 @@ class Vocabulary extends ActiveRecord
     public $query;
     
     /**
-     * @var integer 
+     * @var int 
      */
     public $thread_id;
     
     /**
-     * @var integer 
+     * @var int 
      */
     public $post_id;
     

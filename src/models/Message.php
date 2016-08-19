@@ -44,12 +44,12 @@ class Message extends ActiveRecord
     const SPAM_WAIT     = 1;
     
     /**
-     * @var integer[] Receivers' IDs.
+     * @var int[] Receivers' IDs.
      */
     public $receiversId;
     
     /**
-     * @var integer[] Friends' IDs.
+     * @var int[] Friends' IDs.
      * @since 0.2
      */
     public $friendsId;
@@ -168,8 +168,8 @@ class Message extends ActiveRecord
     
     /**
      * Checks if user is a message receiver.
-     * @param integer $user_id
-     * @return boolean
+     * @param int $user_id
+     * @return bool
      */
     public function isMessageReceiver($user_id)
     {
@@ -194,7 +194,7 @@ class Message extends ActiveRecord
     
     /**
      * Sends message.
-     * @return boolean
+     * @return bool
      */
     public function send()
     {
@@ -252,8 +252,8 @@ class Message extends ActiveRecord
     /**
      * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT 
      * minutes.
-     * @param integer $user_id
-     * @return boolean
+     * @param int $user_id
+     * @return bool
      */
     public static function tooMany($user_id)
     {
@@ -278,7 +278,7 @@ class Message extends ActiveRecord
 
     /**
      * Removes message.
-     * @return boolean
+     * @return bool
      * @throws Exception
      */
     public function remove()
@@ -354,7 +354,7 @@ class Message extends ActiveRecord
     /**
      * Performs post report sending to moderators.
      * @param Post $post reported post
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumReport($post = null)

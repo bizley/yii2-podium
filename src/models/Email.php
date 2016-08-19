@@ -69,8 +69,8 @@ class Email extends ActiveRecord
      * @param string $address
      * @param string $subject
      * @param string $content
-     * @param integer|null $user_id
-     * @return boolean
+     * @param int|null $user_id
+     * @return bool
      */
     public static function queue($address, $subject, $content, $user_id = null)
     {

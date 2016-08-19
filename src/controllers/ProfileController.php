@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\controllers;
 
 use bizley\podium\log\Log;
@@ -95,13 +91,11 @@ class ProfileController extends BaseController
                             )) {
                             Log::info('New email activation link queued', $model->id, __METHOD__);
                             $this->success(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Click the activation link that will be sent to your new e-mail address in few minutes.'));
-                        }
-                        else {
+                        } else {
                             Log::error('Error while queuing new email activation link', $model->id, __METHOD__);
                             $this->warning(Yii::t('podium/flash', 'Your account has been updated but your new e-mail address is not active yet. Unfortunately there was some error while sending you the activation link. Contact administrator about this problem.'));
                         }
-                    }
-                    else {
+                    } else {
                         Log::info('Details updated', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'Your account has been updated.'));
                     }
@@ -197,7 +191,6 @@ class ProfileController extends BaseController
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
         return $this->module->goPodium();
     }
     
@@ -211,8 +204,7 @@ class ProfileController extends BaseController
         if ($postData) {
             if (Subscription::remove(!empty($postData['selection']) ? $postData['selection'] : [])) {
                 $this->success(Yii::t('podium/flash', 'Subscription list has been updated.'));
-            }
-            else {
+            } else {
                 $this->error(Yii::t('podium/flash', 'Sorry! There was an error while unsubscribing the thread list.'));
             }
             return $this->refresh();
@@ -223,7 +215,7 @@ class ProfileController extends BaseController
     
     /**
      * Marking the subscription of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionMark($id = null)
@@ -232,27 +224,22 @@ class ProfileController extends BaseController
 
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
-        }
-        else {
+        } else {
             if ($model->post_seen == Subscription::POST_SEEN) {
                 if ($model->unseen()) {
                     $this->success(Yii::t('podium/flash', 'Thread has been marked unseen.'));
-                }
-                else {
+                } else {
                     Log::error('Error while marking thread', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
-            }
-            elseif ($model->post_seen == Subscription::POST_NEW) {
+            } elseif ($model->post_seen == Subscription::POST_NEW) {
                 if ($model->seen()) {
                     $this->success(Yii::t('podium/flash', 'Thread has been marked seen.'));
-                }
-                else {
+                } else {
                     Log::error('Error while marking thread', $model->id, __METHOD__);
                     $this->error(Yii::t('podium/flash', 'Sorry! There was some error while marking the thread.'));
                 }
-            }
-            else {
+            } else {
                 $this->error(Yii::t('podium/flash', 'Sorry! Subscription has got the wrong status.'));
             }
         }
@@ -262,7 +249,7 @@ class ProfileController extends BaseController
     
     /**
      * Deleting the subscription of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionDelete($id = null)
@@ -271,13 +258,11 @@ class ProfileController extends BaseController
 
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
-        }
-        else {
+        } else {
             if ($model->delete()) {
                 $this->module->cache->deleteElement('user.subscriptions', User::loggedId());
                 $this->success(Yii::t('podium/flash', 'Thread has been unsubscribed.'));
-            }
-            else {
+            } else {
                 Log::error('Error while deleting subscription', $model->id, __METHOD__);
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the subscription.'));
             }
@@ -288,7 +273,7 @@ class ProfileController extends BaseController
     
     /**
      * Subscribing the thread of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionAdd($id = null)
@@ -314,8 +299,7 @@ class ProfileController extends BaseController
             if (!empty($subscription)) {
                 $data['msg'] = Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . 
                         Yii::t('podium/view', 'You are already subscribed to this thread.'), ['class' => 'text-info']);
-            }
-            else {
+            } else {
                 if (Subscription::add((int)$id)) {
                     $data = [
                         'error' => 0,

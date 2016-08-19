@@ -78,7 +78,7 @@ class Subscription extends ActiveRecord
     
     /**
      * Marks post as seen.
-     * @return boolean
+     * @return bool
      */
     public function seen()
     {
@@ -92,7 +92,7 @@ class Subscription extends ActiveRecord
     
     /**
      * Marks post as unseen.
-     * @return boolean
+     * @return bool
      */
     public function unseen()
     {
@@ -106,7 +106,7 @@ class Subscription extends ActiveRecord
     
     /**
      * Prepares notification email.
-     * @param integer $thread
+     * @param int $thread
      */
     public static function notify($thread)
     {
@@ -144,7 +144,7 @@ class Subscription extends ActiveRecord
     /**
      * Removes threads' subscriptions of given IDs.
      * @param array $threads threads' IDs
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public static function remove($threads = [])
@@ -163,8 +163,8 @@ class Subscription extends ActiveRecord
     
     /**
      * Adds subscription for thread.
-     * @param integer $thread thread's ID
-     * @return boolean
+     * @param int $thread thread's ID
+     * @return bool
      * @since 0.2
      */
     public static function add($thread)

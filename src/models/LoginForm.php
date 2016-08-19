@@ -29,7 +29,7 @@ class LoginForm extends Model
     public $password;
     
     /**
-     * @var boolean Remember me flag
+     * @var bool Remember me flag
      */
     public $rememberMe = false;
     
@@ -65,7 +65,7 @@ class LoginForm extends Model
 
     /**
      * Logs user in.
-     * @return boolean
+     * @return bool
      */
     public function login()
     {

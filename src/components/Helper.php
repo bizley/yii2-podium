@@ -69,7 +69,7 @@ class Helper
     
     /**
      * Returns user tag for deleted user.
-     * @param boolean $simple whether to return simple tag instead of full
+     * @param bool $simple whether to return simple tag instead of full
      * @return string tag
      */
     public static function deletedUserTag($simple = false)
@@ -114,9 +114,9 @@ class Helper
     /**
      * Returns user tag.
      * @param string $name user name
-     * @param integer $role user role
-     * @param integer|null $id user ID
-     * @param boolean $simple whether to return simple tag instead of full
+     * @param int $role user role
+     * @param int|null $id user ID
+     * @param bool $simple whether to return simple tag instead of full
      * @return string tag
      */
     public static function podiumUserTag($name, $role, $id = null, $slug = null, $simple = false)
@@ -169,7 +169,7 @@ class Helper
     
     /**
      * Returns role label html.
-     * @param integer|null $role role ID
+     * @param int|null $role role ID
      * @return string label html
      */
     public static function roleLabel($role = null)
@@ -213,7 +213,7 @@ class Helper
     
     /**
      * Returns User status label.
-     * @param integer|null $status status ID
+     * @param int|null $status status ID
      * @return string label html
      */
     public static function statusLabel($status = null)

@@ -22,7 +22,7 @@ trait FlashTrait
     /**
      * Alias for warning().
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function alert($message, $removeAfterAccess = true)
     {
@@ -32,7 +32,7 @@ trait FlashTrait
     /**
      * Adds flash message of 'danger' type.
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function danger($message, $removeAfterAccess = true)
     {
@@ -42,7 +42,7 @@ trait FlashTrait
     /**
      * Alias for danger().
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function error($message, $removeAfterAccess = true)
     {
@@ -53,7 +53,7 @@ trait FlashTrait
      * Adds flash message of given type.
      * @param string $type the type of flash message.
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function goFlash($type, $message, $removeAfterAccess = true)
     {
@@ -63,7 +63,7 @@ trait FlashTrait
     /**
      * Adds flash message of 'info' type.
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function info($message, $removeAfterAccess = true)
     {
@@ -73,7 +73,7 @@ trait FlashTrait
     /**
      * Alias for success().
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function ok($message, $removeAfterAccess = true)
     {
@@ -83,7 +83,7 @@ trait FlashTrait
     /**
      * Adds flash message of 'success' type.
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function success($message, $removeAfterAccess = true)
     {
@@ -93,7 +93,7 @@ trait FlashTrait
     /**
      * Adds flash message of 'warning' type.
      * @param string $message the flash message to be translated.
-     * @param boolean $removeAfterAccess message removal after access only.
+     * @param bool $removeAfterAccess message removal after access only.
      */
     public function warning($message, $removeAfterAccess = true)
     {

@@ -77,8 +77,8 @@ class BaseController extends YiiController
                 'No e-mail address has been set for your account! Go to {link} to add one.', 
                 [
                     'link' => Html::a(Yii::t('podium/view', 'Profile') 
-                                        . ' > '
-                                        . Yii::t('podium/view', 'Account Details'), ['profile/details'])
+                                . ' > '
+                                . Yii::t('podium/view', 'Account Details'), ['profile/details'])
                 ]
             ),
             'old_version' => Yii::t(
@@ -99,7 +99,7 @@ class BaseController extends YiiController
      * Performs maintenance check.
      * @param Action $action the action to be executed.
      * @param array $warnings Flash warnings
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function maintenanceCheck($action, $warnings)
@@ -128,7 +128,7 @@ class BaseController extends YiiController
     /**
      * Performs email check.
      * @param array $warnings Flash warnings
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function emailCheck($warnings)
@@ -150,7 +150,7 @@ class BaseController extends YiiController
     /**
      * Performs upgrade check.
      * @param array $warnings Flash warnings
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function upgradeCheck($warnings)
@@ -167,9 +167,9 @@ class BaseController extends YiiController
         }
         
         $result = Helper::compareVersions(
-                        explode('.', $this->module->version), 
-                        explode('.', $this->module->config->get('version'))
-                    );
+            explode('.', $this->module->version), 
+            explode('.', $this->module->config->get('version'))
+        );
         if ($result == '>') {
             $this->warning(static::warnings()['old_version'], false);
         } elseif ($result == '<') {
@@ -186,25 +186,17 @@ class BaseController extends YiiController
     public function init()
     {
         parent::init();
-        
         if (!Yii::$app->user->isGuest) {
+            $user = User::findMe();
             if ($this->module->userComponent == Podium::USER_INHERIT) {
-                $user = User::findMe();
                 if (!$user) {
-                    if (User::createInheritedAccount()) {
-                        $this->success(
-                                Yii::t(
-                                    'podium/flash', 
-                                    'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', 
-                                    ['link' => Html::a(Yii::t('podium/view', 'Profile'))]
-                                )
-                            );
-                    } else {
+                    if (!User::createInheritedAccount()) {
                         throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
                     }
+                    $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
+                        'link' => Html::a(Yii::t('podium/view', 'Profile'))
+                    ]));
                 }
-            } else {
-                $user = Yii::$app->user->identity;
             }
             if ($user && $user->status == User::STATUS_BANNED) {
                 return $this->redirect(['default/ban']);

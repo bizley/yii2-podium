@@ -18,20 +18,19 @@ use yii\helpers\Html;
  */
 class Readers extends Widget
 {
-
     /**
      * @var string section
      */
     public $what;
     
     /**
-     * @var boolean anonymous user flag.
+     * @var bool anonymous user flag.
      * @since 0.2
      */
     protected $_anon = false;
     
     /**
-     * @var boolean guest user flag.
+     * @var bool guest user flag.
      * @since 0.2
      */
     protected $_guest = true;
@@ -78,7 +77,7 @@ class Readers extends Widget
     /**
      * Returns number of anonymous users browsing given url group.
      * @param string $url
-     * @return integer
+     * @return int
      * @since 0.2
      */
     public function getAnonymousUsers($url = null)
@@ -103,7 +102,7 @@ class Readers extends Widget
     /**
      * Returns number of guest users browsing given url group.
      * @param string $url
-     * @return integer
+     * @return int
      * @since 0.2
      */
     public function getGuestUsers($url = null)
@@ -154,24 +153,24 @@ class Readers extends Widget
         $anonymous = $this->getAnonymousUsers($url);
         if ($anonymous) {
             $out .= Html::button(
-                        Yii::t(
-                            'podium/view', 
-                            '{n, plural, =1{# anonymous user} other{# anonymous users}}', 
-                            ['n' => $anonymous]
-                        ), 
-                        ['class' => 'btn btn-xs btn-default disabled']
-                    ) . ' ';
+                Yii::t(
+                    'podium/view', 
+                    '{n, plural, =1{# anonymous user} other{# anonymous users}}', 
+                    ['n' => $anonymous]
+                ), 
+                ['class' => 'btn btn-xs btn-default disabled']
+            ) . ' ';
         }
         $guests = $this->getGuestUsers($url);
         if ($guests) {
             $out .= Html::button(
-                        Yii::t(
-                            'podium/view', 
-                            '{n, plural, =1{# guest} other{# guests}}', 
-                            ['n' => $guests]
-                        ), 
-                        ['class' => 'btn btn-xs btn-default disabled']
-                    );
+                Yii::t(
+                    'podium/view', 
+                    '{n, plural, =1{# guest} other{# guests}}', 
+                    ['n' => $guests]
+                ), 
+                ['class' => 'btn btn-xs btn-default disabled']
+            );
         }
         
         return $out;

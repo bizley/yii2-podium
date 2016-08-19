@@ -47,7 +47,7 @@ class InstallController extends Controller
      * @see \bizley\podium\Module::$allowedIPs
      * This method is copied from yii2-gii module.
      * @author Qiang Xue <qiang.xue@gmail.com>
-     * @return boolean
+     * @return bool
      */
     public function checkAccess()
     {

@@ -51,7 +51,7 @@ class Thread extends ActiveRecord
     public $post;
     
     /**
-     * @var boolean thread subscription flag
+     * @var bool thread subscription flag
      */
     public $subscribe;
 
@@ -148,7 +148,7 @@ class Thread extends ActiveRecord
 
     /**
      * Posts count.
-     * @return integer
+     * @return int
      * @since 0.2
      */
     public function getPostsCount()
@@ -220,7 +220,7 @@ class Thread extends ActiveRecord
 
     /**
      * Searches for thread.
-     * @param integer $forum_id
+     * @param int $forum_id
      * @return ActiveDataProvider
      */
     public function search($forum_id = null, $filters = null)
@@ -274,7 +274,7 @@ class Thread extends ActiveRecord
     
     /**
      * Searches for threads created by user of given ID.
-     * @param integer $user_id
+     * @param int $user_id
      * @return ActiveDataProvider
      */
     public function searchByUser($user_id)
@@ -406,8 +406,8 @@ class Thread extends ActiveRecord
     
     /**
      * Checks if user is this thread's moderator.
-     * @param integer $user_id
-     * @return boolean
+     * @param int $user_id
+     * @return bool
      */
     public function isMod($user_id = null)
     {
@@ -423,11 +423,11 @@ class Thread extends ActiveRecord
     
     /**
      * Returns the verified thread.
-     * @param integer $category_id thread's category ID
-     * @param integer $forum_id thread's forum ID
-     * @param integer $id thread's ID
+     * @param int $category_id thread's category ID
+     * @param int $forum_id thread's forum ID
+     * @param int $id thread's ID
      * @param string $slug thread's slug
-     * @param boolean $guest whether caller is guest or registered user
+     * @param bool $guest whether caller is guest or registered user
      * @return Thread
      * @since 0.2
      */
@@ -468,7 +468,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread delete with parent forum counters update.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumDelete()
@@ -496,7 +496,7 @@ class Thread extends ActiveRecord
     /**
      * Performs thread posts delete with parent forum counters update.
      * @param array $posts posts IDs
-     * @return boolean
+     * @return bool
      * @throws Exception
      * @since 0.2
      */
@@ -543,7 +543,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread lock / unlock.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumLock()
@@ -563,8 +563,8 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread move with counters update.
-     * @param integer $target new parent forum's ID
-     * @return boolean
+     * @param int $target new parent forum's ID
+     * @return bool
      * @since 0.2
      */
     public function podiumMoveTo($target = null)
@@ -601,11 +601,11 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread posts move with counters update.
-     * @param integer $target new parent thread's ID
+     * @param int $target new parent thread's ID
      * @param array $posts IDs of posts to move
      * @param string $name new thread's name if $target = 0
      * @param type $forum new thread's parent forum if $target = 0
-     * @return boolean
+     * @return bool
      * @throws Exception
      * @since 0.2
      */
@@ -677,7 +677,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs new thread with first post creation and subscription.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumNew()
@@ -725,7 +725,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread pin / unpin.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function podiumPin()
@@ -740,7 +740,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs marking all unread threads as seen for user.
-     * @return boolean
+     * @return bool
      * @throws Exception
      * @since 0.2
      */

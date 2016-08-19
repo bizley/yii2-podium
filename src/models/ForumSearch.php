@@ -37,8 +37,8 @@ class ForumSearch extends Forum
 
     /**
      * Checks if User of given ID is moderator of this forum.
-     * @param integer $user_id
-     * @return boolean
+     * @param int $user_id
+     * @return bool
      */
     public function isMod($user_id = null)
     {

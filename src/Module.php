@@ -121,7 +121,7 @@ class Module extends BaseModule implements BootstrapInterface
     protected $_config;
 
     /**
-     * @var boolean Installation flag
+     * @var bool Installation flag
      */
     protected $_installed;
     
@@ -217,7 +217,7 @@ class Module extends BaseModule implements BootstrapInterface
 
     /**
      * Returns Podium installation flag.
-     * @return boolean
+     * @return bool
      */
     public function getInstalled()
     {

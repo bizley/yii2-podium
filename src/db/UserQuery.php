@@ -1,26 +1,21 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\db;
 
 use bizley\podium\Module as PodiumModule;
 use yii\db\ActiveQuery;
 
 /**
- * UserQuery
+ * ActiveQuery extended for User
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class UserQuery extends ActiveQuery
 {
-    
     /**
      * Adds proper user ID for query.
-     * @param integer $id
+     * @param int $id
      */
     public function loggedUser($id)
     {

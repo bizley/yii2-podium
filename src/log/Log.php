@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\log;
 
 use bizley\podium\models\User;
@@ -18,10 +14,9 @@ use yii\web\Application;
  */
 class Log
 {
-    
     /**
      * Returns ID of user responsible for logged action.
-     * @return integer|null
+     * @return int|null
      */
     public static function blame()
     {

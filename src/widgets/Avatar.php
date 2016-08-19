@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\widgets;
 
 use bizley\podium\components\Helper;
@@ -22,14 +18,13 @@ use yii\helpers\Html;
  */
 class Avatar extends Widget
 {
-
     /**
      * @var User|null Avatar owner.
      */
     public $author;
     
     /**
-     * @var boolean Whether user name should appear underneath the image.
+     * @var bool Whether user name should appear underneath the image.
      */
     public $showName = true;
 
@@ -43,9 +38,11 @@ class Avatar extends Widget
         if ($this->author instanceof User) {
             $meta = $this->author->meta;
             if (empty($meta)) {
-                $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->podiumName)]);
-            }
-            else {
+                $avatar = Html::img(Helper::defaultAvatar(), [
+                    'class' => 'podium-avatar img-circle img-responsive center-block', 
+                    'alt'   => Html::encode($this->author->podiumName)
+                ]);
+            } else {
                 if (!empty($meta->gravatar)) {
                     $avatar = Gravatar::widget([
                         'email'        => $this->author->email,
@@ -56,14 +53,15 @@ class Avatar extends Widget
                             'class' => 'podium-avatar img-circle img-responsive center-block',
                         ]
                     ]);
-                }
-                elseif (!empty($meta->avatar)) {
-                    $avatar = Html::img('/avatars/' . $meta->avatar, ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Html::encode($this->author->podiumName)]);
+                } elseif (!empty($meta->avatar)) {
+                    $avatar = Html::img('/avatars/' . $meta->avatar, [
+                        'class' => 'podium-avatar img-circle img-responsive center-block', 
+                        'alt'   => Html::encode($this->author->podiumName)
+                    ]);
                 }
             }
             $name = $this->showName ? $this->author->podiumTag : '';
-        }
-        else {
+        } else {
             $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'user deleted')]);
             $name   = $this->showName ? Helper::deletedUserTag(true) : '';
         }

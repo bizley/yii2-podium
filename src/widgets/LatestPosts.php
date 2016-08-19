@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\widgets;
 
 use bizley\podium\models\Post;
@@ -20,9 +16,8 @@ use yii\helpers\Html;
  */
 class LatestPosts extends Widget
 {
-
     /**
-     * @var integer number of latest posts
+     * @var int number of latest posts
      */
     public $posts = 5;
     
@@ -48,8 +43,7 @@ class LatestPosts extends Widget
                 $out .= Html::endTag('tr');
             }
             $out .= Html::endTag('table') . "\n";
-        }
-        else {
+        } else {
             $out .= Html::beginTag('div', ['class' => 'panel-body']) . "\n";
             $out .= Html::tag('small', Yii::t('podium/view', 'No posts have been added yet.')) . "\n";
             $out .= Html::endTag('div') . "\n";

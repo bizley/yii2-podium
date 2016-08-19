@@ -129,7 +129,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Finds user of given status by username or email.
      * @param string $keyfield value to compare
-     * @param integer $status
+     * @param int $status
      * @return static|null
      */
     public static function findByKeyfield($keyfield, $status = self::STATUS_ACTIVE)
@@ -262,7 +262,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Finds out if activation token is valid.
      * @param string $token activation token
-     * @return boolean
+     * @return bool
      */
     public static function isActivationTokenValid($token)
     {
@@ -276,7 +276,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Finds out if email token is valid.
      * @param string $token activation token
-     * @return boolean
+     * @return bool
      */
     public static function isEmailTokenValid($token)
     {
@@ -290,7 +290,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Finds out if password reset token is valid.
      * @param string $token password reset token
-     * @return boolean
+     * @return bool
      */
     public static function isPasswordResetTokenValid($token)
     {
@@ -304,8 +304,8 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Finds out if given token type is valid.
      * @param string $token activation token
-     * @param integer $expire expire time
-     * @return boolean
+     * @param int $expire expire time
+     * @return bool
      */
     public static function isTokenValid($token, $expire)
     {
@@ -377,7 +377,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
      * password hash stored in Yii::$app->user->identity so this method should 
      * not be used with User instance other than currently logged in one.
      * @param string $password password to validate
-     * @return boolean if password provided is valid for current user
+     * @return bool if password provided is valid for current user
      */
     public function validatePassword($password)
     {

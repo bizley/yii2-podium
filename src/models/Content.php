@@ -100,7 +100,7 @@ class Content extends ActiveRecord
     /**
      * Returns default content object.
      * @param string $name content's name
-     * @return boolean|Content
+     * @return bool|Content
      * @since 0.2
      */
     public static function prepareDefault($name)

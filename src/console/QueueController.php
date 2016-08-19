@@ -38,7 +38,7 @@ class QueueController extends Controller
     public $defaultAction = 'run';
 
     /**
-     * @var integer the limit of emails sent in one batch (default 100).
+     * @var int the limit of emails sent in one batch (default 100).
      */
     public $limit = self::DEFAULT_BATCH_LIMIT;
     
@@ -59,16 +59,13 @@ class QueueController extends Controller
      */
     public function options($actionID)
     {
-        return array_merge(
-            parent::options($actionID),
-            ['queueTable', 'db', 'mailer']
-        );
+        return array_merge(parent::options($actionID), ['queueTable', 'db', 'mailer']);
     }
     
     /**
      * Checks the existence of the db and mailer components.
      * @param Action $action the action to be executed.
-     * @return boolean whether the action should continue to be executed.
+     * @return bool whether the action should continue to be executed.
      */
     public function beforeAction($action)
     {
@@ -86,7 +83,7 @@ class QueueController extends Controller
 
     /**
      * Returns new batch of emails.
-     * @param integer $limit maximum number of rows in batch
+     * @param int $limit maximum number of rows in batch
      * @return array
      */
     public function getNewBatch($limit = 0)
@@ -111,7 +108,7 @@ class QueueController extends Controller
      * @param string $email
      * @param string $fromName
      * @param string $fromEmail
-     * @return boolean
+     * @return bool
      */
     public function send($email, $fromName, $fromEmail)
     {
@@ -121,15 +118,11 @@ class QueueController extends Controller
             $mailer->setTo($email['email']);
             $mailer->setSubject($email['subject']);
             $mailer->setHtmlBody($email['content']);
-            $mailer->setTextBody(
-                strip_tags(
-                    str_replace(
-                        ['<br>', '<br/>', '<br />', '</p>'], 
-                        "\n", 
-                        $email['content']
-                    )
-                )
-            );
+            $mailer->setTextBody(strip_tags(str_replace(
+                ['<br>', '<br/>', '<br />', '</p>'], 
+                "\n", 
+                $email['content']
+            )));
             return $mailer->send();
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
@@ -141,8 +134,8 @@ class QueueController extends Controller
      * @param string $email
      * @param string $fromName
      * @param string $fromEmail
-     * @param integer $maxAttempts
-     * @return boolean
+     * @param int $maxAttempts
+     * @return bool
      */
     public function process($email, $fromName, $fromEmail, $maxAttempts)
     {
@@ -190,8 +183,8 @@ class QueueController extends Controller
 
     /**
      * Runs the queue.
-     * @param integer $limit
-     * @return integer|void
+     * @param int $limit
+     * @return int|void
      */
     public function actionRun($limit = 0)
     {
@@ -230,6 +223,7 @@ class QueueController extends Controller
         } else {
             $this->stdout("\nBatch sent successfully.\n\n", Console::FG_GREEN);
         }
+        return self::EXIT_CODE_NORMAL;
     }
     
     /**
@@ -264,5 +258,6 @@ class QueueController extends Controller
         $this->stdout(" sent    | $showSent\n");
         $this->stdout(" stucked | $showGaveup\n");
         $this->stdout("------------------------------\n\n");
+        return self::EXIT_CODE_NORMAL;
     }
 }

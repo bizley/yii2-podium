@@ -41,6 +41,11 @@ class User extends BaseUser
     
     const DEFAULT_TIMEZONE = 'UTC';
     
+    const RESP_ERR = 0;
+    const RESP_OK = 1;
+    const RESP_EMAIL_SEND_ERR = 2;
+    const RESP_NO_EMAIL_ERR = 3;
+    
     /**
      * @var string Captcha.
      */
@@ -152,7 +157,7 @@ class User extends BaseUser
     
     /**
      * Activates account.
-     * @return boolean
+     * @return bool
      */
     public function activate()
     {
@@ -177,7 +182,7 @@ class User extends BaseUser
     
     /**
      * Changes email address.
-     * @return boolean
+     * @return bool
      */
     public function changeEmail()
     {
@@ -189,7 +194,7 @@ class User extends BaseUser
     
     /**
      * Changes password.
-     * @return boolean
+     * @return bool
      */
     public function changePassword()
     {
@@ -201,7 +206,7 @@ class User extends BaseUser
     
     /**
      * Returns number of new user messages.
-     * @return integer
+     * @return int
      */
     public function getNewMessagesCount()
     {
@@ -228,7 +233,7 @@ class User extends BaseUser
     
     /**
      * Returns Podium name tag.
-     * @param boolean $simple
+     * @param bool $simple
      * @return string
      */
     public function getPodiumTag($simple = false)
@@ -247,7 +252,7 @@ class User extends BaseUser
     
     /**
      * Returns number of active posts added by user.
-     * @return integer
+     * @return int
      */
     public function getPostsCount()
     {
@@ -256,8 +261,8 @@ class User extends BaseUser
     
     /**
      * Returns number of active posts added by user of given ID.
-     * @param integer $id
-     * @return integer
+     * @param int $id
+     * @return int
      */
     public static function findPostsCount($id)
     {
@@ -272,7 +277,7 @@ class User extends BaseUser
     
     /**
      * Returns number of active threads added by user.
-     * @return integer
+     * @return int
      */
     public function getThreadsCount()
     {
@@ -281,8 +286,8 @@ class User extends BaseUser
     
     /**
      * Returns number of active threads added by user of given ID.
-     * @param integer $id
-     * @return integer
+     * @param int $id
+     * @return int
      */
     public static function findThreadsCount($id)
     {
@@ -335,7 +340,7 @@ class User extends BaseUser
     
     /**
      * Returns number of user subscribed threads with new posts.
-     * @return integer
+     * @return int
      */
     public function getSubscriptionsCount()
     {
@@ -353,8 +358,8 @@ class User extends BaseUser
     
     /**
      * Finds out if user is befriended by another.
-     * @param integer $user_id user ID
-     * @return boolean
+     * @param int $user_id user ID
+     * @return bool
      * @since 0.2
      */
     public function isBefriendedBy($user_id)
@@ -370,8 +375,8 @@ class User extends BaseUser
     
     /**
      * Finds out if user is befriending another.
-     * @param integer $user_id user ID
-     * @return boolean
+     * @param int $user_id user ID
+     * @return bool
      * @since 0.2
      */
     public function isFriendOf($user_id)
@@ -387,8 +392,8 @@ class User extends BaseUser
     
     /**
      * Finds out if user is ignored by another.
-     * @param integer $user_id user ID
-     * @return boolean
+     * @param int $user_id user ID
+     * @return bool
      */
     public function isIgnoredBy($user_id)
     {
@@ -403,8 +408,8 @@ class User extends BaseUser
     
     /**
      * Finds out if user is ignoring another.
-     * @param integer $user_id user ID
-     * @return boolean
+     * @param int $user_id user ID
+     * @return bool
      */
     public function isIgnoring($user_id)
     {
@@ -419,7 +424,7 @@ class User extends BaseUser
     
     /**
      * Returns ID of current logged user.
-     * @return integer
+     * @return int
      */
     public static function loggedId()
     {
@@ -440,7 +445,7 @@ class User extends BaseUser
 
     /**
      * Bans account.
-     * @return boolean
+     * @return bool
      */
     public function ban()
     {
@@ -451,8 +456,8 @@ class User extends BaseUser
     
     /**
      * Demotes user to given role.
-     * @param integer $role
-     * @return boolean
+     * @param int $role
+     * @return bool
      */
     public function demoteTo($role)
     {
@@ -481,8 +486,8 @@ class User extends BaseUser
     
     /**
      * Promotes user to given role.
-     * @param integer $role
-     * @return boolean
+     * @param int $role
+     * @return bool
      */
     public function promoteTo($role)
     {
@@ -510,7 +515,7 @@ class User extends BaseUser
     
     /**
      * Unbans account.
-     * @return boolean
+     * @return bool
      */
     public function unban()
     {
@@ -521,7 +526,7 @@ class User extends BaseUser
     
     /**
      * Registers new account.
-     * @return boolean
+     * @return int
      */
     public function register()
     {
@@ -529,12 +534,22 @@ class User extends BaseUser
         $this->generateActivationToken();
         $this->generateAuthKey();
         $this->status = self::STATUS_REGISTERED;
-        return $this->save();
+        
+        if ($this->save()) {
+            if ($this->email) {
+                if ($this->sendActivationEmail()) {
+                    return self::RESP_OK;
+                }
+                return self::RESP_EMAIL_SEND_ERR;
+            }
+            return self::RESP_NO_EMAIL_ERR;
+        }        
+        return self::RESP_ERR;
     }
     
     /**
      * Saves user account details changes.
-     * @return boolean
+     * @return bool
      */
     public function saveChanges()
     {
@@ -560,13 +575,13 @@ class User extends BaseUser
      * @param array $params name-value pairs that would be passed to the rules associated
      * with the roles and permissions assigned to the user. A param with name 'user' is added to
      * this array, which holds the value of [[id]].
-     * @param boolean $allowCaching whether to allow caching the result of access check.
+     * @param bool $allowCaching whether to allow caching the result of access check.
      * When this parameter is true (default), if the access check of an operation was performed
      * before, its result will be directly returned when calling this method to check the same
      * operation. If this parameter is false, this method will always call
      * [[\yii\rbac\ManagerInterface::checkAccess()]] to obtain the up-to-date access result. Note that this
      * caching is effective only within the same request and only works when `$params = []`.
-     * @return boolean whether the user can perform the operation as specified by the given permission.
+     * @return bool whether the user can perform the operation as specified by the given permission.
      */
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
@@ -613,8 +628,8 @@ class User extends BaseUser
     
     /**
      * Updates moderator assignment for given forum.
-     * @param integer $forum_id forum's ID
-     * @return boolean
+     * @param int $forum_id forum's ID
+     * @return bool
      * @since 0.2
      */
     public function updateModeratorForOne($forum_id = null)
@@ -647,7 +662,7 @@ class User extends BaseUser
      * Updates moderator assignment for given forums.
      * @param array $newForums new assigned forums' IDs
      * @param array $oldForums old assigned forums' IDs
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function updateModeratorForMany($newForums = [], $oldForums = [])
@@ -691,25 +706,25 @@ class User extends BaseUser
     
     /**
      * Creates inherited account.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public static function createInheritedAccount()
     {
         try {
             if (!Yii::$app->user->isGuest) {
-                $new = new User;
-                $new->setScenario('installation');
-                $new->inherited_id = Yii::$app->user->id;
-                $new->status       = self::STATUS_ACTIVE;
-                $new->role         = self::ROLE_MEMBER;
-                $new->timezone     = self::DEFAULT_TIMEZONE;
-                if (!$new->save()) {
+                $newUser = new User;
+                $newUser->setScenario('installation');
+                $newUser->inherited_id = Yii::$app->user->id;
+                $newUser->status       = self::STATUS_ACTIVE;
+                $newUser->role         = self::ROLE_MEMBER;
+                $newUser->timezone     = self::DEFAULT_TIMEZONE;
+                if (!$newUser->save()) {
                     throw new Exception('Account creating error');
                 }
-                Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $new->id);
+                Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $newUser->id);
                 Cache::clearAfter('activate');
-                Log::info('Inherited account created', $new->id, __METHOD__);
+                Log::info('Inherited account created', $newUser->id, __METHOD__);
                 return true;
             }
         } catch (Exception $e) {
@@ -768,7 +783,7 @@ class User extends BaseUser
     
     /**
      * Updates ignore status for the user.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function updateIgnore()
@@ -794,7 +809,7 @@ class User extends BaseUser
     
     /**
      * Updates friend status for the user.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function updateFriend()
@@ -815,6 +830,28 @@ class User extends BaseUser
             return true;
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Sends activation email.
+     * @return bool
+     * @since 0.2
+     */
+    protected function sendActivationEmail()
+    {
+        $forum = Podium::getInstance()->config->get('name');
+        $email = Content::fill(Content::EMAIL_REGISTRATION);
+        if ($email !== false) {
+            $link = Url::to(['account/activate', 'token' => $this->activation_token], true);
+            return Email::queue(
+                $this->email, 
+                str_replace('{forum}', $forum, $email->topic),
+                str_replace('{forum}', $forum, str_replace('{link}', 
+                    Html::a($link, $link), $email->content)), 
+                !empty($this->id) ? $this->id : null
+            );
         }
         return false;
     }

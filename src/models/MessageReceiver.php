@@ -116,7 +116,7 @@ class MessageReceiver extends ActiveRecord
     
     /**
      * Removes message.
-     * @return boolean
+     * @return bool
      */
     public function remove()
     {

@@ -40,7 +40,7 @@ class RbacController extends Controller
      * This method is invoked right before an action is to be executed (after all possible filters.)
      * It checks the existence of the authManager components.
      * @param \yii\base\Action $action the action to be executed.
-     * @return boolean whether the action should continue to be executed.
+     * @return bool whether the action should continue to be executed.
      */
     public function beforeAction($action)
     {
@@ -57,7 +57,7 @@ class RbacController extends Controller
 
     /**
      * Adds RBAC rules.
-     * @return integer|void
+     * @return int|void
      */
     public function actionIndex()
     {
@@ -78,9 +78,11 @@ class RbacController extends Controller
             } else {
                 $this->stdout("RBAC rules have not been added.\n");
             }
+            return self::EXIT_CODE_NORMAL;
         } catch (Exception $e) {
             $this->stderr("ERROR: " . $e->getMessage() . "\n");
         }
+        return self::EXIT_CODE_ERROR;
     }
     
     /**

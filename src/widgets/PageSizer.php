@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\widgets;
 
 use Yii;
@@ -19,7 +15,6 @@ use yii\helpers\Html;
  */
 class PageSizer extends Widget
 {
-
     /**
      * @var array List of page sizes
      */
@@ -44,20 +39,11 @@ class PageSizer extends Widget
         
         Yii::$app->session->set('per-page', $size);
         
-        return Html::tag(
-                'div', 
-                Html::tag(
-                        'div', 
-                        Html::label(Yii::t('podium/view', 'Results per page'), 'per-page') . ' ' . 
-                        Html::dropDownList(
-                                'per-page', 
-                                $size, 
-                                $this->pageSizes, 
-                                ['class' => 'form-control input-sm', 'id' => 'per-page']
-                            ), 
-                        ['class' => 'form-group']
-                    ), 
-                ['class' => 'pull-right form-inline']
-            ) . '<br><br>';
+        return Html::tag('div', Html::tag('div', 
+            Html::label(Yii::t('podium/view', 'Results per page'), 'per-page') 
+            . ' ' 
+            . Html::dropDownList('per-page', $size, $this->pageSizes, ['class' => 'form-control input-sm', 'id' => 'per-page']), 
+            ['class' => 'form-group']
+        ), ['class' => 'pull-right form-inline']) . '<br><br>';
     }
 }

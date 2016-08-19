@@ -59,7 +59,7 @@ class ConfigForm extends Model
     /**
      * Updates the value of setting.
      * @param string[] $data
-     * @return boolean
+     * @return bool
      */
     public function update($data)
     {

@@ -97,7 +97,7 @@ class Forum extends ActiveRecord
     
     /**
      * Returns list of moderators for this forum.
-     * @return integer[]
+     * @return int[]
      */
     public function getMods()
     {
@@ -123,8 +123,8 @@ class Forum extends ActiveRecord
     
     /**
      * Checks if user is moderator for this forum.
-     * @param integer|null $user_id User's ID or null for current signed in.
-     * @return boolean
+     * @param int|null $user_id User's ID or null for current signed in.
+     * @return bool
      */
     public function isMod($user_id = null)
     {
@@ -136,7 +136,7 @@ class Forum extends ActiveRecord
     
     /**
      * Searches forums.
-     * @param integer|null $category_id
+     * @param int|null $category_id
      * @return ActiveDataProvider
      */
     public function search($category_id = null, $onlyVisible = false)
@@ -160,10 +160,10 @@ class Forum extends ActiveRecord
     
     /**
      * Returns the verified forum.
-     * @param integer $category_id forum's category ID
-     * @param integer $id forum's ID
+     * @param int $category_id forum's category ID
+     * @param int $id forum's ID
      * @param string $slug forum's slug
-     * @param boolean $guest whether caller is guest or registered user
+     * @param bool $guest whether caller is guest or registered user
      * @return Thread
      * @since 0.2
      */
@@ -186,8 +186,8 @@ class Forum extends ActiveRecord
     
     /**
      * Sets new forums order.
-     * @param integer $order new forum sorting order number
-     * @return boolean
+     * @param int $order new forum sorting order number
+     * @return bool
      * @throws Exception
      * @since 0.2
      */

@@ -59,14 +59,14 @@ class Activity extends ActiveRecord
      * Adds guest activity.
      * @param string $ip
      * @param string $url
-     * @return boolean
+     * @return bool
      */
     protected static function _addGuest($ip, $url)
     {
         $activity = self::find()
-                        ->where(['ip' => $ip, 'user_id' => null])
-                        ->limit(1)
-                        ->one();
+                    ->where(['ip' => $ip, 'user_id' => null])
+                    ->limit(1)
+                    ->one();
         if ($activity) {
             $activity->url = $url;
         } else {
@@ -81,16 +81,16 @@ class Activity extends ActiveRecord
      * Adds registered user activity.
      * @param string $ip
      * @param string $url
-     * @return boolean
+     * @return bool
      */
     protected static function _addUser($ip, $url)
     {
         $user = User::findMe();
         if ($user) {
             $activity = self::find()
-                            ->where(['user_id' => $user->id])
-                            ->limit(1)
-                            ->one();
+                        ->where(['user_id' => $user->id])
+                        ->limit(1)
+                        ->one();
             if (!$activity) {
                 $activity = new Activity;
                 $activity->user_id = $user->id;
@@ -110,7 +110,7 @@ class Activity extends ActiveRecord
 
     /**
      * Adds user activity.
-     * @return boolean
+     * @return bool
      */
     public static function add()
     {
@@ -130,10 +130,10 @@ class Activity extends ActiveRecord
             
             if ($result) {
                 return true;
-            } else {
-                Log::error('Cannot log user activity', null, __METHOD__);
-                return false;
             }
+            
+            Log::error('Cannot log user activity', null, __METHOD__);
+            return false;
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -141,7 +141,7 @@ class Activity extends ActiveRecord
     
     /**
      * Deletes user activity.
-     * @param integer $id
+     * @param int $id
      */
     public static function deleteUser($id)
     {
@@ -155,7 +155,7 @@ class Activity extends ActiveRecord
     
     /**
      * Updates username after change.
-     * @param integer $id
+     * @param int $id
      * @param string $username
      * @param string $slug
      */
@@ -177,8 +177,8 @@ class Activity extends ActiveRecord
     
     /**
      * Updates role after change.
-     * @param integer $id
-     * @param integer $role
+     * @param int $id
+     * @param int $role
      */
     public static function updateRole($id, $role)
     {
@@ -253,7 +253,7 @@ class Activity extends ActiveRecord
     
     /**
      * Counts number of registered users.
-     * @return integer
+     * @return int
      */
     public static function totalMembers()
     {
@@ -269,7 +269,7 @@ class Activity extends ActiveRecord
     
     /**
      * Counts number of created posts.
-     * @return integer
+     * @return int
      */
     public static function totalPosts()
     {
@@ -283,7 +283,7 @@ class Activity extends ActiveRecord
     
     /**
      * Counts number of created threads.
-     * @return integer
+     * @return int
      */
     public static function totalThreads()
     {

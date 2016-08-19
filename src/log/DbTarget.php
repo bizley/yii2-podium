@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\log;
 
 use yii\log\DbTarget as YiiDbTarget;
@@ -38,8 +34,7 @@ class DbTarget extends YiiDbTarget
                 if (isset($text['msg'])) {
                     if (!is_string($text['msg'])) {
                         $extracted['msg'] = VarDumper::export($text['msg']);
-                    }
-                    else {
+                    } else {
                         $extracted['msg'] = $text['msg'];
                     }
                 }
@@ -49,11 +44,9 @@ class DbTarget extends YiiDbTarget
                 if (isset($text['blame'])) {
                     $extracted['blame'] = $text['blame'];
                 }
-            }
-            elseif (is_string($text)) {
+            } elseif (is_string($text)) {
                 $extracted['msg'] = $text;
-            }
-            else {
+            } else {
                 $extracted['msg'] = VarDumper::export($text);
             }
             $command->bindValues([

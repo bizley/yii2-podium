@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\controllers;
 
 use bizley\podium\models\User;
@@ -21,7 +17,6 @@ use yii\web\Response;
  */
 class MembersController extends BaseController
 {
-
     /**
      * @inheritdoc
      */
@@ -66,13 +61,12 @@ class MembersController extends BaseController
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(['default/index']);
         }
-            
         return User::getMembersList($q);
     }
     
     /**
      * Ignoring the user of given ID.
-     * @param integer $id
+     * @param int $id
      * @return Response
      */
     public function actionIgnore($id = null)
@@ -101,12 +95,10 @@ class MembersController extends BaseController
         if ($model->updateIgnore()) {
             if ($model->isIgnoredBy(User::loggedId())) {
                 $this->success(Yii::t('podium/flash', 'User is now ignored.'));
-            }
-            else {
+            } else {
                 $this->success(Yii::t('podium/flash', 'User is not ignored anymore.'));
             }
-        }
-        else {
+        } else {
             $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
         }
         
@@ -120,7 +112,6 @@ class MembersController extends BaseController
     public function actionIndex()
     {
         $searchModel  = new UserSearch;
-        
         return $this->render('index', [
                 'dataProvider' => $searchModel->search(Yii::$app->request->get(), true),
                 'searchModel'  => $searchModel
@@ -134,7 +125,6 @@ class MembersController extends BaseController
     public function actionMods()
     {
         $searchModel  = new UserSearch;
-        
         return $this->render('mods', [
                 'dataProvider' => $searchModel->search(Yii::$app->request->get(), true, true),
                 'searchModel'  => $searchModel
@@ -143,7 +133,7 @@ class MembersController extends BaseController
     
     /**
      * Listing posts created by user of given ID and slug.
-     * @param integer $id
+     * @param int $id
      * @param string $slug
      * @return string|Response
      */
@@ -166,7 +156,7 @@ class MembersController extends BaseController
     
     /**
      * Listing threads started by user of given ID and slug.
-     * @param integer $id
+     * @param int $id
      * @param string $slug
      * @return string|Response
      */
@@ -189,7 +179,7 @@ class MembersController extends BaseController
     
     /**
      * Viewing profile of user of given ID and slug.
-     * @param integer $id
+     * @param int $id
      * @param string $slug
      * @return string|Response
      */
@@ -207,7 +197,7 @@ class MembersController extends BaseController
     
     /**
      * Adding or removing user as a friend.
-     * @param integer $id user ID
+     * @param int $id user ID
      * @return Response
      * @since 0.2
      */
@@ -232,12 +222,10 @@ class MembersController extends BaseController
         if ($model->updateFriend()) {
             if ($model->isBefriendedBy(User::loggedId())) {
                 $this->success(Yii::t('podium/flash', 'User is your friend now.'));
-            }
-            else {
+            } else {
                 $this->success(Yii::t('podium/flash', 'User is not your friend anymore.'));
             }
-        }
-        else {
+        } else {
             $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
         }
         

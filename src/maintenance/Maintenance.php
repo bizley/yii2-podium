@@ -46,7 +46,7 @@ class Maintenance extends Component
     public $db = 'db';
 
     /**
-     * @var boolean error flag.
+     * @var bool error flag.
      */
     protected $_type = self::TYPE_SUCCESS;
     
@@ -203,9 +203,9 @@ class Maintenance extends Component
     /**
      * Returns percent.
      * Clears cache at 100.
-     * @param integer $currentStep
-     * @param integer $maxStep
-     * @return integer
+     * @param int $currentStep
+     * @param int $maxStep
+     * @return int
      * @since 0.2
      */
     public function countPercent($currentStep, $maxStep)
@@ -419,7 +419,7 @@ class Maintenance extends Component
     /**
      * Checks if Post database table exists.
      * This is taken as verification of Podium installation.
-     * @return boolean whether Post database table exists.
+     * @return bool whether Post database table exists.
      */
     public static function check()
     {
@@ -435,7 +435,7 @@ class Maintenance extends Component
     
     /**
      * Returns result type flag.
-     * @return integer
+     * @return int
      * @since 0.2
      */
     public function getType()
@@ -476,7 +476,7 @@ class Maintenance extends Component
     
     /**
      * Returns table name.
-     * @param boolean $raw whether return raw name
+     * @param bool $raw whether return raw name
      * @return string
      */
     public function getTable($raw = false)
@@ -531,7 +531,7 @@ class Maintenance extends Component
     
     /**
      * Sets result type flag.
-     * @param integer $value
+     * @param int $value
      * @since 0.2
      */
     public function setType($value)

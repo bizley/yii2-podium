@@ -78,9 +78,9 @@ class Cache extends Object
      * }
      * @param string $key the key identifying the content to be cached.
      * @param View $view view object
-     * @param integer $duration number of seconds that the data can remain valid in cache.
+     * @param int $duration number of seconds that the data can remain valid in cache.
      * Use 0 to indicate that the cached data will never expire.
-     * @return boolean
+     * @return bool
      * @since 0.2
      */
     public function begin($key, $view, $duration = 60)
@@ -141,7 +141,7 @@ class Cache extends Object
     /**
      * Deletes the value with the specified key from cache
      * @param string $key the key identifying the value to be deleted from cache.
-     * @return boolean
+     * @return bool
      */
     public function delete($key)
     {
@@ -152,7 +152,7 @@ class Cache extends Object
      * Deletes the value of element with the specified key from cache array.
      * @param string $key a key identifying the value to be deleted from cache.
      * @param string $element a key of the element.
-     * @return boolean
+     * @return bool
      */
     public function deleteElement($key, $element)
     {
@@ -211,8 +211,8 @@ class Cache extends Object
      * Stores the value identified by the key into cache.
      * @param string $key the key identifying the value to be cached.
      * @param mixed $value the value to be cached
-     * @param integer $duration the number of seconds in which the cached value will expire. 0 means never expire.
-     * @return boolean
+     * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
+     * @return bool
      */
     public function set($key, $value, $duration = 0)
     {
@@ -224,8 +224,8 @@ class Cache extends Object
      * @param string $key the key identifying the value to be cached.
      * @param string $element the key of the element.
      * @param mixed $value the value to be cached
-     * @param integer $duration the number of seconds in which the cached value will expire. 0 means never expire.
-     * @return boolean
+     * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
+     * @return bool
      */
     public function setElement($key, $element, $value, $duration = 0)
     {
