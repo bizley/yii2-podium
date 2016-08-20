@@ -90,10 +90,9 @@ class Content extends ActiveRecord
         if (empty($name)) {
             return $defaults;
         }
-        elseif (!empty($defaults[$name])) {
+        if (!empty($defaults[$name])) {
             return $defaults[$name];
         }        
-        
         return null;
     }
 

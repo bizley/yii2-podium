@@ -37,7 +37,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
         </div>
     </div>
     <div class="col-sm-9">
-        <div class="panel panel-info">
+        <div class="panel panel-info table-responsive">
             <div class="panel-heading"><?= Yii::t('podium/view', 'Newest posts') ?></div>
             <table class="table">
                 <thead>

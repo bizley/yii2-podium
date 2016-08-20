@@ -32,27 +32,73 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php if (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])): ?>
 <div class="row">
     <div class="col-sm-12">
-        <div class="panel panel-primary">
+        <div class="panel panel-info">
             <div class="panel-heading">
                 <ul class="list-inline">
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
 <?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>                    
-                    <li><a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pushpin"></span> <?= $thread->pinned ? Yii::t('podium/view', 'Unpin Thread') : Yii::t('podium/view', 'Pin Thread') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-pushpin"></span>
+                            <?php if ($thread->pinned): ?>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Unpin Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Unpin') ?></span>
+                            <?php else: ?>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Pin Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Pin') ?></span>
+                            <?php endif ?>
+                        </a>
+                    </li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-lock"></span> <?= $thread->locked ? Yii::t('podium/view', 'Unlock Thread') : Yii::t('podium/view', 'Lock Thread') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-lock"></span>
+                            <?php if ($thread->locked): ?>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Unlock Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Unlock') ?></span>
+                            <?php else: ?>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Lock Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Lock') ?></span>
+                            <?php endif ?>
+                        </a>
+                    </li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-share-alt"></span> <?= Yii::t('podium/view', 'Move Thread') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-share-alt"></span>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move T') ?></span>
+                        </a>
+                    </li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-trash"></span> <?= Yii::t('podium/view', 'Delete Thread') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-trash"></span>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Delete Thread') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Delete T') ?></span>
+                        </a>
+                    </li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_POST, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-random"></span> <?= Yii::t('podium/view', 'Move Posts') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-random"></span>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Posts') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move P') ?></span>
+                        </a>
+                    </li>
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_POST, ['item' => $thread])): ?>
-                    <li><a href="<?= Url::to(['default/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span> <?= Yii::t('podium/view', 'Delete Posts') ?></a></li>
+                    <li>
+                        <a href="<?= Url::to(['default/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Delete Posts') ?></span>
+                            <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Delete P') ?></span>
+                        </a>
+                    </li>
 <?php endif; ?>
                 </ul>
             </div>
@@ -143,10 +189,14 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-8">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Post Quick Reply'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <div class="form-group">
+                                <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Post Quick Reply'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            </div>
                         </div>
                         <div class="col-sm-4">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']) ?>
+                            <div class="form-group">
+                                <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']) ?>
+                            </div>
                         </div>
                     </div>
                 <?php ActiveForm::end(); ?>

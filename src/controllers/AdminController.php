@@ -136,7 +136,7 @@ class AdminController extends BaseController
      */
     public function actionContents($name = '')
     {
-        if (empty(Content::defaultContent($name))) {
+        if (empty($name)) {
             $name = Content::TERMS_AND_CONDS;
         }
         
