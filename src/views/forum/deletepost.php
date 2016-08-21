@@ -10,10 +10,10 @@
 use yii\helpers\Html;
 
 $this->title = Yii::t('podium/view', 'Delete Post');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->forum->category->name, 'url' => ['default/category', 'id' => $model->forum->category->id, 'slug' => $model->forum->category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $model->forum->name, 'url' => ['default/forum', 'cid' => $model->forum->category->id, 'id' => $model->forum->id, 'slug' => $model->forum->slug]];
-$this->params['breadcrumbs'][] = ['label' => $model->thread->name, 'url' => ['default/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->thread->id, 'slug' => $model->thread->slug]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
+$this->params['breadcrumbs'][] = ['label' => $model->forum->category->name, 'url' => ['forum/category', 'id' => $model->forum->category->id, 'slug' => $model->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $model->forum->name, 'url' => ['forum/forum', 'cid' => $model->forum->category->id, 'id' => $model->forum->id, 'slug' => $model->forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $model->thread->name, 'url' => ['forum/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->thread->id, 'slug' => $model->thread->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Delete Post'), ['class' => 'btn btn-block btn-danger', 'name' => 'delete-button']) ?>
                         </div>
                         <div class="col-sm-6">
-                            <?= Html::a('<span class="glyphicon glyphicon-remove"></span> ' . Yii::t('podium/view', 'Cancel'), ['default/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->thread->id, 'slug' => $model->thread->slug], ['class' => 'btn btn-block btn-default', 'name' => 'cancel-button']) ?>
+                            <?= Html::a('<span class="glyphicon glyphicon-remove"></span> ' . Yii::t('podium/view', 'Cancel'), ['forum/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->thread->id, 'slug' => $model->thread->slug], ['class' => 'btn btn-block btn-default', 'name' => 'cancel-button']) ?>
                         </div>
                     </div>
                 </div>

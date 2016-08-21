@@ -96,7 +96,7 @@ JS
     </div>
     <div class="row hide" id="installationFinished">
         <div class="text-center col-sm-12">
-            <a href="<?= Url::to(['default/index']) ?>" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Installation finished') ?></a>
+            <a href="<?= Url::to(['forum/index']) ?>" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-ok-sign"></span> <?= Yii::t('podium/view', 'Installation finished') ?></a>
         </div>
     </div>
     <div class="row hide" id="installationFinishedError">

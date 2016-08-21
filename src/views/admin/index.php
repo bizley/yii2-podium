@@ -52,7 +52,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <tbody>
 <?php foreach ($posts as $post): ?>
                     <tr>
-                        <td><a href="<?= Url::to(['default/show', 'id' => $post->id]) ?>"><?= Html::encode($post->thread->name) ?></a></td>
+                        <td><a href="<?= Url::to(['forum/show', 'id' => $post->id]) ?>"><?= Html::encode($post->thread->name) ?></a></td>
                         <td><span data-toggle="popover" data-container="body" data-placement="right" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($post->content, 20, '...', true)) ?></small>" title="<?= Yii::t('podium/view', 'Post Preview') ?>"><span class="glyphicon glyphicon-leaf"></span></span></td>
                         <td><a href="<?= Url::to(['admin/view', 'id' => $post->author->id]) ?>"><?= $post->author->podiumName ?></a></td>
                         <td><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDateTime($post->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($post->created_at) ?></span></td>

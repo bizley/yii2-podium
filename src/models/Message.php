@@ -371,7 +371,7 @@ class Message extends ActiveRecord
                         User::loggedId(), $mod, 
                         Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
                         $this->content . '<hr>' . 
-                            Html::a(Yii::t('podium/view', 'Direct link to this post'), ['default/show', 'id' => $post->id]) . '<hr>' .
+                            Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) . '<hr>' .
                             '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><div class="blockquote">' . $post->content . '</div>',
                         Message::STATUS_REMOVED, Message::STATUS_NEW, time(), time(),
                     ];

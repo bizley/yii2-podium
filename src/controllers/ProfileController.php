@@ -27,7 +27,6 @@ use yii\web\UploadedFile;
  */
 class ProfileController extends BaseController
 {
-
     /**
      * @inheritdoc
      */
@@ -65,14 +64,13 @@ class ProfileController extends BaseController
     public function actionDetails()
     {
         $model = User::findMe();
-        
         if (empty($model)) {
             return $this->redirect(['account/login']);
         }
 
-        $model->scenario         = PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT ? 'accountInherit' : 'account';
+        $model->scenario = PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT ? 'accountInherit' : 'account';
         $model->current_password = null;
-        $previous_new_email      = $model->new_email;
+        $previous_new_email = $model->new_email;
         
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
@@ -103,9 +101,7 @@ class ProfileController extends BaseController
                 }
             }
         }
-        
         $model->current_password = null;
-
         return $this->render('details', ['model' => $model]);
     }
     
@@ -116,16 +112,14 @@ class ProfileController extends BaseController
     public function actionForum()
     {
         $model = Meta::find()->where(['user_id' => User::loggedId()])->limit(1)->one();
-        
         if (empty($model)) {
             $model = new Meta;
         }
         
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = User::loggedId();
-            $uploadAvatar   = false;
-            $path           = Yii::getAlias('@webroot/avatars');
-            
+            $uploadAvatar = false;
+            $path = Yii::getAlias('@webroot/avatars');
             $avatar = UploadedFile::getInstance($model, 'image');
             if ($avatar) {
                 $folderExists = true;
@@ -146,7 +140,6 @@ class ProfileController extends BaseController
                     $uploadAvatar = true;
                 }
             }
-            
             if ($model->save()) {
                 if ($uploadAvatar) {
                     if (!$avatar->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
@@ -159,10 +152,9 @@ class ProfileController extends BaseController
                 return $this->refresh();
             }
         }
-
         return $this->render('forum', [
-                'model' => $model,
-                'user'  => User::findMe()
+            'model' => $model,
+            'user'  => User::findMe()
         ]);
     }
 
@@ -173,14 +165,12 @@ class ProfileController extends BaseController
     public function actionIndex()
     {
         $model = User::findMe();
-
         if (empty($model)) {
             if ($this->module->userComponent == PodiumModule::USER_OWN) {
                 return $this->redirect(['account/login']);
             }
             return $this->module->goPodium();
         }
-
         return $this->render('profile', ['model' => $model]);
     }
     
@@ -209,8 +199,9 @@ class ProfileController extends BaseController
             }
             return $this->refresh();
         }
-        
-        return $this->render('subscriptions', ['dataProvider' => (new Subscription)->search(Yii::$app->request->get())]);
+        return $this->render('subscriptions', [
+            'dataProvider' => (new Subscription)->search(Yii::$app->request->get())
+        ]);
     }
     
     /**
@@ -221,7 +212,6 @@ class ProfileController extends BaseController
     public function actionMark($id = null)
     {
         $model = Subscription::find()->where(['id' => $id, 'user_id' => User::loggedId()])->limit(1)->one();
-
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         } else {
@@ -243,7 +233,6 @@ class ProfileController extends BaseController
                 $this->error(Yii::t('podium/flash', 'Sorry! Subscription has got the wrong status.'));
             }
         }
-
         return $this->redirect(['profile/subscriptions']);
     }
     
@@ -255,7 +244,6 @@ class ProfileController extends BaseController
     public function actionDelete($id = null)
     {
         $model = Subscription::find()->where(['id' => (int)$id, 'user_id' => User::loggedId()])->limit(1)->one();
-
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         } else {
@@ -267,7 +255,6 @@ class ProfileController extends BaseController
                 $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the subscription.'));
             }
         }
-
         return $this->redirect(['profile/subscriptions']);
     }
     
@@ -279,37 +266,47 @@ class ProfileController extends BaseController
     public function actionAdd($id = null)
     {
         if (!Yii::$app->request->isAjax) {
-            return $this->redirect(['default/index']);
+            return $this->redirect(['forum/index']);
         }
             
         $data = [
             'error' => 1,
-            'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . 
-                    Yii::t('podium/view', 'Error while adding this subscription!'), ['class' => 'text-danger']),
+            'msg'   => Html::tag('span', 
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                . ' ' . Yii::t('podium/view', 'Error while adding this subscription!'), 
+                ['class' => 'text-danger']
+            ),
         ];
 
         if (Yii::$app->user->isGuest) {
-            $data['msg'] = Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . 
-                    Yii::t('podium/view', 'Please sign in to subscribe to this thread'), ['class' => 'text-info']);
+            $data['msg'] = Html::tag('span', 
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'), 
+                ['class' => 'text-info']
+            );
         }
             
         if (is_numeric($id) && $id > 0) {
             $subscription = Subscription::find()->where(['thread_id' => $id, 'user_id' => User::loggedId()])->limit(1)->one();
-
             if (!empty($subscription)) {
-                $data['msg'] = Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) . ' ' . 
-                        Yii::t('podium/view', 'You are already subscribed to this thread.'), ['class' => 'text-info']);
+                $data['msg'] = Html::tag('span', 
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                    . ' ' . Yii::t('podium/view', 'You are already subscribed to this thread.'), 
+                    ['class' => 'text-info']
+                );
             } else {
                 if (Subscription::add((int)$id)) {
                     $data = [
                         'error' => 0,
-                        'msg'   => Html::tag('span', Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) . ' ' . 
-                                Yii::t('podium/view', 'You have subscribed to this thread!'), ['class' => 'text-success']),
+                        'msg'   => Html::tag('span', 
+                            Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
+                            . ' ' . Yii::t('podium/view', 'You have subscribed to this thread!'), 
+                            ['class' => 'text-success']
+                        ),
                     ];
                 }
             }
         }
-
         return Json::encode($data);
     }
 }

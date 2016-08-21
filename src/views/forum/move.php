@@ -10,10 +10,10 @@
 use yii\helpers\Html;
 
 $this->title = Yii::t('podium/view', 'Move Thread');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->forum->category->name, 'url' => ['default/category', 'id' => $model->forum->category->id, 'slug' => $model->forum->category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $model->forum->name, 'url' => ['default/forum', 'cid' => $model->forum->category->id, 'id' => $model->forum->id, 'slug' => $model->forum->slug]];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['default/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->id, 'slug' => $model->slug]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
+$this->params['breadcrumbs'][] = ['label' => $model->forum->category->name, 'url' => ['forum/category', 'id' => $model->forum->category->id, 'slug' => $model->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $model->forum->name, 'url' => ['forum/forum', 'cid' => $model->forum->category->id, 'id' => $model->forum->id, 'slug' => $model->forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['forum/thread', 'cid' => $model->forum->category->id, 'fid' => $model->forum->id, 'id' => $model->id, 'slug' => $model->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

@@ -89,7 +89,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 <div class="panel panel-default">
     <div class="panel-body small">
         <ul class="list-inline pull-right">
-            <li><a href="<?= Url::to(['default/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
+            <li><a href="<?= Url::to(['forum/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
             <li><a href="#top" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the top') ?>"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
         </ul>
         <?= Readers::widget(['what' => 'members']) ?>

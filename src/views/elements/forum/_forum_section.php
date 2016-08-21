@@ -15,7 +15,7 @@ use yii\helpers\Url;
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="forum<?= $model->id ?>">
         <h4 class="panel-title">
-            <a href="<?= Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
+            <a href="<?= Url::to(['forum/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
         </h4>
 <?php if (!empty($model->sub)): ?>
         <small class="text-muted"><?= Html::encode($model->sub) ?></small>

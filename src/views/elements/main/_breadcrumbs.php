@@ -18,14 +18,14 @@ use yii\widgets\Breadcrumbs;
     </div>
 <?php if (!isset($this->params['no-search']) || $this->params['no-search'] !== true): ?>
     <div class="col-sm-3">
-        <?= Html::beginForm(['default/search'], 'get'); ?>
+        <?= Html::beginForm(['forum/search'], 'get'); ?>
             <div class="form-group">
                 <div class="input-group">
                     <?= Html::textInput('query', null, ['class' => 'form-control']); ?>
                     <div class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="glyphicon glyphicon-search"></span></button>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a href="<?= Url::to(['default/search']) ?>"><?= Yii::t('podium/view', 'Advanced Search Form') ?></a></li>
+                            <li><a href="<?= Url::to(['forum/search']) ?>"><?= Yii::t('podium/view', 'Advanced Search Form') ?></a></li>
                         </ul>
                     </div>
                 </div>

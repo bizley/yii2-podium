@@ -59,7 +59,7 @@ class MembersController extends BaseController
     public function actionFieldlist($q = null)
     {
         if (!Yii::$app->request->isAjax) {
-            return $this->redirect(['default/index']);
+            return $this->redirect(['forum/index']);
         }
         return User::getMembersList($q);
     }
@@ -72,11 +72,17 @@ class MembersController extends BaseController
     public function actionIgnore($id = null)
     {
         if (Yii::$app->user->isGuest) {
-            return $this->redirect(['default/index']);
+            return $this->redirect(['forum/index']);
         }
             
-        $model = User::find()->where(['and', ['id' => (int)$id], ['!=', 'status', User::STATUS_REGISTERED]])->limit(1)->one();
-        
+        $model = User::find()
+                    ->where([
+                        'and', 
+                        ['id' => (int)$id], 
+                        ['!=', 'status', User::STATUS_REGISTERED]
+                    ])
+                    ->limit(1)
+                    ->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
@@ -101,7 +107,6 @@ class MembersController extends BaseController
         } else {
             $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
         }
-        
         return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
     }
 
@@ -113,9 +118,9 @@ class MembersController extends BaseController
     {
         $searchModel  = new UserSearch;
         return $this->render('index', [
-                'dataProvider' => $searchModel->search(Yii::$app->request->get(), true),
-                'searchModel'  => $searchModel
-            ]);
+            'dataProvider' => $searchModel->search(Yii::$app->request->get(), true),
+            'searchModel'  => $searchModel
+        ]);
     }
     
     /**
@@ -126,9 +131,9 @@ class MembersController extends BaseController
     {
         $searchModel  = new UserSearch;
         return $this->render('mods', [
-                'dataProvider' => $searchModel->search(Yii::$app->request->get(), true, true),
-                'searchModel'  => $searchModel
-            ]);
+            'dataProvider' => $searchModel->search(Yii::$app->request->get(), true, true),
+            'searchModel'  => $searchModel
+        ]);
     }
     
     /**
@@ -145,12 +150,10 @@ class MembersController extends BaseController
         }
 
         $user = User::find()->where(['id' => $id, 'slug' => [$slug, null, '']])->limit(1)->one();
-        
         if (empty($user)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
-        
         return $this->render('posts', ['user' => $user]);
     }
     
@@ -168,12 +171,10 @@ class MembersController extends BaseController
         }
 
         $user = User::find()->where(['id' => $id, 'slug' => [$slug, null, '']])->limit(1)->one();
-        
         if (empty($user)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
             return $this->redirect(['members/index']);
         }
-        
         return $this->render('threads', ['user' => $user]);
     }
     
@@ -185,13 +186,18 @@ class MembersController extends BaseController
      */
     public function actionView($id = null, $slug = null)
     {
-        $model = User::find()->where(['and', ['id' => $id, 'slug' => [$slug, null, '']], ['!=', 'status', User::STATUS_REGISTERED]])->limit(1)->one();
-
+        $model = User::find()
+                    ->where([
+                        'and', 
+                        ['id' => $id, 'slug' => [$slug, null, '']], 
+                        ['!=', 'status', User::STATUS_REGISTERED]
+                    ])
+                    ->limit(1)
+                    ->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
         }
-        
         return $this->render('view', ['model' => $model]);
     }
     
@@ -204,11 +210,17 @@ class MembersController extends BaseController
     public function actionFriend($id = null)
     {
         if (Yii::$app->user->isGuest) {
-            return $this->redirect(['default/index']);
+            return $this->redirect(['forum/index']);
         }
     
-        $model = User::find()->where(['and', ['id' => $id], ['!=', 'status', User::STATUS_REGISTERED]])->limit(1)->one();
-        
+        $model = User::find()
+                    ->where([
+                        'and', 
+                        ['id' => $id], 
+                        ['!=', 'status', User::STATUS_REGISTERED]
+                    ])
+                    ->limit(1)
+                    ->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
@@ -228,7 +240,6 @@ class MembersController extends BaseController
         } else {
             $this->error(Yii::t('podium/flash', 'Sorry! There was some error while performing this action.'));
         }
-        
         return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
     }
 }

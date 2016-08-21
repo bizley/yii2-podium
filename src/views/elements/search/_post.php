@@ -49,10 +49,10 @@ else {
                 </small>
             </div>
             <div class="popover-content podium-content">
-                <a href="<?= Url::to(['default/thread', 'cid' => $model->postData->thread->category_id, 'fid' => $model->postData->forum_id, 'id' => $model->postData->thread_id, 'slug' => $model->postData->thread->slug]) ?>"><span class="glyphicon glyphicon-comment"></span> <?= $thread ?></a><br><br>
+                <a href="<?= Url::to(['forum/thread', 'cid' => $model->postData->thread->category_id, 'fid' => $model->postData->forum_id, 'id' => $model->postData->thread_id, 'slug' => $model->postData->thread->slug]) ?>"><span class="glyphicon glyphicon-comment"></span> <?= $thread ?></a><br><br>
                 <?= $content ?>
                 <div class="podium-action-bar">
-                    <a href="<?= Url::to(['default/show', 'id' => $model->postData->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
+                    <a href="<?= Url::to(['forum/show', 'id' => $model->postData->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a>
                 </div>
             </div>
         </div>

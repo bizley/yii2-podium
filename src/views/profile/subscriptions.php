@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label'     => Yii::t('podium/view', "Thread's Name"),
             'format'    => 'raw',
             'value'     => function ($model) {
-                return Html::a($model->thread->name, ['default/show', 'id' => $model->thread->latest->id], ['class' => 'center-block']);
+                return Html::a($model->thread->name, ['forum/show', 'id' => $model->thread->latest->id], ['class' => 'center-block']);
             },
         ],
         [

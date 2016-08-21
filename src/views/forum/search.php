@@ -36,8 +36,8 @@ elseif (empty($query) && !empty($author)) {
 else {
     $this->title = Yii::t('podium/view', 'Search for {type}', ['type' => $typeName]);
 }
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Search Forum'), 'url' => ['default/search']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Search Forum'), 'url' => ['forum/search']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php else: ?>
 <?php
 $this->title = Yii::t('podium/view', 'Search Forum');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">

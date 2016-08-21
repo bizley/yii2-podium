@@ -50,7 +50,7 @@ class Module extends BaseModule implements BootstrapInterface
     const RBAC_INHERIT = 'inherit';
     const RBAC_OWN     = 'own';
     
-    const ROUTE_DEFAULT  = '/podium/default/index';
+    const ROUTE_DEFAULT  = '/podium/forum/index';
     const ROUTE_LOGIN    = '/podium/account/login';
     const ROUTE_REGISTER = '/podium/account/register';
     const MAIN_LAYOUT    = 'main';
@@ -108,6 +108,12 @@ class Module extends BaseModule implements BootstrapInterface
      * Default value is 'password_hash'.
      */
     public $userPasswordField = self::FIELD_PASSWORD;
+
+    /**
+     * @var string Default route for Podium
+     * @since 0.2
+     */
+    public $defaultRoute = 'forum';
 
     /**
      * @var Cache Module cache instance

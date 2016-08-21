@@ -17,7 +17,7 @@ use yii\helpers\Url;
             <a data-toggle="collapse" href="#collapse<?= $model->id ?>" aria-expanded="true" aria-controls="collapse<?= $model->id ?>" class="pull-right">
                 <span class="glyphicon glyphicon-chevron-up"></span>
             </a>
-            <a href="<?= Url::to(['default/category', 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
+            <a href="<?= Url::to(['forum/category', 'id' => $model->id, 'slug' => $model->slug]) ?>"><?= Html::encode($model->name) ?></a>
         </h4>
     </div>
     <div id="collapse<?= $model->id ?>" class="panel-collapse collapse in table-responsive" role="tabpanel" aria-labelledby="category<?= $model->id ?>">

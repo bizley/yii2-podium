@@ -122,8 +122,8 @@ class Subscription extends ActiveRecord
                                 $sub->user->email, 
                                 str_replace('{forum}', $forum, $email->topic),
                                 str_replace('{forum}', $forum, str_replace('{link}', Html::a(
-                                        Url::to(['default/last', 'id' => $sub->thread_id], true),
-                                        Url::to(['default/last', 'id' => $sub->thread_id], true)
+                                        Url::to(['forum/last', 'id' => $sub->thread_id], true),
+                                        Url::to(['forum/last', 'id' => $sub->thread_id], true)
                                     ), $email->content)),
                                 $sub->user_id
                             )) {

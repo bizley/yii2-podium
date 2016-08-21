@@ -10,7 +10,7 @@
 use yii\helpers\Url;
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="col-sm-3 col-sm-offset-9">
         <div class="form-group">
-            <a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-xs btn-block"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a>
+            <a href="<?= Url::to(['forum/unread-posts']) ?>" class="btn btn-info btn-xs btn-block"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a>
         </div>
     </div>
 </div>

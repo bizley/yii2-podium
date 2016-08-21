@@ -12,7 +12,7 @@ use yii\helpers\Url;
 
 ?>
 <td>
-    <a href="<?= Url::to(['default/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block"><?= Html::encode($model->name) ?></a>
+    <a href="<?= Url::to(['forum/forum', 'cid' => $model->category_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block"><?= Html::encode($model->name) ?></a>
 <?php if (!empty($model->sub)): ?>
     <small class="text-muted"><?= Html::encode($model->sub) ?></small>
 <?php endif; ?>
@@ -21,7 +21,7 @@ use yii\helpers\Url;
 <td class="text-right"><?= $model->posts ?></td>
 <td>
 <?php if (!empty($model->latest) && !empty($model->latest->thread)): ?>
-    <a href="<?= Url::to(['default/show', 'id' => $model->latest->id]) ?>" class="center-block"><?= Html::encode($model->latest->thread->name) ?></a>
+    <a href="<?= Url::to(['forum/show', 'id' => $model->latest->id]) ?>" class="center-block"><?= Html::encode($model->latest->thread->name) ?></a>
     <small>
         <?= $model->latest->author->podiumTag ?>
         <span class="hidden-xs"><?= Yii::$app->formatter->asDatetime($model->latest->created_at, 'medium') ?></span>

@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row">
                         <div class="col-sm-12">
                             <?= $form->field($model, 'maintenance_mode')->checkBox()->label(Yii::t('podium/view', 'Set forum to Maintenance mode'))
-                                ->hint(Yii::t('podium/view', 'All users without Administrator privileges will be redirected to {maintenancePage}.', ['maintenancePage' => Html::a(Yii::t('podium/view', 'Maintenance page'), ['default/maintenance'])])) ?>
+                                ->hint(Yii::t('podium/view', 'All users without Administrator privileges will be redirected to {maintenancePage}.', ['maintenancePage' => Html::a(Yii::t('podium/view', 'Maintenance page'), ['forum/maintenance'])])) ?>
                         </div>
                     </div>
                     <h3 id="meta"><span class="label label-primary"><?= Yii::t('podium/view', 'Meta data') ?></span></h3>

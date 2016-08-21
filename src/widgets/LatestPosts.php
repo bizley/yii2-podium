@@ -37,7 +37,7 @@ class LatestPosts extends Widget
             foreach ($latest as $post) {
                 $out .= Html::beginTag('tr');
                 $out .= Html::beginTag('td');
-                $out .= Html::a($post['title'], ['default/show', 'id' => $post['id']], ['class' => 'center-block']) . "\n";
+                $out .= Html::a($post['title'], ['forum/show', 'id' => $post['id']], ['class' => 'center-block']) . "\n";
                 $out .= Html::tag('small', Yii::$app->formatter->asRelativeTime($post['created']) . "\n" . $post['author']) . "\n";
                 $out .= Html::endTag('td');
                 $out .= Html::endTag('tr');

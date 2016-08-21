@@ -19,9 +19,9 @@ use yii\widgets\ListView;
 use yii\widgets\Pjax;
 
 $this->title = $thread->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['default/index']];
-$this->params['breadcrumbs'][] = ['label' => $thread->forum->category->name, 'url' => ['default/category', 'id' => $thread->forum->category->id, 'slug' => $thread->forum->category->slug]];
-$this->params['breadcrumbs'][] = ['label' => $thread->forum->name, 'url' => ['default/forum', 'cid' => $thread->forum->category->id, 'id' => $thread->forum->id, 'slug' => $thread->forum->slug]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->category->name, 'url' => ['forum/category', 'id' => $thread->forum->category->id, 'slug' => $thread->forum->category->slug]];
+$this->params['breadcrumbs'][] = ['label' => $thread->forum->name, 'url' => ['forum/forum', 'cid' => $thread->forum->category->id, 'id' => $thread->forum->id, 'slug' => $thread->forum->slug]];
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
@@ -38,7 +38,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
 <?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>                    
                     <li>
-                        <a href="<?= Url::to(['default/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
                             <span class="glyphicon glyphicon-pushpin"></span>
                             <?php if ($thread->pinned): ?>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Unpin Thread') ?></span>
@@ -52,7 +52,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['default/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/lock', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
                             <span class="glyphicon glyphicon-lock"></span>
                             <?php if ($thread->locked): ?>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Unlock Thread') ?></span>
@@ -66,7 +66,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['default/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
                             <span class="glyphicon glyphicon-share-alt"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Thread') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move T') ?></span>
@@ -75,7 +75,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['default/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
+                        <a href="<?= Url::to(['forum/delete', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
                             <span class="glyphicon glyphicon-trash"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Delete Thread') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Delete T') ?></span>
@@ -84,7 +84,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_POST, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['default/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
                             <span class="glyphicon glyphicon-random"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Posts') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move P') ?></span>
@@ -93,7 +93,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_DELETE_POST, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['default/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
+                        <a href="<?= Url::to(['forum/deleteposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-danger btn-xs">
                             <span class="glyphicon glyphicon-remove"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Delete Posts') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Delete P') ?></span>
@@ -115,9 +115,9 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
             <li><a href="<?= Url::to(['account/register']) ?>" class="btn btn-success btn-sm"><?= Yii::t('podium/view', 'Register new account') ?></a></li>
 <?php else: ?>
 <?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>            
-            <li><a href="<?= Url::to(['default/new-thread', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
+            <li><a href="<?= Url::to(['forum/new-thread', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
 <?php endif; ?>
-            <li><a href="<?= Url::to(['default/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
+            <li><a href="<?= Url::to(['forum/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
 <?php endif; ?>
         </ul>
     </div>
@@ -156,7 +156,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <br>
 <div class="row">
     <div class="col-sm-12 text-right">
-        <a href="<?= Url::to(['default/post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
+        <a href="<?= Url::to(['forum/post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
     </div>
 </div>
 <br>
@@ -228,7 +228,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <div class="panel panel-default">
     <div class="panel-body small">
         <ul class="list-inline pull-right">
-            <li><a href="<?= Url::to(['default/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
+            <li><a href="<?= Url::to(['forum/index']) ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the main page') ?>"><span class="glyphicon glyphicon-home"></span></a></li>
             <li><a href="#top" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Go to the top') ?>"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
         </ul>
         <?= Readers::widget(['what' => 'topic']) ?>

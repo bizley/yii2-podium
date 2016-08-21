@@ -15,16 +15,16 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $firstToSee = $model->firstToSee();
 ?>
 <td class="podium-thread-line">
-    <a href="<?= Url::to(['default/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-pjax="0" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($firstToSee->content, 20, '...', true)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Yii::$app->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
+    <a href="<?= Url::to(['forum/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-pjax="0" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($firstToSee->content, 20, '...', true)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Yii::$app->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
         <span class="glyphicon glyphicon-leaf"></span>
     </a>
-    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-xs pull-left btn btn-<?= $model->getCssClass() ?>" style="margin-right:10px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
+    <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-xs pull-left btn btn-<?= $model->getCssClass() ?>" style="margin-right:10px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
         <span class="glyphicon glyphicon-<?= $model->getIcon() ?>"></span>
     </a>
-    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-lg hidden-md hidden-sm pull-left btn btn-<?= $model->getCssClass() ?> btn-xs" style="margin-right:5px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
+    <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-lg hidden-md hidden-sm pull-left btn btn-<?= $model->getCssClass() ?> btn-xs" style="margin-right:5px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
         <span class="glyphicon glyphicon-<?= $model->getIcon() ?>"></span>
     </a>
-    <a href="<?= Url::to(['default/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block" data-pjax="0">
+    <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block" data-pjax="0">
         <?= Html::encode($model->name) ?>
     </a>
 </td>

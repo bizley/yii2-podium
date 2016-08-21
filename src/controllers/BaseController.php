@@ -10,6 +10,7 @@ use bizley\podium\traits\FlashTrait;
 use Exception;
 use Yii;
 use yii\base\Action;
+use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\Controller as YiiController;
 
@@ -17,6 +18,7 @@ use yii\web\Controller as YiiController;
  * Podium base controller
  * Prepares account in case of new inheritet identity user.
  * Redirects users in case of maintenance.
+ * Not accessible directly.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
@@ -24,6 +26,19 @@ use yii\web\Controller as YiiController;
 class BaseController extends YiiController
 {
     use FlashTrait;
+    
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [['allow' => false]],
+            ],
+        ];
+    }
     
     /**
      * Adds warning for maintenance mode.
@@ -68,25 +83,19 @@ class BaseController extends YiiController
                 'podium/flash', 
                 'Podium is currently in the Maintenance mode. All users without Administrator privileges are redirected to {maintenancePage}. You can switch the mode off at {settingsPage}.', 
                 [
-                    'maintenancePage' => Html::a(Yii::t('podium/flash', 'Maintenance page'), ['default/maintenance']),
+                    'maintenancePage' => Html::a(Yii::t('podium/flash', 'Maintenance page'), ['forum/maintenance']),
                     'settingsPage'    => Html::a(Yii::t('podium/flash', 'Settings page'), ['admin/settings']),
                 ]
             ),
             'email' => Yii::t(
                 'podium/flash', 
                 'No e-mail address has been set for your account! Go to {link} to add one.', 
-                [
-                    'link' => Html::a(Yii::t('podium/view', 'Profile') 
-                                . ' > '
-                                . Yii::t('podium/view', 'Account Details'), ['profile/details'])
-                ]
+                ['link' => Html::a(Yii::t('podium/view', 'Profile') . ' > ' . Yii::t('podium/view', 'Account Details'), ['profile/details'])]
             ),
             'old_version' => Yii::t(
                 'podium/flash', 
                 'It looks like there is a new version of Podium database! {link}', 
-                [
-                    'link' => Html::a(Yii::t('podium/view', 'Update Podium'), ['install/level-up'])
-                ]
+                ['link' => Html::a(Yii::t('podium/view', 'Update Podium'), ['install/level-up'])]
             ),
             'new_version' => Yii::t(
                 'podium/flash', 
@@ -110,7 +119,7 @@ class BaseController extends YiiController
                     foreach ($warnings as $warning) {
                         if ($warning == static::warnings()['maintenance']) {
                             if (!User::can(Rbac::ROLE_ADMIN)) {
-                                return $this->redirect(['default/maintenance']);
+                                return $this->redirect(['forum/maintenance']);
                             }
                             return false;
                         }
@@ -118,7 +127,7 @@ class BaseController extends YiiController
                 }
                 $this->warning(static::warnings()['maintenance'], false);
                 if (!User::can(Rbac::ROLE_ADMIN)) {
-                    return $this->redirect(['default/maintenance']);
+                    return $this->redirect(['forum/maintenance']);
                 }
             }
         }
@@ -199,7 +208,7 @@ class BaseController extends YiiController
                 }
             }
             if ($user && $user->status == User::STATUS_BANNED) {
-                return $this->redirect(['default/ban']);
+                return $this->redirect(['forum/ban']);
             }
             if ($user && !empty($user->timezone)) {
                 Yii::$app->formatter->timeZone = $user->timezone;

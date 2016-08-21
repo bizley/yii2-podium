@@ -14,7 +14,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Html;
 
-$items = [['label' => Yii::t('podium/view', 'Home'), 'url' => ['default/index']]];
+$items = [['label' => Yii::t('podium/view', 'Home'), 'url' => ['forum/index']]];
 
 $podiumModule = Podium::getInstance();
 
@@ -78,7 +78,7 @@ else {
 
 NavBar::begin([
     'brandLabel'            => $podiumModule->config->get('name'),
-    'brandUrl'              => ['default/index'],
+    'brandUrl'              => ['forum/index'],
     'options'               => ['class' => 'navbar-inverse navbar-default', 'id' => 'top'],
     'innerContainerOptions' => ['class' => 'container-fluid',]
 ]);
