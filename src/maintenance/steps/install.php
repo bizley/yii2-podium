@@ -17,10 +17,10 @@ return [
             'level'    => Schema::TYPE_INTEGER,
             'category' => Schema::TYPE_STRING,
             'log_time' => Schema::TYPE_DOUBLE,
-            'prefix'   => Schema::TYPE_TEXT,
+            'ip'       => Schema::TYPE_STRING . '(20)',//Schema::TYPE_TEXT,
             'message'  => Schema::TYPE_TEXT,
             'model'    => Schema::TYPE_INTEGER,
-            'blame'    => Schema::TYPE_INTEGER,
+            'user'     => Schema::TYPE_INTEGER,
         ],
     ],
     [

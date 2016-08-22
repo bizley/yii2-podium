@@ -2,8 +2,10 @@
 
 namespace bizley\podium\log;
 
-use yii\log\DbTarget as YiiDbTarget;
+use Yii;
 use yii\helpers\VarDumper;
+use yii\log\DbTarget as YiiDbTarget;
+use yii\web\Request;
 
 /**
  * Database log target
@@ -20,17 +22,16 @@ class DbTarget extends YiiDbTarget
     public function export()
     {
         $tableName = $this->db->quoteTableName($this->logTable);
-        $sql = "INSERT INTO $tableName ([[level]], [[category]], [[log_time]], [[prefix]], [[message]], [[model]], [[blame]])
-                VALUES (:level, :category, :log_time, :prefix, :message, :model, :blame)";
+        $sql = "INSERT INTO $tableName ([[level]], [[category]], [[log_time]], [[ip]], [[message]], [[model]], [[user]])
+                VALUES (:level, :category, :log_time, :ip, :message, :model, :user)";
         $command = $this->db->createCommand($sql);
         foreach ($this->messages as $message) {
             list($text, $level, $category, $timestamp) = $message;
             $extracted = [
                 'msg'   => '',
                 'model' => null,
-                'blame' => null,
             ];
-            if (is_array($text) && (isset($text['msg']) || isset($text['model']) || isset($text['blame']))) {
+            if (is_array($text) && (isset($text['msg']) || isset($text['model']))) {
                 if (isset($text['msg'])) {
                     if (!is_string($text['msg'])) {
                         $extracted['msg'] = VarDumper::export($text['msg']);
@@ -41,22 +42,23 @@ class DbTarget extends YiiDbTarget
                 if (isset($text['model'])) {
                     $extracted['model'] = $text['model'];
                 }
-                if (isset($text['blame'])) {
-                    $extracted['blame'] = $text['blame'];
-                }
             } elseif (is_string($text)) {
                 $extracted['msg'] = $text;
             } else {
                 $extracted['msg'] = VarDumper::export($text);
             }
+            if (substr($category, 0, 14) == 'bizley\podium\\') {
+                $category = substr($category, 14);
+            }
+            $request = Yii::$app->getRequest();
             $command->bindValues([
                 ':level'    => $level,
                 ':category' => $category,
                 ':log_time' => $timestamp,
-                ':prefix'   => $this->getMessagePrefix($message),
+                ':ip'       => $request instanceof Request ? $request->getUserIP() : null,
                 ':message'  => $extracted['msg'],
                 ':model'    => $extracted['model'],
-                ':blame'    => $extracted['blame'],
+                ':user'     => Log::blame(),
             ])->execute();
         }
     }

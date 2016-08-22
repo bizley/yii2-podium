@@ -27,21 +27,6 @@ class Log
     }
     
     /**
-     * Calls for error log.
-     * @param mixed $msg Message
-     * @param string $model Model
-     * @param string $category
-     */
-    public static function error($msg, $model = null, $category = 'application')
-    {
-        Yii::error([
-            'msg'   => $msg,
-            'model' => $model,
-            'blame' => self::blame(),
-        ], $category);
-    }
-    
-    /**
      * Returns log types.
      * @return array
      */
@@ -55,6 +40,20 @@ class Log
     }
     
     /**
+     * Calls for error log.
+     * @param mixed $msg Message
+     * @param string $model Model
+     * @param string $category
+     */
+    public static function error($msg, $model = null, $category = 'application')
+    {
+        Yii::error([
+            'msg'   => $msg,
+            'model' => $model,
+        ], $category);
+    }
+    
+    /**
      * Calls for info log.
      * @param mixed $msg Message
      * @param string $model Model
@@ -65,7 +64,6 @@ class Log
         Yii::info([
             'msg'   => $msg,
             'model' => $model,
-            'blame' => self::blame(),
         ], $category);
     }
     
@@ -80,7 +78,6 @@ class Log
         Yii::warning([
             'msg'   => $msg,
             'model' => $model,
-            'blame' => self::blame(),
         ], $category);
     }
 }

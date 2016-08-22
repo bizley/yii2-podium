@@ -50,6 +50,24 @@ return [
             'type'  => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
         ],
         [
+            'table' => 'log',
+            'call'  => 'renameColumn',
+            'col'   => 'prefix',
+            'name'  => 'ip',
+        ],
+        [
+            'table' => 'log',
+            'call'  => 'alterColumn',
+            'col'   => 'ip',
+            'type'  => Schema::TYPE_STRING . '(20)',
+        ],
+        [
+            'table' => 'log',
+            'call'  => 'renameColumn',
+            'col'   => 'blame',
+            'name'  => 'user',
+        ],
+        [
             'table'   => 'config',
             'call'    => 'updateVersion',
             'version' => '0.2'
