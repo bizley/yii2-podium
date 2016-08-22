@@ -348,10 +348,6 @@ class Module extends BaseModule implements BootstrapInterface
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en-US',
             'basePath'       => '@podium/messages',
-            'fileMap'        => [
-                'podium/flash'  => 'flash.php',
-                'podium/view'   => 'view.php',
-            ],
         ];
     }
 }

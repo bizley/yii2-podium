@@ -10,7 +10,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title = Yii::t('podium/view', 'Change Password');
+$this->title = Yii::t('podium/view', 'Change password');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

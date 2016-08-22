@@ -11,7 +11,7 @@ use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
-$this->title = Yii::t('podium/view', 'Report Post');
+$this->title = Yii::t('podium/view', 'Report post');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum'), 'url' => ['forum/index']];
 $this->params['breadcrumbs'][] = ['label' => $post->forum->category->name, 'url' => ['forum/category', 'id' => $post->forum->category->id, 'slug' => $post->forum->category->slug]];
 $this->params['breadcrumbs'][] = ['label' => $post->forum->name, 'url' => ['forum/forum', 'cid' => $post->forum->category->id, 'id' => $post->forum->id, 'slug' => $post->forum->slug]];

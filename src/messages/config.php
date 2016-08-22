@@ -3,10 +3,7 @@
 return [
     'sourcePath' => __DIR__ . DIRECTORY_SEPARATOR . '..',
     'languages' => ['pl'],
-    'translator' => 'Yii::t',
     'sort' => true,
-    'removeUnused' => true,
-    'only' => ['*.php'],
     'except' => [
         '.svn',
         '.git',
@@ -18,7 +15,5 @@ return [
         '/css',
         '/tests',
     ],
-    'format' => 'php',
     'messagePath' => __DIR__,
-    'overwrite' => true,
 ];
