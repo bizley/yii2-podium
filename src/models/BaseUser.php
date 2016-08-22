@@ -63,8 +63,9 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     
     /**
      * Finds out if unencrypted password fulfill requirements.
+     * @param string $attribute
      */
-    public function passwordRequirements($attribute, $params)
+    public function passwordRequirements($attribute)
     {
         if (!preg_match('~\p{Lu}~', $this->$attribute) ||
             !preg_match('~\p{Ll}~', $this->$attribute) ||

@@ -115,8 +115,13 @@ class Category extends ActiveRecord
         try {
             $next    = 0;
             $newSort = -1;
-            $query   = (new Query)->from(Category::tableName())->where('id != :id')->
-                params([':id' => $this->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+            $query   = (new Query)
+                        ->from(Category::tableName())
+                        ->where('id != :id')
+                        ->params([':id' => $this->id])
+                        ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
+                        ->indexBy('id');
+            
             foreach ($query->each() as $id => $forum) {
                 if ($next == $order) {
                     $newSort = $next;

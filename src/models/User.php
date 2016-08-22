@@ -438,9 +438,8 @@ class User extends BaseUser
                 return $user->id;
             }
             return null;
-        } else {
-            return Yii::$app->user->id;
         }
+        return Yii::$app->user->id;
     }
 
     /**
