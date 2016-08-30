@@ -2,7 +2,10 @@
 
 return [
     'sourcePath' => __DIR__ . DIRECTORY_SEPARATOR . '..',
-    'languages' => ['pl'],
+    'languages' => [
+        'ru',
+        'pl',
+    ],
     'sort' => true,
     'except' => [
         '.svn',
