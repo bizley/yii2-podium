@@ -23,7 +23,7 @@ Features
 - Console mail queue handling
 - Avatars uploading (+supports Gravatars)
 - Built-in user messages component
-- English and Polish translation
+- English, Polish and Russian translation
 
 Installation & configuration
 ----------------------------
