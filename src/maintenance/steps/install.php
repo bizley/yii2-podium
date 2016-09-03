@@ -44,8 +44,8 @@ return [
     [
         'table' => 'log',
         'call'  => 'addIndex',
-        'name'  => 'blame',
-        'cols'  => ['blame'],
+        'name'  => 'user',
+        'cols'  => ['user'],
     ],
     [
         'table'  => 'config',

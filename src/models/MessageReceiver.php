@@ -181,7 +181,7 @@ class MessageReceiver extends ActiveRecord
         // not very proud of this query - slow for sure
         // let me know if it can be done better.
         $subquery = (new Query)->select(['m2.replyto'])->from(['m1' => Message::tableName()])
-                ->leftJoin(['m2' => Message::tableName()], '`m1`.`replyto` = `m2`.`id`')
+                ->leftJoin(['m2' => Message::tableName()], 'm1.replyto = m2.id')
                 ->where(['is not', 'm2.replyto', null]);
         $query = self::find()->where(['and', 
             ['receiver_id' => User::loggedId()], 

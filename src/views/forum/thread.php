@@ -156,7 +156,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <br>
 <div class="row">
     <div class="col-sm-12 text-right">
-        <a href="<?= Url::to(['forum/post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> New Reply</a>
+        <a href="<?= Url::to(['forum/post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]) ?>" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-leaf"></span> <?= Yii::t('podium/view', 'New Reply'); ?></a>
     </div>
 </div>
 <br>

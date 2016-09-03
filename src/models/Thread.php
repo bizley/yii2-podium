@@ -244,7 +244,7 @@ class Thread extends ActiveRecord
                     && !Yii::$app->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
-                            new Expression('`new_last_seen` < `new_post_at`')
+                            new Expression('new_last_seen < new_post_at')
                         ], ['user_id' => null]]);
                 }]);
             }
@@ -253,7 +253,7 @@ class Thread extends ActiveRecord
                     && !Yii::$app->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
-                            new Expression('`edited_last_seen` < `edited_post_at`')
+                            new Expression('edited_last_seen < edited_post_at')
                         ], ['user_id' => null]]);
                 }]);
             }
@@ -758,8 +758,8 @@ class Thread extends ActiveRecord
                         ['user_id' => $loggedId],
                         [
                             'or',
-                            new Expression('`new_last_seen` < `new_post_at`'),
-                            new Expression('`edited_last_seen` < `edited_post_at`')
+                            new Expression('new_last_seen < new_post_at'),
+                            new Expression('edited_last_seen < edited_post_at')
                         ],
                     ]);
             $time = time();
