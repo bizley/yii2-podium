@@ -6,7 +6,6 @@ use bizley\podium\models\Activity;
 use bizley\podium\models\User;
 use Yii;
 use yii\base\Widget;
-use yii\db\Expression;
 use yii\helpers\Html;
 
 /**
@@ -41,14 +40,13 @@ class Readers extends Widget
      * @return string
      * @since 0.2
      */
-    public function getNamedUsersList($url = null)
+    public function getNamedUsersList($url)
     {
         $out = '';
-        $conditions = [
-            'and',
+        $conditions = ['and',
             [Activity::tableName() . '.anonymous' => 0],
             ['is not', 'user_id', null],
-            new Expression('"url" LIKE :url'),
+            ['like', 'url', $url . '%', false],
             ['>=', Activity::tableName() . '.updated_at', time() - 5 * 60]
         ];
         
@@ -65,8 +63,7 @@ class Readers extends Widget
         
         $users = Activity::find()
                     ->joinWith(['user'])
-                    ->where($conditions)
-                    ->params([':url' => $url . '%']);
+                    ->where($conditions);
         foreach ($users->each() as $user) {
             $out .= $user->user->podiumTag . ' ';
         }
@@ -80,11 +77,10 @@ class Readers extends Widget
      * @return int
      * @since 0.2
      */
-    public function getAnonymousUsers($url = null)
+    public function getAnonymousUsers($url)
     {
         $anons = Activity::find()
-                    ->where([
-                        'and',
+                    ->where(['and',
                         ['anonymous' => 1],
                         ['like', 'url', $url . '%', false],
                         ['>=', 'updated_at', time() - 5 * 60]
@@ -103,17 +99,14 @@ class Readers extends Widget
      * @return int
      * @since 0.2
      */
-    public function getGuestUsers($url = null)
+    public function getGuestUsers($url)
     {
-        $conditions = [
-            'and',
-            ['user_id' => null],
-            new Expression('"url" LIKE :url'),
-            ['>=', 'updated_at', time() - 5 * 60]
-        ];
         $guests = Activity::find()
-                    ->where($conditions)
-                    ->params([':url' => $url . '%'])
+                    ->where(['and',
+                        ['user_id' => null],
+                        ['like', 'url', $url . '%', false],
+                        ['>=', 'updated_at', time() - 5 * 60]
+                    ])
                     ->count('id');
         if ($this->_guest) {
             $guests += 1;
@@ -151,22 +144,18 @@ class Readers extends Widget
         $anonymous = $this->getAnonymousUsers($url);
         if ($anonymous) {
             $out .= Html::button(
-                Yii::t(
-                    'podium/view', 
-                    '{n, plural, =1{# anonymous user} other{# anonymous users}}', 
-                    ['n' => $anonymous]
-                ), 
+                Yii::t('podium/view', '{n, plural, =1{# anonymous user} other{# anonymous users}}', [
+                    'n' => $anonymous
+                ]), 
                 ['class' => 'btn btn-xs btn-default disabled']
             ) . ' ';
         }
         $guests = $this->getGuestUsers($url);
         if ($guests) {
             $out .= Html::button(
-                Yii::t(
-                    'podium/view', 
-                    '{n, plural, =1{# guest} other{# guests}}', 
-                    ['n' => $guests]
-                ), 
+                Yii::t('podium/view', '{n, plural, =1{# guest} other{# guests}}', [
+                    'n' => $guests
+                ]), 
                 ['class' => 'btn btn-xs btn-default disabled']
             );
         }
