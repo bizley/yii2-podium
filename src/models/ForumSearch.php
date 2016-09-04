@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use yii\base\Model;
@@ -18,7 +14,6 @@ use yii\db\Query;
  */
 class ForumSearch extends Forum
 {
-
     /**
      * @inheritdoc
      */

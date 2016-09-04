@@ -16,6 +16,9 @@ use yii\helpers\Url;
  */
 class ReForm extends Model
 {
+    /**
+     * Responses.
+     */
     const RESP_ERR = 0;
     const RESP_OK = 1;
     const RESP_EMAIL_SEND_ERR = 2;
@@ -27,8 +30,6 @@ class ReForm extends Model
      */
     public $username;
     
-    private $_user = false;
-
     /**
      * @inheritdoc
      */
@@ -39,6 +40,8 @@ class ReForm extends Model
         ];
     }
 
+    private $_user = false;
+    
     /**
      * Returns User.
      * @param int $status

@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
@@ -23,6 +19,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $sender_id
  * @property string $topic
@@ -34,11 +31,16 @@ use yii\helpers\HtmlPurifier;
  */
 class Message extends ActiveRecord
 {
-
+    /**
+     * Statuses.
+     */
     const STATUS_NEW     = 1;
     const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
     
+    /**
+     * Limits.
+     */
     const MAX_RECEIVERS = 10;
     const SPAM_MESSAGES = 10;
     const SPAM_WAIT     = 1;
@@ -189,7 +191,7 @@ class Message extends ActiveRecord
      */
     public function getReply()
     {
-        return $this->hasOne(self::className(), ['id' => 'replyto']);
+        return $this->hasOne(static::className(), ['id' => 'replyto']);
     }
     
     /**
@@ -203,49 +205,41 @@ class Message extends ActiveRecord
             $this->sender_id = User::loggedId();
             $this->sender_status = self::STATUS_READ;
             
-            if ($this->save()) {
-                $count = count($this->receiversId);
-                foreach ($this->receiversId as $receiver) {
-                    if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
-                        if ($count == 1) {
-                            throw new Exception('No active receivers to send message to!');
-                        }
-                        else {
-                            continue;
-                        }
-                    }
-                    $message = new MessageReceiver;
-                    $message->message_id      = $this->id;
-                    $message->receiver_id     = $receiver;
-                    $message->receiver_status = self::STATUS_NEW;
-                    if ($message->save()) {
-                        Podium::getInstance()->cache->deleteElement('user.newmessages', $receiver);
-                    }
-                    else {
-                        throw new Exception('MessageReceiver saving error!');
-                    }
-                }
-                $transaction->commit();
-                $sessionKey = 'messages.' . $this->sender_id;
-                if (Yii::$app->session->has($sessionKey)) {
-                    $sentAlready = explode('|', Yii::$app->session->get($sessionKey));
-                    $sentAlready[] = time();
-                    Yii::$app->session->set($sessionKey, implode('|', $sentAlready));
-                }
-                else {
-                    Yii::$app->session->set($sessionKey, time());
-                }
-                return true;
-            }
-            else {
+            if (!$this->save()) {
                 throw new Exception('Message saving error!');
             }
-        }
-        catch (Exception $e) {
+            
+            $count = count($this->receiversId);
+            foreach ($this->receiversId as $receiver) {
+                if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
+                    if ($count == 1) {
+                        throw new Exception('No active receivers to send message to!');
+                    }
+                    continue;
+                }
+                $message = new MessageReceiver;
+                $message->message_id = $this->id;
+                $message->receiver_id = $receiver;
+                $message->receiver_status = self::STATUS_NEW;
+                if (!$message->save()) {
+                    throw new Exception('MessageReceiver saving error!');
+                }
+                Podium::getInstance()->cache->deleteElement('user.newmessages', $receiver);
+            }
+            $transaction->commit();
+            $sessionKey = 'messages.' . $this->sender_id;
+            if (Yii::$app->session->has($sessionKey)) {
+                $sentAlready = explode('|', Yii::$app->session->get($sessionKey));
+                $sentAlready[] = time();
+                Yii::$app->session->set($sessionKey, implode('|', $sentAlready));
+            } else {
+                Yii::$app->session->set($sessionKey, time());
+            }
+            return true;
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
-        
         return false;
     }
     
@@ -289,22 +283,17 @@ class Message extends ActiveRecord
             if ($this->sender_status == self::STATUS_NEW) {
                 $clearCache = true;
             }
-            
             $this->scenario = 'remove';
-        
             if (empty($this->messageReceivers)) {
-                if ($this->delete()) {
-                    if ($clearCache) {
-                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
-                    }
-                    $transaction->commit();
-                    return true;
-                }
-                else {
+                if (!$this->delete()) {
                     throw new Exception('Message removing error!');
                 }
-            }
-            else {
+                if ($clearCache) {
+                    Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
+                }
+                $transaction->commit();
+                return true;
+            } else {
                 $allDeleted = true;
                 foreach ($this->messageReceivers as $mr) {
                     if ($mr->receiver_status != MessageReceiver::STATUS_DELETED) {
@@ -318,33 +307,27 @@ class Message extends ActiveRecord
                             throw new Exception('Received message removing error!');
                         }
                     }
-                    if ($this->delete()) {
-                        if ($clearCache) {
-                            Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
-                        }
-                        $transaction->commit();
-                        return true;
-                    }
-                    else {
+                    if (!$this->delete()) {
                         throw new Exception('Message removing error!');
                     }
-                }
-                else {
-                    $this->sender_status = self::STATUS_DELETED;
-                    if ($this->save()) {
-                        if ($clearCache) {
-                            Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
-                        }
-                        $transaction->commit();
-                        return true;
+                    if ($clearCache) {
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
                     }
-                    else {
+                    $transaction->commit();
+                    return true;
+                } else {
+                    $this->sender_status = self::STATUS_DELETED;
+                    if (!$this->save()) {
                         throw new Exception('Message status changing error!');
                     }
+                    if ($clearCache) {
+                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->sender_id);
+                    }
+                    $transaction->commit();
+                    return true;
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
@@ -364,31 +347,43 @@ class Message extends ActiveRecord
                 throw new Exception('Reported post missing');
             }
             $package = [];
-            $mods    = $post->forum->mods;
+            $mods = $post->forum->mods;
             foreach ($mods as $mod) {
                 if ($mod != User::loggedId()) {
                     $package[] = [
-                        User::loggedId(), $mod, 
+                        User::loggedId(), 
+                        $mod, 
                         Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
-                        $this->content . '<hr>' . 
-                            Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) . '<hr>' .
-                            '<strong>' . Yii::t('podium/view', 'Post contents') . '</strong><br><div class="blockquote">' . $post->content . '</div>',
-                        Message::STATUS_REMOVED, Message::STATUS_NEW, time(), time(),
+                        $this->content 
+                            . '<hr>' 
+                            . Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) 
+                            . '<hr>' 
+                            . '<strong>' 
+                            . Yii::t('podium/view', 'Post contents') 
+                            . '</strong><br><div class="blockquote">' 
+                            . $post->content 
+                            . '</div>',
+                        Message::STATUS_REMOVED, 
+                        Message::STATUS_NEW, 
+                        time(), 
+                        time(),
                     ];
                 }
             }
             if (empty($package)) {
                 throw new Exception('No one to send report to');
             }
-            Yii::$app->db->createCommand()->batchInsert(Message::tableName(), 
-                ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 'receiver_status', 'created_at', 'updated_at'], 
-                    array_values($package))->execute();
+            Yii::$app->db->createCommand()->batchInsert(
+                Message::tableName(), 
+                ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 
+                    'receiver_status', 'created_at', 'updated_at'], 
+                array_values($package)
+            )->execute();
 
             Podium::getInstance()->cache->delete('user.newmessages');
             Log::info('Post reported', $post->id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

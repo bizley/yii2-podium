@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -20,7 +16,6 @@ use yii\helpers\HtmlPurifier;
  */
 class SearchForm extends Model
 {
-
     /**
      * @var string Query
      */
@@ -68,7 +63,7 @@ class SearchForm extends Model
     {
         return [
             [['query', 'author'], 'string'],
-            [['query', 'author'], 'filter', 'filter' => function($value) {
+            [['query', 'author'], 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process(trim($value));
             }],
             ['query', 'string', 'min' => 3],
@@ -116,12 +111,10 @@ class SearchForm extends Model
             }
             if (!empty($this->date_from) && empty($this->date_to)) {
                 $query->andWhere(['>=', Thread::tableName() . '.created_at', $this->date_from]);
-            }
-            elseif (!empty($this->date_to) && empty($this->date_from)) {
+            } elseif (!empty($this->date_to) && empty($this->date_from)) {
                 $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
                 $query->andWhere(['<=', Thread::tableName() . '.created_at', $this->date_to]);
-            }
-            elseif (!empty($this->date_to) && !empty($this->date_from)) {
+            } elseif (!empty($this->date_to) && !empty($this->date_from)) {
                 if ($this->date_from > $this->date_to) {
                     $tmp = $this->date_to;
                     $this->date_to   = $this->date_from;
@@ -154,8 +147,7 @@ class SearchForm extends Model
                     ],
                 ]
             ];
-        }
-        else {
+        } else {
             $query = Vocabulary::find()->select('post_id, thread_id');
             if (Yii::$app->user->isGuest) {
                 $query->joinWith(['posts' => function ($q) {
@@ -167,8 +159,7 @@ class SearchForm extends Model
                         }
                     ]);
                 }]);
-            }
-            else {
+            } else {
                 $query->joinWith(['posts']);
             }
             if (!empty($this->query)) {
@@ -190,12 +181,10 @@ class SearchForm extends Model
             }
             if (!empty($this->date_from) && empty($this->date_to)) {
                 $query->andWhere(['>=', Post::tableName() . '.updated_at', $this->date_from]);
-            }
-            elseif (!empty($this->date_to) && empty($this->date_from)) {
+            } elseif (!empty($this->date_to) && empty($this->date_from)) {
                 $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
                 $query->andWhere(['<=', Post::tableName() . '.updated_at', $this->date_to]);
-            }
-            elseif (!empty($this->date_to) && !empty($this->date_from)) {
+            } elseif (!empty($this->date_to) && !empty($this->date_from)) {
                 if ($this->date_from > $this->date_to) {
                     $tmp = $this->date_to;
                     $this->date_to   = $this->date_from;

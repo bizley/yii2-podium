@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
@@ -20,6 +16,7 @@ use yii\helpers\Url;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property integer $thread_id
@@ -27,7 +24,9 @@ use yii\helpers\Url;
  */
 class Subscription extends ActiveRecord
 {
-
+    /**
+     * Posts read statuses.
+     */
     const POST_SEEN = 1;
     const POST_NEW  = 0;
     
@@ -64,7 +63,7 @@ class Subscription extends ActiveRecord
     public function search()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => self::find()->where(['user_id' => User::loggedId()]),
+            'query' => static::find()->where(['user_id' => User::loggedId()]),
             'pagination' => [
                 'defaultPageSize' => 10,
                 'forcePageParam' => false
@@ -128,12 +127,10 @@ class Subscription extends ActiveRecord
                                 $sub->user_id
                             )) {
                             Log::info('Subscription notice link queued', $sub->user_id, __METHOD__);
-                        }
-                        else {
+                        } else {
                             Log::error('Error while queuing subscription notice link', $sub->user_id, __METHOD__);
                         }
-                    }
-                    else {
+                    } else {
                         Log::error('Error while queuing subscription notice link - no email set', $sub->user_id, __METHOD__);
                     }
                 }
@@ -154,8 +151,7 @@ class Subscription extends ActiveRecord
                 Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()])->execute();
                 return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

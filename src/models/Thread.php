@@ -35,10 +35,16 @@ use Zelenin\yii\behaviors\Slug;
  */
 class Thread extends ActiveRecord
 {
+    /**
+     * Colour classes.
+     */
     const CLASS_DEFAULT = 'default';
     const CLASS_EDITED  = 'warning';
     const CLASS_NEW     = 'success';
     
+    /**
+     * Icon classes.
+     */
     const ICON_HOT      = 'fire';
     const ICON_LOCKED   = 'lock';
     const ICON_NEW      = 'leaf';
@@ -87,14 +93,14 @@ class Thread extends ActiveRecord
             ['name', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.')],
             ['post', 'required', 'on' => ['new']],
             ['post', 'string', 'min' => 10, 'on' => ['new']],
-            ['post', 'filter', 'filter' => function($value) {
-                    return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
-                }, 'on' => ['new']],
+            ['post', 'filter', 'filter' => function ($value) {
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+            }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['subscribe', 'boolean'],
-            ['name', 'filter', 'filter' => function($value) {
-                    return HtmlPurifier::process(Html::encode($value));
-                }],
+            ['name', 'filter', 'filter' => function ($value) {
+                return HtmlPurifier::process(Html::encode($value));
+            }],
         ];
     }
 
@@ -113,8 +119,7 @@ class Thread extends ActiveRecord
      */
     public function getUserView()
     {
-        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])
-                        ->where(['user_id' => User::loggedId()]);
+        return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     /**
@@ -132,8 +137,7 @@ class Thread extends ActiveRecord
      */
     public function getSubscription()
     {
-        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])
-                        ->where(['user_id' => User::loggedId()]);
+        return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
     
     /**
@@ -142,8 +146,7 @@ class Thread extends ActiveRecord
      */
     public function getLatest()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
-                        ->orderBy(['id' => SORT_DESC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_DESC]);
     }
 
     /**
@@ -162,8 +165,7 @@ class Thread extends ActiveRecord
      */
     public function getPostData()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
-                        ->orderBy(['id' => SORT_ASC]);
+        return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -172,12 +174,10 @@ class Thread extends ActiveRecord
      */
     public function getFirstNewNotSeen()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
-                        ->where(['>', 'created_at', $this->userView 
-                                    ? $this->userView->new_last_seen 
-                                    : 0
-                                ])
-                        ->orderBy(['id' => SORT_ASC]);
+        return $this
+                ->hasOne(Post::className(), ['thread_id' => 'id'])
+                ->where(['>', 'created_at', $this->userView ? $this->userView->new_last_seen : 0])
+                ->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -186,12 +186,10 @@ class Thread extends ActiveRecord
      */
     public function getFirstEditedNotSeen()
     {
-        return $this->hasOne(Post::className(), ['thread_id' => 'id'])
-                        ->where(['>', 'edited_at', $this->userView 
-                                    ? $this->userView->edited_last_seen 
-                                    : 0
-                                ])
-                        ->orderBy(['id' => SORT_ASC]);
+        return $this
+                ->hasOne(Post::className(), ['thread_id' => 'id'])
+                ->where(['>', 'edited_at', $this->userView ? $this->userView->edited_last_seen : 0])
+                ->orderBy(['id' => SORT_ASC]);
     }
     
     /**
@@ -211,11 +209,11 @@ class Thread extends ActiveRecord
     {
         if ($this->firstNewNotSeen) {
             return $this->firstNewNotSeen;
-        } elseif ($this->firstEditedNotSeen) {
-            return $this->firstEditedNotSeen;
-        } else {
-            return $this->latest;
         }
+        if ($this->firstEditedNotSeen) {
+            return $this->firstEditedNotSeen;
+        }
+        return $this->latest;
     }
 
     /**
@@ -225,7 +223,7 @@ class Thread extends ActiveRecord
      */
     public function search($forum_id = null, $filters = null)
     {
-        $query = self::find();
+        $query = static::find();
         if ($forum_id) {
             $query->where(['forum_id' => (int)$forum_id]);
         }
@@ -239,18 +237,14 @@ class Thread extends ActiveRecord
             if (!empty($filters['hot']) && $filters['hot'] == 1) {
                 $query->andWhere(['>=', 'posts', Podium::getInstance()->config->get('hot_minimum')]);
             }
-            if (!empty($filters['new']) 
-                    && $filters['new'] == 1 
-                    && !Yii::$app->user->isGuest) {
+            if (!empty($filters['new']) && $filters['new'] == 1 && !Yii::$app->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
                             new Expression('new_last_seen < new_post_at')
                         ], ['user_id' => null]]);
                 }]);
             }
-            if (!empty($filters['edit']) 
-                    && $filters['edit'] == 1 
-                    && !Yii::$app->user->isGuest) {
+            if (!empty($filters['edit']) && $filters['edit'] == 1 && !Yii::$app->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
                             new Expression('edited_last_seen < edited_post_at')
@@ -260,13 +254,13 @@ class Thread extends ActiveRecord
         }
         
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
+            'query' => $query,
             'pagination' => false,
         ]);
         $dataProvider->sort->defaultOrder = [
-            'pinned'     => SORT_DESC, 
+            'pinned' => SORT_DESC, 
             'updated_at' => SORT_DESC, 
-            'id'         => SORT_ASC
+            'id' => SORT_ASC
         ];
 
         return $dataProvider;
@@ -279,7 +273,7 @@ class Thread extends ActiveRecord
      */
     public function searchByUser($user_id)
     {
-        $query = self::find();
+        $query = static::find();
         $query->where(['author_id' => (int)$user_id]);
         if (Yii::$app->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
@@ -288,12 +282,12 @@ class Thread extends ActiveRecord
         }
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
+            'query' => $query,
             'pagination' => false,
         ]);
         $dataProvider->sort->defaultOrder = [
             'updated_at' => SORT_DESC, 
-            'id'         => SORT_ASC
+            'id' => SORT_ASC
         ];
 
         return $dataProvider;
@@ -309,16 +303,15 @@ class Thread extends ActiveRecord
         $append = false;
 
         if ($this->locked) {
-            $icon   = self::ICON_LOCKED;
+            $icon = self::ICON_LOCKED;
             $append = true;
         } elseif ($this->pinned) {
-            $icon   = self::ICON_PINNED;
+            $icon = self::ICON_PINNED;
             $append = true;
         } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
-            $icon   = self::ICON_HOT;
+            $icon = self::ICON_HOT;
             $append = true;
         }
-
         if ($this->userView) {
             if ($this->new_post_at > $this->userView->new_last_seen) {
                 if (!$append) {
@@ -334,7 +327,6 @@ class Thread extends ActiveRecord
                 $icon = self::ICON_NEW;
             }
         }
-
         return $icon;
     }
 
@@ -345,19 +337,18 @@ class Thread extends ActiveRecord
     public function getDescription()
     {
         $description = Yii::t('podium/view', 'No New Posts');
-        $append      = false;
+        $append = false;
 
         if ($this->locked) {
             $description = Yii::t('podium/view', 'Locked Thread');
-            $append      = true;
+            $append = true;
         } elseif ($this->pinned) {
             $description = Yii::t('podium/view', 'Pinned Thread');
-            $append      = true;
+            $append = true;
         } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
             $description = Yii::t('podium/view', 'Hot Thread');
-            $append      = true;
+            $append = true;
         }
-
         if ($this->userView) {
             if ($this->new_post_at > $this->userView->new_last_seen) {
                 if (!$append) {
@@ -379,7 +370,6 @@ class Thread extends ActiveRecord
                 $description .= ' (' . Yii::t('podium/view', 'New Posts') . ')';
             }
         }
-
         return $description;
     }
 
@@ -400,7 +390,6 @@ class Thread extends ActiveRecord
         } else {
             $class = self::CLASS_NEW;
         }
-
         return $class;
     }
     
@@ -413,10 +402,9 @@ class Thread extends ActiveRecord
     {
         if (User::can(Rbac::ROLE_ADMIN)) {
             return true;
-        } else {
-            if (in_array($user_id, $this->forum->getMods())) {
-                return true;
-            }
+        }
+        if (in_array($user_id, $this->forum->getMods())) {
+            return true;
         }
         return false;
     }
@@ -442,10 +430,9 @@ class Thread extends ActiveRecord
                 || empty($slug)) {
             return null;
         }
-        
         return static::find()
-                ->joinWith(
-                    ['forum' => function ($query) use ($guest) {
+                ->joinWith([
+                    'forum' => function ($query) use ($guest) {
                         if ($guest) {
                             $query->andWhere([Forum::tableName() . '.visible' => 1]);
                         }
@@ -454,12 +441,12 @@ class Thread extends ActiveRecord
                                 $query->andWhere([Category::tableName() . '.visible' => 1]);
                             }
                         }]);
-                    }]
-                )
+                    }
+                ])
                 ->where([
-                    static::tableName() . '.id'          => $id, 
-                    static::tableName() . '.slug'        => $slug,
-                    static::tableName() . '.forum_id'    => $forum_id,
+                    static::tableName() . '.id' => $id, 
+                    static::tableName() . '.slug' => $slug,
+                    static::tableName() . '.forum_id' => $forum_id,
                     static::tableName() . '.category_id' => $category_id,
                 ])
                 ->limit(1)
@@ -476,11 +463,10 @@ class Thread extends ActiveRecord
         $transaction = Thread::getDb()->beginTransaction();
         try {
             if ($this->delete()) {
-                $this->forum
-                        ->updateCounters([
-                            'threads' => -1, 
-                            'posts'   => -$this->postsCount
-                        ]);
+                $this->forum->updateCounters([
+                    'threads' => -1, 
+                    'posts'   => -$this->postsCount
+                ]);
                 $transaction->commit();
                 Cache::clearAfter('threadDelete');
                 Log::info('Thread deleted', $this->id, __METHOD__);
@@ -550,12 +536,7 @@ class Thread extends ActiveRecord
     {
         $this->locked = !$this->locked;
         if ($this->save()) {
-            Log::info(
-                    $this->locked 
-                        ? 'Thread locked' 
-                        : 'Thread unlocked', 
-                    $this->id, __METHOD__
-                );
+            Log::info($this->locked ? 'Thread locked' : 'Thread unlocked', $this->id, __METHOD__);
             return true;
         }
         return false;
@@ -579,11 +560,7 @@ class Thread extends ActiveRecord
                 $this->forum_id = $newParent->id;
                 $this->category_id = $newParent->category_id;
                 if ($this->save()) {
-                    Post::updateAll(
-                        ['forum_id' => $newParent->id], 
-                        'thread_id = :tid', 
-                        [':tid' => $this->id]
-                    );
+                    Post::updateAll(['forum_id' => $newParent->id], ['thread_id' => $this->id]);
                 }
                 $transaction->commit();
                 Cache::clearAfter('threadMove');
@@ -638,18 +615,18 @@ class Thread extends ActiveRecord
                         throw new Exception('Incorrect post ID');
                     }
                     $newPost = Post::find()
-                                        ->where([
-                                            'id'        => $post, 
-                                            'thread_id' => $this->id, 
-                                            'forum_id'  => $this->forum->id
-                                        ])
-                                        ->limit(1)
-                                        ->one();
+                                ->where([
+                                    'id'        => $post, 
+                                    'thread_id' => $this->id, 
+                                    'forum_id'  => $this->forum->id
+                                ])
+                                ->limit(1)
+                                ->one();
                     if (empty($newPost)) {
                         throw new Exception('No post of given ID found');
                     }
                     $newPost->thread_id = $newThread->id;
-                    $newPost->forum_id  = $newThread->forum_id;
+                    $newPost->forum_id = $newThread->forum_id;
                     $newPost->save();                    
                 }
                 $wholeThread = false;
@@ -688,12 +665,12 @@ class Thread extends ActiveRecord
                 $this->forum->updateCounters(['threads' => 1]);
 
                 $post = new Post;
-                $post->content   = $this->post;
+                $post->content = $this->post;
                 $post->thread_id = $this->id;
-                $post->forum_id  = $this->forum_id;
+                $post->forum_id = $this->forum_id;
                 $post->author_id = User::loggedId();
-                $post->likes     = 0;
-                $post->dislikes  = 0;
+                $post->likes = 0;
+                $post->dislikes = 0;
 
                 if ($post->save()) {
                     $post->markSeen();
@@ -705,7 +682,7 @@ class Thread extends ActiveRecord
 
                     if ($this->subscribe) {
                         $subscription = new Subscription();
-                        $subscription->user_id   = User::loggedId();
+                        $subscription->user_id = User::loggedId();
                         $subscription->thread_id = $this->id;
                         $subscription->post_seen = Subscription::POST_SEEN;
                         $subscription->save();
@@ -753,11 +730,9 @@ class Thread extends ActiveRecord
             }
             $updateBatch = [];
             $threadsPrevMarked = Thread::find()->joinWith('threadView')
-                    ->where([
-                        'and',
+                    ->where(['and',
                         ['user_id' => $loggedId],
-                        [
-                            'or',
+                        ['or',
                             new Expression('new_last_seen < new_post_at'),
                             new Expression('edited_last_seen < edited_post_at')
                         ],
@@ -768,9 +743,9 @@ class Thread extends ActiveRecord
             }
             if (!empty($updateBatch)) {
                 Yii::$app->db->createCommand()->update(ThreadView::tableName(), [
-                        'new_last_seen' => $time, 
-                        'edited_last_seen' => $time
-                    ], ['thread_id' => $updateBatch, 'user_id' => $loggedId])->execute();
+                    'new_last_seen' => $time, 
+                    'edited_last_seen' => $time
+                ], ['thread_id' => $updateBatch, 'user_id' => $loggedId])->execute();
             }
 
             $insertBatch = [];
@@ -779,14 +754,9 @@ class Thread extends ActiveRecord
                 $insertBatch[] = [$loggedId, $thread->id, $time, $time];
             }
             if (!empty($insertBatch)) {
-                Yii::$app->db
-                            ->createCommand()
-                            ->batchInsert(
-                                ThreadView::tableName(), 
-                                ['user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'], 
-                                $insertBatch
-                            )
-                            ->execute();
+                Yii::$app->db->createCommand()->batchInsert(ThreadView::tableName(), [
+                    'user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'
+                ], $insertBatch)->execute();
             }
             return true;
         } catch (Exception $e) {

@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -18,7 +14,6 @@ use yii\data\ActiveDataProvider;
  */
 class UserSearch extends User
 {
-
     /**
      * @inheritdoc
      */
@@ -61,11 +56,12 @@ class UserSearch extends User
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['id' => $this->id])
-                ->andFilterWhere(['status' => $this->status])
-                ->andFilterWhere(['role' => $this->role])
-                ->andFilterWhere(['like', 'email', $this->email])
-                ->andFilterWhere(['like', 'username', $this->username]);
+        $query
+            ->andFilterWhere(['id' => $this->id])
+            ->andFilterWhere(['status' => $this->status])
+            ->andFilterWhere(['role' => $this->role])
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'username', $this->username]);
 
         return $dataProvider;
     }

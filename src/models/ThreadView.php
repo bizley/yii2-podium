@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -24,7 +20,6 @@ use yii\db\Expression;
  */
 class ThreadView extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -41,20 +36,17 @@ class ThreadView extends ActiveRecord
     public function search()
     {
         $loggedId = User::loggedId();
-        $query = Thread::find()->joinWith('threadView')->where([
-                    'or',
-                    [
-                        'and',
-                        ['user_id' => $loggedId],
-                        new Expression('new_last_seen < new_post_at')
-                    ],
-                    [
-                        'and',
-                        ['user_id' => $loggedId],
-                        new Expression('edited_last_seen < edited_post_at')
-                    ],
-                    ['user_id' => null],
-                ]);
+        $query = Thread::find()->joinWith('threadView')->where(['or',
+            ['and',
+                ['user_id' => $loggedId],
+                new Expression('new_last_seen < new_post_at')
+            ],
+            ['and',
+                ['user_id' => $loggedId],
+                new Expression('edited_last_seen < edited_post_at')
+            ],
+            ['user_id' => null],
+        ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

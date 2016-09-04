@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use yii\behaviors\TimestampBehavior;
@@ -14,6 +10,7 @@ use yii\db\ActiveRecord;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property integer $post_id
@@ -22,7 +19,6 @@ use yii\db\ActiveRecord;
  */
 class PostThumb extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */

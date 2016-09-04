@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use yii\db\ActiveRecord;
@@ -14,13 +10,13 @@ use yii\db\ActiveRecord;
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property integer $forum_id
  */
 class Mod extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */

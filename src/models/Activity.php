@@ -63,17 +63,12 @@ class Activity extends ActiveRecord
      */
     protected static function _addGuest($ip, $url)
     {
-        $activity = self::find()
-                    ->where(['ip' => $ip, 'user_id' => null])
-                    ->limit(1)
-                    ->one();
-        if ($activity) {
-            $activity->url = $url;
-        } else {
+        $activity = static::find()->where(['ip' => $ip, 'user_id' => null])->limit(1)->one();
+        if (empty($activity)) {
             $activity = new Activity;
-            $activity->url = $url;
             $activity->ip = $ip;
         }
+        $activity->url = $url;
         return $activity->save();
     }
     
@@ -87,11 +82,8 @@ class Activity extends ActiveRecord
     {
         $user = User::findMe();
         if ($user) {
-            $activity = self::find()
-                        ->where(['user_id' => $user->id])
-                        ->limit(1)
-                        ->one();
-            if (!$activity) {
+            $activity = static::find()->where(['user_id' => $user->id])->limit(1)->one();
+            if (empty($activity)) {
                 $activity = new Activity;
                 $activity->user_id = $user->id;
             }
@@ -117,21 +109,17 @@ class Activity extends ActiveRecord
         try {
             $ip = Yii::$app->request->getUserIp();
             $url = Yii::$app->request->getUrl();
-            
             if (empty($ip)) {
                 $ip = '0.0.0.0';
             }
-
             if (Yii::$app->user->isGuest) {
-                $result = self::_addGuest($ip, $url);
+                $result = static::_addGuest($ip, $url);
             } else {
-                $result = self::_addUser($ip, $url);
+                $result = static::_addUser($ip, $url);
             }
-            
             if ($result) {
                 return true;
             }
-            
             Log::error('Cannot log user activity', null, __METHOD__);
             return false;
         } catch (Exception $e) {
@@ -145,7 +133,7 @@ class Activity extends ActiveRecord
      */
     public static function deleteUser($id)
     {
-        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        $activity = static::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity && $activity->delete()) {
             Podium::getInstance()->cache->delete('forum.lastactive');
         } else {
@@ -161,7 +149,7 @@ class Activity extends ActiveRecord
      */
     public static function updateName($id, $username, $slug)
     {
-        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        $activity = static::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity) {
             $activity->username = $username;
             $activity->user_slug = $slug;
@@ -182,7 +170,7 @@ class Activity extends ActiveRecord
      */
     public static function updateRole($id, $role)
     {
-        $activity = self::find()->where(['user_id' => $id])->limit(1)->one();
+        $activity = static::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity) {
             $activity->role = $role;
             if ($activity->save()) {
@@ -204,41 +192,28 @@ class Activity extends ActiveRecord
         $last = Podium::getInstance()->cache->get('forum.lastactive');
         if ($last === false) {
             $last = [
-                'count'     => self::find()
-                                ->where(['>', 'updated_at', time() - 15 * 60])
-                                ->count(),
-                'members'   => self::find()
-                                ->where([
-                                    'and', 
-                                    ['>', 'updated_at', time() - 15 * 60], 
-                                    ['is not', 'user_id', null], 
-                                    ['anonymous' => 0]
-                                ])
-                                ->count(),
-                'anonymous' => self::find()
-                                ->where([
-                                    'and', 
-                                    ['>', 'updated_at', time() - 15 * 60], 
-                                    ['is not', 'user_id', null], 
-                                    ['anonymous' => 1]
-                                ])
-                                ->count(),
-                'guests'    => self::find()
-                                ->where([
-                                    'and', 
-                                    ['>', 'updated_at', time() - 15 * 60], 
-                                    ['user_id' => null]
-                                ])
-                                ->count(),
-                'names'     => [],
+                'count' => static::find()->where(['>', 'updated_at', time() - 15 * 60])->count(),
+                'members' => static::find()->where(['and', 
+                                ['>', 'updated_at', time() - 15 * 60], 
+                                ['is not', 'user_id', null], 
+                                ['anonymous' => 0]
+                            ])->count(),
+                'anonymous' => static::find()->where(['and', 
+                                ['>', 'updated_at', time() - 15 * 60], 
+                                ['is not', 'user_id', null], 
+                                ['anonymous' => 1]
+                            ])->count(),
+                'guests' => static::find()->where(['and', 
+                                ['>', 'updated_at', time() - 15 * 60], 
+                                ['user_id' => null]
+                            ])->count(),
+                'names' => [],
             ];
-            $members = self::find()
-                        ->where([
-                            'and', 
-                            ['>', 'updated_at', time() - 15 * 60], 
-                            ['is not', 'user_id', null], 
-                            ['anonymous' => 0]
-                        ]);
+            $members = static::find()->where(['and', 
+                        ['>', 'updated_at', time() - 15 * 60], 
+                        ['is not', 'user_id', null], 
+                        ['anonymous' => 0]
+                    ]);
             foreach ($members->each() as $member) {
                 $last['names'][$member->user_id] = [
                     'name' => $member->username,
@@ -259,9 +234,7 @@ class Activity extends ActiveRecord
     {
         $members = Podium::getInstance()->cache->get('forum.memberscount');
         if ($members === false) {
-            $members = User::find()
-                        ->where(['!=', 'status', User::STATUS_REGISTERED])
-                        ->count();
+            $members = User::find()->where(['!=', 'status', User::STATUS_REGISTERED])->count();
             Podium::getInstance()->cache->set('forum.memberscount', $members);
         }
         return $members;

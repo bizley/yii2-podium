@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -17,7 +13,6 @@ use yii\base\Model;
  */
 class LoginForm extends Model
 {
-
     /**
      * @var string Username or email
      */
@@ -33,8 +28,6 @@ class LoginForm extends Model
      */
     public $rememberMe = false;
     
-    private $_user = false;
-
     /**
      * @inheritdoc
      */
@@ -56,7 +49,6 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Incorrect username or password.');
             }
@@ -75,6 +67,8 @@ class LoginForm extends Model
         return false;
     }
 
+    private $_user = false;
+    
     /**
      * Return User.
      * @return User

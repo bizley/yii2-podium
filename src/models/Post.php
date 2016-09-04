@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -24,6 +20,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property string $content
  * @property integer $thread_id
@@ -36,7 +33,6 @@ use yii\helpers\HtmlPurifier;
  */
 class Post extends ActiveRecord
 {
-
     /**
      * @var bool Subscription flag.
      */
@@ -70,12 +66,12 @@ class Post extends ActiveRecord
     {
         return [
             ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
-            ['topic', 'filter', 'filter' => function($value) {
+            ['topic', 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process(Html::encode($value));
             }, 'on' => ['firstPost']],
             ['subscribe', 'boolean'],
             ['content', 'required'],
-            ['content', 'filter', 'filter' => function($value) {
+            ['content', 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
             }],
             ['content', 'string', 'min' => 10],
@@ -151,16 +147,13 @@ class Post extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-
         try {
             if ($insert) {
-                $this->_insertWords();
+                $this->insertWords();
+            } else {
+                $this->updateWords();
             }
-            else {
-                $this->_updateWords();
-            }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -169,7 +162,7 @@ class Post extends ActiveRecord
      * Prepares tag words.
      * @return string[]
      */
-    protected function _prepareWords()
+    protected function prepareWords()
     {
         $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(preg_replace(['/\n/', '/\<br ?\/?\>/i'], ' ', $this->content)))));
         $allWords = [];
@@ -178,7 +171,6 @@ class Post extends ActiveRecord
                 $allWords[] = $word;
             }
         }
-        
         return $allWords;
     }
     
@@ -187,7 +179,7 @@ class Post extends ActiveRecord
      * @param string[] $allWords All words extracted from post
      * @throws Exception
      */
-    protected function _addNewWords($allWords)
+    protected function addNewWords($allWords)
     {
         try {
             $newWords = $allWords;
@@ -204,8 +196,7 @@ class Post extends ActiveRecord
             if (!empty($formatWords)) {
                 Yii::$app->db->createCommand()->batchInsert(Vocabulary::tableName(), ['word'], $formatWords)->execute();
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
@@ -215,12 +206,12 @@ class Post extends ActiveRecord
      * Inserts tag words.
      * @throws Exception
      */
-    protected function _insertWords()
+    protected function insertWords()
     {
         try {
             $vocabulary = [];
-            $allWords   = $this->_prepareWords();
-            $this->_addNewWords($allWords);
+            $allWords = $this->prepareWords();
+            $this->addNewWords($allWords);
             $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
@@ -228,8 +219,7 @@ class Post extends ActiveRecord
             if (!empty($vocabulary)) {
                 Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], $vocabulary)->execute();
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
@@ -239,12 +229,12 @@ class Post extends ActiveRecord
      * Updates tag words.
      * @throws Exception
      */
-    protected function _updateWords()
+    protected function updateWords()
     {
         try {
             $vocabulary = [];
-            $allWords   = $this->_prepareWords();
-            $this->_addNewWords($allWords);
+            $allWords = $this->prepareWords();
+            $this->addNewWords($allWords);
             $query = (new Query)->from(Vocabulary::tableName())->where(['word' => $allWords]);
             foreach ($query->each() as $vocabularyNew) {
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
@@ -258,8 +248,7 @@ class Post extends ActiveRecord
                     Yii::$app->db->createCommand()->delete('{{%podium_vocabulary_junction}}', ['id' => $junk['id']])->execute();
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
             throw $e;
         }
@@ -284,7 +273,7 @@ class Post extends ActiveRecord
     public function search($forum_id, $thread_id)
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => self::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]),
+            'query' => static::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]),
             'pagination' => [
                 'defaultPageSize' => 10,
                 'pageSizeLimit' => false,
@@ -302,7 +291,7 @@ class Post extends ActiveRecord
      */
     public function searchByUser($user_id)
     {
-        $query = self::find();
+        $query = static::find();
         $query->where(['author_id' => $user_id]);
         if (Yii::$app->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
@@ -332,22 +321,20 @@ class Post extends ActiveRecord
             $threadView = ThreadView::find()->where(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id])->limit(1)->one();
             if (empty($threadView)) {
                 $threadView = new ThreadView;
-                $threadView->user_id          = User::loggedId();
-                $threadView->thread_id        = $this->thread_id;
-                $threadView->new_last_seen    = $this->created_at;
+                $threadView->user_id = User::loggedId();
+                $threadView->thread_id = $this->thread_id;
+                $threadView->new_last_seen = $this->created_at;
                 $threadView->edited_last_seen = !empty($this->edited_at) ? $this->edited_at : $this->created_at;
                 $threadView->save();
                 $this->thread->updateCounters(['views' => 1]);
-            }
-            else {
+            } else {
                 if ($this->edited) {
                     if ($threadView->edited_last_seen < $this->edited_at) {
                         $threadView->edited_last_seen = $this->edited_at;
                         $threadView->save();
                         $this->thread->updateCounters(['views' => 1]);
                     }
-                }
-                else {
+                } else {
                     $save = false;
                     if ($threadView->new_last_seen < $this->created_at) {
                         $threadView->new_last_seen = $this->created_at;
@@ -386,25 +373,24 @@ class Post extends ActiveRecord
                 $posts = static::getLatestPostsForGuests($posts);
                 foreach ($posts as $post) {
                     $latest[] = [
-                        'id'      => $post->id,
-                        'title'   => $post->thread->name,
+                        'id' => $post->id,
+                        'title' => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->author->podiumTag
+                        'author' => $post->author->podiumTag
                     ];
                 }
                 Podium::getInstance()->cache->setElement('forum.latestposts', 'guest', $latest);
             }
-        }
-        else {
+        } else {
             $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'member');
             if ($latest === false) {
                 $posts = static::getLatestPostsForMembers($posts);
                 foreach ($posts as $post) {
                     $latest[] = [
-                        'id'      => $post->id,
-                        'title'   => $post->thread->name,
+                        'id' => $post->id,
+                        'title' => $post->thread->name,
                         'created' => $post->created_at,
-                        'author'  => $post->author->podiumTag
+                        'author' => $post->author->podiumTag
                     ];
                 }
                 Podium::getInstance()->cache->setElement('forum.latestposts', 'member', $latest);
@@ -425,17 +411,30 @@ class Post extends ActiveRecord
      */
     public static function verify($category_id = null, $forum_id = null, $thread_id = null, $id = null)
     {
-        if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($forum_id) || $forum_id < 1 || !is_numeric($thread_id) || $thread_id < 1 || !is_numeric($id) || $id < 1) {
+        if (!is_numeric($category_id) 
+                || $category_id < 1 
+                || !is_numeric($forum_id) 
+                || $forum_id < 1 
+                || !is_numeric($thread_id) 
+                || $thread_id < 1 
+                || !is_numeric($id) 
+                || $id < 1) {
             return null;
         }
-        
-        return static::find()->joinWith(['thread', 'forum' => function ($query) use ($category_id) {
-                $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $category_id]);
-            }])->where([
-                    static::tableName() . '.id'        => $id, 
+        return static::find()
+                ->joinWith([
+                    'thread', 
+                    'forum' => function ($query) use ($category_id) {
+                        $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $category_id]);
+                    }
+                ])
+                ->where([
+                    static::tableName() . '.id' => $id, 
                     static::tableName() . '.thread_id' => $thread_id,
-                    static::tableName() . '.forum_id'  => $forum_id,
-                ])->limit(1)->one();
+                    static::tableName() . '.forum_id' => $forum_id,
+                ])
+                ->limit(1)
+                ->one();
     }
     
     /**
@@ -452,8 +451,7 @@ class Post extends ActiveRecord
                 if ($this->thread->postsCount) {
                     $this->thread->updateCounters(['posts' => -1]);
                     $this->forum->updateCounters(['posts' => -1]);
-                }
-                else {
+                } else {
                     $wholeThread = true;
                     $this->thread->delete();
                     $this->forum->updateCounters(['posts' => -1, 'threads' => -1]);
@@ -463,8 +461,7 @@ class Post extends ActiveRecord
                 Log::info('Post deleted', !empty($this->id) ? $this->id : '', __METHOD__);
                 return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -495,8 +492,7 @@ class Post extends ActiveRecord
             $transaction->commit();
             Log::info('Post updated', $this->id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -523,18 +519,17 @@ class Post extends ActiveRecord
                 if ($previous->save()) {
                     $previous->markSeen();
                     $previous->thread->touch('edited_post_at');
-                    $id     = $previous->id;
+                    $id = $previous->id;
                     $thread = $previous->thread;
                 }
-            }
-            else {
+            } else {
                 if ($this->save()) {
                     $this->markSeen();
                     $this->forum->updateCounters(['posts' => 1]);
                     $this->thread->updateCounters(['posts' => 1]);
                     $this->thread->touch('new_post_at');
                     $this->thread->touch('edited_post_at');
-                    $id     = $this->id;
+                    $id = $this->id;
                     $thread = $this->thread;
                 }
             }
@@ -544,7 +539,7 @@ class Post extends ActiveRecord
             Subscription::notify($thread->id);
             if ($this->subscribe && !$thread->subscription) {
                 $subscription = new Subscription();
-                $subscription->user_id   = User::loggedId();
+                $subscription->user_id = User::loggedId();
                 $subscription->thread_id = $thread->id;
                 $subscription->post_seen = Subscription::POST_SEEN;
                 $subscription->save();
@@ -553,8 +548,7 @@ class Post extends ActiveRecord
             Cache::clearAfter('newPost');
             Log::info('Post added', $id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -577,37 +571,32 @@ class Post extends ActiveRecord
                     if ($this->thumb->save()) {
                         $this->updateCounters(['likes' => -1, 'dislikes' => 1]);
                     }
-                }
-                elseif ($this->thumb->thumb == -1 && $up) {
+                } elseif ($this->thumb->thumb == -1 && $up) {
                     $this->thumb->thumb = 1;
                     if ($this->thumb->save()) {
                         $this->updateCounters(['likes' => 1, 'dislikes' => -1]);
                     }
                 }
-            }
-            else {
+            } else {
                 $postThumb = new PostThumb;
                 $postThumb->post_id = $this->id;
                 $postThumb->user_id = User::loggedId();
-                $postThumb->thumb   = $up ? 1 : -1;
+                $postThumb->thumb = $up ? 1 : -1;
                 if ($postThumb->save()) {
                     if ($postThumb->thumb) {
                         $this->updateCounters(['likes' => 1]);
-                    }
-                    else {
+                    } else {
                         $this->updateCounters(['dislikes' => 1]);
                     }
                 }
             }
             if ($count == 0) {
                 Podium::getInstance()->cache->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
-            }
-            else {
+            } else {
                 Podium::getInstance()->cache->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
             }
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

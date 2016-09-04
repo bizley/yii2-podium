@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
@@ -22,6 +18,7 @@ use Zelenin\yii\behaviors\Slug;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property string $name
  * @property string $slug
@@ -34,7 +31,6 @@ use Zelenin\yii\behaviors\Slug;
  */
 class Category extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -79,15 +75,12 @@ class Category extends ActiveRecord
      */
     public function search()
     {
-        $query = self::find();
-        
+        $query = static::find();        
         if (Yii::$app->user->isGuest) {
             $query->andWhere(['visible' => 1]);
         }
-
         $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
-
         return $dataProvider;
     }
     
@@ -97,9 +90,8 @@ class Category extends ActiveRecord
      */
     public function show()
     {
-        $dataProvider = new ActiveDataProvider(['query' => self::find()]);
+        $dataProvider = new ActiveDataProvider(['query' => static::find()]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
-
         return $dataProvider->getModels();
     }
     
@@ -113,38 +105,31 @@ class Category extends ActiveRecord
     public function newOrder($order)
     {
         try {
-            $next    = 0;
+            $next = 0;
             $newSort = -1;
-            $query   = (new Query)
+            $query = (new Query)
                         ->from(Category::tableName())
-                        ->where('id != :id')
-                        ->params([':id' => $this->id])
+                        ->where(['!=', 'id', $this->id])
                         ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
                         ->indexBy('id');
-            
             foreach ($query->each() as $id => $forum) {
                 if ($next == $order) {
                     $newSort = $next;
                     $next++;
                 }
-                Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                Yii::$app->db->createCommand()->update(Category::tableName(), ['sort' => $next], ['id' => $id])->execute();
                 $next++;
             }
-            
             if ($newSort == -1) {
                 $newSort = $next;
             }
-            
             $this->sort = $newSort;
-            
             if (!$this->save()) {
                 throw new Exception('Categories order saving error');
             }
-            
             Log::info('Categories orded updated', $this->id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

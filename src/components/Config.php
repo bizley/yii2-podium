@@ -62,22 +62,22 @@ class Config extends Component
     public function getDefaults()
     {
         return [
-            'name'                        => self::PODIUM_NAME,
-            'version'                     => self::CURRENT_VERSION,
-            'hot_minimum'                 => self::HOT_MINIMUM,
-            'members_visible'             => self::FLAG_MEMBERS_VISIBLE,
-            'from_email'                  => self::DEFAULT_FROM_EMAIL,
-            'from_name'                   => self::DEFAULT_FROM_NAME,
-            'maintenance_mode'            => self::MAINTENANCE_MODE,
-            'max_attempts'                => self::MAX_SEND_ATTEMPTS,
-            'use_captcha'                 => self::FLAG_USE_CAPTCHA,
-            'recaptcha_sitekey'           => '',
-            'recaptcha_secretkey'         => '',
+            'name' => self::PODIUM_NAME,
+            'version' => self::CURRENT_VERSION,
+            'hot_minimum' => self::HOT_MINIMUM,
+            'members_visible' => self::FLAG_MEMBERS_VISIBLE,
+            'from_email' => self::DEFAULT_FROM_EMAIL,
+            'from_name' => self::DEFAULT_FROM_NAME,
+            'maintenance_mode' => self::MAINTENANCE_MODE,
+            'max_attempts' => self::MAX_SEND_ATTEMPTS,
+            'use_captcha' => self::FLAG_USE_CAPTCHA,
+            'recaptcha_sitekey' => '',
+            'recaptcha_secretkey' => '',
             'password_reset_token_expire' => self::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE,
-            'email_token_expire'          => self::SECONDS_EMAIL_TOKEN_EXPIRE,
-            'activation_token_expire'     => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
-            'meta_keywords'               => self::META_KEYWORDS,
-            'meta_description'            => self::META_DESCRIPTION,
+            'email_token_expire' => self::SECONDS_EMAIL_TOKEN_EXPIRE,
+            'activation_token_expire' => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
+            'meta_keywords' => self::META_KEYWORDS,
+            'meta_description' => self::META_DESCRIPTION,
         ];
     }
     

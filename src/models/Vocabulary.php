@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -22,7 +18,6 @@ use yii\helpers\HtmlPurifier;
  */
 class Vocabulary extends ActiveRecord
 {
-
     /**
      * @var string Query
      */
@@ -83,8 +78,7 @@ class Vocabulary extends ActiveRecord
      */
     public function getPosts()
     {
-        return $this->hasMany(Post::className(), ['id' => 'post_id'])
-            ->viaTable('{{%podium_vocabulary_junction}}', ['word_id' => 'id']);
+        return $this->hasMany(Post::className(), ['id' => 'post_id'])->viaTable('{{%podium_vocabulary_junction}}', ['word_id' => 'id']);
     }
     
     /**
@@ -92,13 +86,12 @@ class Vocabulary extends ActiveRecord
      */
     public function search()
     {
-        $query = self::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);
+        $query = static::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);
         if (Yii::$app->user->isGuest) {
             $query->joinWith(['posts' => function($q) {
                 $q->joinWith(['forum'])->where([Forum::tableName() . '.visible' => 1]);
             }]);
-        }
-        else {
+        } else {
             $query->joinWith(['posts']);
         }
         
@@ -108,8 +101,8 @@ class Vocabulary extends ActiveRecord
                 'defaultOrder' => ['thread_id' => SORT_DESC],
                 'attributes' => [
                     'thread_id' => [
-                        'asc'     => ['thread_id' => SORT_ASC],
-                        'desc'    => ['thread_id' => SORT_DESC],
+                        'asc' => ['thread_id' => SORT_ASC],
+                        'desc' => ['thread_id' => SORT_DESC],
                         'default' => SORT_DESC,
                     ],
                 ]

@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
@@ -19,7 +15,6 @@ use yii\validators\StringValidator;
  */
 class ConfigForm extends Model
 {
-
     /**
      * @var Config Config instance.
      */
@@ -41,8 +36,7 @@ class ConfigForm extends Model
     public function init()
     {
         parent::init();
-
-        $this->config   = Podium::getInstance()->config;
+        $this->config = Podium::getInstance()->config;
         $this->settings = $this->config->all();
     }
     
@@ -72,13 +66,11 @@ class ConfigForm extends Model
                     if (!$this->config->set($key, $value)) {
                         return false;
                     }                            
-                }
-                else {
+                } else {
                     return false;
                 }
             }
         }
-        
         return true;
     }
 }

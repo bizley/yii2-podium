@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
@@ -21,6 +17,7 @@ use yii\db\Query;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $message_id
  * @property integer $receiver_id
@@ -30,7 +27,9 @@ use yii\db\Query;
  */
 class MessageReceiver extends ActiveRecord
 {
-
+    /**
+     * Statuses.
+     */
     const STATUS_NEW     = 1;
     const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
@@ -68,9 +67,7 @@ class MessageReceiver extends ActiveRecord
     {
         return array_merge(
             parent::scenarios(),
-            [
-                'remove' => ['receiver_status'],
-            ]                
+            ['remove' => ['receiver_status']]
         );
     }
     
@@ -82,7 +79,7 @@ class MessageReceiver extends ActiveRecord
         return [
             [['receiver_id', 'message_id'], 'required'],
             [['receiver_id', 'message_id'], 'integer', 'min' => 1],
-            ['receiver_status', 'in', 'range' => self::getStatuses()],
+            ['receiver_status', 'in', 'range' => static::getStatuses()],
             [['senderName', 'topic'], 'string']
         ];
     }
@@ -127,48 +124,39 @@ class MessageReceiver extends ActiveRecord
                 $clearCache = true;
             }
             $deleteParent = null;
-            
             $this->scenario = 'remove';
-            
             if ($this->message->sender_status != Message::STATUS_DELETED) {
                 $this->receiver_status = self::STATUS_DELETED;
-                if ($this->save()) {
-                    if ($clearCache) {
-                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
-                    }
-                    $transaction->commit();
-                    return true;
-                }
-                else {
+                if (!$this->save()) {
                     throw new Exception('Message status changing error!');
                 }
-            }
-            else {
+                if ($clearCache) {
+                    Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
+                }
+                $transaction->commit();
+                return true;
+            } else {
                 if ($this->message->sender_status == Message::STATUS_DELETED && count($this->message->messageReceivers) == 1) {
                     $deleteParent = $this->message;
                 }
-                if ($this->delete()) {
-                    if ($clearCache) {
-                        Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
-                    }
-                    if ($deleteParent) {
-                        if (!$deleteParent->delete()) {
-                            throw new Exception('Sender message deleting error!');
-                        }
-                    }
-                    $transaction->commit();
-                    return true;
-                }
-                else {
+                if (!$this->delete()) {
                     throw new Exception('Message removing error!');
                 }
+                if ($clearCache) {
+                    Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
+                }
+                if ($deleteParent) {
+                    if (!$deleteParent->delete()) {
+                        throw new Exception('Sender message deleting error!');
+                    }
+                }
+                $transaction->commit();
+                return true;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
-        
         return false;
     }
     
@@ -178,24 +166,32 @@ class MessageReceiver extends ActiveRecord
      */
     public function search($params)
     {
-        // not very proud of this query - slow for sure
-        // let me know if it can be done better.
-        $subquery = (new Query)->select(['m2.replyto'])->from(['m1' => Message::tableName()])
-                ->leftJoin(['m2' => Message::tableName()], 'm1.replyto = m2.id')
-                ->where(['is not', 'm2.replyto', null]);
-        $query = self::find()->where(['and', 
+        $subquery = (new Query)
+                    ->select(['m2.replyto'])
+                    ->from(['m1' => Message::tableName()])
+                    ->leftJoin(['m2' => Message::tableName()], 'm1.replyto = m2.id')
+                    ->where(['is not', 'm2.replyto', null]);
+        $query = static::find()->where(['and', 
             ['receiver_id' => User::loggedId()], 
             ['!=', 'receiver_status', self::STATUS_DELETED],
             ['not in', 'message_id', $subquery]
         ]);
-        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'  => [
-                'attributes' => ['id', 'topic', 'created_at', 
+            'sort' => [
+                'attributes' => [
+                    'id', 
+                    'topic', 
+                    'created_at', 
                     'senderName' => [
-                        'asc' => [User::tableName() . '.username' => SORT_ASC, User::tableName() . '.id' => SORT_ASC],
-                        'desc' => [User::tableName() . '.username' => SORT_DESC, User::tableName() . '.id' => SORT_DESC],
+                        'asc' => [
+                            User::tableName() . '.username' => SORT_ASC, 
+                            User::tableName() . '.id' => SORT_ASC
+                        ],
+                        'desc' => [
+                            User::tableName() . '.username' => SORT_DESC, 
+                            User::tableName() . '.id' => SORT_DESC
+                        ],
                         'default' => SORT_ASC
                     ],
                 ],
@@ -220,12 +216,10 @@ class MessageReceiver extends ActiveRecord
                     $q->andFilterWhere(['username' => ['', null], User::tableName() . '.id' => $matches[2]]);
                 }]);
             }]);
-        }
-        elseif (preg_match('/^([0-9]+)$/', $this->senderName, $matches)) {
+        } elseif (preg_match('/^([0-9]+)$/', $this->senderName, $matches)) {
             $dataProvider->query->joinWith(['message' => function($q) use ($matches) {
                 $q->joinWith(['sender' => function ($q) use ($matches) {
-                    $q->andFilterWhere([
-                        'or', 
+                    $q->andFilterWhere(['or', 
                         ['like', 'username', $this->senderName],
                         [
                             'username' => ['', null],
@@ -234,15 +228,13 @@ class MessageReceiver extends ActiveRecord
                     ]);
                 }]);
             }]);
-        }
-        else {
+        } else {
             $dataProvider->query->joinWith(['message' => function($q) {
                 $q->joinWith(['sender' => function ($q) {
                     $q->andFilterWhere(['like', User::tableName() . '.username', $this->senderName]);
                 }]);
             }]);
         }
-
         return $dataProvider;
     }
     

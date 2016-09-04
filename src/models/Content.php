@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
@@ -16,6 +12,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property string $name
  * @property string $topic
@@ -23,7 +20,9 @@ use yii\helpers\HtmlPurifier;
  */
 class Content extends ActiveRecord
 {
-
+    /**
+     * Content names.
+     */
     const EMAIL_REACTIVATION = 'email-react';
     const EMAIL_REGISTRATION = 'email-reg';
     const EMAIL_PASSWORD     = 'email-pass';
@@ -47,8 +46,12 @@ class Content extends ActiveRecord
         return [
             [['content', 'topic'], 'required'],
             [['content', 'topic'], 'string', 'min' => 1],
-            ['topic', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value); }],
-            ['content', 'filter', 'filter' => function($value) { return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full')); }],
+            ['topic', 'filter', 'filter' => function ($value) {
+                return HtmlPurifier::process($value);
+            }],
+            ['content', 'filter', 'filter' => function ($value) {
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+            }],
         ];
     }
     
@@ -62,27 +65,27 @@ class Content extends ActiveRecord
     {
         $defaults = [
             self::EMAIL_REACTIVATION => [
-                'topic'   => Yii::t('podium/view', '{forum} account reactivation'),
+                'topic' => Yii::t('podium/view', '{forum} account reactivation'),
                 'content' => Yii::t('podium/view', '<p>{forum} Account Activation</p><p>You are receiving this e-mail because someone has started the process of activating the account at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>'),
             ],
             self::EMAIL_REGISTRATION => [
-                'topic'   => Yii::t('podium/view', 'Welcome to {forum}! This is your activation link'),
+                'topic' => Yii::t('podium/view', 'Welcome to {forum}! This is your activation link'),
                 'content' => Yii::t('podium/view', '<p>Thank you for registering at {forum}!</p><p>To activate your account open the following link in your Internet browser:<br>{link}<br></p><p>See you soon!<br>{forum}</p>'),
             ],
             self::EMAIL_PASSWORD => [
-                'topic'   => Yii::t('podium/view', '{forum} password reset link'),
+                'topic' => Yii::t('podium/view', '{forum} password reset link'),
                 'content' => Yii::t('podium/view', '<p>{forum} Password Reset</p><p>You are receiving this e-mail because someone has started the process of changing the account password at {forum}.<br>If this person is you open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>If it was not you just ignore this e-mail.</p><p>Thank you!<br>{forum}</p>'),
             ],
             self::EMAIL_NEW => [
-                'topic'   => Yii::t('podium/view', 'New e-mail activation link at {forum}'),
+                'topic' => Yii::t('podium/view', 'New e-mail activation link at {forum}'),
                 'content' => Yii::t('podium/view', '<p>{forum} New E-mail Address Activation</p><p>To activate your new e-mail address open the following link in your Internet browser and follow the instructions on screen.</p><p>{link}</p><p>Thank you<br>{forum}</p>'),
             ],
             self::EMAIL_SUBSCRIPTION => [
-                'topic'   => Yii::t('podium/view', 'New post in subscribed thread at {forum}'),
+                'topic' => Yii::t('podium/view', 'New post in subscribed thread at {forum}'),
                 'content' => Yii::t('podium/view', '<p>There has been new post added in the thread you are subscribing. Click the following link to read the thread.</p><p>{link}</p><p>See you soon!<br>{forum}</p>'),
             ],
             self::TERMS_AND_CONDS => [
-                'topic'   => Yii::t('podium/view', 'Forum Terms and Conditions'),
+                'topic' => Yii::t('podium/view', 'Forum Terms and Conditions'),
                 'content' => Yii::t('podium/view', "Please remember that we are not responsible for any messages posted. We do not vouch for or warrant the accuracy, completeness or usefulness of any post, and are not responsible for the contents of any post.<br><br>The posts express the views of the author of the post, not necessarily the views of this forum. Any user who feels that a posted message is objectionable is encouraged to contact us immediately by email. We have the ability to remove objectionable posts and we will make every effort to do so, within a reasonable time frame, if we determine that removal is necessary.<br><br>You agree, through your use of this service, that you will not use this forum to post any material which is knowingly false and/or defamatory, inaccurate, abusive, vulgar, hateful, harassing, obscene, profane, sexually oriented, threatening, invasive of a person's privacy, or otherwise violative of any law.<br><br>You agree not to post any copyrighted material unless the copyright is owned by you or by this forum."),
             ],
         ];
@@ -105,7 +108,6 @@ class Content extends ActiveRecord
     public static function prepareDefault($name)
     {
         $default = static::defaultContent($name);
-        
         if (empty($default)) {
             return false;
         }
@@ -125,11 +127,9 @@ class Content extends ActiveRecord
     public static function fill($name)
     {
         $email = Content::find()->where(['name' => $name])->limit(1)->one();
-        
         if (empty($email)) {
             $email = Content::prepareDefault($name);
         }
-        
         return $email;
     }
 }

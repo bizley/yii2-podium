@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use Yii;
@@ -18,7 +14,6 @@ use yii\db\ActiveRecord;
  */
 class LogSearch extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -55,15 +50,15 @@ class LogSearch extends ActiveRecord
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['id' => $this->id])
-                ->andFilterWhere(['level' => $this->level])
-                ->andFilterWhere(['model' => $this->model])
-                ->andFilterWhere(['blame' => $this->blame])
-                ->andFilterWhere(['like', 'category', $this->category])
-                ->andFilterWhere(['like', 'prefix', $this->prefix])
-                ->andFilterWhere(['like', 'message', $this->message]);
+        $query
+            ->andFilterWhere(['id' => $this->id])
+            ->andFilterWhere(['level' => $this->level])
+            ->andFilterWhere(['model' => $this->model])
+            ->andFilterWhere(['blame' => $this->blame])
+            ->andFilterWhere(['like', 'category', $this->category])
+            ->andFilterWhere(['like', 'prefix', $this->prefix])
+            ->andFilterWhere(['like', 'message', $this->message]);
 
         return $dataProvider;
     }
-
 }

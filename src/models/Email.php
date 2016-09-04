@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
@@ -16,6 +12,7 @@ use yii\db\ActiveRecord;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property string $email
@@ -28,7 +25,9 @@ use yii\db\ActiveRecord;
  */
 class Email extends ActiveRecord
 {
-
+    /**
+     * Statuses.
+     */
     const STATUS_PENDING = 0;
     const STATUS_SENT    = 1;
     const STATUS_GAVEUP  = 9;
@@ -84,8 +83,7 @@ class Email extends ActiveRecord
             $email->attempt = 0;
 
             return $email->save();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
@@ -24,6 +20,7 @@ use Zelenin\yii\behaviors\Slug;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $category_id
  * @property string $name
@@ -38,7 +35,6 @@ use Zelenin\yii\behaviors\Slug;
  */
 class Forum extends ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
@@ -103,14 +99,19 @@ class Forum extends ActiveRecord
     {
         $mods = Podium::getInstance()->cache->getElement('forum.moderators', $this->id);
         if ($mods === false) {
-            $mods    = [];
-            $modteam = User::find()->select(['id', 'role'])->where(['status' => User::STATUS_ACTIVE, 'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]])->asArray()->all();
-
+            $mods = [];
+            $modteam = User::find()
+                        ->select(['id', 'role'])
+                        ->where([
+                            'status' => User::STATUS_ACTIVE, 
+                            'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]
+                        ])
+                        ->asArray()
+                        ->all();
             foreach ($modteam as $user) {
                 if ($user['role'] == User::ROLE_ADMIN) {
                     $mods[] = $user['id'];
-                }
-                else {
+                } else {
                     if ((new Query)->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user->id])->exists()) {
                         $mods[] = $user['id'];
                     }
@@ -173,15 +174,21 @@ class Forum extends ActiveRecord
             return null;
         }
         
-        return static::find()->joinWith(['category' => function ($query) use ($guest) {
-                if ($guest) {
-                    $query->andWhere([Category::tableName() . '.visible' => 1]);
-                }
-            }])->where([
-                    static::tableName() . '.id'          => $id, 
-                    static::tableName() . '.slug'        => $slug,
+        return static::find()
+                ->joinWith([
+                    'category' => function ($query) use ($guest) {
+                        if ($guest) {
+                            $query->andWhere([Category::tableName() . '.visible' => 1]);
+                        }
+                    }
+                ])
+                ->where([
+                    static::tableName() . '.id' => $id, 
+                    static::tableName() . '.slug' => $slug,
                     static::tableName() . '.category_id' => $category_id,
-                ])->limit(1)->one();
+                ])
+                ->limit(1)
+                ->one();
     }
     
     /**
@@ -194,33 +201,34 @@ class Forum extends ActiveRecord
     public function newOrder($order)
     {
         try {
-            $next    = 0;
+            $next = 0;
             $newSort = -1;
-            $query   = (new Query)->from(Forum::tableName())->where('id != :id AND category_id = :cid')->
-                params([':id' => $this->id, ':cid' => $this->category_id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->indexBy('id');
+            $query = (new Query)
+                        ->from(Forum::tableName())
+                        ->where(['and',
+                            ['!=', 'id', $this->id],
+                            ['category_id' => $this->category_id]
+                        ])
+                        ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
+                        ->indexBy('id');
             foreach ($query->each() as $id => $forum) {
                 if ($next == $order) {
                     $newSort = $next;
                     $next++;
                 }
-                Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], 'id = :id', [':id' => $id])->execute();
+                Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], ['id' => $id])->execute();
                 $next++;
             }
-            
             if ($newSort == -1) {
                 $newSort = $next;
             }
-            
             $this->sort = $newSort;
-            
             if (!$this->save()) {
                 throw new Exception('Forums order saving error');
             }
-            
             Log::info('Forums orded updated', $this->id, __METHOD__);
             return true;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;

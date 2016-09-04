@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
@@ -18,6 +14,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
  * @property integer $id
  * @property integer $user_id
  * @property string $location
@@ -29,7 +26,9 @@ use yii\helpers\HtmlPurifier;
  */
 class Meta extends ActiveRecord
 {
-
+    /**
+     * Max image sizes.
+     */
     const MAX_WIDTH  = 165;
     const MAX_HEIGHT = 165;
     const MAX_SIZE   = 204800;

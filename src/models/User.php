@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
@@ -41,6 +37,9 @@ class User extends BaseUser
     
     const DEFAULT_TIMEZONE = 'UTC';
     
+    /**
+     * Responses.
+     */
     const RESP_ERR = 0;
     const RESP_OK = 1;
     const RESP_EMAIL_SEND_ERR = 2;
@@ -137,19 +136,18 @@ class User extends BaseUser
     public function scenarios()
     {
         $scenarios = [
-            'installation'   => [],
-            'token'          => [],
-            'ban'            => [],
-            'role'           => [],
+            'installation' => [],
+            'token' => [],
+            'ban' => [],
+            'role' => [],
             'passwordChange' => ['password', 'password_repeat'],
-            'register'       => ['email', 'password', 'password_repeat'],
-            'account'        => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
+            'register' => ['email', 'password', 'password_repeat'],
+            'account' => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
             'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
         if (Podium::getInstance()->config->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
         }
-        
         return $scenarios;
     }
     
@@ -305,9 +303,9 @@ class User extends BaseUser
     public static function getRoles()
     {
         return [
-            self::ROLE_MEMBER    => Yii::t('podium/view', 'Member'),
+            self::ROLE_MEMBER => Yii::t('podium/view', 'Member'),
             self::ROLE_MODERATOR => Yii::t('podium/view', 'Moderator'),
-            self::ROLE_ADMIN     => Yii::t('podium/view', 'Admin'),
+            self::ROLE_ADMIN => Yii::t('podium/view', 'Admin'),
         ];
     }
     
@@ -319,7 +317,7 @@ class User extends BaseUser
     {
         return [
             self::ROLE_MODERATOR => Yii::t('podium/view', 'Moderator'),
-            self::ROLE_ADMIN     => Yii::t('podium/view', 'Admin'),
+            self::ROLE_ADMIN => Yii::t('podium/view', 'Admin'),
         ];
     }
     
@@ -330,8 +328,8 @@ class User extends BaseUser
     public static function getStatuses()
     {
         return [
-            self::STATUS_ACTIVE     => Yii::t('podium/view', 'Active'),
-            self::STATUS_BANNED     => Yii::t('podium/view', 'Banned'),
+            self::STATUS_ACTIVE => Yii::t('podium/view', 'Active'),
+            self::STATUS_BANNED => Yii::t('podium/view', 'Banned'),
             self::STATUS_REGISTERED => Yii::t('podium/view', 'Registered'),
         ];
     }
@@ -350,7 +348,6 @@ class User extends BaseUser
             ])->count();
             Podium::getInstance()->cache->setElement('user.subscriptions', $this->id, $cache);
         }
-
         return $cache;
     }
     
@@ -429,7 +426,6 @@ class User extends BaseUser
         if (Yii::$app->user->isGuest) {
             return null;
         }
-        
         if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
             $user = static::findMe();
             if ($user) {
@@ -447,7 +443,7 @@ class User extends BaseUser
     public function ban()
     {
         $this->scenario = 'ban';
-        $this->status   = self::STATUS_BANNED;
+        $this->status = self::STATUS_BANNED;
         return $this->save();
     }
     
@@ -461,7 +457,7 @@ class User extends BaseUser
         $transaction = static::getDb()->beginTransaction();
         try {
             $this->scenario = 'role';
-            $this->role     = $role;            
+            $this->role = $role;
             if ($this->save()) {
                 if (Yii::$app->authManager->getRolesByUser($this->id)) {
                     Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id);
@@ -610,7 +606,6 @@ class User extends BaseUser
         if (Yii::$app->user->isGuest) {
             return null;
         }
-
         $cache = Podium::getInstance()->cache->getElement('user.friends', static::loggedId());
         if ($cache === false) {
             $cache = [];
@@ -670,10 +665,12 @@ class User extends BaseUser
             $add = [];
             foreach ($newForums as $forum) {
                 if (!in_array($forum, $oldForums)) {
-                    if ((new Query)->from(Forum::tableName())
+                    if ((new Query)
+                            ->from(Forum::tableName())
                             ->where(['id' => $forum])
                             ->exists() 
-                            && (new Query)->from(Mod::tableName())
+                            && (new Query)
+                                ->from(Mod::tableName())
                                 ->where(['forum_id' => $forum, 'user_id' => $this->id])
                                 ->exists() === false) {
                         $add[] = [$forum, $this->id];
@@ -715,9 +712,9 @@ class User extends BaseUser
                 $newUser = new User;
                 $newUser->setScenario('installation');
                 $newUser->inherited_id = Yii::$app->user->id;
-                $newUser->status       = self::STATUS_ACTIVE;
-                $newUser->role         = self::ROLE_MEMBER;
-                $newUser->timezone     = self::DEFAULT_TIMEZONE;
+                $newUser->status = self::STATUS_ACTIVE;
+                $newUser->role = self::ROLE_MEMBER;
+                $newUser->timezone = self::DEFAULT_TIMEZONE;
                 if (!$newUser->save()) {
                     throw new Exception('Account creating error');
                 }
@@ -754,12 +751,11 @@ class User extends BaseUser
             if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
                 $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
             } elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
-                $users->andWhere([
-                    'or', 
+                $users->andWhere(['or', 
                     ['like', 'username', $query],
                     [
                         'username' => ['', null],
-                        'id'       => $matches[1]
+                        'id' => $matches[1]
                     ]
                 ]);
             } else {
@@ -788,15 +784,15 @@ class User extends BaseUser
     public function updateIgnore()
     {
         try {
-            if ($this->isIgnoredBy(User::loggedId())) {
-                Yii::$app->db->createCommand()->delete(
-                        '{{%podium_user_ignore}}', 
-                        'user_id = :uid AND ignored_id = :iid', 
-                        [':uid' => User::loggedId(), ':iid' => $this->id]
-                    )->execute();
+            $userId = User::loggedId();
+            if ($this->isIgnoredBy($userId)) {
+                Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', [
+                    'user_id' => $userId,
+                    'ignored_id' => $this->id
+                ])->execute();
                 Log::info('User unignored', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => User::loggedId(), 'ignored_id' => $this->id])->execute();
+                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => $userId, 'ignored_id' => $this->id])->execute();
                 Log::info('User ignored', $this->id, __METHOD__);
             }
             return true;
@@ -814,15 +810,15 @@ class User extends BaseUser
     public function updateFriend()
     {
         try {
-            if ($this->isBefriendedBy(User::loggedId())) {
-                Yii::$app->db->createCommand()->delete(
-                        '{{%podium_user_friend}}', 
-                        'user_id = :uid AND friend_id = :iid', 
-                        [':uid' => User::loggedId(), ':iid' => $this->id]
-                    )->execute();
+            $userId = User::loggedId();
+            if ($this->isBefriendedBy($userId)) {
+                Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', [
+                    'user_id' => $userId,
+                    'friend_id' => $this->id
+                ])->execute();
                 Log::info('User unfriended', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => User::loggedId(), 'friend_id' => $this->id])->execute();
+                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $userId, 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
             Podium::getInstance()->cache->deleteElement('user.friends', $this->id);
