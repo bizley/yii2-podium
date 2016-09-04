@@ -43,8 +43,6 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     const STATUS_BANNED     = 9;
     const STATUS_ACTIVE     = 10;
     
-    private static $_identity;
-    
     /**
      * @inheritdoc
      */
@@ -74,21 +72,6 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
             mb_strlen($this->$attribute, 'UTF-8') > 100) {
             $this->addError($attribute, Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
-    }
-    
-    /**
-     * Returns current user based on module configuration.
-     * @return mixed
-     */
-    public static function findMe()
-    {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
-            if (self::$_identity === null) {
-                self::$_identity = self::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
-            }
-            return self::$_identity;
-        }
-        return Yii::$app->user->identity;
     }
     
     /**

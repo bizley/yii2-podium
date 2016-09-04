@@ -81,8 +81,6 @@ class User extends BaseUser
      */
     public $tos;
     
-    private $_access = [];
-    
     /**
      * @inheritdoc
      */
@@ -568,6 +566,8 @@ class User extends BaseUser
         return false;
     }
     
+    private $_access = [];
+    
     /**
      * Implementation of \yii\web\User::can().
      * @param string $permissionName the name of the permission (e.g. "edit post") that needs access check.
@@ -853,5 +853,22 @@ class User extends BaseUser
             );
         }
         return false;
+    }
+    
+    private static $_identity;
+    
+    /**
+     * Returns current user based on module configuration.
+     * @return mixed
+     */
+    public static function findMe()
+    {
+        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
+            if (static::$_identity === null) {
+                static::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            }
+            return static::$_identity;
+        }
+        return Yii::$app->user->identity;
     }
 }
