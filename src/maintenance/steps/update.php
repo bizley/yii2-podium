@@ -63,9 +63,20 @@ return [
         ],
         [
             'table' => 'log',
+            'call'  => 'dropForeign',
+            'name'  => 'blame',
+        ],
+        [
+            'table' => 'log',
             'call'  => 'renameColumn',
             'col'   => 'blame',
             'name'  => 'user',
+        ],
+        [
+            'table' => 'log',
+            'call'  => 'addIndex',
+            'name'  => 'user',
+            'cols'  => ['user'],
         ],
         [
             'table'   => 'config',
