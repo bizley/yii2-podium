@@ -82,15 +82,13 @@ class Readers extends Widget
      */
     public function getAnonymousUsers($url = null)
     {
-        $conditions = [
-            'and',
-            ['anonymous' => 1],
-            new Expression('"url" LIKE :url'),
-            ['>=', 'updated_at', time() - 5 * 60]
-        ];
         $anons = Activity::find()
-                    ->where($conditions)
-                    ->params([':url' => $url . '%'])
+                    ->where([
+                        'and',
+                        ['anonymous' => 1],
+                        ['like', 'url', $url . '%', false],
+                        ['>=', 'updated_at', time() - 5 * 60]
+                    ])
                     ->count('id');
         if ($this->_anon) {
             $anons += 1;
