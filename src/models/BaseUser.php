@@ -83,10 +83,10 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     public static function findMe()
     {
         if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
-            if (static::$_identity === null) {
-                static::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+            if (self::$_identity === null) {
+                self::$_identity = self::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
             }
-            return static::$_identity;
+            return self::$_identity;
         }
         return Yii::$app->user->identity;
     }

@@ -48,7 +48,7 @@ class Readers extends Widget
             'and',
             [Activity::tableName() . '.anonymous' => 0],
             ['is not', 'user_id', null],
-            new Expression('`url` LIKE :url'),
+            new Expression('"url" LIKE :url'),
             ['>=', Activity::tableName() . '.updated_at', time() - 5 * 60]
         ];
         
@@ -85,7 +85,7 @@ class Readers extends Widget
         $conditions = [
             'and',
             ['anonymous' => 1],
-            new Expression('`url` LIKE :url'),
+            new Expression('"url" LIKE :url'),
             ['>=', 'updated_at', time() - 5 * 60]
         ];
         $anons = Activity::find()
@@ -110,7 +110,7 @@ class Readers extends Widget
         $conditions = [
             'and',
             ['user_id' => null],
-            new Expression('`url` LIKE :url'),
+            new Expression('"url" LIKE :url'),
             ['>=', 'updated_at', time() - 5 * 60]
         ];
         $guests = Activity::find()

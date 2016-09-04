@@ -46,12 +46,12 @@ class ThreadView extends ActiveRecord
                     [
                         'and',
                         ['user_id' => $loggedId],
-                        new Expression('`new_last_seen` < `new_post_at`')
+                        new Expression('new_last_seen < new_post_at')
                     ],
                     [
                         'and',
                         ['user_id' => $loggedId],
-                        new Expression('`edited_last_seen` < `edited_post_at`')
+                        new Expression('edited_last_seen < edited_post_at')
                     ],
                     ['user_id' => null],
                 ]);

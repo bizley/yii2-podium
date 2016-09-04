@@ -273,7 +273,7 @@ class BaseForumActionsController extends BaseController
                 }
             }
         }
-        return $this->render('forum/edit', [
+        return $this->render('edit', [
             'preview'     => $preview,
             'model'       => $post,
             'isFirstPost' => $isFirstPost
