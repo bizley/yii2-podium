@@ -431,6 +431,7 @@ return [
     'You have subscribed to this thread!' => 'Zasubskrybowałeś ten wątek!',
     'You have to read and agree on ToS.' => 'Musisz przeczytać i zaakceptować regulamin.',
     'You have to select at least one message receiver.' => 'Musisz wybrać przynajmniej jednego adresata.',
+    'You need email address set to use Gravatar.' => 'Musisz mieć ustawiony adres e-mail, aby używać Gravatara.',
     'You subscribe this thread' => 'Subskrybujesz ten wątek',
     'Your Gravatar image' => 'Twój Gravatar',
     'Your avatar' => 'Twój avatar',

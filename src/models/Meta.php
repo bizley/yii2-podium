@@ -66,7 +66,10 @@ class Meta extends ActiveRecord
                 return HtmlPurifier::process(Html::encode($value));
             }],            
             ['gravatar', 'boolean'],
-            ['image', 'image', 'mimeTypes' => 'image/png, image/jpeg, image/gif', 'maxWidth' => self::MAX_WIDTH, 'maxHeight' => self::MAX_HEIGHT, 'maxSize' => self::MAX_SIZE],
+            ['image', 'image', 
+                'mimeTypes' => 'image/png, image/jpeg, image/gif', 
+                'maxWidth' => self::MAX_WIDTH, 'maxHeight' => self::MAX_HEIGHT, 
+                'maxSize' => self::MAX_SIZE],
             ['signature', 'filter', 'filter' => function($value) {
                 return HtmlPurifier::process($value, Helper::podiumPurifierConfig('minimal'));
             }],

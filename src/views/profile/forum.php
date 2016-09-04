@@ -37,13 +37,24 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'signature')->label(Yii::t('podium/view', 'Signature under each post'))->widget(Quill::className(), ['toolbar' => 'basic', 'options' => ['style' => 'height:100px']]) ?>
+                            <?= $form
+                                ->field($model, 'signature')
+                                ->label(Yii::t('podium/view', 'Signature under each post'))
+                                ->widget(Quill::className(), ['toolbar' => 'basic', 'options' => ['style' => 'height:100px']]) ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <a href="http://gravatar.com" target="_blank" class="pull-right"><?= Yii::t('podium/view', 'What is Gravatar?') ?></a>
-                            <?= $form->field($model, 'gravatar')->checkbox()->label('<strong>' . Yii::t('podium/view', 'Use Gravatar image as avatar') . '</strong>') ?>
+                            <?= $form
+                                ->field($model, 'gravatar')
+                                ->checkbox(['disabled' => empty($user->email)])
+                                ->label('<strong>' . Yii::t('podium/view', 'Use Gravatar image as avatar') . '</strong>')
+                                ->hint(
+                                    (empty($user->email)
+                                        ? Html::tag('span', Yii::t('podium/view', 'You need email address set to use Gravatar.'), ['class' => 'text-danger pull-right'])
+                                        : ''
+                                    ) . Html::a(Yii::t('podium/view', 'What is Gravatar?'), 'http://gravatar.com', ['target' => 'gravatar'])
+                                ) ?>
                         </div>
                     </div>
                     <div class="row">

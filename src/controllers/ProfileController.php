@@ -111,50 +111,57 @@ class ProfileController extends BaseController
      */
     public function actionForum()
     {
-        $model = Meta::find()->where(['user_id' => User::loggedId()])->limit(1)->one();
+        $user = User::findMe();
+        $model = Meta::find()->where(['user_id' => $user->id])->limit(1)->one();
         if (empty($model)) {
             $model = new Meta;
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            $model->user_id = User::loggedId();
+            $model->user_id = $user->id;
             $uploadAvatar = false;
             $path = Yii::getAlias('@webroot/avatars');
-            $avatar = UploadedFile::getInstance($model, 'image');
-            if ($avatar) {
-                $folderExists = true;
-                if (!file_exists($path)) {
-                    if (!FileHelper::createDirectory($path)) {
-                        $folderExists = false;
-                        Log::error('Error while creating avatars folder', null, __METHOD__);
-                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.'));
-                    }
-                }
-                if ($folderExists) {
-                    if (!empty($model->avatar)) {
-                        if (!unlink($path . DIRECTORY_SEPARATOR . $model->avatar)) {
-                            Log::error('Error while deleting old avatar image', null, __METHOD__);
+            $model->image = UploadedFile::getInstance($model, 'image');
+            if ($model->validate()) {
+                if ($model->gravatar && empty($user->email)) {
+                    $model->addError('gravatar', Yii::t('podium/view', 'You need email address set to use Gravatar.'));
+                } else {
+                    if ($model->image) {
+                        $folderExists = true;
+                        if (!file_exists($path)) {
+                            if (!FileHelper::createDirectory($path)) {
+                                $folderExists = false;
+                                Log::error('Error while creating avatars folder', null, __METHOD__);
+                                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while creating the avatars folder. Contact administrator about this problem.'));
+                            }
+                        }
+                        if ($folderExists) {
+                            if (!empty($model->avatar)) {
+                                if (!unlink($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                                    Log::error('Error while deleting old avatar image', null, __METHOD__);
+                                }
+                            }
+                            $model->avatar = Yii::$app->security->generateRandomString() . '.' . $model->image->getExtension();
+                            $uploadAvatar = true;
                         }
                     }
-                    $model->avatar = Yii::$app->security->generateRandomString() . '.' . $avatar->getExtension();
-                    $uploadAvatar = true;
-                }
-            }
-            if ($model->save()) {
-                if ($uploadAvatar) {
-                    if (!$avatar->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
-                        Log::error('Error while saving avatar image', null, __METHOD__);
-                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.'));
+                    if ($model->save(false)) {
+                        if ($uploadAvatar) {
+                            if (!$model->image->saveAs($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                                Log::error('Error while saving avatar image', null, __METHOD__);
+                                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while uploading the avatar image. Contact administrator about this problem.'));
+                            }
+                        }
+                        Log::info('Profile updated', $model->id, __METHOD__);
+                        $this->success(Yii::t('podium/flash', 'Your profile details have been updated.'));
+                        return $this->refresh();
                     }
                 }
-                Log::info('Profile updated', $model->id, __METHOD__);
-                $this->success(Yii::t('podium/flash', 'Your profile details have been updated.'));
-                return $this->refresh();
             }
         }
         return $this->render('forum', [
             'model' => $model,
-            'user'  => User::findMe()
+            'user'  => $user
         ]);
     }
 
