@@ -69,7 +69,7 @@ class BaseForumActionsController extends BaseController
         
         $postData = Yii::$app->request->post('thread');
         if ($postData) {
-            if ($postData['thread'] != $thread->id) {
+            if ($postData != $thread->id) {
                 $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the thread.'));
             } else {
                 if ($thread->podiumDelete()) {
