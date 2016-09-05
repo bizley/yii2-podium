@@ -280,7 +280,6 @@ class ForumController extends BaseForumActionsController
                             ['thread_id' => $post->thread_id], 
                             ['<', 'id', $post->id]
                         ])
-                        ->orderBy(['id' => SORT_ASC])
                         ->count();
             $page = floor($count / 10) + 1;
             if ($page > 1) {
