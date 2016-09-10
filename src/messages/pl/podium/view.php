@@ -260,7 +260,7 @@ return [
     'Podium "From" email name' => 'Nazwa Podium w adresach e-mail',
     'Podium Installation' => 'Instalacja Podium',
     'Podium Settings' => 'Ustawienia Podium',
-    'Podium cannot be held liable for any database damages that may result directly or indirectly from the updating process. Back up your data first!' => 'Podium nie odpowiada za jakiekolwiek uszkodzenia danych bazy, które mogą być spowodowane pośrednio lub bezpośrednio procesem aktualizacji. Wykonaj wcześniej kopię bezpieczeństwa bazy danych!',
+    'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!' => 'Podium nie odpowiada za jakiekolwiek uszkodzenia danych bazy, które mogą być spowodowane pośrednio lub bezpośrednio procesem aktualizacji. Wykonaj wcześniej kopię bezpieczeństwa bazy danych!',
     'Podium does its best to make sure your data is not corrupted but make a database copy just in case.' => 'Podium stara się nie uszkodzić danych w bazie, ale wykonaj kopię na wszelki wypadek.',
     'Podium logging may be disabled in development environment (i.e. by Yii Debugger).' => 'Logi Podium mogą być wyłączone w środowisku developerskim (np. przez Yii Debuggera).',
     'Podium update' => 'Aktualizacja Podium',

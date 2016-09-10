@@ -315,7 +315,7 @@ class BaseAdminForumController extends BaseController
      */
     public function actionSettings()
     {
-        $model = new ConfigForm();
+        $model = new ConfigForm;
         $data = Yii::$app->request->post('ConfigForm');        
         if ($data) {
             if (User::can(Rbac::PERM_CHANGE_SETTINGS)) {

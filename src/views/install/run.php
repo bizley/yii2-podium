@@ -72,14 +72,28 @@ JS
 ?>
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
-        <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br>
-        <em><strong><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
+        <div class="form-group">
+            <em><?= Yii::t('podium/view', 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.') ?></em><br>
+            <em><strong><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em>
+        </div>
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-exclamation-sign"></span> <?= Yii::t('podium/view', 'Seriously - back up your existing database first!') ?><br>
+            <?= Yii::t('podium/view', 'Podium does its best to make sure your data is not corrupted but make a database copy just in case.') ?><br>
+            <?= Yii::t('podium/view', 'You have been warned!') ?>*
+        </div>
         <div class="alert alert-danger">
             <label><input type="checkbox" name="drop" value="1" id="drop"> <?= Yii::t('podium/view', 'Check this box to drop all existing Podium tables first') ?> <span class="glyphicon glyphicon-alert"></span></label><br>
             <?= Yii::t('podium/view', '(all existing Podium data will be deleted!)') ?>
         </div>
-        <button id="installPodium" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Start Podium Installation') ?></button><br><br>
-        <?= Yii::t('podium/view', 'Version to install') ?> <kbd><?= $version ?></kbd>
+        <div class="form-group">
+            <button id="installPodium" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-import"></span> <?= Yii::t('podium/view', 'Start Podium Installation') ?></button>
+        </div>
+        <div class="form-group">
+            <?= Yii::t('podium/view', 'Version to install') ?> <kbd><?= $version ?></kbd>
+        </div>
+        <div class="form-group text-muted">
+            <small>* <?= Yii::t('podium/view', 'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!') ?></small>
+        </div>
     </div>
 </div>
 <div class="row hide" id="installationResults">

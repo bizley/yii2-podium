@@ -68,23 +68,30 @@ JS
 <div class="row" id="startInstallation">
     <div class="text-center col-sm-12">
 <?php if ($error == '' && $info == ''): ?>
-        <em><?= Yii::t('podium/view', 'Podium will attempt to update all database tables to the current version.') ?></em><br>
-        <em><strong class="text-danger"><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em><br><br>
-        <div class="alert alert-danger">
-            <span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Seriously - back up your existing database first!') ?><br>
+        <div class="form-group">
+            <em><?= Yii::t('podium/view', 'Podium will attempt to update all database tables to the current version.') ?></em><br>
+            <em><strong class="text-danger"><?= Yii::t('podium/view', 'Back up your existing database and then click the button below.') ?></strong></em>
+        </div>
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-exclamation-sign"></span> <?= Yii::t('podium/view', 'Seriously - back up your existing database first!') ?><br>
             <?= Yii::t('podium/view', 'Podium does its best to make sure your data is not corrupted but make a database copy just in case.') ?><br>
             <?= Yii::t('podium/view', 'You have been warned!') ?>*
         </div>
-        <button id="installPodium" class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Upgrade Podium Database') ?></button><br><br>
+        <div class="form-group">
+            <button id="installPodium" class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-open"></span> <?= Yii::t('podium/view', 'Upgrade Podium Database') ?></button>
+        </div>
 <?php elseif ($error != ''): ?>
         <div class="alert alert-danger"><?= $error ?></div>
 <?php elseif ($info != ''): ?>
         <div class="alert alert-success"><?= $info ?></div>
 <?php endif; ?>
-        <?= Yii::t('podium/view', 'Current database version') ?> <kbd><?= $dbVersion ?></kbd> <span class="glyphicon glyphicon-transfer"></span> <kbd><?= $currentVersion ?></kbd> <?= Yii::t('podium/view', 'Current module version') ?>
+        <div class="form-group">
+            <?= Yii::t('podium/view', 'Current database version') ?> <kbd><?= $dbVersion ?></kbd> <span class="glyphicon glyphicon-transfer"></span> <kbd><?= $currentVersion ?></kbd> <?= Yii::t('podium/view', 'Current module version') ?>
+        </div>
 <?php if ($info == ''): ?>
-        <br><br>
-        <small>* <?= Yii::t('podium/view', 'Podium cannot be held liable for any database damages that may result directly or indirectly from the updating process. Back up your data first!') ?></small>
+        <div class="form-group text-muted">
+            <small>* <?= Yii::t('podium/view', 'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!') ?></small>
+        </div>
 <?php endif; ?>
     </div>
 </div>

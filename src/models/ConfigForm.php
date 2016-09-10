@@ -57,7 +57,7 @@ class ConfigForm extends Model
      */
     public function update($data)
     {
-        $validator = new StringValidator();
+        $validator = new StringValidator;
         $validator->max = 255;
         
         foreach ($data as $key => $value) {

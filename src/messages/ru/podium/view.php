@@ -260,7 +260,7 @@ return [
     'Podium "From" email name' => 'Имя в e-mail сообщениях от Podium',
     'Podium Installation' => 'Установка Podium',
     'Podium Settings' => 'Настройки Podium',
-    'Podium cannot be held liable for any database damages that may result directly or indirectly from the updating process. Back up your data first!' => 'Podium не несёт ответственности за какие-либо повреждения базы данных. Сначала обязательно сделайте копию вашей базы данных!',
+    'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!' => 'Podium не несёт ответственности за какие-либо повреждения базы данных. Сначала обязательно сделайте копию вашей базы данных!',
     'Podium does its best to make sure your data is not corrupted but make a database copy just in case.' => 'Подиум старается не повредить данные в базе, но сделайте копию на всякий случай.',
     'Podium logging may be disabled in development environment (i.e. by Yii Debugger).' => 'Журналы Podium могут быть отключены в среде разработчика (например Yii Debugger).',
     'Podium update' => 'Обновление Podium',
