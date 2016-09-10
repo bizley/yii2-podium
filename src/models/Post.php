@@ -314,8 +314,9 @@ class Post extends ActiveRecord
     
     /**
      * Marks post as seen by current user.
+     * @param bool $updateCounters Whether to update view counter
      */
-    public function markSeen()
+    public function markSeen($updateCounters = true)
     {
         if (!Yii::$app->user->isGuest) {
             $threadView = ThreadView::find()->where(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id])->limit(1)->one();
@@ -326,13 +327,17 @@ class Post extends ActiveRecord
                 $threadView->new_last_seen = $this->created_at;
                 $threadView->edited_last_seen = !empty($this->edited_at) ? $this->edited_at : $this->created_at;
                 $threadView->save();
-                $this->thread->updateCounters(['views' => 1]);
+                if ($updateCounters) {
+                    $this->thread->updateCounters(['views' => 1]);
+                }
             } else {
                 if ($this->edited) {
                     if ($threadView->edited_last_seen < $this->edited_at) {
                         $threadView->edited_last_seen = $this->edited_at;
                         $threadView->save();
-                        $this->thread->updateCounters(['views' => 1]);
+                        if ($updateCounters) {
+                            $this->thread->updateCounters(['views' => 1]);
+                        }
                     }
                 } else {
                     $save = false;
@@ -346,7 +351,9 @@ class Post extends ActiveRecord
                     }
                     if ($save) {
                         $threadView->save();
-                        $this->thread->updateCounters(['views' => 1]);
+                        if ($updateCounters) {
+                            $this->thread->updateCounters(['views' => 1]);
+                        }
                     }
                 }
             }
@@ -501,7 +508,8 @@ class Post extends ActiveRecord
     
     /**
      * Performs new post creation and subscription.
-     * If previous post in thread has got the same author posts are merged.
+     * If previous post in thread has got the same author and merge_posts is set 
+     * posts are merged.
      * @param Post $previous previous post
      * @return bool
      * @throws Exception
@@ -512,19 +520,20 @@ class Post extends ActiveRecord
         $transaction = static::getDb()->beginTransaction();
         try {
             $id = null;
-            if (!empty($previous) && $previous->author_id == User::loggedId()) {
+            $sameAuthor = !empty($previous->author_id) && $previous->author_id == User::loggedId();
+            if ($sameAuthor && Podium::getInstance()->config->get('merge_posts')) {
                 $previous->content .= '<hr>' . $this->content;
                 $previous->edited = 1;
                 $previous->touch('edited_at');
                 if ($previous->save()) {
-                    $previous->markSeen();
+                    $previous->markSeen(false);
                     $previous->thread->touch('edited_post_at');
                     $id = $previous->id;
                     $thread = $previous->thread;
                 }
             } else {
                 if ($this->save()) {
-                    $this->markSeen();
+                    $this->markSeen(!$sameAuthor);
                     $this->forum->updateCounters(['posts' => 1]);
                     $this->thread->updateCounters(['posts' => 1]);
                     $this->thread->touch('new_post_at');

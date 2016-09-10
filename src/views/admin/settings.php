@@ -87,6 +87,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'hot_minimum')->textInput()->label(Yii::t('podium/view', 'Minimum number of posts for thread to become Hot')) ?>
                         </div>
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'merge_posts')->checkBox()->label(Yii::t('podium/view', 'Merge reply with post in case of the same author')) ?>
+                        </div>
                     </div>
                     <h3 id="guests"><span class="label label-primary"><?= Yii::t('podium/view', 'Guests privileges') ?></span></h3>
                     <div class="row">

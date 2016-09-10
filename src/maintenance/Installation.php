@@ -147,6 +147,7 @@ class Installation extends Maintenance
                         ['maintenance_mode', Config::MAINTENANCE_MODE],
                         ['max_attempts', Config::MAX_SEND_ATTEMPTS],
                         ['use_captcha', Config::FLAG_USE_CAPTCHA],
+                        ['merge_posts' => Config::FLAG_MERGE_POSTS],
                         ['recaptcha_sitekey', ''],
                         ['recaptcha_secretkey', ''],
                         ['password_reset_token_expire', Config::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],

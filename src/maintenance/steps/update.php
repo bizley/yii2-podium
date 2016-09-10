@@ -79,9 +79,16 @@ return [
             'cols'  => ['user'],
         ],
         [
-            'table'   => 'config',
-            'call'    => 'updateVersion',
-            'version' => '0.2'
+            'table' => 'config',
+            'call'  => 'updateValue',
+            'name'  => 'merge_posts',
+            'value' => '1'
+        ],
+        [
+            'table' => 'config',
+            'call'  => 'updateValue',
+            'name'  => 'version',
+            'value' => '0.2'
         ]
     ]
 ];

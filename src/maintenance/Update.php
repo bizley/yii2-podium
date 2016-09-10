@@ -93,27 +93,32 @@ class Update extends Maintenance
     }
     
     /**
-     * Updates database version number.
+     * Updates database value in config table.
      * @param array $data
      * @return string result message.
      * @since 0.2
      */
-    protected function updateVersion($data)
+    protected function updateValue($data)
     {
-        if (empty($data['version'])) {
+        if (empty($data['name'])) {
             $this->type = self::TYPE_ERROR;
-            return Yii::t('podium/flash', 'Version number missing.');
+            return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
+        }
+        if (empty($data['value'])) {
+            $this->type = self::TYPE_ERROR;
+            return Yii::t('podium/flash', 'Installation aborted! Column value missing.');
         }
         
         try {
-            Podium::getInstance()->config->set('version', $data['version']);
-            return Yii::t('podium/flash', 'Database version has been updated to {version}.', [
-                'version' => $data['version']
+            Podium::getInstance()->config->set($data['name'], $data['value']);
+            return Yii::t('podium/flash', 'Config setting {name} has been updated to {value}.', [
+                'name'  => $data['name'],
+                'value' => $data['value'],
             ]);
         } catch (Exception $e) {
             Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
             $this->type = self::TYPE_ERROR;
-            return Yii::t('podium/flash', 'Error during version updating') 
+            return Yii::t('podium/flash', 'Error during configuration updating') 
                 . ': ' . Html::tag('pre', $e->getMessage());
         }
     }

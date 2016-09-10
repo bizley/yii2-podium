@@ -27,6 +27,7 @@ class Config extends Component
     const DEFAULT_FROM_NAME = 'Podium';
     const FLAG_USE_CAPTCHA = 1;
     const FLAG_MEMBERS_VISIBLE = 1;
+    const FLAG_MERGE_POSTS = 1;
     const HOT_MINIMUM = 20;
     const MAINTENANCE_MODE = 0;
     const MAX_SEND_ATTEMPTS = 5;
@@ -71,6 +72,7 @@ class Config extends Component
             'maintenance_mode' => self::MAINTENANCE_MODE,
             'max_attempts' => self::MAX_SEND_ATTEMPTS,
             'use_captcha' => self::FLAG_USE_CAPTCHA,
+            'merge_posts' => self::FLAG_MERGE_POSTS,
             'recaptcha_sitekey' => '',
             'recaptcha_secretkey' => '',
             'password_reset_token_expire' => self::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE,
@@ -135,7 +137,7 @@ class Config extends Component
                 $config[$setting['name']] = $setting['value'];
             }
         } catch (Exception $e) {
-            Log::error($e->getMessage(), null, __METHOD__);
+            Log::warning($e->getMessage(), null, __METHOD__);
         }
         return $config;
     }
@@ -177,10 +179,7 @@ class Config extends Component
                         )
                         ->execute();
                 }
-                $this->cache->set(
-                                'config', 
-                                array_merge($this->defaults, $this->fromDb)
-                            );
+                $this->cache->set('config', array_merge($this->defaults, $this->fromDb));
                 return true;
             }      
         } catch (Exception $e) {
