@@ -3,7 +3,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\db\UserQuery;
+use bizley\podium\log\Log;
 use bizley\podium\Module as Podium;
+use Exception;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\db\ActiveQuery;
@@ -156,7 +158,12 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::find()->where(['id' => $id, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
+        try {
+            return static::find()->where(['id' => $id, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
+        } catch (Exception $exc) {
+            Log::warning('Podium is not installed correctly!', null, __METHOD__);
+            return null;
+        }
     }
     
     /**
