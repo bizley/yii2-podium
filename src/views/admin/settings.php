@@ -147,6 +147,6 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <div class="col-sm-3">
-        <a href="<?= Url::to(['admin/clear']) ?>" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-alert"></span> Clear all cache</a>
+        <a href="<?= Url::to(['admin/clear']) ?>" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Clear all cache'); ?></a>
     </div>
 </div><br>
