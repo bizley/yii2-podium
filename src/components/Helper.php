@@ -252,8 +252,15 @@ class Helper
             if ($zone != 'UTC') {
                 $zoneName = $zone;
                 $timeForZone = new DateTime(null, new DateTimeZone($zone));
-                if (is_numeric($timeForZone)) {
-                    $zoneName .= ' (' . ($timeForZone < 0 ? '+' : '') . ($timeForZone / 60 / 60) . ')';
+                $offset = $timeForZone->getOffset();
+                if (is_numeric($offset)) {
+                    $zoneName .= ' (UTC';
+                    if ($offset != 0) {
+                        $offset = $offset / 60 / 60;
+                        $offsetDisplay = floor($offset) . ':' . str_pad(60 * ($offset - floor($offset)), 2, '0', STR_PAD_LEFT);
+                        $zoneName .= ' ' . ($offset < 0 ? '' : '+') . $offsetDisplay;
+                    }
+                    $zoneName .= ')';
                 }
                 $timeZones[$zone] = $zoneName;
             }
