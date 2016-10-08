@@ -104,16 +104,22 @@ class Module extends BaseModule implements BootstrapInterface
     
     /**
      * @var string Module inherited user password_hash field.
-     * This will be used for profile updating comfirmation.
+     * This will be used for profile updating confirmation.
      * Default value is 'password_hash'.
      */
     public $userPasswordField = self::FIELD_PASSWORD;
-
+    
     /**
      * @var string Default route for Podium
      * @since 0.2
      */
     public $defaultRoute = 'forum';
+    
+    /**
+     * @var bool Value of identity Cookie 'secure' parameter.
+     * @since 0.2
+     */
+    public $secureIdentityCookie = false;
 
     /**
      * @var Cache Module cache instance
@@ -177,7 +183,7 @@ class Module extends BaseModule implements BootstrapInterface
         $app->urlManager->addRules([
                 new GroupUrlRule([
                     'prefix' => 'podium',
-                    'rules'  => require(__DIR__ . '/url-rules.php'),
+                    'rules' => require(__DIR__ . '/url-rules.php'),
                 ])
             ], false);
     }
@@ -235,7 +241,6 @@ class Module extends BaseModule implements BootstrapInterface
     
     /**
      * Returns Podium version.
-     * 
      * @return string
      */
     public function getVersion()
@@ -298,24 +303,24 @@ class Module extends BaseModule implements BootstrapInterface
     {
         Yii::$app->setComponents([
             'authManager' => [
-                'class'           => 'yii\rbac\DbManager',
-                'itemTable'       => '{{%podium_auth_item}}',
-                'itemChildTable'  => '{{%podium_auth_item_child}}',
+                'class' => 'yii\rbac\DbManager',
+                'itemTable' => '{{%podium_auth_item}}',
+                'itemChildTable' => '{{%podium_auth_item_child}}',
                 'assignmentTable' => '{{%podium_auth_assignment}}',
-                'ruleTable'       => '{{%podium_auth_rule}}',
-                'cache'           => $this->cache->engine
+                'ruleTable' => '{{%podium_auth_rule}}',
+                'cache' => $this->cache->engine
             ],
         ]);
     }
 
     /**
-     * Registers formatter with chosen timezone.
+     * Registers formatter with default timezone.
      */
     public function registerFormatter()
     {
         Yii::$app->setComponents([
             'formatter' => [
-                'class'    => 'yii\i18n\Formatter',
+                'class' => 'yii\i18n\Formatter',
                 'timeZone' => 'UTC',
             ],
         ]);
@@ -329,12 +334,16 @@ class Module extends BaseModule implements BootstrapInterface
     {
         Yii::$app->setComponents([
             'user' => [
-                'class'           => 'yii\web\User',
-                'identityClass'   => 'bizley\podium\models\User',
+                'class' => 'yii\web\User',
+                'identityClass' => 'bizley\podium\models\User',
                 'enableAutoLogin' => true,
-                'loginUrl'        => $this->loginUrl,
-                'identityCookie'  => ['name' => 'podium', 'httpOnly' => true],
-                'idParam'         => '__id_podium',
+                'loginUrl' => $this->loginUrl,
+                'identityCookie' => [
+                    'name' => 'podium', 
+                    'httpOnly' => true,
+                    'secure' => $this->secureIdentityCookie,
+                ],
+                'idParam' => '__id_podium',
             ],
         ]);
     }
@@ -345,9 +354,9 @@ class Module extends BaseModule implements BootstrapInterface
     public function registerTranslations()
     {
         Yii::$app->i18n->translations['podium/*'] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
+            'class' => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en-US',
-            'basePath'       => '@podium/messages',
+            'basePath' => '@podium/messages',
         ];
     }
 }
