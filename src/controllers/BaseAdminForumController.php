@@ -243,7 +243,7 @@ class BaseAdminForumController extends BaseController
      */
     public function actionLogs()
     {
-        $searchModel = new LogSearch();
+        $searchModel = new LogSearch;
         return $this->render('logs', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
             'searchModel'  => $searchModel,

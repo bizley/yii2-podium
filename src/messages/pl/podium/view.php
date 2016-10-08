@@ -340,7 +340,6 @@ return [
     'Sign in' => 'Zaloguj się',
     'Sign in to reply' => 'Zaloguj się, aby odpowiedzieć',
     'Sign out' => 'Wyloguj się',
-    'Signature' => 'Podpis',
     'Signature under each post' => 'Podpis pod każdym postem',
     'Sorry! Sorting parameters are wrong.' => 'Wybacz, ale parametry sortowania są nieprawidłowe.',
     'Sorry! There was some error while changing the order of the categories.' => 'Przepraszamy! Wystąpił błąd w czasie zmiany kolejności kategorii.',

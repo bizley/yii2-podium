@@ -341,7 +341,6 @@ return [
     'Sign in' => 'Войти',
     'Sign in to reply' => 'Залогиньтесь, чтобы ответить',
     'Sign out' => 'Выйти',
-    'Signature' => 'Подпись',
     'Signature under each post' => 'Подпись (будет отображаться под каждым вашим сообщением)',
     'Sorry! Sorting parameters are wrong.' => 'Параметры сортировки некорректны.',
     'Sorry! There was some error while changing the order of the categories.' => 'Возникла ошибка при попытке сменить порядок категорий.',

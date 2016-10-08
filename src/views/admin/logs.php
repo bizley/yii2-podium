@@ -82,8 +82,8 @@ $this->params['breadcrumbs'][] = $this->title;
             },
         ],
         [
-            'attribute'   => 'prefix',
-            'label'       => Yii::t('podium/view', 'Signature') . Helper::sortOrder('prefix'),
+            'attribute'   => 'ip',
+            'label'       => Yii::t('podium/view', 'IP') . Helper::sortOrder('ip'),
             'encodeLabel' => false,
         ],
         [
@@ -104,11 +104,11 @@ $this->params['breadcrumbs'][] = $this->title;
             },
         ],
         [
-            'attribute'   => 'blame',
-            'label'       => Yii::t('podium/view', 'Who') . Helper::sortOrder('blame'),
+            'attribute'   => 'user',
+            'label'       => Yii::t('podium/view', 'Who') . Helper::sortOrder('user'),
             'encodeLabel' => false,
             'value'       => function ($model) {
-                return $model->blame !== null ? $model->blame : '';
+                return $model->user !== null ? $model->user : '';
             },
         ],
     ],

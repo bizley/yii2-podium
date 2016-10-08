@@ -28,8 +28,8 @@ class LogSearch extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'level', 'model', 'blame'], 'integer'],
-            [['category', 'prefix', 'message'], 'string'],
+            [['id', 'level', 'model', 'user'], 'integer'],
+            [['category', 'ip', 'message'], 'string'],
         ];
     }
 
@@ -54,9 +54,9 @@ class LogSearch extends ActiveRecord
             ->andFilterWhere(['id' => $this->id])
             ->andFilterWhere(['level' => $this->level])
             ->andFilterWhere(['model' => $this->model])
-            ->andFilterWhere(['blame' => $this->blame])
+            ->andFilterWhere(['user' => $this->blame])
             ->andFilterWhere(['like', 'category', $this->category])
-            ->andFilterWhere(['like', 'prefix', $this->prefix])
+            ->andFilterWhere(['like', 'ip', $this->ip])
             ->andFilterWhere(['like', 'message', $this->message]);
 
         return $dataProvider;
