@@ -61,6 +61,7 @@ return [
     'Change e-mail address' => 'Zmień adres e-mail',
     'Change password' => 'Zmień hasło',
     'Check this box to drop all existing Podium tables first' => 'Zaznacz to pole, aby usunąć najpierw wszystkie istniejące tabele Podium',
+    'Clear all cache' => 'Wyczyść pamięć podręczną',
     'Click here' => 'Kliknij tutaj',
     'Complaint' => 'Zgłoszenie',
     'Complaint about the post #{id}' => 'Zgłoszenie posta #{id}',
