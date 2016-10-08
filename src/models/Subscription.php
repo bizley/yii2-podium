@@ -131,7 +131,7 @@ class Subscription extends ActiveRecord
                             Log::error('Error while queuing subscription notice link', $sub->user_id, __METHOD__);
                         }
                     } else {
-                        Log::error('Error while queuing subscription notice link - no email set', $sub->user_id, __METHOD__);
+                        Log::warning('Error while queuing subscription notice link - no email set', $sub->user_id, __METHOD__);
                     }
                 }
             }
