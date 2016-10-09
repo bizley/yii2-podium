@@ -19,7 +19,7 @@ return [
     'Error during account creating' => 'При создании учётной записи возникла ошибка',
     'Error during configuration updating' => 'При обновлении настроек возникла ошибка',
     'Error during content adding' => 'При добавлении контента возникла ошибка',
-    'Error during settings adding' => 'При добавления настроек возникла ошибка',
+    'Error during settings adding' => 'При добавлении настроек возникла ошибка',
     'Error during table column {name} adding' => 'При добавлении столбца {name} возникла ошибка',
     'Error during table column {name} dropping' => 'При удалении столбца {name} возникла ошибка',
     'Error during table column {name} renaming to {new}' => 'При попытке переименовать столбец {name} в {new} возникла ошибка',
