@@ -54,7 +54,7 @@ class LogSearch extends ActiveRecord
             ->andFilterWhere(['id' => $this->id])
             ->andFilterWhere(['level' => $this->level])
             ->andFilterWhere(['model' => $this->model])
-            ->andFilterWhere(['user' => $this->blame])
+            ->andFilterWhere(['user' => $this->user])
             ->andFilterWhere(['like', 'category', $this->category])
             ->andFilterWhere(['like', 'ip', $this->ip])
             ->andFilterWhere(['like', 'message', $this->message]);
