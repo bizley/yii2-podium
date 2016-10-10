@@ -11,6 +11,7 @@ use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
 use bizley\podium\models\Vocabulary;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\filters\AccessControl;
@@ -674,7 +675,7 @@ class BaseForumActionsController extends BaseController
                 } else {
                     if ($model->podiumNew($previous)) {
                         $this->success(Yii::t('podium/flash', 'New reply has been added.'));
-                        if (!empty($previous) && $previous->author_id == User::loggedId()) {
+                        if (!empty($previous) && $previous->author_id == User::loggedId() && Podium::getInstance()->config->get('merge_posts')) {
                             return $this->redirect(['forum/show', 'id' => $previous->id]);
                         }
                         return $this->redirect(['forum/show', 'id' => $model->id]);
