@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\quill\Quill;
+use bizley\podium\widgets\QuillBasic;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -28,14 +28,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(Yii::t('podium/view', 'Complaint'))->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
+                            <?= $form->field($model, 'content')
+                                ->label(Yii::t('podium/view', 'Complaint'))
+                                ->widget(QuillBasic::className()) ?>
                         </div>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Report post'), ['class' => 'btn btn-block btn-danger', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Report post'), [
+                                'class' => 'btn btn-block btn-danger', 'name' => 'save-button'
+                            ]) ?>
                         </div>
                     </div>
                 </div>

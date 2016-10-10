@@ -10,8 +10,8 @@
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use bizley\podium\widgets\QuillBasic;
 use bizley\podium\widgets\Readers;
-use bizley\quill\Quill;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -175,7 +175,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
                 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['toolbar' => 'basic', 'options' => ['style' => 'height:100px']]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(QuillBasic::className()) ?>
                         </div>
                     </div>
 <?php if (!$thread->subscription): ?>

@@ -11,7 +11,7 @@ use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
-use bizley\quill\Quill;
+use bizley\podium\widgets\QuillBasic;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -47,7 +47,7 @@ $loggedId = User::loggedId();
             <div class="row">
                 <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-sm-9">
-                    <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(QuillBasic::className()) ?>
                 </div>
             </div>
             <div class="row">

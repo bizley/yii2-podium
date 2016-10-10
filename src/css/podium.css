@@ -1,21 +1,30 @@
-body { padding-top:20px; padding-bottom:20px; }
+body { padding-top:20px; padding-bottom:20px }
 .avatar-name { padding:10px }
 .blockquote { font-size:inherit !important; border-left:5px solid #337ab7; background-color:#eee; padding:3px 3px 3px 10px !important }
 .blockquote a.btn { background-color:#fff; text-decoration:none }
 .navbar { margin-bottom:20px }
 .note-editor .note-dialog .form-group.row-fluid.note-group-select-from-files { display:none }
-.popover.podium { display:block !important; width:auto !important; max-width:none !important; position:relative !important; z-index:auto !important; }
+.popover.podium { display:block !important; width:auto !important; max-width:none !important; position:relative !important; z-index:auto !important }
 .popover.right.podium > .arrow { top:55px !important }
-.podium-action-bar { position:absolute; bottom:10px; right:10px; display:none; }
-.podium-content { padding-bottom:17px; }
+.podium-action-bar { position:absolute; bottom:10px; right:10px; display:none }
+.podium-action-bar.list-inline > li { padding-right:1px; padding-left:1px }
+.podium-content { padding-bottom:17px }
 .podium-content:hover .podium-action-bar { display:block }
 .podium-footer { margin-top:10px; max-height:125px; overflow-y:hidden }
 .podium-footer hr { margin-bottom:5px }
 .podium-go-to-new { display:none }
 .podium-gradient { background-image:linear-gradient(to right bottom, white, #c5dee5) }
 .podium-post { margin-bottom:5px }
-.podium-post .podium-content img { display:block; max-width:100%; height:auto; }
+.podium-post .podium-content img { display:block; max-width:100%; height:auto }
 .podium-thread-line:hover .podium-go-to-new { display:inline }
+.ql-align-center { text-align:center }
+.ql-align-right { text-align:right }
+.ql-align-justify { text-align:justify }
+.ql-size-small { font-size:0.75em }
+.ql-size-large { font-size:1.5em }
+.ql-size-large { font-size:1.5em }
+.ql-size-huge { font-size:2.5em }
+.ql-snow .ql-editor pre.ql-syntax { background-color:inherit; color:inherit }
 @media (max-width: 767px) { .podium-avatar { display:none !important }}
 .select2-container--krajee .select2-results__option--highlighted[aria-selected] { background-color: #d9edf7 !important }
 @-moz-document url-prefix() { fieldset { display: table-cell }}

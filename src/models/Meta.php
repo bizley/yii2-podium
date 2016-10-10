@@ -70,7 +70,7 @@ class Meta extends ActiveRecord
                 'maxWidth' => self::MAX_WIDTH, 'maxHeight' => self::MAX_HEIGHT, 
                 'maxSize' => self::MAX_SIZE],
             ['signature', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('minimal'));
+                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
             }],
             ['signature', 'string', 'max' => 512],
         ];

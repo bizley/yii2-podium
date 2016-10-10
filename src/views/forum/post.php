@@ -9,7 +9,7 @@
 
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
-use bizley\quill\Quill;
+use bizley\podium\widgets\QuillFull;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -47,7 +47,7 @@ $author = User::findMe();
                 <?php $form = ActiveForm::begin(['id' => 'new-post-form', 'action' => ['post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className()) ?>
                         </div>
                     </div>
                     <div class="row">

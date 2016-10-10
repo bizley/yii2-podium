@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\quill\Quill;
+use bizley\podium\widgets\QuillFull;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(Quill::className(), ['options' => ['style' => 'height:320px']]) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className()) ?>
                         </div>
                     </div>
                 </div>

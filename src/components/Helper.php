@@ -79,8 +79,6 @@ class Helper
     
     /**
      * Returns HTMLPurifier configuration set.
-     * This terrible old html4 tags are just because of Trumbowyg v1.
-     * To be changed when Trumbowyg v2 is ready.
      * @param string $type set name
      * @return array configuration
      */
@@ -91,19 +89,16 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'div[style|class],span[class|style],b,i,u,s,a[title|href|class|style],ul,li,ol,hr,h1,h2,h3,h4,br,p,img[alt|src]',
+                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol,span[style|class],h1,h2,h3,h4,h5,h6,sub,sup,blockquote,pre[class],img[src],iframe[class|frameborder|src]',
+                    'HTML.SafeIframe' => true,
+                    'URI.SafeIframeRegexp' => '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
                 break;
-            case 'minimal':
-                $config = [
-                    'HTML.Allowed' => 'div[style|class],span[class|style],p,br,b,i,u,s,a[title|href|class|style],img[alt|src]',
-                    'Attr.AllowedFrameTargets' => ['_blank']
-                ];
             case 'default':
             default:
                 $config = [
-                    'HTML.Allowed' => 'div[style|class],span[class|style],p,br,b,i,u,s,a[title|href|class|style],ul,li,ol,hr,h1,h2,h3,h4,img[alt|src]',
+                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
         }
@@ -300,7 +295,7 @@ class Helper
             if ((int)$a[$v] < (int)$b[$v]) {
                 return '<';
             }
-            elseif ((int)$a[$v] > (int)$b[$v]) {
+            if ((int)$a[$v] > (int)$b[$v]) {
                 return '>';
             }
         }
