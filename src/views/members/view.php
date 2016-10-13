@@ -33,9 +33,24 @@ if (!Yii::$app->user->isGuest) {
 
 ?>
 <ul class="nav nav-tabs">
-    <li role="presentation"><a href="<?= Url::to(['members/index']) ?>"><span class="glyphicon glyphicon-user"></span> <?= Yii::t('podium/view', 'Members List') ?></a></li>
-    <li role="presentation"><a href="<?= Url::to(['members/mods']) ?>"><span class="glyphicon glyphicon-scissors"></span> <?= Yii::t('podium/view', 'Moderation Team') ?></a></li>
-    <li role="presentation" class="active"><a href="#"><span class="glyphicon glyphicon-eye-open"></span> <?= Yii::t('podium/view', 'Member View') ?></a></li>
+    <li role="presentation">
+        <a href="<?= Url::to(['members/index']) ?>">
+            <span class="glyphicon glyphicon-user"></span> 
+            <?= Yii::t('podium/view', 'Members List') ?>
+        </a>
+    </li>
+    <li role="presentation">
+        <a href="<?= Url::to(['members/mods']) ?>">
+            <span class="glyphicon glyphicon-scissors"></span> 
+            <?= Yii::t('podium/view', 'Moderation Team') ?>
+        </a>
+    </li>
+    <li role="presentation" class="active">
+        <a href="#">
+            <span class="glyphicon glyphicon-eye-open"></span> 
+            <?= Yii::t('podium/view', 'Member View') ?>
+        </a>
+    </li>
 </ul>
 <br>
 <div class="row">
@@ -94,7 +109,7 @@ if (!Yii::$app->user->isGuest) {
             </div>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-3 hidden-xs">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
             'email'        => $model->email,

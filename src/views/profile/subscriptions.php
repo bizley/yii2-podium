@@ -18,10 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'subscriptions']) ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9 col-sm-8">
         <h4><?= Yii::t('podium/view', 'Subscriptions') ?></h4>
         <?= Html::beginForm(); ?>
 <?= GridView::widget([
@@ -59,16 +59,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'buttons' => [
                 'mark' => function($url, $model) {
                     if ($model->post_seen) {
-                        return Html::a('<span class="glyphicon glyphicon-eye-close"></span> ' . Yii::t('podium/view', 'Mark unseen'), $url, [
+                        return Html::a('<span class="glyphicon glyphicon-eye-close"></span> <span class="hidden-sm">' . Yii::t('podium/view', 'Mark unseen') . '</span>', $url, [
                             'class' => 'btn btn-warning btn-xs'
                         ]);
                     }
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Mark seen'), $url, [
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span> <span class="hidden-sm">' . Yii::t('podium/view', 'Mark seen') . '</span>', $url, [
                         'class' => 'btn btn-success btn-xs'
                     ]);
                 },
                 'delete' => function($url, $model) {
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span> ' . Yii::t('podium/view', 'Unsubscribe'), $url, [
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span> <span class="hidden-sm">' . Yii::t('podium/view', 'Unsubscribe') . '</span>', $url, [
                         'class' => 'btn btn-danger btn-xs'
                     ]);
                 },

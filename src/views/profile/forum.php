@@ -23,10 +23,10 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'forum']) ?>
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-8">
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'forum-form', 'options' => ['enctype' => 'multipart/form-data']]); ?>
                 <div class="panel-body">
@@ -76,7 +76,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
             <?php ActiveForm::end(); ?>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-md-3 hidden-sm hidden-xs">
 <?php if (!empty($model->gravatar)): ?>
         <?= Gravatar::widget([
             'email'        => $user->email,

@@ -90,7 +90,7 @@ $loggedId = User::loggedId();
             </div>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-3 hidden-xs">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
             'email'        => $model->email,

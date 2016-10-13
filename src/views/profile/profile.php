@@ -17,10 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'profile']) ?>
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-8">
         <div class="panel panel-default">
             <div class="panel-body">
                 <h2>
@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-md-3 hidden-sm hidden-xs">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
             'email'        => $model->email,

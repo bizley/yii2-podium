@@ -22,7 +22,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
 ?>
 <br>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <ul class="nav nav-pills nav-stacked">
             <li role="presentation" class="<?= $model->name == Content::TERMS_AND_CONDS ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::TERMS_AND_CONDS]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Forum Terms and Conditions') ?></a></li>
             <li role="presentation" class="<?= $model->name == Content::EMAIL_REGISTRATION ? 'active' : '' ?>"><a href="<?= Url::to(['admin/contents', 'name' => Content::EMAIL_REGISTRATION]) ?>"><span class="glyphicon glyphicon-chevron-right"></span> <?= Yii::t('podium/view', 'Registration e-mail') ?></a></li>
@@ -44,7 +44,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
         </div>
 <?php endif; ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9 col-sm-8">
         <?php $form = ActiveForm::begin(['id' => 'content-form']); ?>
             <div class="row">
                 <div class="col-sm-12">

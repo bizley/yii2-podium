@@ -25,33 +25,33 @@ $loggedId = User::loggedId();
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9 col-sm-8">
         <?= $this->render('/elements/messages/_navbar', ['active' => 'new']) ?>
         <br>
         <?php $form = ActiveForm::begin(['id' => 'message-form']); ?>
             <div class="row">
-                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
-                <div class="col-sm-9"><p class="form-control-static"><?= $reply->sender->getPodiumTag(true) ?></p>
+                <div class="col-md-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Send to') ?></p></div>
+                <div class="col-md-9"><p class="form-control-static"><?= $reply->sender->getPodiumTag(true) ?></p>
                     <?= $form->field($model, 'receiversId[]')->hiddenInput(['value' => $model->receiversId[0]])->label(false) ?>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
-                <div class="col-sm-9">
+                <div class="col-md-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
+                <div class="col-md-9">
                     <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Message Topic')])->label(false) ?>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
-                <div class="col-sm-9">
+                <div class="col-md-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
+                <div class="col-md-9">
                     <?= $form->field($model, 'content')->label(false)->widget(QuillBasic::className()) ?>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-9 col-sm-offset-3">
+                <div class="col-md-9 col-md-offset-3">
                     <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Send Message'), ['class' => 'btn btn-block btn-primary', 'name' => 'send-button']) ?>
                 </div>
             </div>

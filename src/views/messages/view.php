@@ -36,10 +36,10 @@ $loggedId = User::loggedId();
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9 col-sm-8">
         <?= $this->render('/elements/messages/_navbar', ['active' => 'view']) ?>
         <br>
         <div <?= Helper::replyBgd() ?>>

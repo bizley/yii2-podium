@@ -22,7 +22,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 <?= $this->render('/elements/admin/_navbar', ['active' => 'categories']); ?>
 <br>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <ul class="nav nav-pills nav-stacked">
             <li role="presentation"><a href="<?= Url::to(['admin/categories']) ?>"><span class="glyphicon glyphicon-list"></span> <?= Yii::t('podium/view', 'Categories List') ?></a></li>
 <?php foreach ($categories as $category): ?>
@@ -37,7 +37,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
             <li role="presentation"><a href="<?= Url::to(['admin/new-category']) ?>"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new category') ?></a></li>
         </ul>
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-8">
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'edit-forum-form']); ?>
                 <div class="panel-heading">

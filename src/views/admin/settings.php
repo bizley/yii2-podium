@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('/elements/admin/_navbar', ['active' => 'settings']); ?>
 <br>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><?= Yii::t('podium/view', 'Settings Index') ?></h3>
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-8">
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'settings-form']); ?>
                 <div class="panel-heading">
@@ -146,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php ActiveForm::end(); ?>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-8 col-sm-offset-4 col-md-offset-0">
         <a href="<?= Url::to(['admin/clear']) ?>" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Clear all cache'); ?></a>
     </div>
 </div><br>

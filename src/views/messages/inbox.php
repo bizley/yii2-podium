@@ -21,10 +21,10 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'messages']) ?>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9 col-sm-8">
         <?= $this->render('/elements/messages/_navbar', ['active' => 'inbox']) ?>
         <br>
 <?= GridView::widget([

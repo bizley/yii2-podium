@@ -26,10 +26,10 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
 
 ?>
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-md-3 col-sm-4">
         <?= $this->render('/elements/profile/_navbar', ['active' => 'details']) ?>
     </div>
-    <div class="col-sm-6">
+    <div class="col-md-6 col-sm-8">
         <div class="panel panel-default">
             <?php $form = ActiveForm::begin(['id' => 'details-form']); ?>
                 <div class="panel-body">
@@ -134,7 +134,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
             <?php ActiveForm::end(); ?>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-md-3 hidden-sm hidden-xs">
 <?php if (!empty($model->meta->gravatar)): ?>
         <?= Gravatar::widget([
             'email'        => $model->email,
