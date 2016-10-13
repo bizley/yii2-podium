@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
+use bizley\podium\widgets\Modal;
 use cebe\gravatar\Gravatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -111,41 +112,24 @@ if (!Yii::$app->user->isGuest) {
     </div>
 </div>
 <?php if (!Yii::$app->user->isGuest): ?>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalIgnoreLabel" aria-hidden="true" id="podiumModalIgnore">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalIgnoreLabel"><?= Yii::t('podium/view', 'Ignore user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to ignore this user?') ?></p>
-                <p><?= Yii::t('podium/view', 'The user will not be able to send you messages.') ?></p>
-                <p><strong><?= Yii::t('podium/view', 'You can always unignore the user if you change your mind later on.') ?></strong></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="#" id="ignoreUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Ignore user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalUnIgnoreLabel" aria-hidden="true" id="podiumModalUnIgnore">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalUnIgnoreLabel"><?= Yii::t('podium/view', 'Unignore user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to unignore this user?') ?></p>
-                <p><?= Yii::t('podium/view', 'The user will be able to send you messages again.') ?></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="#" id="unignoreUrl" class="btn btn-success"><?= Yii::t('podium/view', 'Unignore user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
+<?php Modal::begin([
+    'id' => 'podiumModalIgnore',
+    'header' => Yii::t('podium/view', 'Ignore user'),
+    'footer' => Yii::t('podium/view', 'Ignore user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger', 'id' => 'ignoreUrl']
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to ignore this user?') ?></p>
+<p><?= Yii::t('podium/view', 'The user will not be able to send you messages.') ?></p>
+<p><strong><?= Yii::t('podium/view', 'You can always unignore the user if you change your mind later on.') ?></strong></p>
+<?php Modal::end() ?>
+<?php Modal::begin([
+    'id' => 'podiumModalUnIgnore',
+    'header' => Yii::t('podium/view', 'Unignore user'),
+    'footer' => Yii::t('podium/view', 'Unignore user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-success', 'id' => 'unignoreUrl']
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to ignore this user?') ?></p>
+<p><?= Yii::t('podium/view', 'The user will not be able to send you messages.') ?></p>
+<p><strong><?= Yii::t('podium/view', 'You can always unignore the user if you change your mind later on.') ?></strong></p>
+<?php Modal::end() ?>
 <?php endif;

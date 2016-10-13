@@ -22,6 +22,10 @@ class Modal extends YiiModal
      * @var array footer confirmation HTML options
      */
     public $footerConfirmOptions = [];
+    /**
+     * @var mixed footer confirmation URL
+     */
+    public $footerConfirmUrl = '#';
 
 
     /**
@@ -32,7 +36,7 @@ class Modal extends YiiModal
         $this->header = Html::tag('h4', $this->header, ['class' => 'modal-title', 'id' => $this->id . 'Label']);
         $this->options['aria-labelledby'] = $this->id . 'Label';
         $this->footer = Html::button(Yii::t('podium/view', 'Cancel'), ['class' => 'btn btn-default', 'data-dismiss' => 'modal'])
-                . "\n" . Html::a($this->footer, '#', $this->footerConfirmOptions);
+                . "\n" . Html::a($this->footer, $this->footerConfirmUrl, $this->footerConfirmOptions);
         
         parent::init();
     }

@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
+use bizley\podium\widgets\Modal;
 use kartik\sortable\Sortable;
 use yii\helpers\Url;
 
@@ -53,23 +54,14 @@ if (!empty($items)) {
 </div><br>
 
 <?php if (!empty($items)): ?>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModalDelete">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalDeleteLabel"><?= Yii::t('podium/view', 'Delete Category') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to delete this category?') ?></p>
-                <p><?= Yii::t('podium/view', "All category forums, forums' threads and posts will be deleted as well.") ?></p>
-                <p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="#" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete Category') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
+<?php Modal::begin([
+    'id' => 'podiumModalDelete',
+    'header' => Yii::t('podium/view', 'Delete Category'),
+    'footer' => Yii::t('podium/view', 'Delete Category'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger', 'id' => 'deleteUrl']
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to delete this category?') ?></p>
+<p><?= Yii::t('podium/view', "All category forums, forums' threads and posts will be deleted as well.") ?></p>
+<p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
+<?php Modal::end() ?>
 <?php endif;

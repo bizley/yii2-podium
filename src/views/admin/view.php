@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
+use bizley\podium\widgets\Modal;
 use cebe\gravatar\Gravatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -107,95 +108,55 @@ $loggedId = User::loggedId();
     </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDeleteLabel" aria-hidden="true" id="podiumModalDelete">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalDeleteLabel"><?= Yii::t('podium/view', 'Delete User') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to delete this user?') ?></p>
-                <p><?= Yii::t('podium/view', 'The user can register again using the same name but all previously created posts will not be linked back to him.') ?></p>
-                <p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/delete', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete User') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalBanLabel" aria-hidden="true" id="podiumModalBan">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalBanLabel"><?= Yii::t('podium/view', 'Ban user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to ban this user?') ?></p>
-                <p><?= Yii::t('podium/view', 'The user will not be deleted but will not be able to sign in again.') ?></p>
-                <p><strong><?= Yii::t('podium/view', 'You can always unban the user if you change your mind later on.') ?></strong></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/ban', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Ban user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalUnBanLabel" aria-hidden="true" id="podiumModalUnBan">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalUnBanLabel"><?= Yii::t('podium/view', 'Unban user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to unban this user?') ?></p>
-                <p><?= Yii::t('podium/view', 'The user will be able to sign in again.') ?></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/ban', 'id' => $model->id]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Unban user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalPromoteLabel" aria-hidden="true" id="podiumModalPromote">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalPromoteLabel"><?= Yii::t('podium/view', 'Promote user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to promote this user to Moderator?') ?></p>
-                <p><?= Yii::t('podium/view', 'You can choose forums for this user to moderate in next step.') ?></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/promote', 'id' => $model->id]) ?>" class="btn btn-success"><?= Yii::t('podium/view', 'Promote user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModalDemoteLabel" aria-hidden="true" id="podiumModalDemote">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="podiumModalDemoteLabel"><?= Yii::t('podium/view', 'Demote user') ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= Yii::t('podium/view', 'Are you sure you want to demote this user to Member?') ?></p>
-                <p><?= Yii::t('podium/view', 'All his moderation assignments will be removed.') ?></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['admin/demote', 'id' => $model->id]) ?>" class="btn btn-danger"><?= Yii::t('podium/view', 'Demote user') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
+<?php Modal::begin([
+    'id' => 'podiumModalDelete',
+    'header' => Yii::t('podium/view', 'Delete User'),
+    'footer' => Yii::t('podium/view', 'Delete User'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger'],
+    'footerConfirmUrl' => Url::to(['admin/delete', 'id' => $model->id])
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to delete this user?') ?></p>
+<p><?= Yii::t('podium/view', 'The user can register again using the same name but all previously created posts will not be linked back to him.') ?></p>
+<p><strong><?= Yii::t('podium/view', 'This action can not be undone.') ?></strong></p>
+<?php Modal::end() ?>
+<?php Modal::begin([
+    'id' => 'podiumModalBan',
+    'header' => Yii::t('podium/view', 'Ban user'),
+    'footer' => Yii::t('podium/view', 'Ban user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger'],
+    'footerConfirmUrl' => Url::to(['admin/ban', 'id' => $model->id])
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to ban this user?') ?></p>
+<p><?= Yii::t('podium/view', 'The user will not be deleted but will not be able to sign in again.') ?></p>
+<p><strong><?= Yii::t('podium/view', 'You can always unban the user if you change your mind later on.') ?></strong></p>
+<?php Modal::end() ?>
+<?php Modal::begin([
+    'id' => 'podiumModalUnBan',
+    'header' => Yii::t('podium/view', 'Unban user'),
+    'footer' => Yii::t('podium/view', 'Unban user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-success'],
+    'footerConfirmUrl' => Url::to(['admin/ban', 'id' => $model->id])
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to unban this user?') ?></p>
+<p><?= Yii::t('podium/view', 'The user will be able to sign in again.') ?></p>
+<?php Modal::end() ?>
+<?php Modal::begin([
+    'id' => 'podiumModalPromote',
+    'header' => Yii::t('podium/view', 'Promote user'),
+    'footer' => Yii::t('podium/view', 'Promote user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-success'],
+    'footerConfirmUrl' => Url::to(['admin/promote', 'id' => $model->id])
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to promote this user to Moderator?') ?></p>
+<p><?= Yii::t('podium/view', 'You can choose forums for this user to moderate in next step.') ?></p>
+<?php Modal::end() ?>
+<?php Modal::begin([
+    'id' => 'podiumModalDemote',
+    'header' => Yii::t('podium/view', 'Demote user'),
+    'footer' => Yii::t('podium/view', 'Demote user'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger'],
+    'footerConfirmUrl' => Url::to(['admin/demote', 'id' => $model->id])
+ ]) ?>
+<p><?= Yii::t('podium/view', 'Are you sure you want to demote this user to Member?') ?></p>
+<p><?= Yii::t('podium/view', 'All his moderation assignments will be removed.') ?></p>
+<?php Modal::end();

@@ -11,6 +11,7 @@ use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
 use bizley\podium\widgets\Avatar;
+use bizley\podium\widgets\Modal;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -83,20 +84,12 @@ $loggedId = User::loggedId();
     </div>
 </div><br>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="podiumModal" aria-hidden="true" id="podiumModal">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"><?= Yii::t('podium/view', 'Delete Message') ?></h4>
-            </div>
-            <div class="modal-body">
-                <?= Yii::t('podium/view', 'Are you sure you want to delete this message?') ?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= Yii::t('podium/view', 'Cancel') ?></button>
-                <a href="<?= Url::to(['messages/delete-' . $type, 'id' => $id]) ?>" id="deleteUrl" class="btn btn-danger"><?= Yii::t('podium/view', 'Delete Message') ?></a>
-            </div>
-        </div>
-    </div>
-</div>
+<?php Modal::begin([
+    'id' => 'podiumModal',
+    'header' => Yii::t('podium/view', 'Delete Message'),
+    'footer' => Yii::t('podium/view', 'Delete Message'),
+    'footerConfirmOptions' => ['class' => 'btn btn-danger'],
+    'footerConfirmUrl' => Url::to(['messages/delete-' . $type, 'id' => $id])
+ ]) ?>
+<?= Yii::t('podium/view', 'Are you sure you want to delete this message?') ?>
+<?php Modal::end();
