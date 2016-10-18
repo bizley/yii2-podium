@@ -119,7 +119,7 @@ class BaseController extends YiiController
                     foreach ($warnings as $warning) {
                         if ($warning == static::warnings()['maintenance']) {
                             if (!User::can(Rbac::ROLE_ADMIN)) {
-                                return $this->redirect(['forum/maintenance']);
+                                return $this->redirect(['/forum/maintenance']);
                             }
                             return false;
                         }
@@ -127,7 +127,7 @@ class BaseController extends YiiController
                 }
                 $this->warning(static::warnings()['maintenance'], false);
                 if (!User::can(Rbac::ROLE_ADMIN)) {
-                    return $this->redirect(['forum/maintenance']);
+                    return $this->redirect(['/forum/maintenance']);
                 }
             }
         }
@@ -190,29 +190,35 @@ class BaseController extends YiiController
     
     /**
      * Creates inherited user account.
+     * Redirects banned user to proper view.
+     * Sets user's timezone.
      * @throws Exception
      */
     public function init()
     {
         parent::init();
-        if (!Yii::$app->user->isGuest) {
-            $user = User::findMe();
-            if ($this->module->userComponent == Podium::USER_INHERIT) {
-                if (!$user) {
-                    if (!User::createInheritedAccount()) {
-                        throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
+        try {
+            if (!Yii::$app->user->isGuest) {
+                $user = User::findMe();
+                if ($this->module->userComponent == Podium::USER_INHERIT) {
+                    if (!$user) {
+                        if (!User::createInheritedAccount()) {
+                            throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
+                        }
+                        $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
+                            'link' => Html::a(Yii::t('podium/view', 'Profile'))
+                        ]));
                     }
-                    $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
-                        'link' => Html::a(Yii::t('podium/view', 'Profile'))
-                    ]));
+                }
+                if ($user && $user->status == User::STATUS_BANNED) {
+                    return $this->redirect(['/forum/ban']);
+                }
+                if ($user && !empty($user->timezone)) {
+                    Yii::$app->formatter->timeZone = $user->timezone;
                 }
             }
-            if ($user && $user->status == User::STATUS_BANNED) {
-                return $this->redirect(['forum/ban']);
-            }
-            if ($user && !empty($user->timezone)) {
-                Yii::$app->formatter->timeZone = $user->timezone;
-            }
+        } catch (Exception $exc) {
+            return $this->redirect(['/install/run']);
         }
     }
 }
