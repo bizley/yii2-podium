@@ -34,6 +34,11 @@ Follow instructions at [Podium wiki](https://github.com/bizley/yii2-podium/wiki)
 > Any part of this module can change without warning.  
 > Please report all issues and suggestions [here](https://github.com/bizley/yii2-podium/issues).
 
+Demo
+----
+
+Podium Demo is available at [http://bizley.pl/podium](http://bizley.pl/podium).
+
 Screenshots
 -----------
 
