@@ -13,6 +13,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
 use yii\helpers\Json;
+use yii\helpers\Url;
 use Zelenin\yii\behaviors\Slug;
 
 /**
