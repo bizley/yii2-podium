@@ -1,7 +1,5 @@
 body { padding-top:20px; padding-bottom:20px }
 .avatar-name { padding:10px }
-.blockquote { font-size:inherit !important; border-left:5px solid #337ab7; background-color:#eee; padding:3px 3px 3px 10px !important }
-.blockquote a.btn { background-color:#fff; text-decoration:none }
 .navbar { margin-bottom:20px }
 .note-editor .note-dialog .form-group.row-fluid.note-group-select-from-files { display:none }
 .popover.podium { display:block !important; width:auto !important; max-width:none !important; position:relative !important; z-index:auto !important }
@@ -16,6 +14,8 @@ body { padding-top:20px; padding-bottom:20px }
 .podium-gradient { background-image:linear-gradient(to right bottom, white, #c5dee5) }
 .podium-post { margin-bottom:5px }
 .podium-post .podium-content img { display:block; max-width:100%; height:auto }
+.podium-post blockquote { font-size:inherit !important; border-left:5px solid #337ab7; background-color:#eee; padding:3px 3px 3px 10px !important }
+.podium-post blockquote a.btn { background-color:#fff; text-decoration:none }
 .podium-thread-line:hover .podium-go-to-new { display:inline }
 .ql-align-center { text-align:center }
 .ql-align-right { text-align:right }

@@ -90,6 +90,7 @@ class Helper
             case 'full':
                 $config = [
                     'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol,span[style|class],h1,h2,h3,h4,h5,h6,sub,sup,blockquote,pre[class],img[src],iframe[class|frameborder|src]',
+                    'CSS.AllowedProperties' => 'color,background-color',
                     'HTML.SafeIframe' => true,
                     'URI.SafeIframeRegexp' => '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
                     'Attr.AllowedFrameTargets' => ['_blank']
