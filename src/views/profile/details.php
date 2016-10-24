@@ -9,7 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\Module as PodiumModule;
-use cebe\gravatar\Gravatar;
+use bizley\podium\widgets\Avatar;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -135,19 +135,9 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
         </div>
     </div>
     <div class="col-md-3 hidden-sm hidden-xs">
-<?php if (!empty($model->meta->gravatar)): ?>
-        <?= Gravatar::widget([
-            'email'        => $model->email,
-            'defaultImage' => 'identicon',
-            'rating'       => 'r',
-            'options'      => [
-                'alt'   => Yii::t('podium/view', 'Your Gravatar image'),
-                'class' => 'img-circle img-responsive',
-            ]]); ?>
-<?php elseif (!empty($model->meta->avatar)): ?>
-        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
-<?php else: ?>
-        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
-<?php endif; ?>
+        <?= Avatar::widget([
+            'author' => $model,
+            'showName' => false
+        ]) ?>
     </div>
 </div><br>

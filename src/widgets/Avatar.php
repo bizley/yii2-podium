@@ -35,14 +35,19 @@ class Avatar extends Widget
      */
     public function run()
     {
+        $avatar = Html::img(Helper::defaultAvatar(), [
+            'class' => 'podium-avatar img-circle img-responsive center-block', 
+            'alt' => Yii::t('podium/view', 'user deleted')
+        ]);
+        $name = Helper::deletedUserTag(true);
         if ($this->author instanceof User) {
+            $avatar = Html::img(Helper::defaultAvatar(), [
+                'class' => 'podium-avatar img-circle img-responsive center-block', 
+                'alt'   => Html::encode($this->author->podiumName)
+            ]);
+            $name = $this->author->podiumTag;
             $meta = $this->author->meta;
-            if (empty($meta)) {
-                $avatar = Html::img(Helper::defaultAvatar(), [
-                    'class' => 'podium-avatar img-circle img-responsive center-block', 
-                    'alt'   => Html::encode($this->author->podiumName)
-                ]);
-            } else {
+            if (!empty($meta)) {
                 if (!empty($meta->gravatar)) {
                     $avatar = Gravatar::widget([
                         'email'        => $this->author->email,
@@ -60,14 +65,7 @@ class Avatar extends Widget
                     ]);
                 }
             }
-            $name = $this->showName ? $this->author->podiumTag : '';
-        } else {
-            $avatar = Html::img(Helper::defaultAvatar(), ['class' => 'podium-avatar img-circle img-responsive center-block', 'alt' => Yii::t('podium/view', 'user deleted')]);
-            $name   = $this->showName ? Helper::deletedUserTag(true) : '';
         }
-        
-        $name = $this->showName ? Html::tag('p', $name, ['class' => 'avatar-name']) : '';
-        
-        return $avatar . $name;
+        return $avatar . ($this->showName ? Html::tag('p', $name, ['class' => 'avatar-name']) : '');
     }
 }

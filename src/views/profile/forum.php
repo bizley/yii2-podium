@@ -7,10 +7,9 @@
  * @since 0.1
  */
 
-use bizley\podium\components\Helper;
 use bizley\podium\models\Meta;
+use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\QuillBasic;
-use cebe\gravatar\Gravatar;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -77,19 +76,9 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
         </div>
     </div>
     <div class="col-md-3 hidden-sm hidden-xs">
-<?php if (!empty($model->gravatar)): ?>
-        <?= Gravatar::widget([
-            'email'        => $user->email,
-            'defaultImage' => 'identicon',
-            'rating'       => 'r',
-            'options'      => [
-                'alt'   => Yii::t('podium/view', 'Your Gravatar image'),
-                'class' => 'img-circle img-responsive',
-            ]]); ?>
-<?php elseif (!empty($model->avatar)): ?>
-        <img class="img-circle img-responsive" src="/avatars/<?= $model->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
-<?php else: ?>
-        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
-<?php endif; ?>
+        <?= Avatar::widget([
+            'author' => $user,
+            'showName' => false
+        ]) ?>
     </div>
 </div><br>

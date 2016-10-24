@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
-use cebe\gravatar\Gravatar;
+use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -46,19 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <div class="col-md-3 hidden-sm hidden-xs">
-<?php if (!empty($model->meta->gravatar)): ?>
-        <?= Gravatar::widget([
-            'email'        => $model->email,
-            'defaultImage' => 'identicon',
-            'rating'       => 'r',
-            'options'      => [
-                'alt'   => Yii::t('podium/view', 'Your Gravatar image'),
-                'class' => 'img-circle img-responsive',
-            ]]); ?>
-<?php elseif (!empty($model->meta->avatar)): ?>
-        <img class="img-circle img-responsive" src="/avatars/<?= $model->meta->avatar ?>" alt="<?= Yii::t('podium/view', 'Your avatar') ?>">
-<?php else: ?>
-        <img class="img-circle img-responsive" src="<?= Helper::defaultAvatar() ?>" alt="<?= Yii::t('podium/view', 'Default avatar') ?>">
-<?php endif; ?>
+        <?= Avatar::widget([
+            'author' => $model,
+            'showName' => false
+        ]) ?>
     </div>
 </div><br>
