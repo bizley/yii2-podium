@@ -164,6 +164,10 @@ class BaseController extends YiiController
      */
     public function upgradeCheck($warnings)
     {
+        if (!User::can(Rbac::ROLE_ADMIN)) {
+            return false;
+        }
+        
         if ($warnings) {
             foreach ($warnings as $warning) {
                 if ($warning == static::warnings()['old_version']) {
