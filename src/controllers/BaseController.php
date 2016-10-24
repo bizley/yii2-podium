@@ -119,7 +119,7 @@ class BaseController extends YiiController
                     foreach ($warnings as $warning) {
                         if ($warning == static::warnings()['maintenance']) {
                             if (!User::can(Rbac::ROLE_ADMIN)) {
-                                return $this->redirect(['/forum/maintenance']);
+                                return $this->redirect(['forum/maintenance']);
                             }
                             return false;
                         }
@@ -127,7 +127,7 @@ class BaseController extends YiiController
                 }
                 $this->warning(static::warnings()['maintenance'], false);
                 if (!User::can(Rbac::ROLE_ADMIN)) {
-                    return $this->redirect(['/forum/maintenance']);
+                    return $this->redirect(['forum/maintenance']);
                 }
             }
         }
@@ -191,7 +191,7 @@ class BaseController extends YiiController
     /**
      * Creates inherited user account.
      * Redirects banned user to proper view.
-     * Sets user's timezone.
+     * Sets user's time zone.
      * @throws Exception
      */
     public function init()
@@ -211,14 +211,14 @@ class BaseController extends YiiController
                     }
                 }
                 if ($user && $user->status == User::STATUS_BANNED) {
-                    return $this->redirect(['/forum/ban']);
+                    return $this->redirect(['forum/ban']);
                 }
                 if ($user && !empty($user->timezone)) {
                     Yii::$app->formatter->timeZone = $user->timezone;
                 }
             }
         } catch (Exception $exc) {
-            return $this->redirect(['/install/run']);
+            Yii::$app->response->redirect(['install/run']);
         }
     }
 }
