@@ -72,7 +72,7 @@ class Maintenance extends Component
      */
     protected function addColumn($data)
     {
-        if (empty($data['col']) || !is_string($data['col'])) {
+        if (!isset($data['col']) || !is_string($data['col'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
@@ -103,15 +103,15 @@ class Maintenance extends Component
      */
     protected function addForeign($data)
     {
-        if (empty($data['key']) || (!is_string($data['key']) && !is_array($data['key']))) {
+        if (!isset($data['key']) || (!is_string($data['key']) && !is_array($data['key']))) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.');
         }
-        if (empty($data['ref']) || !is_string($data['ref'])) {
+        if (!isset($data['ref']) || !is_string($data['ref'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Foreign key reference missing.');
         }
-        if (empty($data['col']) || (!is_string($data['col']) && !is_array($data['col']))) {
+        if (!isset($data['col']) || (!is_string($data['col']) && !is_array($data['col']))) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Referenced columns missing.');
         }
@@ -147,7 +147,7 @@ class Maintenance extends Component
      */
     protected function addIndex($data)
     {
-        if (empty($data['name']) || !is_string($data['name'])) {
+        if (!isset($data['name']) || !is_string($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Index name missing.');
         }
@@ -177,11 +177,11 @@ class Maintenance extends Component
      */
     protected function alterColumn($data)
     {
-        if (empty($data['col']) || !is_string($data['col'])) {
+        if (!isset($data['col']) || !is_string($data['col'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
-        if (empty($data['type']) || !is_string($data['type'])) {
+        if (!isset($data['type']) || !is_string($data['type'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column type missing.');
         }
@@ -231,7 +231,7 @@ class Maintenance extends Component
      */
     protected function createTable($data)
     {
-        if (empty($data['schema']) || !is_array($data['schema'])) {
+        if (!isset($data['schema']) || !is_array($data['schema'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Database schema missing.');
         }
@@ -283,7 +283,7 @@ class Maintenance extends Component
      */
     protected function dropColumn($data)
     {
-        if (empty($data['col']) || !is_string($data['col'])) {
+        if (!isset($data['col']) || !is_string($data['col'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
@@ -309,7 +309,7 @@ class Maintenance extends Component
      */
     protected function dropForeign($data)
     {
-        if (empty($data['name']) || !is_string($data['name'])) {
+        if (!isset($data['name']) || !is_string($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Foreign key name missing.');
         }
@@ -335,7 +335,7 @@ class Maintenance extends Component
      */
     protected function dropIndex($data)
     {
-        if (empty($data['name']) || !is_string($data['name'])) {
+        if (!isset($data['name']) || !is_string($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Index name missing.');
         }
@@ -363,7 +363,7 @@ class Maintenance extends Component
      */
     protected function rename($data)
     {
-        if (empty($data['name']) || !is_string($data['name'])) {
+        if (!isset($data['name']) || !is_string($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! New table name missing.');
         }
@@ -391,11 +391,11 @@ class Maintenance extends Component
      */
     protected function renameColumn($data)
     {
-        if (empty($data['col']) || !is_string($data['col'])) {
+        if (!isset($data['col']) || !is_string($data['col'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
-        if (empty($data['name']) || !is_string($data['name'])) {
+        if (!isset($data['name']) || !is_string($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! New column name missing.');
         }

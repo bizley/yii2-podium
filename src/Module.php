@@ -24,7 +24,7 @@ use yii\web\Response;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.3 (beta)
+ * @version 0.3.1 (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium

@@ -97,6 +97,12 @@ return [
             'call'  => 'updateValue',
             'name'  => 'registration_off',
             'value' => '0'
+        ],
+        [
+            'table' => 'config',
+            'call'  => 'updateValue',
+            'name'  => 'version',
+            'value' => '0.3'
         ]
     ],
 ];

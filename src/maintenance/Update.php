@@ -100,11 +100,11 @@ class Update extends Maintenance
      */
     protected function updateValue($data)
     {
-        if (empty($data['name'])) {
+        if (!isset($data['name'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
-        if (empty($data['value'])) {
+        if (!isset($data['value'])) {
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Installation aborted! Column value missing.');
         }
