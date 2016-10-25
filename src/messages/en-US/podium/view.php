@@ -182,6 +182,7 @@ return [
     'Member since {date}' => 'Member since {date}',
     'Members' => 'Members',
     'Members List' => 'Members List',
+    'Merge reply with post in case of the same author' => 'Merge reply with post in case of the same author',
     'Message' => 'Message',
     'Message Content' => 'Message Content',
     'Message Topic' => 'Message Topic',

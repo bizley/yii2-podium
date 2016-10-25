@@ -182,6 +182,7 @@ return [
     'Member since {date}' => 'Forumowicz od {date}',
     'Members' => 'Forumowicze',
     'Members List' => 'Lista forumowiczów',
+    'Merge reply with post in case of the same author' => 'Scal posty w przypadku odpowiedzi tego samego autora',
     'Message' => 'Wiadomość',
     'Message Content' => 'Treść wiadomości',
     'Message Topic' => 'Temat wiadomości',
