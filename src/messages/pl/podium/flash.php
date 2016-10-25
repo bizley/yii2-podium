@@ -190,6 +190,7 @@ return [
     'User is not your friend anymore.' => 'Użytkownik nie jest już Twoim przyjacielem.',
     'User is now ignored.' => 'Użytkownik jest od teraz ignorowany.',
     'User is your friend now.' => 'Użytkownik jest od teraz Twoim przyjacielem.',
+    'User registration is currently not allowed.' => 'Rejestracja użytkowników jest aktualnie wstrzymana.',
     'Weird... Installation should already complete...' => 'Dziwne... Instalacja powinna się już zakończyć...',
     'Weird... Update should already complete...' => 'Dziwne... Aktualizacja powinna się już zakończyć...',
     'You are not allowed to perform this action.' => 'Nie możesz wykonać tej akcji.',

@@ -155,6 +155,7 @@ class Installation extends Maintenance
                         ['activation_token_expire', Config::SECONDS_ACTIVATION_TOKEN_EXPIRE],
                         ['meta_keywords', Config::META_KEYWORDS],
                         ['meta_description', Config::META_DESCRIPTION],
+                        ['registration_off', Config::REGISTRATION_OFF],
                     ]
                 )
                 ->execute();

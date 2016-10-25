@@ -34,6 +34,7 @@ class Config extends Component
     const META_DESCRIPTION = 'Podium - Yii 2 Forum Module';
     const META_KEYWORDS = 'yii2, forum, podium';
     const PODIUM_NAME = 'Podium';
+    const REGISTRATION_OFF = 0;
     const SECONDS_ACTIVATION_TOKEN_EXPIRE = 259200;
     const SECONDS_EMAIL_TOKEN_EXPIRE = 86400;
     const SECONDS_PASSWORD_RESET_TOKEN_EXPIRE = 86400;
@@ -80,6 +81,7 @@ class Config extends Component
             'activation_token_expire' => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
             'meta_keywords' => self::META_KEYWORDS,
             'meta_description' => self::META_DESCRIPTION,
+            'registration_off' => self::REGISTRATION_OFF,
         ];
     }
     

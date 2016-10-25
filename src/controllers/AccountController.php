@@ -213,6 +213,11 @@ class AccountController extends BaseController
             return $this->module->goPodium();
         }
         
+        if ($this->module->config->get('registration_off') == '1') {
+            $this->info(Yii::t('podium/flash', 'User registration is currently not allowed.'));
+            return $this->module->goPodium();
+        }
+        
         $model = new User;
         $model->scenario = 'register';
         if ($model->load(Yii::$app->request->post())) {

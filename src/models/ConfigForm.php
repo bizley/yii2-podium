@@ -16,7 +16,7 @@ use yii\validators\StringValidator;
 class ConfigForm extends Model
 {
     /**
-     * @var Config Config instance.
+     * @var Config Configuration instance.
      */
     public $config;
     
@@ -62,11 +62,10 @@ class ConfigForm extends Model
         
         foreach ($data as $key => $value) {
             if (!in_array($key, $this->readonly) && isset($this->settings[$key])) {
-                if ($validator->validate($value)) {
-                    if (!$this->config->set($key, $value)) {
-                        return false;
-                    }                            
-                } else {
+                if (!$validator->validate($value)) {
+                    return false;
+                }
+                if (!$this->config->set($key, $value)) {
                     return false;
                 }
             }

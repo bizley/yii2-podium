@@ -70,6 +70,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h3 id="register"><span class="label label-primary"><?= Yii::t('podium/view', 'Registration') ?></span></h3>
                     <div class="row">
                         <div class="col-sm-12">
+                            <?= $form->field($model, 'registration_off')->checkBox()->label(Yii::t('podium/view', 'Switch registration off'))
+                                ->hint(Yii::t('podium/view', 'New users registration will not be available. This setting is ignored in case of running Podium with Inherited User Identity.')) ?>
+                        </div>                        
+                        <div class="col-sm-12">
                             <?= $form->field($model, 'use_captcha')->checkBox()->label(Yii::t('podium/view', 'Add captcha in registration form')) ?>
                         </div>
                         <div class="col-sm-12">

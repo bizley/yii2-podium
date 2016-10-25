@@ -27,7 +27,7 @@ if (Yii::$app->user->isGuest) {
         ];
     }
     if ($podiumModule->userComponent == Podium::USER_OWN) {
-        if (!empty($podiumModule->registerUrl)) {
+        if (!empty($podiumModule->registerUrl) && $podiumModule->config->get('registration_off') != '1') {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }
         if (!empty($podiumModule->loginUrl)) {
@@ -36,8 +36,8 @@ if (Yii::$app->user->isGuest) {
     }
 }
 else {
-    $podiumUser        = User::findMe();
-    $messageCount      = $podiumUser->newMessagesCount;
+    $podiumUser = User::findMe();
+    $messageCount = $podiumUser->newMessagesCount;
     $subscriptionCount = $podiumUser->subscriptionsCount;
     
     if (User::can(Rbac::ROLE_ADMIN)) {
@@ -53,7 +53,8 @@ else {
         'active' => $this->context->id == 'members'
     ];
     $items[] = [
-        'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName]) . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName]) 
+                    . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
         'url'   => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
