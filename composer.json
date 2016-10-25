@@ -17,6 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
+        "yiisoft/yii2-bootstrap": "*",
         "bizley/quill": "^2.0",
         "cebe/yii2-gravatar": "*",
         "kartik-v/yii2-widget-fileinput": "*",
