@@ -24,8 +24,8 @@ $firstToSee = $model->firstToSee();
     <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="hidden-lg hidden-md hidden-sm pull-left btn btn-<?= $model->getCssClass() ?> btn-xs" style="margin-right:5px" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">
         <span class="glyphicon glyphicon-<?= $model->getIcon() ?>"></span>
     </a>
-    <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block" data-pjax="0">
-        <?= Html::encode($model->name) ?>
+    <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="center-block <?= $model->locked ? 'text-danger' : '' ?>" data-pjax="0">
+        <?= $model->pinned ? '<mark>' : '' ?><?= Html::encode($model->name) ?><?= $model->pinned ? '</mark>' : '' ?>
     </a>
 </td>
 <td class="text-center"><?= $model->posts > 0 ? $model->posts - 1 : 0 ?></td>

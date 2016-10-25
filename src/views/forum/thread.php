@@ -123,17 +123,30 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
     </div>
 </div>
 
+<?php
+$headerClass = 'default';
+$headerIcon = Html::tag('span', '', ['class' => 'glyphicon glyphicon-comment']);
+if ($thread->pinned) {
+    $headerClass = 'success';
+    $headerIcon = Html::tag('span', '', ['class' => 'glyphicon glyphicon-pushpin']);
+}
+if ($thread->locked) {
+    $headerClass = 'danger';
+    $headerIcon = Html::tag('span', '', ['class' => 'glyphicon glyphicon-lock']);
+}
+?>
+
 <div class="row">
     <div class="col-sm-12">
-        <div class="panel panel-default">
+        <div class="panel panel-<?= $headerClass ?>">
             <div class="panel-heading">
                 <h3 class="panel-title">
 <?php if ($thread->subscription): ?>
-                    <a href="<?= Url::to(['profile/subscriptions']) ?>" class="btn btn-warning btn-xs pull-right" data-toggle="tooltip" data-placement="left" title="<?= Yii::t('podium/view', 'You subscribe this thread') ?>"><span class="glyphicon glyphicon-star"></span></a>
+                    <a href="<?= Url::to(['profile/subscriptions']) ?>" class="btn btn-default btn-lg pull-right" data-toggle="tooltip" data-placement="left" title="<?= Yii::t('podium/view', 'You subscribe this thread') ?>"><span class="glyphicon glyphicon-star"></span></a>
 <?php elseif (!Yii::$app->user->isGuest): ?>
                     <small id="subsription-status" class="pull-right"><button class="add-subscription btn btn-success btn-xs"><span class="glyphicon glyphicon-star-empty"></span> <?= Yii::t('podium/view', 'Subscribe to this thread') ?></button></small>
 <?php endif; ?>
-                    <?= Html::encode($thread->name) ?>
+                    <?= $headerIcon ?> <?= Html::encode($thread->name) ?>
                 </h3>
             </div>
         </div>
