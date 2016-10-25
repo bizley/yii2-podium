@@ -223,7 +223,7 @@ return [
     'New password' => 'Новый пароль',
     'New post in subscribed thread' => 'Новое сообщение в теме, на которую вы подписаны',
     'New post in subscribed thread at {forum}' => 'Новое сообщение в теме, на которую вы подписаны, с форума {forum}',
-    'New users registration will not be available. This setting is ignored in case of running Podium with Inherited User Identity.' => 'Регистрация новых пользователей будет невозможна. Этот параметр игнорируется, если в Подиум работает в режиме наследования пользователей из основного приложения.',
+    'New users registration will not be available. This setting is ignored in case of running Podium with Inherited User Identity.' => 'Регистрация новых пользователей будет невозможна. Этот параметр игнорируется, если Podium работает в режиме наследования пользователей из основного приложения.',
     'Newest members' => 'Новые участники',
     'Newest posts' => 'Новые сообщения',
     'No New Posts' => 'Нет новых сообщений',
