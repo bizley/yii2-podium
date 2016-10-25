@@ -190,6 +190,7 @@ return [
     'User is not your friend anymore.' => 'Пользователь был удалён из вашего списка друзей.',
     'User is now ignored.' => 'Пользователь был добавлен в ваш игнор-лист.',
     'User is your friend now.' => 'Пользователь был добавлен в ваш список друзей.',
+    'User registration is currently not allowed.' => 'Регистрация пользователей в настоящее время приостановлена.',
     'Weird... Installation should already complete...' => 'Странно... Установка уже должна была завершиться...',
     'Weird... Update should already complete...' => 'Странно... Обновление уже должно было завершиться...',
     'You are not allowed to perform this action.' => 'У вас нет прав на выполнение данного действия.',
