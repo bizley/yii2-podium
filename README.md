@@ -2,9 +2,9 @@ Podium
 ======
 
 [![Join the chat at https://gitter.im/bizley/yii2-podium](https://badges.gitter.im/bizley/yii2-podium.svg)](https://gitter.im/bizley/yii2-podium?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
-[![Latest Stable Version](https://poser.pugx.org/bizley/podium/v/stable)](https://packagist.org/packages/bizley/podium) 
-[![Total Downloads](https://poser.pugx.org/bizley/podium/downloads)](https://packagist.org/packages/bizley/podium) 
-[![License](https://poser.pugx.org/bizley/podium/license)](https://packagist.org/packages/bizley/podium) 
+![Latest Stable Version](https://img.shields.io/packagist/v/bizley/podium.svg)
+![Total Downloads](https://img.shields.io/packagist/dt/bizley/podium.svg)
+![License](https://img.shields.io/packagist/l/bizley/podium.svg)
 [![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat)](http://www.yiiframework.com/) 
 
 Yii 2 forum module
