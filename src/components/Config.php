@@ -3,6 +3,7 @@
 namespace bizley\podium\components;
 
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\base\Component;
@@ -22,7 +23,6 @@ use yii\db\Query;
  */
 class Config extends Component
 {
-    const CURRENT_VERSION = '0.2';
     const DEFAULT_FROM_EMAIL = 'no-reply@change.me';
     const DEFAULT_FROM_NAME = 'Podium';
     const FLAG_USE_CAPTCHA = 1;
@@ -65,7 +65,7 @@ class Config extends Component
     {
         return [
             'name' => self::PODIUM_NAME,
-            'version' => self::CURRENT_VERSION,
+            'version' => Podium::getInstance()->version,
             'hot_minimum' => self::HOT_MINIMUM,
             'members_visible' => self::FLAG_MEMBERS_VISIBLE,
             'from_email' => self::DEFAULT_FROM_EMAIL,

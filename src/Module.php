@@ -24,7 +24,7 @@ use yii\web\Response;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.3.1 (beta)
+ * @version 0.4 (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -140,7 +140,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * @var string Module version
      */
-    protected $_version = '0.3';
+    protected $_version = '0.4';
 
     /**
      * Registers user activity after every action.

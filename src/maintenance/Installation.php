@@ -139,7 +139,7 @@ class Installation extends Maintenance
                     ['name', 'value'], 
                     [
                         ['name', Config::PODIUM_NAME], 
-                        ['version', Config::CURRENT_VERSION], 
+                        ['version', Podium::getInstance()->version], 
                         ['hot_minimum', Config::HOT_MINIMUM], 
                         ['members_visible', Config::FLAG_MEMBERS_VISIBLE],
                         ['from_email', Config::DEFAULT_FROM_EMAIL],
