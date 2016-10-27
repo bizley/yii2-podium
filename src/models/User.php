@@ -22,11 +22,6 @@ use Zelenin\yii\behaviors\Slug;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property string $current_password write-only password
- * @property string $password write-only password
- * @property string $password_repeat write-only password repeated
- * @property integer $tos write-only terms of service agreement
  */
 class User extends BaseUser
 {
@@ -608,7 +603,8 @@ class User extends BaseUser
         if (Yii::$app->user->isGuest) {
             return null;
         }
-        $cache = Podium::getInstance()->cache->getElement('user.friends', static::loggedId());
+        $logged = static::loggedId();
+        $cache = Podium::getInstance()->cache->getElement('user.friends', $logged);
         if ($cache === false) {
             $cache = [];
             $friends = static::findMe()->friends;
@@ -617,7 +613,7 @@ class User extends BaseUser
                     $cache[$friend->id] = $friend->getPodiumTag(true);
                 }
             }
-            Podium::getInstance()->cache->setElement('user.friends', static::loggedId(), $cache);
+            Podium::getInstance()->cache->setElement('user.friends', $logged, $cache);
         }
         return $cache;
     }
@@ -780,21 +776,21 @@ class User extends BaseUser
     
     /**
      * Updates ignore status for the user.
+     * @param int $member
      * @return bool
      * @since 0.2
      */
-    public function updateIgnore()
+    public function updateIgnore($member)
     {
         try {
-            $userId = User::loggedId();
-            if ($this->isIgnoredBy($userId)) {
+            if ($this->isIgnoredBy($member)) {
                 Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', [
-                    'user_id' => $userId,
+                    'user_id' => $member,
                     'ignored_id' => $this->id
                 ])->execute();
                 Log::info('User unignored', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => $userId, 'ignored_id' => $this->id])->execute();
+                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => $member, 'ignored_id' => $this->id])->execute();
                 Log::info('User ignored', $this->id, __METHOD__);
             }
             return true;
@@ -806,24 +802,24 @@ class User extends BaseUser
     
     /**
      * Updates friend status for the user.
+     * @param int $friend
      * @return bool
      * @since 0.2
      */
-    public function updateFriend()
+    public function updateFriend($friend)
     {
         try {
-            $userId = User::loggedId();
-            if ($this->isBefriendedBy($userId)) {
+            if ($this->isBefriendedBy($friend)) {
                 Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', [
-                    'user_id' => $userId,
+                    'user_id' => $friend,
                     'friend_id' => $this->id
                 ])->execute();
                 Log::info('User unfriended', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $userId, 'friend_id' => $this->id])->execute();
+                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $friend, 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
-            Podium::getInstance()->cache->deleteElement('user.friends', $this->id);
+            Podium::getInstance()->cache->deleteElement('user.friends', $friend);
             return true;
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);

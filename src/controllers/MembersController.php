@@ -88,7 +88,9 @@ class MembersController extends BaseController
             return $this->redirect(['members/index']);
         }
         
-        if ($model->id == User::loggedId()) {
+        $logged = User::loggedId();
+        
+        if ($model->id == $logged) {
             $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore your own account.'));
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
@@ -98,8 +100,8 @@ class MembersController extends BaseController
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
         
-        if ($model->updateIgnore()) {
-            if ($model->isIgnoredBy(User::loggedId())) {
+        if ($model->updateIgnore($logged)) {
+            if ($model->isIgnoredBy($logged)) {
                 $this->success(Yii::t('podium/flash', 'User is now ignored.'));
             } else {
                 $this->success(Yii::t('podium/flash', 'User is not ignored anymore.'));
@@ -226,13 +228,15 @@ class MembersController extends BaseController
             return $this->redirect(['members/index']);
         }
         
-        if ($model->id == User::loggedId()) {
+        $logged = User::loggedId();
+        
+        if ($model->id == $logged) {
             $this->error(Yii::t('podium/flash', 'Sorry! You can not befriend your own account.'));
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
         
-        if ($model->updateFriend()) {
-            if ($model->isBefriendedBy(User::loggedId())) {
+        if ($model->updateFriend($logged)) {
+            if ($model->isBefriendedBy($logged)) {
                 $this->success(Yii::t('podium/flash', 'User is your friend now.'));
             } else {
                 $this->success(Yii::t('podium/flash', 'User is not your friend anymore.'));
