@@ -105,4 +105,12 @@ return [
             'value' => '0.3'
         ]
     ],
+    '0.4' => [
+        [
+            'table' => 'config',
+            'call'  => 'updateValue',
+            'name'  => 'version',
+            'value' => '0.4'
+        ]
+    ],
 ];
