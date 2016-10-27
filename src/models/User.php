@@ -12,6 +12,7 @@ use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
+use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use Zelenin\yii\behaviors\Slug;
