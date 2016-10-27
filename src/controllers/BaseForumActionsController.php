@@ -829,7 +829,7 @@ class BaseForumActionsController extends BaseController
             ),
         ];
             
-        if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->isGuest) {
             $data['msg'] = Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Please sign in to vote on this post'), 
