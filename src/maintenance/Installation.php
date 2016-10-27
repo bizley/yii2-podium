@@ -68,7 +68,7 @@ class Installation extends Maintenance
                 . Html::tag('strong', Yii::t('podium/flash', 'Remember to change these credentials after first login!'), ['class' => 'text-danger']) ;
         } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during account creating') 
                 . ': ' . Html::tag('pre', $e->getMessage());
@@ -120,7 +120,7 @@ class Installation extends Maintenance
                 ]);
         } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during account creating') 
                 . ': ' . Html::tag('pre', $e->getMessage());
@@ -161,7 +161,7 @@ class Installation extends Maintenance
                 ->execute();
             return Yii::t('podium/flash', 'Default Config settings have been added.');
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during settings adding') 
                 . ': ' . Html::tag('pre', $e->getMessage());
@@ -215,7 +215,7 @@ class Installation extends Maintenance
                 ->execute();
             return Yii::t('podium/flash', 'Default Content has been added.');
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during content adding') 
                 . ': ' . Html::tag('pre', $e->getMessage());
@@ -232,7 +232,7 @@ class Installation extends Maintenance
             (new Rbac)->add($this->authManager);
             return Yii::t('podium/flash', 'Access roles have been created.');
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during access roles creating') 
                 . ': ' . Html::tag('pre', $e->getMessage());

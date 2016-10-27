@@ -116,7 +116,7 @@ class Update extends Maintenance
                 'value' => $data['value'],
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during configuration updating') 
                 . ': ' . Html::tag('pre', $e->getMessage());

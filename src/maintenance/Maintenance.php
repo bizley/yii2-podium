@@ -87,7 +87,7 @@ class Maintenance extends Component
                 'name' => $data['col']
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table column {name} adding', [
                     'name' => $data['col']
@@ -131,7 +131,7 @@ class Maintenance extends Component
                 'name' => $this->getForeignName($data['key'])
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table foreign key {name} adding', [
                     'name' => $this->getForeignName($data['key'])
@@ -162,7 +162,7 @@ class Maintenance extends Component
                 'name' => $this->getIndexName($data['name'])
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table index {name} adding', [
                     'name' => $this->getIndexName($data['name'])
@@ -192,7 +192,7 @@ class Maintenance extends Component
                 'name' => $data['col']
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table column {name} updating', [
                     'name' => $data['col']
@@ -243,7 +243,7 @@ class Maintenance extends Component
         } catch (Exception $e) {
             if ($this->_table != 'log') {
                 // in case of creating log table don't try to log error in it if it's not available
-                Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+                Yii::error($e->getMessage(), __METHOD__);
             }
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table {name} creating', [
@@ -268,7 +268,7 @@ class Maintenance extends Component
             }
             return true;
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table {name} dropping', [
                     'name' => $this->getTable(true)
@@ -294,7 +294,7 @@ class Maintenance extends Component
                 'name' => $data['col']
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table column {name} dropping', [
                     'name' => $data['col']
@@ -320,7 +320,7 @@ class Maintenance extends Component
                 'name' => $this->getForeignName($data['name'])
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table foreign key {name} dropping', [
                     'name' => $this->getForeignName($data['name'])
@@ -346,7 +346,7 @@ class Maintenance extends Component
                 'name' => $this->getIndexName($data['name'])
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table index {name} dropping', [
                     'name' => $this->getIndexName($data['name'])
@@ -375,7 +375,7 @@ class Maintenance extends Component
                 'new'  => $this->getTableName($data['name'])
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table {name} renaming to {new}', [
                     'name' => $this->getTable(true), 
@@ -407,7 +407,7 @@ class Maintenance extends Component
                 'new'  => $data['name']
             ]);
         } catch (Exception $e) {
-            Yii::error([$e->getName(), $e->getMessage()], __METHOD__);
+            Yii::error($e->getMessage(), __METHOD__);
             $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during table column {name} renaming to {new}', [
                     'name' => $data['col'], 
