@@ -24,7 +24,6 @@
         "kartik-v/yii2-sortable": "*",
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-datepicker": "*",
-        "zelenin/yii2-rss": "*",
         "himiklab/yii2-recaptcha-widget": "^1.0"
     },
     "autoload": {

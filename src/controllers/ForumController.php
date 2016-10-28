@@ -10,11 +10,7 @@ use Exception;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
-use yii\helpers\Html;
-use yii\helpers\StringHelper;
-use yii\helpers\Url;
 use yii\web\Response;
-use Zelenin\yii\extensions\Rss\RssView;
 
 /**
  * Podium Forum controller
@@ -179,72 +175,6 @@ class ForumController extends BaseForumActionsController
     {
         $this->layout = 'maintenance';
         return $this->render('maintenance');
-    }
-    
-    /**
-     * Main RSS channel.
-     * @return string
-     */
-    public function actionRss()
-    {
-        $response = Yii::$app->getResponse();
-        $headers = $response->getHeaders();
-        $headers->set('Content-Type', 'application/rss+xml; charset=utf-8');
-
-        $response->content = RssView::widget([
-            'dataProvider' => (new Forum)->search(null, true),
-            'channel'      => [
-                'title'       => $this->module->config->get('name'),
-                'link'        => Url::to(['forum/index'], true),
-                'description' => $this->module->config->get('meta_description'),
-                'language'    => Yii::$app->language
-            ],
-            'items' => [
-                'title' => function ($model, $widget) {
-                    return Html::encode(
-                            !empty($model->latest) 
-                                ? $model->latest->thread->name 
-                                : $model->name
-                    );
-                },
-                'description' => function ($model, $widget) {
-                    return !empty($model->latest) 
-                        ? StringHelper::truncateWords($model->latest->content, 50, '...', true) 
-                        : '';
-                },
-                'link' => function ($model, $widget) {
-                    return Url::to(!empty($model->latest) 
-                            ? ['forum/show', 'id' => $model->latest->id] 
-                            : ['forum/forum', 
-                                'cid'  => $model->category_id, 
-                                'id'   => $model->id, 
-                                'slug' => $model->slug
-                            ], true);
-                },
-                'author' => function ($model, $widget) {
-                    return !empty($model->latest) 
-                        ? $model->latest->author->username 
-                        : $this->module->config->get('name');
-                },
-                'guid' => function ($model, $widget) {
-                    if (!empty($model->latest)) {
-                        return Url::to(['forum/show', 'id' => $model->latest->id], true) 
-                            . ' ' . Yii::$app->formatter->asDatetime($model->latest->updated_at, 'php:' . DATE_RSS);
-                    } else {
-                        return Url::to(['forum/forum', 
-                            'cid'  => $model->category_id, 
-                            'id'   => $model->id, 
-                            'slug' => $model->slug
-                        ], true) . ' ' . Yii::$app->formatter->asDatetime($model->updated_at, 'php:' . DATE_RSS);
-                    }
-                },
-                'pubDate' => function ($model, $widget) {
-                    return Yii::$app->formatter->asDatetime(
-                        !empty($model->latest) ? $model->latest->updated_at : $model->updated_at, 'php:' . DATE_RSS
-                    );
-                }
-            ]
-        ]);
     }
     
     /**

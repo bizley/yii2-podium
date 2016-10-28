@@ -9,16 +9,12 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\Activity;
-use yii\helpers\Url;
 
 $lastActive = Activity::lastActive();
 
 ?>
 <div class="panel panel-default">
     <div class="panel-body small">
-        <p class="pull-right">
-            <small><a href="<?= Url::to(['forum/rss']) ?>">RSS</a></small>
-        </p>
         <p>
             <?= Yii::t('podium/view', '{n, plural, =1{# active user} other{# active users}} (in the past 15 minutes)', ['n' => !empty($lastActive['count']) ? $lastActive['count'] : 0]) ?><br>
             <?= Yii::t('podium/view', '{n, plural, =1{# member} other{# members}}', ['n' => !empty($lastActive['members']) ? $lastActive['members'] : 0]) ?>, 

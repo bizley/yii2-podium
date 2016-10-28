@@ -67,7 +67,6 @@ return [
     'register'                                                => 'account/register',
     'report/<cid:\d+>/<fid:\d+>/<tid:\d+>/<pid:\d+>'          => 'forum/report',
     'reset'                                                   => 'account/reset',
-    'rss'                                                     => 'forum/rss',
     'search'                                                  => 'forum/search',
     'show/<id:\d+>'                                           => 'forum/show',
     'thread/<cid:\d+>/<fid:\d+>/<id:\d+>/<slug:[\w\-]+>'      => 'forum/thread',
