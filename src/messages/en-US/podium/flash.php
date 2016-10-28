@@ -197,6 +197,7 @@ return [
     'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.' => 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.',
     'You can only demote Moderators to Members.' => 'You can only demote Moderators to Members.',
     'You can only promote Members to Moderators.' => 'You can only promote Members to Moderators.',
+    'You don\'t have to report this post since you are allowed to modify it.' => 'You don\'t have to report this post since you are allowed to modify it.',
     'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.' => 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.',
     'You have to enter word at least 3 characters long.' => 'You have to enter word at least 3 characters long.',
     'You have to enter words or author\'s name first.' => 'You have to enter words or author\'s name first.',

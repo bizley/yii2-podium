@@ -714,6 +714,16 @@ class BaseForumActionsController extends BaseController
             return $this->redirect(['forum/index']);
         }
 
+        if (User::can(Rbac::PERM_UPDATE_POST, ['item' => $post])) {
+            $this->info(Yii::t('podium/flash', "You don't have to report this post since you are allowed to modify it."));
+            return $this->redirect(['forum/edit', 
+                'cid' => $post->forum->category->id, 
+                'fid' => $post->forum->id, 
+                'tid' => $post->thread->id, 
+                'pid' => $post->id
+            ]);
+        }
+        
         if ($post->author_id == User::loggedId()) {
             $this->info(Yii::t('podium/flash', 
                 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.')

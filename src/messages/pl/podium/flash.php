@@ -197,6 +197,7 @@ return [
     'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.' => 'Nie możesz zgłosić własnego posta. Skontaktuj się proszę z administratorem lub moderatorami, jeśli masz co do niego jakiekolwiek uwagi.',
     'You can only demote Moderators to Members.' => 'Możesz zdegradować jedynie moderatorów do zwykłych forumowiczów.',
     'You can only promote Members to Moderators.' => 'Możesz awansować jedynie zwykłych forumowiczów do moderatorów.',
+    'You don\'t have to report this post since you are allowed to modify it.' => 'Nie musisz zgłaszać tego posta, skoro możesz go edytować.',
     'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.' => 'Osiągnąłeś limit maksymalnie {max_messages} wiadomości na {max_minutes, plural, =1{ minutę} few{ minuty} other{ minut}}. Odczekaj kilka minut zanim wyślesz nową wiadomość.',
     'You have to enter word at least 3 characters long.' => 'Musisz podać słowo składające się przynajmniej z 3 znaków.',
     'You have to enter words or author\'s name first.' => 'Musisz podać najpierw słowa lub nazwę autora.',
