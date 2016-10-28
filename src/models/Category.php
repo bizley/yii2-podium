@@ -5,13 +5,13 @@ namespace bizley\podium\models;
 use bizley\podium\log\Log;
 use Exception;
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
-use Zelenin\yii\behaviors\Slug;
 
 /**
  * Category model
@@ -47,9 +47,8 @@ class Category extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => Slug::className(),
+                'class' => SluggableBehavior::className(),
                 'attribute' => 'name',
-                'immutable' => false,
             ]
         ];
     }

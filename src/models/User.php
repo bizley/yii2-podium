@@ -10,12 +10,12 @@ use bizley\podium\rbac\Rbac;
 use Exception;
 use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
-use Zelenin\yii\behaviors\Slug;
 
 /**
  * User model
@@ -120,9 +120,8 @@ class User extends BaseUser
         return [
             TimestampBehavior::className(),
             [
-                'class'     => Slug::className(),
+                'class'     => SluggableBehavior::className(),
                 'attribute' => 'username',
-                'immutable' => false,
             ],
         ];
     }

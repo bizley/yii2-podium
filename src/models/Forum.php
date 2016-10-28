@@ -6,6 +6,7 @@ use bizley\podium\log\Log;
 use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -13,7 +14,6 @@ use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
-use Zelenin\yii\behaviors\Slug;
 
 /**
  * Forum model
@@ -51,9 +51,8 @@ class Forum extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => Slug::className(),
+                'class' => SluggableBehavior::className(),
                 'attribute' => 'name',
-                'immutable' => false,
             ]
         ];
     }

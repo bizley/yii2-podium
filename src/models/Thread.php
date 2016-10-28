@@ -9,13 +9,13 @@ use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
-use Zelenin\yii\behaviors\Slug;
 
 /**
  * Thread model
@@ -77,10 +77,9 @@ class Thread extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class'     => Slug::className(),
+                'class' => SluggableBehavior::className(),
                 'attribute' => 'name',
-                'immutable' => false,
-            ]
+            ],
         ];
     }
 
