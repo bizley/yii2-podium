@@ -197,6 +197,7 @@ return [
     'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.' => 'Нельзя сообщить о своём собственном сообщении. Свяжитесь с администратором или модератором.',
     'You can only demote Moderators to Members.' => 'Модераторов можно разжаловать только до Участников.',
     'You can only promote Members to Moderators.' => 'Участников можно повысить только до Модераторов.',
+    'You don\'t have to report this post since you are allowed to modify it.' => 'Вы можете сразу отредактировать сообщение вместо того, чтобы жаловаться на него. ',
     'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.' => 'Вы достигли максимума - {max_messages} сообщ. в {max_minutes} мин. Чтобы добавить новое сообщение, подождите несколько минут.',
     'You have to enter word at least 3 characters long.' => 'Выберите слово длиной как минимум 3 символа.',
     'You have to enter words or author\'s name first.' => 'Сначала введите слова или имя автора.',
