@@ -19,9 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= $this->render('/elements/admin/_navbar', ['active' => 'logs']); ?>
 <br>
-<?php if (YII_ENV_DEV): ?>
-<p class="text-danger"><span class="glyphicon glyphicon-alert"></span> <?= Yii::t('podium/view', 'Podium logging may be disabled in development environment (i.e. by Yii Debugger).') ?></p>
-<?php endif; ?>
 
 <?= GridView::widget([
     'dataProvider' => $dataProvider,

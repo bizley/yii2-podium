@@ -265,7 +265,6 @@ return [
     'Podium Settings' => 'Podium Settings',
     'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!' => 'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!',
     'Podium does its best to make sure your data is not corrupted but make a database copy just in case.' => 'Podium does its best to make sure your data is not corrupted but make a database copy just in case.',
-    'Podium logging may be disabled in development environment (i.e. by Yii Debugger).' => 'Podium logging may be disabled in development environment (i.e. by Yii Debugger).',
     'Podium update' => 'Podium update',
     'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.' => 'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.',
     'Podium will attempt to update all database tables to the current version.' => 'Podium will attempt to update all database tables to the current version.',

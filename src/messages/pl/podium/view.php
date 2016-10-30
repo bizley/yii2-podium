@@ -265,7 +265,6 @@ return [
     'Podium Settings' => 'Ustawienia Podium',
     'Podium cannot be held liable for any database damages that may result directly or indirectly from the installing process. Back up your data first!' => 'Podium nie odpowiada za jakiekolwiek uszkodzenia danych bazy, które mogą być spowodowane pośrednio lub bezpośrednio procesem aktualizacji. Wykonaj wcześniej kopię bezpieczeństwa bazy danych!',
     'Podium does its best to make sure your data is not corrupted but make a database copy just in case.' => 'Podium stara się nie uszkodzić danych w bazie, ale wykonaj kopię na wszelki wypadek.',
-    'Podium logging may be disabled in development environment (i.e. by Yii Debugger).' => 'Logi Podium mogą być wyłączone w środowisku developerskim (np. przez Yii Debuggera).',
     'Podium update' => 'Aktualizacja Podium',
     'Podium will attempt to create all database tables required by the forum along with the default configuration and the administrator account.' => 'Podium spróbuje utworzyć wszystkie wymagane tabele w bazie danych, razem z domyślną konfiguracją i kontem administratora.',
     'Podium will attempt to update all database tables to the current version.' => 'Podium spróbuje zaktualizować wszystkie tabele bazy danych do aktualnej wersji.',
