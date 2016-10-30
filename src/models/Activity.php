@@ -172,7 +172,7 @@ class Activity extends ActiveRecord
     {
         $activity = static::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity) {
-            $activity->role = $role;
+            $activity->user_role = $role;
             if ($activity->save()) {
                 Podium::getInstance()->cache->delete('forum.lastactive');
             } else {
