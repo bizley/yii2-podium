@@ -164,7 +164,9 @@ class Post extends ActiveRecord
      */
     protected function prepareWords()
     {
-        $wordsRaw = array_unique(explode(' ', preg_replace('/\s/', ' ', strip_tags(preg_replace(['/\n/', '/\<br ?\/?\>/i'], ' ', $this->content)))));
+        $cleanHtml = HtmlPurifier::process($this->content);
+        $purged = preg_replace('/<[^>]+>/', ' ', $cleanHtml);
+        $wordsRaw = array_unique(preg_split('/[\s,\.\n]+/', $purged));
         $allWords = [];
         foreach ($wordsRaw as $word) {
             if (mb_strlen($word, 'UTF-8') > 2 && mb_strlen($word, 'UTF-8') <= 255) {
