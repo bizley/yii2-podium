@@ -24,7 +24,7 @@ use yii\web\Response;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.4 (beta)
+ * @version 0.5 (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -58,10 +58,15 @@ class Module extends BaseModule implements BootstrapInterface
     const FIELD_PASSWORD = 'password_hash';
     
     /**
+     * @var string Module version
+     */
+    protected $_version = '0.4';
+
+    /**
      * @var null|integer Admin account ID if $user is set to 'inherit'.
      */
     public $adminId;
-    
+
     /**
      * @var array the list of IPs that are allowed to access installation mode 
      * of this module.
@@ -137,10 +142,6 @@ class Module extends BaseModule implements BootstrapInterface
      */
     protected $_installed;
     
-    /**
-     * @var string Module version
-     */
-    protected $_version = '0.4';
 
     /**
      * Registers user activity after every action.
