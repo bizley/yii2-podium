@@ -197,6 +197,7 @@ return [
     'Model ID' => 'Model ID',
     'Moderation Team' => 'Moderation Team',
     'Moderator' => 'Moderator',
+    'Moderator of' => 'Moderator of',
     'Moderator options' => 'Moderator options',
     'Moderators' => 'Moderators',
     'Move P' => 'Move P',

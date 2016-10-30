@@ -35,6 +35,11 @@ use yii\web\IdentityInterface;
  * @property string $timezone
  * @property integer $created_at
  * @property integer $updated_at
+ * 
+ * @property Activity $activity
+ * @property Meta $meta
+ * @property Mod[] $mods
+ * @property User[] $friends
  */
 abstract class BaseUser extends ActiveRecord implements IdentityInterface
 {
@@ -248,6 +253,16 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     public function getMeta()
     {
         return $this->hasOne(Meta::className(), ['user_id' => 'id']);
+    }
+    
+    /**
+     * Moderated forum relation.
+     * @return ActiveQuery
+     * @since 0.5
+     */
+    public function getMods()
+    {
+        return $this->hasMany(Mod::className(), ['user_id' => 'id']);
     }
     
     /**

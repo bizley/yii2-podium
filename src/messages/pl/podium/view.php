@@ -197,6 +197,7 @@ return [
     'Model ID' => 'ID modelu',
     'Moderation Team' => 'Moderatorzy',
     'Moderator' => 'Moderator',
+    'Moderator of' => 'Moderator dla',
     'Moderator options' => 'Opcje moderowania',
     'Moderators' => 'Moderatorzy',
     'Move P' => 'Przenieś P',

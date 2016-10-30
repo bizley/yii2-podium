@@ -101,6 +101,14 @@ if (!Yii::$app->user->isGuest) {
                 </p>
 <?php endif; ?>
             </div>
+<?php if ($model->role == User::ROLE_MODERATOR && !empty($model->mods)): ?>
+            <div class="panel-body">
+                <?= Yii::t('podium/view', 'Moderator of') ?> 
+<?php foreach ($model->mods as $mod): ?>
+                <a href="<?= Url::to(['forum/forum', 'cid' => $mod->forum->category_id, 'id' => $mod->forum->id, 'slug' => $mod->forum->slug]) ?>" class="btn btn-default btn-xs"><?= Html::encode($mod->forum->name) ?></a> 
+<?php endforeach; ?>
+            </div>
+<?php endif; ?>
             <div class="panel-footer">
                 <ul class="list-inline">
                     <li><?= Yii::t('podium/view', 'Threads') ?> <span class="badge"><?= $model->threadsCount ?></span></li>
