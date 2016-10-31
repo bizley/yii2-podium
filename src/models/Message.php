@@ -346,39 +346,35 @@ class Message extends ActiveRecord
             if (empty($post)) {
                 throw new Exception('Reported post missing');
             }
-            $package = [];
-            $mods = $post->forum->mods;
-            foreach ($mods as $mod) {
-                if ($mod != User::loggedId()) {
-                    $package[] = [
-                        User::loggedId(), 
-                        $mod, 
-                        Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]),
-                        $this->content 
-                            . '<hr>' 
+            $logged = User::loggedId();
+            $this->sender_id = $logged;
+            $this->topic = Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]);
+            $this->content .= '<hr>' 
                             . Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) 
                             . '<hr>' 
-                            . '<strong>' 
-                            . Yii::t('podium/view', 'Post contents') 
-                            . '</strong><br><div class="blockquote">' 
-                            . $post->content 
-                            . '</div>',
-                        Message::STATUS_REMOVED, 
-                        Message::STATUS_NEW, 
-                        time(), 
-                        time(),
-                    ];
+                            . '<p>' . Yii::t('podium/view', 'Post contents') . '</p>'
+                            . '<blockquote>' . $post->content . '</blockquote>';
+            $this->sender_status = self::STATUS_DELETED;
+            if (!$this->save()) {
+                throw new Exception('Saving complaint error!');
+            }
+            
+            $receivers = [];
+            $mods = $post->forum->mods;
+            $stamp = time();
+            foreach ($mods as $mod) {
+                if ($mod != $logged) {
+                    $receivers[] = [$this->id, $mod, self::STATUS_NEW, $stamp, $stamp];
                 }
             }
-            if (empty($package)) {
+            if (empty($receivers)) {
                 throw new Exception('No one to send report to');
             }
             Yii::$app->db->createCommand()->batchInsert(
-                Message::tableName(), 
-                ['sender_id', 'receiver_id', 'topic', 'content', 'sender_status', 
-                    'receiver_status', 'created_at', 'updated_at'], 
-                array_values($package)
-            )->execute();
+                    MessageReceiver::tableName(), 
+                    ['message_id', 'receiver_id', 'receiver_status', 'created_at', 'updated_at'], 
+                    $receivers
+                )->execute();
 
             Podium::getInstance()->cache->delete('user.newmessages');
             Log::info('Post reported', $post->id, __METHOD__);

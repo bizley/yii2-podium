@@ -89,7 +89,7 @@ class Helper
         switch ($type) {
             case 'full':
                 $config = [
-                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol,span[style|class],h1,h2,h3,h4,h5,h6,sub,sup,blockquote,pre[class],img[src],iframe[class|frameborder|src]',
+                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol,span[style|class],h1,h2,h3,h4,h5,h6,sub,sup,blockquote,pre[class],img[src],iframe[class|frameborder|src],hr',
                     'CSS.AllowedProperties' => 'color,background-color',
                     'HTML.SafeIframe' => true,
                     'URI.SafeIframeRegexp' => '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
@@ -99,7 +99,7 @@ class Helper
             case 'default':
             default:
                 $config = [
-                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol',
+                    'HTML.Allowed' => 'p[class],br,b,strong,i,em,u,s,a[href|target],ul,li,ol,hr',
                     'Attr.AllowedFrameTargets' => ['_blank']
                 ];
         }
