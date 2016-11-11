@@ -3,8 +3,8 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 

@@ -6,8 +6,9 @@
  */
 namespace bizley\podium\components;
 
+use bizley\podium\models\Post;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use DateTime;
 use DateTimeZone;
 use Yii;
@@ -18,7 +19,7 @@ use yii\helpers\Url;
 
 /**
  * Podium Helper
- * Static methods for html output and other little things.
+ * Static methods for HTML output and other little things.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
@@ -27,7 +28,7 @@ class Helper
 {
     
     /**
-     * Prepares content for admin categories.
+     * Prepares content for categories administration.
      * @param mixed $category
      * @return string
      */
@@ -44,7 +45,7 @@ class Helper
     }
     
     /**
-     * Prepares content for admin forums.
+     * Prepares content for forums administration.
      * @param mixed $forum
      * @return string
      */
@@ -143,10 +144,10 @@ class Helper
     }
     
     /**
-     * Returns quote html.
-     * @param \bizley\podium\models\Post $post post model to be quoted
+     * Returns quote HTML.
+     * @param Post $post post model to be quoted
      * @param string $quote partial text to be quoted
-     * @return string quote html
+     * @return string
      */
     public static function prepareQuote($post, $quote = '')
     {
@@ -164,9 +165,9 @@ class Helper
     }
     
     /**
-     * Returns role label html.
+     * Returns role label HTML.
      * @param int|null $role role ID
-     * @return string label html
+     * @return string
      */
     public static function roleLabel($role = null)
     {
@@ -190,7 +191,7 @@ class Helper
     /**
      * Returns sorting icon.
      * @param string|null $attribute sorting attribute name
-     * @return string|null icon html or null if empty attribute
+     * @return string|null icon HTML or null if empty attribute
      */
     public static function sortOrder($attribute = null)
     {
@@ -210,7 +211,7 @@ class Helper
     /**
      * Returns User status label.
      * @param int|null $status status ID
-     * @return string label html
+     * @return string label HTML
      */
     public static function statusLabel($status = null)
     {
@@ -232,8 +233,8 @@ class Helper
     }
     
     /**
-     * Returns timezones with current offset array.
-     * @return array timezones
+     * Returns time zones with current offset array.
+     * @return array
      */
     public static function timeZones()
     {

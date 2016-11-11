@@ -4,15 +4,15 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\db\Query;
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
@@ -43,7 +43,7 @@ class User extends BaseUser
     const RESP_NO_EMAIL_ERR = 3;
     
     /**
-     * @var string Captcha.
+     * @var string CAPTCHA.
      */
     public $captcha;
     
@@ -53,22 +53,22 @@ class User extends BaseUser
     public $current_password;
     
     /**
-     * @var string Unencrypted password (write-only).
+     * @var string Un-encrypted password (write-only).
      */
     public $password;
     
     /**
-     * @var string Unencrypted password for change (write-only).
+     * @var string Un-encrypted password for change (write-only).
      */
     public $new_password;
     
     /**
-     * @var string Unencrypted password repeated (write-only).
+     * @var string Un-encrypted password repeated (write-only).
      */
     public $password_repeat;
     
     /**
-     * @var string Unencrypted password repeated for change (write-only).
+     * @var string Un-encrypted password repeated for change (write-only).
      */
     public $new_password_repeat;
     
@@ -459,7 +459,7 @@ class User extends BaseUser
                     Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id);
                 }
                 if (Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
-                    Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $this->id])->execute();
+                    Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $this->id])->execute();
                     Activity::updateRole($this->id, User::ROLE_MEMBER);
                     $transaction->commit();
                     Log::info('User demoted', $this->id, __METHOD__);
@@ -630,12 +630,12 @@ class User extends BaseUser
                     'forum_id' => $forum_id, 
                     'user_id'  => $this->id
                 ])->exists()) {
-                Yii::$app->db->createCommand()->delete(Mod::tableName(), [
+                Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), [
                     'forum_id' => $forum_id, 
                     'user_id'  => $this->id
                 ])->execute();
             } else {
-                Yii::$app->db->createCommand()->insert(Mod::tableName(), [
+                Podium::getInstance()->db->createCommand()->insert(Mod::tableName(), [
                     'forum_id' => $forum_id, 
                     'user_id'  => $this->id
                 ])->execute();
@@ -683,10 +683,10 @@ class User extends BaseUser
                 }
             }
             if (!empty($add)) {
-                Yii::$app->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
+                Podium::getInstance()->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute();
             }
             if (!empty($remove)) {
-                Yii::$app->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute();
+                Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute();
             }
             Podium::getInstance()->cache->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
@@ -783,13 +783,13 @@ class User extends BaseUser
     {
         try {
             if ($this->isIgnoredBy($member)) {
-                Yii::$app->db->createCommand()->delete('{{%podium_user_ignore}}', [
+                Podium::getInstance()->db->createCommand()->delete('{{%podium_user_ignore}}', [
                     'user_id' => $member,
                     'ignored_id' => $this->id
                 ])->execute();
                 Log::info('User unignored', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => $member, 'ignored_id' => $this->id])->execute();
+                Podium::getInstance()->db->createCommand()->insert('{{%podium_user_ignore}}', ['user_id' => $member, 'ignored_id' => $this->id])->execute();
                 Log::info('User ignored', $this->id, __METHOD__);
             }
             return true;
@@ -809,13 +809,13 @@ class User extends BaseUser
     {
         try {
             if ($this->isBefriendedBy($friend)) {
-                Yii::$app->db->createCommand()->delete('{{%podium_user_friend}}', [
+                Podium::getInstance()->db->createCommand()->delete('{{%podium_user_friend}}', [
                     'user_id' => $friend,
                     'friend_id' => $this->id
                 ])->execute();
                 Log::info('User unfriended', $this->id, __METHOD__);
             } else {
-                Yii::$app->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $friend, 'friend_id' => $this->id])->execute();
+                Podium::getInstance()->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $friend, 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
             Podium::getInstance()->cache->deleteElement('user.friends', $friend);

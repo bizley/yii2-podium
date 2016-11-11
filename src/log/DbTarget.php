@@ -2,6 +2,7 @@
 
 namespace bizley\podium\log;
 
+use bizley\podium\Podium;
 use Yii;
 use yii\helpers\VarDumper;
 use yii\log\DbTarget as YiiDbTarget;
@@ -21,10 +22,10 @@ class DbTarget extends YiiDbTarget
      */
     public function export()
     {
-        $tableName = $this->db->quoteTableName($this->logTable);
+        $tableName = Podium::getInstance()->db->quoteTableName($this->logTable);
         $sql = "INSERT INTO $tableName ([[level]], [[category]], [[log_time]], [[ip]], [[message]], [[model]], [[user]])
                 VALUES (:level, :category, :log_time, :ip, :message, :model, :user)";
-        $command = $this->db->createCommand($sql);
+        $command = Podium::getInstance()->db->createCommand($sql);
         foreach ($this->messages as $message) {
             list($text, $level, $category, $timestamp) = $message;
             $extracted = [

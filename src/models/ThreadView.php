@@ -2,9 +2,9 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\ActiveRecord;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**

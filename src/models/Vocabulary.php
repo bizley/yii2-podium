@@ -2,9 +2,9 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\Module as Podium;
+use bizley\podium\db\ActiveRecord;
+use bizley\podium\Podium;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -13,8 +13,6 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * @property integer $id
- * @property string $word
  */
 class Vocabulary extends ActiveRecord
 {

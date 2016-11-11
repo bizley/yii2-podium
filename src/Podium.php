@@ -5,7 +5,7 @@ namespace bizley\podium;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Config;
 use bizley\podium\log\DbTarget;
-use bizley\podium\maintenance\Installation;
+use bizley\podium\maintenance\Maintenance;
 use bizley\podium\models\Activity;
 use Yii;
 use yii\base\Action;
@@ -13,8 +13,9 @@ use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
-use yii\base\Module as BaseModule;
+use yii\base\Module;
 use yii\console\Application as ConsoleApplication;
+use yii\db\Connection;
 use yii\i18n\Formatter;
 use yii\rbac\DbManager;
 use yii\web\Application as WebApplication;
@@ -27,7 +28,7 @@ use yii\web\User;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.5 (beta)
+ * @version 0.5-dev (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -46,11 +47,12 @@ use yii\web\User;
  * @property Formatter $formatter
  * @property DbManager $rbac
  * @property User $user
+ * @property Connection $db
  * 
  * @property boolean $installed
  * @property string $version
  */
-class Module extends BaseModule implements BootstrapInterface
+class Podium extends Module implements BootstrapInterface
 {
     const ROUTE_DEFAULT  = '/forum/index';
     const ROUTE_LOGIN    = '/account/login';
@@ -66,7 +68,7 @@ class Module extends BaseModule implements BootstrapInterface
     protected $_version = '0.4';
 
     /**
-     * @var null|integer Admin account ID if `$user` is set to `'inherit'`.
+     * @var null|int Admin account ID if `$userComponent` is not set to `true`.
      */
     public $adminId;
 
@@ -116,6 +118,15 @@ class Module extends BaseModule implements BootstrapInterface
      * @since 0.5
      */
     public $formatterComponent = true;
+    
+    /**
+     * @var string|array Module db component.
+     * It can be:
+     * - string with inherited component ID,
+     * - array with custom configuration.
+     * @since 0.5
+     */
+    public $dbComponent = 'db';
     
     /**
      * @var bool|string URL for user login.
@@ -258,10 +269,7 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function getInstalled()
     {
-        if ($this->_installed === null) {
-            $this->_installed = Installation::check();
-        }            
-        return $this->_installed;
+        return Maintenance::check();
     }
     
     /**
@@ -296,7 +304,7 @@ class Module extends BaseModule implements BootstrapInterface
     /**
      * Initializes the module for Web application.
      * Sets Podium alias (@podium) and layout.
-     * Registers user identity, authorization, translations, and formatter.
+     * Registers user identity, authorization, translations, formatter, and db.
      * Verifies the installation.
      */
     public function init()
@@ -312,6 +320,9 @@ class Module extends BaseModule implements BootstrapInterface
         if ($this->formatterComponent !== true && !is_string($this->formatterComponent) && !is_array($this->formatterComponent)) {
             throw InvalidConfigException('Invalid value for the formatterComponent parameter.');
         }
+        if (!is_string($this->dbComponent) && !is_array($this->dbComponent)) {
+            throw InvalidConfigException('Invalid value for the dbComponent parameter.');
+        }
         
         $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
         
@@ -322,15 +333,14 @@ class Module extends BaseModule implements BootstrapInterface
             $this->registerUrl = [$this->prepareRoute(self::ROUTE_REGISTER)];
         }
 
-        $this->registerAuthorization();
-        
         if (Yii::$app instanceof WebApplication) {
             $this->registerIdentity();
+            $this->registerAuthorization();
             $this->registerFormatter();
+            $this->registerDbConnection();
             $this->registerTranslations();
 
             $this->layout = self::MAIN_LAYOUT;
-            $this->_installed = Installation::check();
         }
     }
 
@@ -343,12 +353,11 @@ class Module extends BaseModule implements BootstrapInterface
      */
     public function getComponent($name)
     {
-        $componentId = 'podium_' . $name;
         $configurationName = $name . 'Component';
         if (is_string($this->$configurationName)) {
-            $componentId = $this->$configurationName;
+            return Yii::$app->get($this->$configurationName);
         }
-        return $this->get($componentId);
+        return $this->get('podium_' . $name);
     }
     
     /**
@@ -438,7 +447,7 @@ class Module extends BaseModule implements BootstrapInterface
         }
         
         $configuration = [
-            'class' => 'yii\web\User',
+            'class' => 'bizley\podium\web\User',
             'identityClass' => 'bizley\podium\models\User',
             'enableAutoLogin' => true,
             'loginUrl' => $this->loginUrl,
@@ -466,5 +475,27 @@ class Module extends BaseModule implements BootstrapInterface
             'sourceLanguage' => 'en-US',
             'basePath' => '@podium/messages',
         ];
+    }
+    
+    /**
+     * Returns instance of db component.
+     * @return Connection
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getDb()
+    {
+        return $this->getComponent('db');
+    }
+    
+    /**
+     * Registers DB connection.
+     * @since 0.5
+     */
+    public function registerDbConnection()
+    {
+        if (is_array($this->dbComponent)) {
+            $this->set('podium_db', $this->dbComponent);
+        }
     }
 }

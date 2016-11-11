@@ -2,10 +2,10 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\ActiveRecord;
 use bizley\podium\log\Log;
 use Exception;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 
 /**
  * Email model

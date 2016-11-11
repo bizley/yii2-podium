@@ -4,15 +4,15 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
@@ -36,7 +36,7 @@ use yii\helpers\HtmlPurifier;
 class Thread extends ActiveRecord
 {
     /**
-     * Colour classes.
+     * Color classes.
      */
     const CLASS_DEFAULT = 'default';
     const CLASS_EDITED  = 'warning';
@@ -52,7 +52,7 @@ class Thread extends ActiveRecord
     const ICON_PINNED   = 'pushpin';
 
     /**
-     * @var string attached post's content
+     * @var string attached post content
      */
     public $post;
     
@@ -393,7 +393,7 @@ class Thread extends ActiveRecord
     }
     
     /**
-     * Checks if user is this thread's moderator.
+     * Checks if user is this thread moderator.
      * @param int $user_id
      * @return bool
      */
@@ -410,10 +410,10 @@ class Thread extends ActiveRecord
     
     /**
      * Returns the verified thread.
-     * @param int $category_id thread's category ID
-     * @param int $forum_id thread's forum ID
-     * @param int $id thread's ID
-     * @param string $slug thread's slug
+     * @param int $category_id thread category ID
+     * @param int $forum_id thread forum ID
+     * @param int $id thread ID
+     * @param string $slug thread slug
      * @param bool $guest whether caller is guest or registered user
      * @return Thread
      * @since 0.2
@@ -577,10 +577,10 @@ class Thread extends ActiveRecord
     
     /**
      * Performs thread posts move with counters update.
-     * @param int $target new parent thread's ID
+     * @param int $target new parent thread ID
      * @param array $posts IDs of posts to move
-     * @param string $name new thread's name if $target = 0
-     * @param type $forum new thread's parent forum if $target = 0
+     * @param string $name new thread name if $target = 0
+     * @param type $forum new thread parent forum if $target = 0
      * @return bool
      * @throws Exception
      * @since 0.2
@@ -741,7 +741,7 @@ class Thread extends ActiveRecord
                 $updateBatch[] = $thread->id;
             }
             if (!empty($updateBatch)) {
-                Yii::$app->db->createCommand()->update(ThreadView::tableName(), [
+                Podium::getInstance()->db->createCommand()->update(ThreadView::tableName(), [
                     'new_last_seen' => $time, 
                     'edited_last_seen' => $time
                 ], ['thread_id' => $updateBatch, 'user_id' => $loggedId])->execute();
@@ -753,7 +753,7 @@ class Thread extends ActiveRecord
                 $insertBatch[] = [$loggedId, $thread->id, $time, $time];
             }
             if (!empty($insertBatch)) {
-                Yii::$app->db->createCommand()->batchInsert(ThreadView::tableName(), [
+                Podium::getInstance()->db->createCommand()->batchInsert(ThreadView::tableName(), [
                     'user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'
                 ], $insertBatch)->execute();
             }

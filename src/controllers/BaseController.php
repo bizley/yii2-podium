@@ -4,7 +4,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\traits\FlashTrait;
 use Exception;
@@ -16,7 +16,7 @@ use yii\web\Controller as YiiController;
 
 /**
  * Podium base controller
- * Prepares account in case of new inheritet identity user.
+ * Prepares account in case of new inherited identity user.
  * Redirects users in case of maintenance.
  * Not accessible directly.
  * 

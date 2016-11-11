@@ -31,9 +31,10 @@ class AdminController extends BaseAdminForumController
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                'user' => $this->module->user,
                 'rules' => [
                     [
-                        'allow'         => false,
+                        'allow' => false,
                         'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },

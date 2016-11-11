@@ -2,16 +2,15 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\ActiveRecord;
+use bizley\podium\db\Query;
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
-use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
@@ -215,7 +214,7 @@ class Forum extends ActiveRecord
                     $newSort = $next;
                     $next++;
                 }
-                Yii::$app->db->createCommand()->update(Forum::tableName(), ['sort' => $next], ['id' => $id])->execute();
+                Podium::getInstance()->db->createCommand()->update(Forum::tableName(), ['sort' => $next], ['id' => $id])->execute();
                 $next++;
             }
             if ($newSort == -1) {

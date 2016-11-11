@@ -9,7 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\gridview\ActionColumn;
 use bizley\podium\widgets\gridview\GridView;
 use bizley\podium\widgets\Readers;

@@ -5,7 +5,7 @@ namespace bizley\podium\maintenance;
 use bizley\podium\components\Config;
 use bizley\podium\models\Content;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;

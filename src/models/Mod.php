@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use yii\db\ActiveRecord;
+use bizley\podium\db\ActiveRecord;
 
 /**
  * Mod model

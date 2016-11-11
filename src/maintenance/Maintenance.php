@@ -3,7 +3,7 @@
 namespace bizley\podium\maintenance;
 
 use bizley\podium\models\Post;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\base\Component;
@@ -43,7 +43,7 @@ class Maintenance extends Component
     /**
      * @var Connection database connection.
      */
-    public $db = 'db';
+    public $db;
 
     /**
      * @var bool error flag.
@@ -513,7 +513,7 @@ class Maintenance extends Component
     {
         parent::init();
 
-        $this->db = Instance::ensure($this->db, Connection::className());
+        $this->db = Instance::ensure(Podium::getInstance()->db, Connection::className());
         if ($this->db->driverName === 'mysql') {
             $this->setTableOptions('CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
         }

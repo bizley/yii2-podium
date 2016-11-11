@@ -3,8 +3,8 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
 use Yii;
-use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
 
 /**

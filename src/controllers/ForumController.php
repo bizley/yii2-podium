@@ -2,14 +2,14 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\db\Query;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
 use bizley\podium\models\Thread;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Response;
 
@@ -30,9 +30,10 @@ class ForumController extends BaseForumActionsController
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                'user' => $this->module->user,
                 'rules' => [
                     [
-                        'allow'         => false,
+                        'allow' => false,
                         'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
@@ -86,9 +87,9 @@ class ForumController extends BaseForumActionsController
     
     /**
      * Displaying the forum of given category ID, own ID and slug.
-     * @param int $cid category's ID
-     * @param int $id forum's ID
-     * @param string $slug forum's slug
+     * @param int $cid category ID
+     * @param int $id forum ID
+     * @param string $slug forum slug
      * @return string|Response
      */
     public function actionForum($cid = null, $id = null, $slug = null, $toggle = null)
@@ -226,10 +227,10 @@ class ForumController extends BaseForumActionsController
 
     /**
      * Displaying the thread of given category ID, forum ID, own ID and slug.
-     * @param int $cid category's ID
-     * @param int $fid forum's ID
-     * @param int $id thread's ID
-     * @param string $slug thread's slug
+     * @param int $cid category ID
+     * @param int $fid forum ID
+     * @param int $id thread ID
+     * @param string $slug thread slug
      * @return string|Response
      */
     public function actionThread($cid = null, $fid = null, $id = null, $slug = null)

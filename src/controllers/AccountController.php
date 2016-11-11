@@ -29,13 +29,14 @@ class AccountController extends BaseController
     {
         return [
             'access' => [
-                'class'        => AccessControl::className(),
+                'class' => AccessControl::className(),
+                'user' => $this->module->user,
                 'denyCallback' => function ($rule, $action) {
                     return $this->module->goPodium();
                 },
                 'rules' => [
                     [
-                        'allow'         => false,
+                        'allow' => false,
                         'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },
@@ -44,7 +45,7 @@ class AccountController extends BaseController
                         }
                     ],
                     [
-                        'allow'   => true,
+                        'allow' => true,
                         'actions' => ['new-email']
                     ],
                     [

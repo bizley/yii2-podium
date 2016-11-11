@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use himiklab\yii2\recaptcha\ReCaptcha;
 use yii\bootstrap\ActiveForm;
 use yii\captcha\Captcha;
