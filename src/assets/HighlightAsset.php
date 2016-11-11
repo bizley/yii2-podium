@@ -15,5 +15,5 @@ class HighlightAsset extends AssetBundle
     /**
      * @inheritdoc
      */
-    public $css = ['https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/github-gist.min.css'];
+    public $css = ['https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/github-gist.min.css'];
 }
