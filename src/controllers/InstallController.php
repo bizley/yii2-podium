@@ -3,12 +3,12 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\components\Helper;
+use bizley\podium\db\Query;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
 use bizley\podium\Podium;
 use bizley\podium\traits\FlashTrait;
 use Yii;
-use yii\db\Query;
 use yii\helpers\Json;
 use yii\web\Controller;
 

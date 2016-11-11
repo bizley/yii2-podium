@@ -2,9 +2,9 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\Query;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\db\Query;
 
 /**
  * MessageSearch model
@@ -15,7 +15,7 @@ use yii\db\Query;
 class MessageSearch extends Message
 {
     /**
-     * @var string Receiver' name.
+     * @var string Receiver name.
      */
     public $receiverName;
 

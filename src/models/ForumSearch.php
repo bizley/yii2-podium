@@ -2,9 +2,9 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\Query;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use yii\db\Query;
 
 /**
  * ForumSearch model

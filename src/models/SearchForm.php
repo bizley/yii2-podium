@@ -27,7 +27,7 @@ class SearchForm extends Model
     public $match;
     
     /**
-     * @var string Author's name
+     * @var string Author name
      */
     public $author;
     

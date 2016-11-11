@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\db\Query;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
@@ -9,7 +10,6 @@ use bizley\podium\models\Thread;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Response;
 
@@ -30,9 +30,10 @@ class ForumController extends BaseForumActionsController
         return [
             'access' => [
                 'class' => AccessControl::className(),
+                'user' => $this->module->user,
                 'rules' => [
                     [
-                        'allow'         => false,
+                        'allow' => false,
                         'matchCallback' => function ($rule, $action) {
                             return !$this->module->getInstalled();
                         },

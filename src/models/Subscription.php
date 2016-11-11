@@ -2,12 +2,12 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\ActiveRecord;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -139,8 +139,8 @@ class Subscription extends ActiveRecord
     }
     
     /**
-     * Removes threads' subscriptions of given IDs.
-     * @param array $threads threads' IDs
+     * Removes threads subscriptions of given IDs.
+     * @param array $threads threads IDs
      * @return bool
      * @since 0.2
      */
@@ -148,7 +148,7 @@ class Subscription extends ActiveRecord
     {
         try {
             if (!empty($threads)) {
-                Yii::$app->db->createCommand()->delete(Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()])->execute();
+                Podium::getInstance()->db->createCommand()->delete(Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()])->execute();
                 return true;
             }
         } catch (Exception $e) {
@@ -159,7 +159,7 @@ class Subscription extends ActiveRecord
     
     /**
      * Adds subscription for thread.
-     * @param int $thread thread's ID
+     * @param int $thread thread ID
      * @return bool
      * @since 0.2
      */

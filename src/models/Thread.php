@@ -4,6 +4,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
@@ -12,7 +13,6 @@ use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
@@ -741,7 +741,7 @@ class Thread extends ActiveRecord
                 $updateBatch[] = $thread->id;
             }
             if (!empty($updateBatch)) {
-                Yii::$app->db->createCommand()->update(ThreadView::tableName(), [
+                Podium::getInstance()->db->createCommand()->update(ThreadView::tableName(), [
                     'new_last_seen' => $time, 
                     'edited_last_seen' => $time
                 ], ['thread_id' => $updateBatch, 'user_id' => $loggedId])->execute();
@@ -753,7 +753,7 @@ class Thread extends ActiveRecord
                 $insertBatch[] = [$loggedId, $thread->id, $time, $time];
             }
             if (!empty($insertBatch)) {
-                Yii::$app->db->createCommand()->batchInsert(ThreadView::tableName(), [
+                Podium::getInstance()->db->createCommand()->batchInsert(ThreadView::tableName(), [
                     'user_id', 'thread_id', 'new_last_seen', 'edited_last_seen'
                 ], $insertBatch)->execute();
             }

@@ -4,14 +4,14 @@ namespace bizley\podium\models;
 
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
+use bizley\podium\db\Query;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveRecord;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
@@ -196,7 +196,7 @@ class Post extends ActiveRecord
                 $formatWords[] = [$word];
             }
             if (!empty($formatWords)) {
-                Yii::$app->db->createCommand()->batchInsert(Vocabulary::tableName(), ['word'], $formatWords)->execute();
+                Podium::getInstance()->db->createCommand()->batchInsert(Vocabulary::tableName(), ['word'], $formatWords)->execute();
             }
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
@@ -219,7 +219,7 @@ class Post extends ActiveRecord
                 $vocabulary[] = [$vocabularyNew['id'], $this->id];
             }
             if (!empty($vocabulary)) {
-                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], $vocabulary)->execute();
+                Podium::getInstance()->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], $vocabulary)->execute();
             }
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
@@ -242,12 +242,12 @@ class Post extends ActiveRecord
                 $vocabulary[$vocabularyNew['id']] = [$vocabularyNew['id'], $this->id];
             }
             if (!empty($vocabulary)) {
-                Yii::$app->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], array_values($vocabulary))->execute();
+                Podium::getInstance()->db->createCommand()->batchInsert('{{%podium_vocabulary_junction}}', ['word_id', 'post_id'], array_values($vocabulary))->execute();
             }
             $query = (new Query)->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
             foreach ($query->each() as $junk) {
                 if (!array_key_exists($junk['word_id'], $vocabulary)) {
-                    Yii::$app->db->createCommand()->delete('{{%podium_vocabulary_junction}}', ['id' => $junk['id']])->execute();
+                    Podium::getInstance()->db->createCommand()->delete('{{%podium_vocabulary_junction}}', ['id' => $junk['id']])->execute();
                 }
             }
         } catch (Exception $e) {

@@ -3,14 +3,14 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Helper;
+use bizley\podium\db\ActiveRecord;
+use bizley\podium\db\Query;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
@@ -370,7 +370,7 @@ class Message extends ActiveRecord
             if (empty($receivers)) {
                 throw new Exception('No one to send report to');
             }
-            Yii::$app->db->createCommand()->batchInsert(
+            Podium::getInstance()->db->createCommand()->batchInsert(
                     MessageReceiver::tableName(), 
                     ['message_id', 'receiver_id', 'receiver_status', 'created_at', 'updated_at'], 
                     $receivers

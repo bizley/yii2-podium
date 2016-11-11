@@ -2,8 +2,8 @@
 
 namespace bizley\podium\models;
 
+use bizley\podium\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 
 /**
  * PostThumb model

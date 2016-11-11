@@ -2,15 +2,14 @@
 
 namespace bizley\podium\components;
 
+use bizley\podium\db\Query;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use Exception;
-use Yii;
 use yii\base\Component;
-use yii\db\Query;
 
 /**
- * Config Podium component.
+ * Podium configuration component.
  * Handles the module configuration.
  * Every default configuration value is saved in database first time when 
  * administrator saves Podium settings.
@@ -161,25 +160,17 @@ class Config extends Component
                     }
                 }
                 if ((new Query)->from(static::tableName())->where(['name' => $name])->exists()) {
-                    Yii::$app
-                        ->db
-                        ->createCommand()
-                        ->update(
+                    Podium::getInstance()->db->createCommand()->update(
                             static::tableName(), 
                             ['value' => $value], 
                             'name = :name', 
                             [':name' => $name]
-                        )
-                        ->execute();
+                        )->execute();
                 } else {
-                    Yii::$app
-                        ->db
-                        ->createCommand()
-                        ->insert(
+                    Podium::getInstance()->db->createCommand()->insert(
                             static::tableName(), 
                             ['name' => $name, 'value' => $value]
-                        )
-                        ->execute();
+                        )->execute();
                 }
                 $this->cache->set('config', array_merge($this->defaults, $this->fromDb));
                 return true;
