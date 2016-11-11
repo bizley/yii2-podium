@@ -37,7 +37,7 @@ class Installation extends Maintenance
      */
     protected function addAdmin()
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             return $this->addInheritedAdmin();
         }
         $transaction = $this->db->beginTransaction();
@@ -87,7 +87,7 @@ class Installation extends Maintenance
             return Yii::t('podium/flash', 'No administrator privileges have been set!');
         }
         try {
-            $identity = Yii::$app->user->identityClass;
+            $identity = Podium::getInstance()->user->identityClass;
             $inheritedUser = $identity::findIdentity($this->module->adminId);
             if (!$inheritedUser) {
                 throw new Exception;
@@ -229,7 +229,7 @@ class Installation extends Maintenance
     protected function addRules()
     {
         try {
-            (new Rbac)->add($this->authManager);
+            (new Rbac())->add($this->authManager);
             return Yii::t('podium/flash', 'Access roles have been created.');
         } catch (Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);

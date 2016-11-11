@@ -4,6 +4,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
+use bizley\podium\Module as Podium;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Response;
@@ -71,7 +72,7 @@ class MembersController extends BaseController
      */
     public function actionIgnore($id = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             return $this->redirect(['forum/index']);
         }
             
@@ -211,7 +212,7 @@ class MembersController extends BaseController
      */
     public function actionFriend($id = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             return $this->redirect(['forum/index']);
         }
     

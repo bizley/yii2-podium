@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use Yii;
+use bizley\podium\Module as Podium;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;
@@ -85,7 +85,7 @@ class SearchForm extends Model
     {
         if ($this->type == 'topics') {
             $query = Thread::find();
-            if (Yii::$app->user->isGuest) {
+            if (Podium::getInstance()->user->isGuest) {
                 $query->joinWith([
                     'category' => function ($q) {
                         $q->andWhere([Category::tableName() . '.visible' => 1]);
@@ -149,7 +149,7 @@ class SearchForm extends Model
             ];
         } else {
             $query = Vocabulary::find()->select('post_id, thread_id');
-            if (Yii::$app->user->isGuest) {
+            if (Podium::getInstance()->user->isGuest) {
                 $query->joinWith(['posts' => function ($q) {
                     $q->joinWith([
                         'forum' => function ($qu) {

@@ -159,7 +159,7 @@ class User extends BaseUser
                 $this->removeActivationToken();
                 $this->status = self::STATUS_ACTIVE;
                 if ($this->save()) {
-                    if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
+                    if (Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
                         $transaction->commit();
                         return true;
                     }
@@ -419,17 +419,17 @@ class User extends BaseUser
      */
     public static function loggedId()
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             return null;
         }
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent !== true) {
             $user = static::findMe();
             if ($user) {
                 return $user->id;
             }
             return null;
         }
-        return Yii::$app->user->id;
+        return Podium::getInstance()->user->id;
     }
 
     /**
@@ -455,10 +455,10 @@ class User extends BaseUser
             $this->scenario = 'role';
             $this->role = $role;
             if ($this->save()) {
-                if (Yii::$app->authManager->getRolesByUser($this->id)) {
-                    Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id);
+                if (Podium::getInstance()->rbac->getRolesByUser($this->id)) {
+                    Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id);
                 }
-                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id)) {
+                if (Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
                     Yii::$app->db->createCommand()->delete(Mod::tableName(), 'user_id = :id', [':id' => $this->id])->execute();
                     Activity::updateRole($this->id, User::ROLE_MEMBER);
                     $transaction->commit();
@@ -485,10 +485,10 @@ class User extends BaseUser
             $this->scenario = 'role';
             $this->role     = $role;
             if ($this->save()) {
-                if (Yii::$app->authManager->getRolesByUser($this->id)) {
-                    Yii::$app->authManager->revoke(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $this->id);
+                if (Podium::getInstance()->rbac->getRolesByUser($this->id)) {
+                    Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id);
                 }
-                if (Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
+                if (Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
                     Activity::updateRole($this->id, User::ROLE_MODERATOR);
                     $transaction->commit();
                     Log::info('User promoted', $this->id, __METHOD__);
@@ -576,20 +576,20 @@ class User extends BaseUser
      */
     public static function can($permissionName, $params = [], $allowCaching = true)
     {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT && !Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->userComponent !== true && !Podium::getInstance()->user->isGuest) {
             $user = static::findMe();
             if ($user) {
                 if ($allowCaching && empty($params) && isset($user->_access[$permissionName])) {
                     return $user->_access[$permissionName];
                 }
-                $access = Yii::$app->authManager->checkAccess($user->id, $permissionName, $params);
+                $access = Podium::getInstance()->rbac->checkAccess($user->id, $permissionName, $params);
                 if ($allowCaching && empty($params)) {
                     $user->_access[$permissionName] = $access;
                 }
                 return $access;
             }
         }
-        return Yii::$app->user->can($permissionName, $params, $allowCaching);
+        return Podium::getInstance()->user->can($permissionName, $params, $allowCaching);
     }
     
     /**
@@ -599,7 +599,7 @@ class User extends BaseUser
      */
     public static function friendsList()
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             return null;
         }
         $logged = static::loggedId();
@@ -705,17 +705,17 @@ class User extends BaseUser
     public static function createInheritedAccount()
     {
         try {
-            if (!Yii::$app->user->isGuest) {
+            if (!Podium::getInstance()->user->isGuest) {
                 $newUser = new User;
                 $newUser->setScenario('installation');
-                $newUser->inherited_id = Yii::$app->user->id;
+                $newUser->inherited_id = Podium::getInstance()->user->id;
                 $newUser->status = self::STATUS_ACTIVE;
                 $newUser->role = self::ROLE_MEMBER;
                 $newUser->timezone = self::DEFAULT_TIMEZONE;
                 if (!$newUser->save()) {
                     throw new Exception('Account creating error');
                 }
-                Yii::$app->authManager->assign(Yii::$app->authManager->getRole(Rbac::ROLE_USER), $newUser->id);
+                Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $newUser->id);
                 Cache::clearAfter('activate');
                 Log::info('Inherited account created', $newUser->id, __METHOD__);
                 return true;
@@ -856,12 +856,12 @@ class User extends BaseUser
      */
     public static function findMe()
     {
-        if (Podium::getInstance()->userComponent == Podium::USER_INHERIT) {
+        if (Podium::getInstance()->userComponent !== true) {
             if (static::$_identity === null) {
-                static::$_identity = static::find()->where(['inherited_id' => Yii::$app->user->id])->limit(1)->one();
+                static::$_identity = static::find()->where(['inherited_id' => Podium::getInstance()->user->id])->limit(1)->one();
             }
             return static::$_identity;
         }
-        return Yii::$app->user->identity;
+        return Podium::getInstance()->user->identity;
     }
 }

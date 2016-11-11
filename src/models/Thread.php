@@ -236,14 +236,14 @@ class Thread extends ActiveRecord
             if (!empty($filters['hot']) && $filters['hot'] == 1) {
                 $query->andWhere(['>=', 'posts', Podium::getInstance()->config->get('hot_minimum')]);
             }
-            if (!empty($filters['new']) && $filters['new'] == 1 && !Yii::$app->user->isGuest) {
+            if (!empty($filters['new']) && $filters['new'] == 1 && !Podium::getInstance()->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
                             new Expression('new_last_seen < new_post_at')
                         ], ['user_id' => null]]);
                 }]);
             }
-            if (!empty($filters['edit']) && $filters['edit'] == 1 && !Yii::$app->user->isGuest) {
+            if (!empty($filters['edit']) && $filters['edit'] == 1 && !Podium::getInstance()->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
                     $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
                             new Expression('edited_last_seen < edited_post_at')
@@ -274,7 +274,7 @@ class Thread extends ActiveRecord
     {
         $query = static::find();
         $query->where(['author_id' => (int)$user_id]);
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
                 $q->where([Forum::tableName() . '.visible' => 1]);
             }]);

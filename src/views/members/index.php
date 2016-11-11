@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\gridview\ActionColumn;
 use bizley\podium\widgets\gridview\GridView;
 use bizley\podium\widgets\Readers;
@@ -58,9 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute' => 'created_at',
             'label' => Yii::t('podium/view', 'Joined'),
-            'value' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            },
+            'format' => 'datetime'
         ],
         [
             'attribute' => 'threads_count',
@@ -78,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'class' => ActionColumn::className(),
-            'template' => '{view}' . (!Yii::$app->user->isGuest ? ' {pm}' : ''),
+            'template' => '{view}' . (!Podium::getInstance()->user->isGuest ? ' {pm}' : ''),
             'buttons' => [
                 'view' => function($url, $model) {
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug], ActionColumn::buttonOptions([

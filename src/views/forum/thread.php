@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\QuillBasic;
@@ -110,7 +111,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <div class="row">
     <div class="col-sm-12 text-right">
         <ul class="list-inline">
-<?php if (Yii::$app->user->isGuest): ?>
+<?php if (Podium::getInstance()->user->isGuest): ?>
             <li><a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary btn-sm"><?= Yii::t('podium/view', 'Sign in to reply') ?></a></li>
             <li><a href="<?= Url::to(['account/register']) ?>" class="btn btn-success btn-sm"><?= Yii::t('podium/view', 'Register new account') ?></a></li>
 <?php else: ?>
@@ -143,7 +144,7 @@ if ($thread->locked) {
                 <h3 class="panel-title">
 <?php if ($thread->subscription): ?>
                     <a href="<?= Url::to(['profile/subscriptions']) ?>" class="btn btn-default btn-lg pull-right" data-toggle="tooltip" data-placement="left" title="<?= Yii::t('podium/view', 'You subscribe this thread') ?>"><span class="glyphicon glyphicon-star"></span></a>
-<?php elseif (!Yii::$app->user->isGuest): ?>
+<?php elseif (!Podium::getInstance()->user->isGuest): ?>
                     <small id="subsription-status" class="pull-right"><button class="add-subscription btn btn-success btn-xs"><span class="glyphicon glyphicon-star-empty"></span> <?= Yii::t('podium/view', 'Subscribe to this thread') ?></button></small>
 <?php endif; ?>
                     <?= $headerIcon ?> <?= Html::encode($thread->name) ?>
@@ -165,7 +166,7 @@ if ($thread->locked) {
 <?php Pjax::end(); ?>
 
 <?php if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))): ?>
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
 <br>
 <div class="row">
     <div class="col-sm-12 text-right">

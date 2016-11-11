@@ -6,6 +6,7 @@ use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Post;
 use bizley\podium\models\Thread;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\db\Query;
@@ -69,7 +70,7 @@ class ForumController extends BaseForumActionsController
         }
 
         $conditions = ['id' => (int)$id, 'slug' => $slug];
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $conditions['visible'] = 1;
         }
         $model = Category::find()->where($conditions)->limit(1)->one();
@@ -108,7 +109,7 @@ class ForumController extends BaseForumActionsController
             ]);
         }
         
-        $forum = Forum::verify($cid, $id, $slug, Yii::$app->user->isGuest);
+        $forum = Forum::verify($cid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($forum)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -233,7 +234,7 @@ class ForumController extends BaseForumActionsController
      */
     public function actionThread($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -289,7 +290,7 @@ class ForumController extends BaseForumActionsController
      */
     public function actionUnreadPosts()
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->info(Yii::t('podium/flash', 'This page is available for registered users only.'));
             return $this->redirect(['account/login']);
         }

@@ -52,12 +52,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionDelete($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to delete the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -97,7 +97,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to delete the post.'));
             return $this->redirect(['account/login']);
         }
@@ -161,12 +161,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionDeleteposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -219,7 +219,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to edit the post.'));
             return $this->redirect(['account/login']);
         }
@@ -291,12 +291,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionLock($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -333,12 +333,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionMove($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -403,12 +403,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionMoveposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -510,7 +510,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionNewThread($cid = null, $fid = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to create a new thread.'));
             return $this->redirect(['account/login']);
         }
@@ -572,12 +572,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionPin($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
             
-        $thread = Thread::verify($cid, $fid, $id, $slug, Yii::$app->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -615,7 +615,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
@@ -703,7 +703,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionReport($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to report the post.'));
             return $this->redirect(['account/login']);
         }
@@ -839,7 +839,7 @@ class BaseForumActionsController extends BaseController
             ),
         ];
             
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $data['msg'] = Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Please sign in to vote on this post'), 
@@ -913,7 +913,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionMarkSeen()
     {
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $this->info(Yii::t('podium/flash', 'This action is available for registered users only.'));
             return $this->redirect(['account/login']);
         }

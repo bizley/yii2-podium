@@ -380,7 +380,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     /**
      * Validates password.
      * In case of inherited user component password hash is compared to 
-     * password hash stored in Yii::$app->user->identity so this method should 
+     * password hash stored in Podium::getInstance()->user->identity so this method should 
      * not be used with User instance other than currently logged in one.
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
@@ -388,13 +388,13 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
     public function validatePassword($password)
     {
         $podium = Podium::getInstance();
-        if ($podium->userComponent == Podium::USER_INHERIT) {
+        if ($podium->userComponent !== true) {
             $password_hash = Podium::FIELD_PASSWORD;
             if (!empty($podium->userPasswordField)) {
                 $password_hash = $podium->userPasswordField;
             }
-            if (!empty(Yii::$app->user->identity->$password_hash)) {
-                return Yii::$app->security->validatePassword($password, Yii::$app->user->identity->$password_hash);
+            if (!empty($podium->user->identity->$password_hash)) {
+                return Yii::$app->security->validatePassword($password, $podium->user->identity->$password_hash);
             }
             return false;
         }

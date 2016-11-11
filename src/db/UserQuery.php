@@ -19,7 +19,7 @@ class UserQuery extends ActiveQuery
      */
     public function loggedUser($id)
     {
-        if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT) {
+        if (PodiumModule::getInstance()->userComponent !== true) {
             return $this->andWhere(['inherited_id' => $id]);
         }
         return $this->andWhere(['id' => $id]);

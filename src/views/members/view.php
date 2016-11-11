@@ -9,6 +9,7 @@
 
 use bizley\podium\components\Helper;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\Modal;
 use yii\helpers\Html;
@@ -19,14 +20,14 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Members List
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
-if (!Yii::$app->user->isGuest) {
+if (!Podium::getInstance()->user->isGuest) {
     $this->registerJs("$('#podiumModalIgnore').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#ignoreUrl').attr('href', button.data('url')); });");
     $this->registerJs("$('#podiumModalUnIgnore').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); $('#unignoreUrl').attr('href', button.data('url')); });");
 }
 
 $loggedId = User::loggedId();
 $ignored = $friend = false;
-if (!Yii::$app->user->isGuest) {
+if (!Podium::getInstance()->user->isGuest) {
     $ignored = $model->isIgnoredBy($loggedId);
     $friend  = $model->isBefriendedBy($loggedId);
 }
@@ -57,7 +58,7 @@ if (!Yii::$app->user->isGuest) {
     <div class="col-sm-9">
         <div class="panel panel-default">
             <div class="panel-body">
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
                 <div class="pull-right">
 <?php if ($model->id !== $loggedId): ?>
                     <a href="<?= Url::to(['messages/new', 'user' => $model->id]) ?>" class="btn btn-default btn-lg" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Send Message') ?>"><span class="glyphicon glyphicon-envelope"></span></a>
@@ -93,7 +94,7 @@ if (!Yii::$app->user->isGuest) {
                 
                 <p><?= Yii::t('podium/view', 'Whereabouts') ?>: <?= !empty($model->meta) && !empty($model->meta->location) ? Html::encode($model->meta->location) : '-' ?></p>
                 
-                <p><?= Yii::t('podium/view', 'Member since {date}', ['date' => Yii::$app->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Yii::$app->formatter->asRelativeTime($model->created_at) ?>)</p>
+                <p><?= Yii::t('podium/view', 'Member since {date}', ['date' => Podium::getInstance()->formatter->asDatetime($model->created_at, 'long')]) ?> (<?= Podium::getInstance()->formatter->asRelativeTime($model->created_at) ?>)</p>
 <?php if ($model->status != User::STATUS_REGISTERED): ?>
                 <p>
                     <a href="<?= Url::to(['members/threads', 'id' => $model->id, 'slug' => $model->podiumSlug]) ?>" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> <?= Yii::t('podium/view', 'Find all threads started by {name}', ['name' => Html::encode($model->podiumName)]) ?></a> 
@@ -124,7 +125,7 @@ if (!Yii::$app->user->isGuest) {
         ]) ?>
     </div>
 </div>
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
 <?php Modal::begin([
     'id' => 'podiumModalIgnore',
     'header' => Yii::t('podium/view', 'Ignore user'),

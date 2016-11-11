@@ -295,7 +295,7 @@ class Post extends ActiveRecord
     {
         $query = static::find();
         $query->where(['author_id' => $user_id]);
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $query->joinWith(['forum' => function($q) {
                 $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
@@ -320,7 +320,7 @@ class Post extends ActiveRecord
      */
     public function markSeen($updateCounters = true)
     {
-        if (!Yii::$app->user->isGuest) {
+        if (!Podium::getInstance()->user->isGuest) {
             $threadView = ThreadView::find()->where(['user_id' => User::loggedId(), 'thread_id' => $this->thread_id])->limit(1)->one();
             if (empty($threadView)) {
                 $threadView = new ThreadView;
@@ -376,7 +376,7 @@ class Post extends ActiveRecord
     {
         $latest = [];
         
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'guest');
             if ($latest === false) {
                 $posts = static::getLatestPostsForGuests($posts);

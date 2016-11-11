@@ -4,6 +4,7 @@ namespace bizley\podium\widgets;
 
 use bizley\podium\models\Activity;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;
@@ -50,7 +51,7 @@ class Readers extends Widget
             ['>=', Activity::tableName() . '.updated_at', time() - 5 * 60]
         ];
         
-        if (!Yii::$app->user->isGuest) {
+        if (!Podium::getInstance()->user->isGuest) {
             $this->_guest = false;
             $me = User::findMe();
             $conditions[] = ['!=', 'user_id', $me->id];

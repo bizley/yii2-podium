@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\gridview\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -65,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => Yii::t('podium/view', 'Time'),
             'filter' => false,
             'value' => function ($model) {
-                return Yii::$app->formatter->asDatetime(floor($model->log_time), 'medium');
+                return Podium::getInstance()->formatter->asDatetime(floor($model->log_time), 'medium');
             },
         ],
         [

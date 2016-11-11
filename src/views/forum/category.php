@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use yii\helpers\Url;
 
 $this->title = $model->name;
@@ -14,7 +15,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'Main Forum')
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
 <div class="row">
     <div class="col-sm-3 col-sm-offset-9">
         <div class="form-group">

@@ -7,17 +7,20 @@ use bizley\podium\components\Config;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\models\Activity;
-use bizley\podium\models\User;
 use Yii;
 use yii\base\Action;
 use yii\base\Application;
 use yii\base\BootstrapInterface;
+use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\base\Module as BaseModule;
 use yii\console\Application as ConsoleApplication;
+use yii\i18n\Formatter;
+use yii\rbac\DbManager;
 use yii\web\Application as WebApplication;
 use yii\web\GroupUrlRule;
 use yii\web\Response;
+use yii\web\User;
 
 /**
  * Podium Module
@@ -34,37 +37,36 @@ use yii\web\Response;
  * Podium requires Yii 2
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
- * Podium requires PECL intl >= 2.0.0
- * http://php.net/manual/en/intro.intl.php
+ * 
+ * For Podium documentation go to
+ * https://github.com/bizley/yii2-podium/wiki
  * 
  * @property Cache $cache
  * @property Config $config
+ * @property Formatter $formatter
+ * @property DbManager $rbac
+ * @property User $user
+ * 
  * @property boolean $installed
  * @property string $version
  */
 class Module extends BaseModule implements BootstrapInterface
 {
-    const USER_INHERIT = 'inherit';
-    const USER_OWN     = 'own';
-    
-    const RBAC_INHERIT = 'inherit';
-    const RBAC_OWN     = 'own';
-    
     const ROUTE_DEFAULT  = '/forum/index';
     const ROUTE_LOGIN    = '/account/login';
     const ROUTE_REGISTER = '/account/register';
     
-    const MAIN_LAYOUT    = 'main';
+    const MAIN_LAYOUT = 'main';
     
     const FIELD_PASSWORD = 'password_hash';
     
     /**
-     * @var string Module version
+     * @var string Module version.
      */
     protected $_version = '0.4';
 
     /**
-     * @var null|integer Admin account ID if $user is set to 'inherit'.
+     * @var null|integer Admin account ID if `$user` is set to `'inherit'`.
      */
     public $adminId;
 
@@ -72,18 +74,49 @@ class Module extends BaseModule implements BootstrapInterface
      * @var array the list of IPs that are allowed to access installation mode 
      * of this module.
      * Each array element represents a single IP filter which can be either an 
-     * IP address or an address with wildcard (e.g. 192.168.0.*) to represent a 
-     * network segment.
+     * IP address or an address with wildcard (e.g. `192.168.0.*`) to represent 
+     * a network segment.
      * The default value is `['127.0.0.1', '::1']`, which means the module can 
      * only be accessed by localhost.
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
     
     /**
-     * @var string Controller namespace
+     * @var string Controller namespace.
      */
     public $controllerNamespace = 'bizley\podium\controllers';
 
+    /**
+     * @var bool|string|array Module user component.
+     * Since version 0.5 it can be:
+     * - `true` for own Podium component configuration,
+     * - string with inherited component ID,
+     * - array with custom configuration (look at `registerIdentity()` to see
+     *   what Podium uses).
+     */
+    public $userComponent = true;
+    
+    /**
+     * @var bool|string|array Module RBAC component.
+     * Since version 0.5 it can be:
+     * - `true` for own Podium component configuration,
+     * - string with inherited component ID,
+     * - array with custom configuration (look at `registerAuthorization()` to 
+     *   see what Podium uses).
+     */
+    public $rbacComponent = true;
+    
+    /**
+     * @var bool|string|array Module formatter component.
+     * It can be:
+     * - `true` for own Podium component configuration,
+     * - string with inherited component ID,
+     * - array with custom configuration (look at `registerFormatter()` to 
+     *   see what Podium uses).
+     * @since 0.5
+     */
+    public $formatterComponent = true;
+    
     /**
      * @var bool|string URL for user login.
      * If this property is `false` login link is not provided in menu.
@@ -99,47 +132,37 @@ class Module extends BaseModule implements BootstrapInterface
     public $registerUrl;
     
     /**
-     * @var string Module RBAC component
-     */
-    public $rbacComponent = self::RBAC_OWN;
-    
-    /**
-     * @var string Module user component
-     */
-    public $userComponent = self::USER_OWN;
-    
-    /**
      * @var string Module inherited user password_hash field.
      * This will be used for profile updating confirmation.
-     * Default value is 'password_hash'.
+     * Default value is `'password_hash'`.
      */
     public $userPasswordField = self::FIELD_PASSWORD;
     
     /**
-     * @var string Default route for Podium
+     * @var string Default route for Podium.
      * @since 0.2
      */
     public $defaultRoute = 'forum';
     
     /**
-     * @var bool Value of identity Cookie 'secure' parameter.
+     * @var bool Value of identity Cookie `'secure'` parameter.
      * @since 0.2
      */
     public $secureIdentityCookie = false;
 
     /**
-     * @var Cache Module cache instance
+     * @var Cache Module cache instance.
      * @since 0.2
      */
     protected $_cache;
     
     /**
-     * @var Config Module configuration instance
+     * @var Config Module configuration instance.
      */
     protected $_config;
 
     /**
-     * @var bool Installation flag
+     * @var bool Installation flag.
      */
     protected $_installed;
     
@@ -271,101 +294,166 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
-     * Initializes the module for web app.
+     * Initializes the module for Web application.
      * Sets Podium alias (@podium) and layout.
-     * Registers user identity, authorization, translations and formatter.
+     * Registers user identity, authorization, translations, and formatter.
      * Verifies the installation.
      */
     public function init()
     {
         parent::init();
         
-        if (!in_array($this->userComponent, [self::USER_INHERIT, self::USER_OWN])) {
-            throw InvalidConfigException('Invalid value for the user parameter.');
+        if ($this->userComponent !== true && !is_string($this->userComponent) && !is_array($this->userComponent)) {
+            throw InvalidConfigException('Invalid value for the userComponent parameter.');
         }
-        if (!in_array($this->rbacComponent, [self::RBAC_INHERIT, self::RBAC_OWN])) {
-            throw InvalidConfigException('Invalid value for the rbac parameter.');
+        if ($this->rbacComponent !== true && !is_string($this->rbacComponent) && !is_array($this->rbacComponent)) {
+            throw InvalidConfigException('Invalid value for the rbacComponent parameter.');
         }
-
+        if ($this->formatterComponent !== true && !is_string($this->formatterComponent) && !is_array($this->formatterComponent)) {
+            throw InvalidConfigException('Invalid value for the formatterComponent parameter.');
+        }
+        
         $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
-
+        
         if ($this->loginUrl !== false) {
             $this->loginUrl = [$this->prepareRoute(self::ROUTE_LOGIN)];
         }
         if ($this->registerUrl !== false) {
             $this->registerUrl = [$this->prepareRoute(self::ROUTE_REGISTER)];
         }
+
+        $this->registerAuthorization();
         
         if (Yii::$app instanceof WebApplication) {
-            if ($this->userComponent == self::USER_OWN) {
-                $this->registerIdentity();
-            }
-            if ($this->rbacComponent == self::RBAC_OWN) {
-                $this->registerAuthorization();
-            }
-            $this->registerTranslations();
+            $this->registerIdentity();
             $this->registerFormatter();
+            $this->registerTranslations();
 
             $this->layout = self::MAIN_LAYOUT;
             $this->_installed = Installation::check();
-        } elseif (Yii::$app instanceof ConsoleApplication) {
-            if ($this->rbacComponent == self::RBAC_OWN) {
-                $this->registerAuthorization();
-            }
         }
     }
 
     /**
+     * Returns instance of component of given name.
+     * @param string $name
+     * @return Component
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getComponent($name)
+    {
+        $componentId = 'podium_' . $name;
+        $configurationName = $name . 'Component';
+        if (is_string($this->$configurationName)) {
+            $componentId = $this->$configurationName;
+        }
+        return $this->get($componentId);
+    }
+    
+    /**
+     * Returns instance of RBAC component.
+     * @return DbManager
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getRbac()
+    {
+        return $this->getComponent('rbac');
+    }
+    
+    /**
      * Registers user authorization.
-     * @see Installation
      */
     public function registerAuthorization()
     {
-        Yii::$app->setComponents([
-            'authManager' => [
-                'class' => 'yii\rbac\DbManager',
-                'itemTable' => '{{%podium_auth_item}}',
-                'itemChildTable' => '{{%podium_auth_item_child}}',
-                'assignmentTable' => '{{%podium_auth_assignment}}',
-                'ruleTable' => '{{%podium_auth_rule}}',
-                'cache' => $this->cache->engine
-            ],
-        ]);
+        if (is_string($this->rbacComponent)) {
+            return;
+        }
+        
+        $configuration = [
+            'class' => 'yii\rbac\DbManager',
+            'itemTable' => '{{%podium_auth_item}}',
+            'itemChildTable' => '{{%podium_auth_item_child}}',
+            'assignmentTable' => '{{%podium_auth_assignment}}',
+            'ruleTable' => '{{%podium_auth_rule}}',
+            'cache' => $this->cache->engine
+        ];
+        if (is_array($this->rbacComponent)) {
+            $configuration = $this->rbacComponent;
+        }
+        
+        $this->set('podium_rbac', $configuration);
     }
 
     /**
-     * Registers formatter with default timezone.
+     * Returns instance of formatter component.
+     * @return Formatter
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getFormatter()
+    {
+        return $this->getComponent('formatter');
+    }
+    
+    /**
+     * Registers formatter with default time zone.
      */
     public function registerFormatter()
     {
-        Yii::$app->setComponents([
-            'formatter' => [
-                'class' => 'yii\i18n\Formatter',
-                'timeZone' => 'UTC',
-            ],
-        ]);
+        if (is_string($this->formatterComponent)) {
+            return;
+        }
+        
+        $configuration = [
+            'class' => 'yii\i18n\Formatter',
+            'timeZone' => 'UTC',
+        ];
+        if (is_array($this->formatterComponent)) {
+            $configuration = $this->formatterComponent;
+        }
+        
+        $this->set('podium_formatter', $configuration);
     }
 
     /**
+     * Returns instance of user component.
+     * @return User
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getUser()
+    {
+        return $this->getComponent('user');
+    }
+    
+    /**
      * Registers user identity.
-     * @see User
      */
     public function registerIdentity()
     {
-        Yii::$app->setComponents([
-            'user' => [
-                'class' => 'yii\web\User',
-                'identityClass' => 'bizley\podium\models\User',
-                'enableAutoLogin' => true,
-                'loginUrl' => $this->loginUrl,
-                'identityCookie' => [
-                    'name' => 'podium', 
-                    'httpOnly' => true,
-                    'secure' => $this->secureIdentityCookie,
-                ],
-                'idParam' => '__id_podium',
+        if (is_string($this->userComponent)) {
+            return;
+        }
+        
+        $configuration = [
+            'class' => 'yii\web\User',
+            'identityClass' => 'bizley\podium\models\User',
+            'enableAutoLogin' => true,
+            'loginUrl' => $this->loginUrl,
+            'identityCookie' => [
+                'name' => 'podium', 
+                'httpOnly' => true,
+                'secure' => $this->secureIdentityCookie,
             ],
-        ]);
+            'idParam' => '__id_podium',
+        ];
+        if (is_array($this->userComponent)) {
+            $configuration = $this->userComponent;
+        }
+        
+        $this->set('podium_user', $configuration);
     }
 
     /**

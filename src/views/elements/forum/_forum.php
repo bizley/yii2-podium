@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -24,8 +25,8 @@ use yii\helpers\Url;
     <a href="<?= Url::to(['forum/show', 'id' => $model->latest->id]) ?>" class="center-block"><?= Html::encode($model->latest->thread->name) ?></a>
     <small>
         <?= $model->latest->author->podiumTag ?>
-        <span class="hidden-xs"><?= Yii::$app->formatter->asDatetime($model->latest->created_at, 'medium') ?></span>
-        <span class="hidden-sm hidden-md hidden-lg"><?= Yii::$app->formatter->asDatetime($model->latest->created_at, 'short') ?></span>
+        <span class="hidden-xs"><?= Podium::getInstance()->formatter->asDatetime($model->latest->created_at, 'medium') ?></span>
+        <span class="hidden-sm hidden-md hidden-lg"><?= Podium::getInstance()->formatter->asDatetime($model->latest->created_at, 'short') ?></span>
     </small>
 <?php endif; ?>
 </td>

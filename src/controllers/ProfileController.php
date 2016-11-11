@@ -68,7 +68,7 @@ class ProfileController extends BaseController
             return $this->redirect(['account/login']);
         }
 
-        $model->scenario = PodiumModule::getInstance()->userComponent == PodiumModule::USER_INHERIT ? 'accountInherit' : 'account';
+        $model->scenario = PodiumModule::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
         $model->current_password = null;
         $previous_new_email = $model->new_email;
         
@@ -173,7 +173,7 @@ class ProfileController extends BaseController
     {
         $model = User::findMe();
         if (empty($model)) {
-            if ($this->module->userComponent == PodiumModule::USER_OWN) {
+            if ($this->module->userComponent === true) {
                 return $this->redirect(['account/login']);
             }
             return $this->module->goPodium();
@@ -187,7 +187,7 @@ class ProfileController extends BaseController
      */
     public function actionLogout()
     {
-        Yii::$app->user->logout();
+        PodiumModule::getInstance()->user->logout();
         return $this->module->goPodium();
     }
     
@@ -285,7 +285,7 @@ class ProfileController extends BaseController
             ),
         ];
 
-        if (Yii::$app->user->isGuest) {
+        if (PodiumModule::getInstance()->user->isGuest) {
             $data['msg'] = Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'), 

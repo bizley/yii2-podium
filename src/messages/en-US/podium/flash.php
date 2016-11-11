@@ -214,5 +214,5 @@ return [
     'Your new e-mail address has been activated.' => 'Your new e-mail address has been activated.',
     'Your profile details have been updated.' => 'Your profile details have been updated.',
     'resend the link' => 'resend the link',
-    '{userComponent} is set to \'{inheritParam}\' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.' => '{userComponent} is set to \'{inheritParam}\' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.',
+    '{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.' => '{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.',
 ];

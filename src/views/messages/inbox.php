@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\models\Message;
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\gridview\ActionColumn;
 use bizley\podium\widgets\gridview\GridView;
 use bizley\podium\widgets\Modal;
@@ -55,10 +56,10 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'label' => Yii::t('podium/view', 'Sent'),
             'format' => 'raw',
             'value' => function($model) {
-                return Html::tag('span', Yii::$app->formatter->asRelativeTime($model->message->created_at), [
+                return Html::tag('span', Podium::getInstance()->formatter->asRelativeTime($model->message->created_at), [
                     'data-toggle' => 'tooltip', 
                     'data-placement' => 'top', 
-                    'title' => Yii::$app->formatter->asDatetime($model->message->created_at, 'long')
+                    'title' => Podium::getInstance()->formatter->asDatetime($model->message->created_at, 'long')
                 ]);
             }
         ],

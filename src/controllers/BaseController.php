@@ -202,9 +202,9 @@ class BaseController extends YiiController
     {
         parent::init();
         try {
-            if (!Yii::$app->user->isGuest) {
+            if (!Podium::getInstance()->user->isGuest) {
                 $user = User::findMe();
-                if ($this->module->userComponent == Podium::USER_INHERIT) {
+                if ($this->module->userComponent !== true) {
                     if (!$user) {
                         if (!User::createInheritedAccount()) {
                             throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
@@ -218,7 +218,7 @@ class BaseController extends YiiController
                     return $this->redirect(['forum/ban']);
                 }
                 if ($user && !empty($user->timezone)) {
-                    Yii::$app->formatter->timeZone = $user->timezone;
+                    Podium::getInstance()->formatter->timeZone = $user->timezone;
                 }
             }
         } catch (Exception $exc) {

@@ -8,7 +8,6 @@ use bizley\podium\models\Content;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -77,7 +76,7 @@ class AccountController extends BaseController
      */
     public function actionActivate($token)
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to activate your account.'));
             return $this->module->goPodium();
         }
@@ -105,7 +104,7 @@ class AccountController extends BaseController
      */
     public function actionLogin()
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', 'Please use application Login form to sign in.'));
             return $this->module->goPodium();
         }
@@ -150,7 +149,7 @@ class AccountController extends BaseController
      */
     public function actionPassword($token)
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to change your account password.'));
             return $this->module->goPodium();
         }
@@ -175,7 +174,7 @@ class AccountController extends BaseController
      */
     public function actionReactivate()
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to reactivate your account.'));
             return $this->module->goPodium();
         }
@@ -208,7 +207,7 @@ class AccountController extends BaseController
      */
     public function actionRegister()
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', "Please use application's Register form to sign up."));
             return $this->module->goPodium();
         }
@@ -257,7 +256,7 @@ class AccountController extends BaseController
      */
     public function actionReset()
     {
-        if ($this->module->userComponent == Podium::USER_INHERIT) {
+        if ($this->module->userComponent !== true) {
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to reset your account password.'));
             return $this->module->goPodium();
         }

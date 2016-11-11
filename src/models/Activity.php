@@ -112,7 +112,7 @@ class Activity extends ActiveRecord
             if (empty($ip)) {
                 $ip = '0.0.0.0';
             }
-            if (Yii::$app->user->isGuest) {
+            if (Podium::getInstance()->user->isGuest) {
                 $result = static::_addGuest($ip, $url);
             } else {
                 $result = static::_addUser($ip, $url);

@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use Yii;
+use bizley\podium\Module as Podium;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
@@ -87,7 +87,7 @@ class Vocabulary extends ActiveRecord
     public function search()
     {
         $query = static::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $query->joinWith(['posts' => function($q) {
                 $q->joinWith(['forum'])->where([Forum::tableName() . '.visible' => 1]);
             }]);

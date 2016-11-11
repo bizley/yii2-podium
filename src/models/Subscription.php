@@ -165,7 +165,7 @@ class Subscription extends ActiveRecord
      */
     public static function add($thread)
     {
-        if (!Yii::$app->user->isGuest) {
+        if (!Podium::getInstance()->user->isGuest) {
             $sub = new Subscription;
             $sub->thread_id = $thread;
             $sub->user_id   = User::loggedId();

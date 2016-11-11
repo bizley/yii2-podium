@@ -9,6 +9,7 @@
 
 use bizley\podium\assets\HighlightAsset;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
@@ -21,7 +22,7 @@ $this->registerJs("$('.podium-thumb-down').click(function (e) { e.preventDefault
 $this->registerJs("$('.podium-rating').click(function (e) { e.preventDefault(); $('.podium-rating-details').removeClass('hidden'); });");
 $this->registerJs("$('.podium-rating-details').click(function (e) { e.preventDefault(); $('.podium-rating-details').addClass('hidden'); });");
 
-if (!Yii::$app->user->isGuest) {
+if (!Podium::getInstance()->user->isGuest) {
     $model->markSeen();
 }
 
@@ -50,9 +51,9 @@ if (strpos($model->content, '<pre class="ql-syntax">') !== false) {
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right">
-                    <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></span>
+                    <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDatetime($model->created_at, 'long') ?>"><?= Podium::getInstance()->formatter->asRelativeTime($model->created_at) ?></span>
 <?php if ($model->edited && $model->edited_at): ?>
-                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
+                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Podium::getInstance()->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
 <?php endif; ?>
                     &mdash;
                     <span class="podium-rating label label-<?= $ratingClass ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Rating') ?>"><?= $rating ?></span>
@@ -78,14 +79,14 @@ if (strpos($model->content, '<pre class="ql-syntax">') !== false) {
                         <?= Html::hiddenInput('quote', '', ['class' => 'quote-selection']); ?>
                     <?= Html::endForm(); ?>
                     <li><span class="podium-thumb-info"></span></li>
-<?php if (!Yii::$app->user->isGuest && $model->author_id != $loggedId): ?>
+<?php if (!Podium::getInstance()->user->isGuest && $model->author_id != $loggedId): ?>
                     <li><button class="btn btn-primary btn-xs podium-quote" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Reply with quote') ?>"><span class="glyphicon glyphicon-leaf"></span></button></li>
 <?php endif; ?>
 <?php if ($model->author_id == $loggedId || User::can(Rbac::PERM_UPDATE_POST, ['item' => $model->thread])): ?>
                     <li><a href="<?= Url::to(['forum/edit', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit Post') ?>"><span class="glyphicon glyphicon-edit"></span></a></li>
 <?php endif; ?>
                     <li><a href="<?= Url::to(['forum/show', 'id' => $model->id]) ?>" class="btn btn-default btn-xs" data-pjax="0" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Direct link to this post') ?>"><span class="glyphicon glyphicon-link"></span></a></li>
-<?php if (!Yii::$app->user->isGuest && $model->author_id != $loggedId): ?>
+<?php if (!Podium::getInstance()->user->isGuest && $model->author_id != $loggedId): ?>
 <?php if ($model->thumb && $model->thumb->thumb == 1): ?>
                     <li><a href="#" class="btn btn-xs disabled text-muted podium-thumb-up" data-post-id="<?= $model->id ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Thumb up') ?>"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>
 <?php else: ?>

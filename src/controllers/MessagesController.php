@@ -7,6 +7,7 @@ use bizley\podium\models\Message;
 use bizley\podium\models\MessageReceiver;
 use bizley\podium\models\MessageSearch;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Json;
@@ -343,7 +344,7 @@ class MessagesController extends BaseController
             
         $result = ['messages' => '', 'more' => 0];
 
-        if (!Yii::$app->user->isGuest) {
+        if (!Podium::getInstance()->user->isGuest) {
             $loggedId = User::loggedId();
             $id = Yii::$app->request->post('message');
             $message = Message::find()->where(['id' => $id])->limit(1)->one();

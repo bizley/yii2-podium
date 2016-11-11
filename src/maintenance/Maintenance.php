@@ -38,7 +38,7 @@ class Maintenance extends Component
     /**
      * @var DbManager authorization manager.
      */
-    public $authManager = 'authManager';
+    public $authManager;
     
     /**
      * @var Connection database connection.
@@ -507,7 +507,7 @@ class Maintenance extends Component
     }
     
     /**
-     * Initialise component.
+     * Initialize component.
      */
     public function init()
     {
@@ -517,7 +517,7 @@ class Maintenance extends Component
         if ($this->db->driverName === 'mysql') {
             $this->setTableOptions('CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB');
         }
-        $this->authManager = Instance::ensure($this->authManager, DbManager::className());
+        $this->authManager = Instance::ensure(Podium::getInstance()->rbac, DbManager::className());
     }
     
     /**

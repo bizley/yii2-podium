@@ -214,5 +214,5 @@ return [
     'Your new e-mail address has been activated.' => 'Twój nowy adres e-mail został aktywowany.',
     'Your profile details have been updated.' => 'Twój profil został zaktualizowany.',
     'resend the link' => 'wysłać link ponownie',
-    '{userComponent} is set to \'{inheritParam}\' but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.' => '{userComponent} został ustawiony na \'{inheritParam}\', ale nie podano ID administratora w parametrze {adminId}. Uprawnienia administratora nie zostaną dodane.',
+    '{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.' => '{userComponent} został ustawiony na konfigurację użytkownika, ale nie podano ID administratora w parametrze {adminId}. Uprawnienia administratora nie zostaną dodane.',
 ];

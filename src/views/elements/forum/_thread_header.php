@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use yii\helpers\Url;
 
 ?>
@@ -17,7 +18,7 @@ use yii\helpers\Url;
             <li class="text-muted">
                 <?= Yii::t('podium/view', 'Show only') ?>
             </li>
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
             <li>
                 <a href="<?= Url::to(['forum/forum', 'cid' => $category, 'id' => $forum, 'slug' => $slug, 'toggle' => 'new']) ?>" class="btn btn-success btn-xs <?= !empty($filters['new']) && $filters['new'] ? 'active' : '' ?>">
                     <span class="glyphicon glyphicon-leaf"></span> 

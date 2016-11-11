@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use yii\helpers\Html;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
@@ -21,9 +22,9 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             <div class="arrow"></div>
             <div class="popover-title">
                 <small class="pull-right">
-                    <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></span>
+                    <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDatetime($model->created_at, 'long') ?>"><?= Podium::getInstance()->formatter->asRelativeTime($model->created_at) ?></span>
 <?php if ($model->edited && $model->edited_at): ?>
-                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
+                    <em>(<?= Yii::t('podium/view', 'Edited') ?> <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDatetime($model->edited_at, 'long') ?>"><?= Podium::getInstance()->formatter->asRelativeTime($model->edited_at) ?>)</span></em>
 <?php endif; ?>
                 </small>
                 <?= $model->author->podiumTag ?>

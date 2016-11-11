@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $this->registerJs("$('#show-email').click(function (e) { e.preventDefault(); $('#details-email').removeClass('hide'); $('#user-new_email').prop('disabled', false); $(this).addClass('hide'); });");
-if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
+if (PodiumModule::getInstance()->userComponent === true) {
     $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-new_password').prop('disabled', false); $('#user-new_password_repeat').prop('disabled', false); $(this).addClass('hide'); });");
 }
 
@@ -69,7 +69,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                                 <button class="btn btn-warning btn-block <?= !empty($model->new_email) ? 'hide' : '' ?>" id="show-email"><span class="glyphicon glyphicon-envelope"></span> <?= Yii::t('podium/view', 'Change e-mail address') ?></button>
                             </div>
                         </div>
-<?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
+<?php if (PodiumModule::getInstance()->userComponent === true): ?>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <button class="btn btn-warning btn-block <?= !empty($model->new_password) ? 'hide' : '' ?>" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
@@ -91,7 +91,7 @@ if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN) {
                             ])->label(Yii::t('podium/view', 'New Podium e-mail')) ?>
                         </div>
                     </div>
-<?php if (PodiumModule::getInstance()->userComponent == PodiumModule::USER_OWN): ?>
+<?php if (PodiumModule::getInstance()->userComponent === true): ?>
                     <div id="details-password" class="<?= empty($model->new_password) ? 'hide' : '' ?>">
                         <div class="row">
                             <div class="col-sm-12">

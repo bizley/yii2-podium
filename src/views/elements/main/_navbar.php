@@ -18,7 +18,7 @@ $items = [['label' => Yii::t('podium/view', 'Home'), 'url' => ['forum/index']]];
 
 $podiumModule = Podium::getInstance();
 
-if (Yii::$app->user->isGuest) {
+if (Podium::getInstance()->user->isGuest) {
     if (Podium::getInstance()->config->get('members_visible')) {
         $items[] = [
             'label'  => Yii::t('podium/view', 'Members'), 
@@ -26,7 +26,7 @@ if (Yii::$app->user->isGuest) {
             'active' => $this->context->id == 'members'
         ];
     }
-    if ($podiumModule->userComponent == Podium::USER_OWN) {
+    if ($podiumModule->userComponent === true) {
         if (!empty($podiumModule->registerUrl) && $podiumModule->config->get('registration_off') != '1') {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }
@@ -72,7 +72,7 @@ else {
             ['label' => Yii::t('podium/view', 'New Message'), 'url' => ['messages/new']],
         ]
     ];
-    if ($podiumModule->userComponent == Podium::USER_OWN) {
+    if ($podiumModule->userComponent === true) {
         $items[] = ['label' => Yii::t('podium/view', 'Sign out'), 'url' => ['profile/logout'], 'linkOptions' => ['data-method' => 'post']];
     }
 }

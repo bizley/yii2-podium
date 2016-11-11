@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\LatestPosts;
 use yii\helpers\Url;
 
@@ -19,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $this->render('/elements/forum/_sections', ['dataProvider' => $dataProvider]) ?>
     </div>
     <div class="col-sm-3">
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
         <a href="<?= Url::to(['forum/unread-posts']) ?>" class="btn btn-info btn-xs btn-block"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a><br>
 <?php endif ?>
         <?= LatestPosts::widget(); ?>

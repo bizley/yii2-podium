@@ -3,6 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
+use bizley\podium\Module as Podium;
 use Exception;
 use Yii;
 use yii\behaviors\SluggableBehavior;
@@ -75,7 +76,7 @@ class Category extends ActiveRecord
     public function search()
     {
         $query = static::find();        
-        if (Yii::$app->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $query->andWhere(['visible' => 1]);
         }
         $dataProvider = new ActiveDataProvider(['query' => $query]);

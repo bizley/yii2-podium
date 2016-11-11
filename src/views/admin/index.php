@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Module as Podium;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 use yii\helpers\Url;
@@ -29,7 +30,9 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <tr>
                     <td>
                         <a href="<?= Url::to(['admin/view', 'id' => $member->id]) ?>"><?= $member->podiumName ?></a>
-                        <span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDateTime($member->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($member->created_at) ?></span>
+                        <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDateTime($member->created_at, 'long') ?>">
+                            <?= Podium::getInstance()->formatter->asRelativeTime($member->created_at) ?>
+                        </span>
                     </td>
                 </tr>
 <?php endforeach; ?>
@@ -52,11 +55,25 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <tbody>
 <?php foreach ($posts as $post): ?>
                     <tr>
-                        <td><a href="<?= Url::to(['forum/show', 'id' => $post->id]) ?>"><?= Html::encode($post->thread->name) ?></a></td>
-                        <td><span data-toggle="popover" data-container="body" data-placement="right" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($post->content, 20, '...', true)) ?></small>" title="<?= Yii::t('podium/view', 'Post Preview') ?>"><span class="glyphicon glyphicon-leaf"></span></span></td>
-                        <td><a href="<?= Url::to(['admin/view', 'id' => $post->author->id]) ?>"><?= $post->author->podiumName ?></a></td>
-                        <td><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDateTime($post->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($post->created_at) ?></span></td>
-                        <td>+<?= $post->likes ?> / -<?= $post->dislikes ?></td>
+                        <td>
+                            <a href="<?= Url::to(['forum/show', 'id' => $post->id]) ?>"><?= Html::encode($post->thread->name) ?></a>
+                        </td>
+                        <td>
+                            <span data-toggle="popover" data-container="body" data-placement="right" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($post->content, 20, '...', true)) ?></small>" title="<?= Yii::t('podium/view', 'Post Preview') ?>">
+                                <span class="glyphicon glyphicon-leaf"></span>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="<?= Url::to(['admin/view', 'id' => $post->author->id]) ?>"><?= $post->author->podiumName ?></a>
+                        </td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDateTime($post->created_at, 'long') ?>">
+                                <?= Podium::getInstance()->formatter->asRelativeTime($post->created_at) ?>
+                            </span>
+                        </td>
+                        <td>
+                            +<?= $post->likes ?> / -<?= $post->dislikes ?>
+                        </td>
                     </tr>
 <?php endforeach; ?>
                 </tbody>

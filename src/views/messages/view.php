@@ -10,6 +10,7 @@
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\Modal;
 use yii\helpers\Html;
@@ -51,7 +52,7 @@ $loggedId = User::loggedId();
                     <div class="popover right podium">
                         <div class="arrow"></div>
                         <div class="popover-title">
-                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Yii::$app->formatter->asDatetime($model->created_at, 'long') ?>"><?= Yii::$app->formatter->asRelativeTime($model->created_at) ?></span></small>
+                            <small class="pull-right"><span data-toggle="tooltip" data-placement="top" title="<?= Podium::getInstance()->formatter->asDatetime($model->created_at, 'long') ?>"><?= Podium::getInstance()->formatter->asRelativeTime($model->created_at) ?></span></small>
                             <?= Html::encode($model->topic) ?>
                         </div>
                         <div class="popover-content">

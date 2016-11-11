@@ -8,6 +8,7 @@
  */
 
 use bizley\podium\models\User;
+use bizley\podium\Module as Podium;
 use bizley\podium\rbac\Rbac;
 use yii\helpers\Url;
 
@@ -17,7 +18,7 @@ $this->params['breadcrumbs'][] = ['label' => $model->category->name, 'url' => ['
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?php if (!Yii::$app->user->isGuest): ?>
+<?php if (!Podium::getInstance()->user->isGuest): ?>
 <div class="row">
     <div class="col-sm-12 text-right">
         <ul class="list-inline">

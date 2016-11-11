@@ -2,6 +2,7 @@
 
 namespace bizley\podium\widgets\gridview;
 
+use bizley\podium\Module as Podium;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\GridView as YiiGridView;
 use yii\widgets\Pjax;
@@ -31,6 +32,16 @@ class GridView extends YiiGridView
      * @var string additional jQuery selector for selecting filter input fields
      */
     public $filterSelector = 'select#per-page';
+    
+    /**
+     * Sets formatter to use Podium component.
+     * @since 0.5
+     */
+    public function init()
+    {
+        parent::init();
+        $this->formatter = Podium::getInstance()->formatter;
+    }
     
     /**
      * Runs the widget.
