@@ -12,10 +12,10 @@ Yii 2 forum module
 
 This extension allows you to add forum to your app.
 
-> # UPDATE TO VERSION 0.5
-> **Warning: This version breaks BC!**
-> `own` and `inherit` values are no longer valid for `userComponent` and `rbacComponent`!
-> See [Podium wiki](https://github.com/bizley/yii2-podium/wiki) for details.
+> # UPDATE TO VERSION 0.5  
+> **Warning: This future version breaks BC!**  
+> `own` and `inherit` values are no longer valid for `userComponent` and `rbacComponent`!  
+> Details will be given in [Podium wiki](https://github.com/bizley/yii2-podium/wiki) once it's released.
 
 Features
 --------
