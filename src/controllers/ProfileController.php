@@ -8,7 +8,7 @@ use bizley\podium\models\Email;
 use bizley\podium\models\Meta;
 use bizley\podium\models\Subscription;
 use bizley\podium\models\User;
-use bizley\podium\Module as PodiumModule;
+use bizley\podium\Podium;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
@@ -68,7 +68,7 @@ class ProfileController extends BaseController
             return $this->redirect(['account/login']);
         }
 
-        $model->scenario = PodiumModule::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
+        $model->scenario = Podium::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
         $model->current_password = null;
         $previous_new_email = $model->new_email;
         
@@ -187,7 +187,7 @@ class ProfileController extends BaseController
      */
     public function actionLogout()
     {
-        PodiumModule::getInstance()->user->logout();
+        Podium::getInstance()->user->logout();
         return $this->module->goPodium();
     }
     
@@ -285,7 +285,7 @@ class ProfileController extends BaseController
             ),
         ];
 
-        if (PodiumModule::getInstance()->user->isGuest) {
+        if (Podium::getInstance()->user->isGuest) {
             $data['msg'] = Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'), 

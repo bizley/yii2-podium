@@ -10,7 +10,7 @@
 use bizley\podium\components\Helper;
 use bizley\podium\models\Message;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\QuillBasic;
 use yii\bootstrap\ActiveForm;

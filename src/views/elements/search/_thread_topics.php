@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use yii\helpers\Html;
 use yii\helpers\Url;
 

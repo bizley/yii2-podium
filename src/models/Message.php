@@ -5,7 +5,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Helper;
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;

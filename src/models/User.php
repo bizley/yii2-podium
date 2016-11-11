@@ -5,7 +5,7 @@ namespace bizley\podium\models;
 use bizley\podium\components\Cache;
 use bizley\podium\components\Helper;
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use himiklab\yii2\recaptcha\ReCaptchaValidator;

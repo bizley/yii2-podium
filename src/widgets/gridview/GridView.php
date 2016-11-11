@@ -2,7 +2,7 @@
 
 namespace bizley\podium\widgets\gridview;
 
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\PageSizer;
 use yii\grid\GridView as YiiGridView;
 use yii\widgets\Pjax;

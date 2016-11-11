@@ -4,7 +4,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Response;

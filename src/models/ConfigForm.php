@@ -3,7 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\components\Config;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use yii\base\Model;
 use yii\validators\StringValidator;
 

@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\gridview\ActionColumn;
 use bizley\podium\widgets\gridview\GridView;
 use bizley\podium\widgets\Modal;

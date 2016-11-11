@@ -3,7 +3,7 @@
 namespace bizley\podium\log;
 
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Yii;
 use yii\web\Application;
 

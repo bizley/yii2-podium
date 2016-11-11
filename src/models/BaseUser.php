@@ -4,7 +4,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\db\UserQuery;
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;

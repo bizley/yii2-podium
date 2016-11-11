@@ -13,7 +13,7 @@ use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
-use yii\base\Module as BaseModule;
+use yii\base\Module;
 use yii\console\Application as ConsoleApplication;
 use yii\i18n\Formatter;
 use yii\rbac\DbManager;
@@ -27,7 +27,7 @@ use yii\web\User;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.5 (beta)
+ * @version 0.5-dev (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -50,7 +50,7 @@ use yii\web\User;
  * @property boolean $installed
  * @property string $version
  */
-class Module extends BaseModule implements BootstrapInterface
+class Podium extends Module implements BootstrapInterface
 {
     const ROUTE_DEFAULT  = '/forum/index';
     const ROUTE_LOGIN    = '/account/login';
@@ -66,7 +66,7 @@ class Module extends BaseModule implements BootstrapInterface
     protected $_version = '0.4';
 
     /**
-     * @var null|integer Admin account ID if `$user` is set to `'inherit'`.
+     * @var null|int Admin account ID if `$userComponent` is not set to `true`.
      */
     public $adminId;
 

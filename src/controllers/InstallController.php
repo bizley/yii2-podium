@@ -5,6 +5,7 @@ namespace bizley\podium\controllers;
 use bizley\podium\components\Helper;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;
+use bizley\podium\Podium;
 use bizley\podium\traits\FlashTrait;
 use Yii;
 use yii\db\Query;
@@ -43,7 +44,7 @@ class InstallController extends Controller
     
     /**
      * Checks if user's IP is on the allowed list.
-     * @see \bizley\podium\Module::$allowedIPs
+     * @see Podium::$allowedIPs
      * This method is copied from yii2-gii module.
      * @author Qiang Xue <qiang.xue@gmail.com>
      * @return bool

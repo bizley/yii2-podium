@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\log\Log;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\gridview\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

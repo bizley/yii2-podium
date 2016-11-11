@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
 use bizley\podium\widgets\QuillBasic;

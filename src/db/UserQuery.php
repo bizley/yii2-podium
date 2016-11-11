@@ -2,7 +2,7 @@
 
 namespace bizley\podium\db;
 
-use bizley\podium\Module as PodiumModule;
+use bizley\podium\Podium;
 use yii\db\ActiveQuery;
 
 /**
@@ -19,7 +19,7 @@ class UserQuery extends ActiveQuery
      */
     public function loggedUser($id)
     {
-        if (PodiumModule::getInstance()->userComponent !== true) {
+        if (Podium::getInstance()->userComponent !== true) {
             return $this->andWhere(['inherited_id' => $id]);
         }
         return $this->andWhere(['id' => $id]);

@@ -4,7 +4,7 @@ namespace bizley\podium\widgets;
 
 use bizley\podium\models\Activity;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;

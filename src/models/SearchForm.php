@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;

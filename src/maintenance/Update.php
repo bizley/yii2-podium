@@ -3,7 +3,7 @@
 namespace bizley\podium\maintenance;
 
 use bizley\podium\components\Helper;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\helpers\Html;

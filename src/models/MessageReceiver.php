@@ -4,7 +4,7 @@ namespace bizley\podium\models;
 
 use bizley\podium\log\Log;
 use bizley\podium\models\User;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -13,7 +13,7 @@ use yii\db\ActiveRecord;
 use yii\db\Query;
 
 /**
- * MessageReceive rmodel
+ * MessageReceiver model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1

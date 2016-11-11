@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\components\Helper;
-use bizley\podium\Module as Podium;
+use bizley\podium\Podium;
 use bizley\podium\widgets\Avatar;
 use yii\helpers\Html;
 use yii\helpers\Url;
