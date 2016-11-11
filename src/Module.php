@@ -50,9 +50,10 @@ class Module extends BaseModule implements BootstrapInterface
     const RBAC_INHERIT = 'inherit';
     const RBAC_OWN     = 'own';
     
-    const ROUTE_DEFAULT  = '/podium/forum/index';
-    const ROUTE_LOGIN    = '/podium/account/login';
-    const ROUTE_REGISTER = '/podium/account/register';
+    const ROUTE_DEFAULT  = '/forum/index';
+    const ROUTE_LOGIN    = '/account/login';
+    const ROUTE_REGISTER = '/account/register';
+    
     const MAIN_LAYOUT    = 'main';
     
     const FIELD_PASSWORD = 'password_hash';
@@ -84,23 +85,23 @@ class Module extends BaseModule implements BootstrapInterface
     public $controllerNamespace = 'bizley\podium\controllers';
 
     /**
-     * @var string|array the URL for user login.
-     * If this property is null login link is not provided in menu.
+     * @var bool|string URL for user login.
+     * If this property is `false` login link is not provided in menu.
      * Login link is not provided for inherited user component.
      */
-    public $loginUrl = [self::ROUTE_LOGIN];
+    public $loginUrl;
+    
+    /**
+     * @var bool|string URL for new user registering.
+     * If this property is `false` registration link is not provided in menu.
+     * Registration link is not provided for inherited user component.
+     */
+    public $registerUrl;
     
     /**
      * @var string Module RBAC component
      */
     public $rbacComponent = self::RBAC_OWN;
-    
-    /**
-     * @var string|array the URL for new user registering.
-     * If this property is null registration link is not provided in menu.
-     * Registration link is not provided for inherited user component.
-     */
-    public $registerUrl = [self::ROUTE_REGISTER];
     
     /**
      * @var string Module user component
@@ -183,7 +184,7 @@ class Module extends BaseModule implements BootstrapInterface
     {
         $app->urlManager->addRules([
                 new GroupUrlRule([
-                    'prefix' => 'podium',
+                    'prefix' => $this->id,
                     'rules' => require(__DIR__ . '/url-rules.php'),
                 ])
             ], false);
@@ -250,12 +251,23 @@ class Module extends BaseModule implements BootstrapInterface
     }
 
     /**
+     * Appends module ID to the route.
+     * @param string $route
+     * @return string
+     * @since 0.5
+     */
+    public function prepareRoute($route)
+    {
+        return '/' . $this->id . $route;
+    }
+    
+    /**
      * Redirects to Podium main controller's action.
      * @return Response
      */
     public function goPodium()
     {
-        return Yii::$app->response->redirect([self::ROUTE_DEFAULT]);
+        return Yii::$app->response->redirect([$this->prepareRoute(self::ROUTE_DEFAULT)]);
     }
 
     /**
@@ -277,6 +289,13 @@ class Module extends BaseModule implements BootstrapInterface
 
         $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
 
+        if ($this->loginUrl !== false) {
+            $this->loginUrl = [$this->prepareRoute(self::ROUTE_LOGIN)];
+        }
+        if ($this->registerUrl !== false) {
+            $this->registerUrl = [$this->prepareRoute(self::ROUTE_REGISTER)];
+        }
+        
         if (Yii::$app instanceof WebApplication) {
             if ($this->userComponent == self::USER_OWN) {
                 $this->registerIdentity();

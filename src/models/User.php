@@ -106,7 +106,7 @@ class User extends BaseUser
         if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
             $rules[] = ['captcha', ReCaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
         } else {
-            $rules[] = ['captcha', 'captcha', 'captchaAction' => 'podium/account/captcha'];
+            $rules[] = ['captcha', 'captcha', 'captchaAction' => Podium::getInstance()->id . '/account/captcha'];
         }
         
         return $rules;
