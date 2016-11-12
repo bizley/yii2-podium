@@ -2,7 +2,7 @@
 
 /**
  * Podium installation steps.
- * v0.3
+ * v0.5
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  */
 
@@ -111,6 +111,19 @@ return [
             'call'  => 'updateValue',
             'name'  => 'version',
             'value' => '0.4'
+        ]
+    ],
+    '0.5' => [
+        [
+            'table' => 'user_activity',
+            'call'  => 'dropIndex',
+            'name'  => 'url',
+        ],
+        [
+            'table' => 'config',
+            'call'  => 'updateValue',
+            'name'  => 'version',
+            'value' => '0.5'
         ]
     ],
 ];

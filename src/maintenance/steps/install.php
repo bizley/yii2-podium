@@ -2,7 +2,7 @@
 
 /**
  * Podium installation steps.
- * v0.2
+ * v0.5
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  */
 
@@ -602,12 +602,6 @@ return [
         'call'  => 'addIndex',
         'name'  => 'updated_at',
         'cols'  => ['updated_at'],
-    ],
-    [
-        'table' => 'user_activity',
-        'call'  => 'addIndex',
-        'name'  => 'url',
-        'cols'  => ['url'],
     ],
     [
         'table' => 'user_activity',
