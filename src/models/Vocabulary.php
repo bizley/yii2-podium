@@ -80,18 +80,21 @@ class Vocabulary extends ActiveRecord
     }
     
     /**
-     * @inheritdoc
+     * Returns data provider for simple search.
+     * @return ActiveDataProvider
      */
     public function search()
     {
-        $query = static::find()->select('post_id, thread_id')->where(['like', 'word', $this->query]);
+        $query = static::find()->where(['and',
+            ['is not', 'post_id', null],
+            ['like', 'word', $this->query]
+        ])->joinWith(['posts.author', 'posts.thread']);
         if (Podium::getInstance()->user->isGuest) {
-            $query->joinWith(['posts' => function($q) {
-                $q->joinWith(['forum'])->where([Forum::tableName() . '.visible' => 1]);
+            $query->joinWith(['posts.forum' => function($q) {
+                $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
-        } else {
-            $query->joinWith(['posts']);
         }
+        $query->groupBy(['post_id']);
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -23,15 +23,20 @@ use yii\helpers\HtmlPurifier;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  * 
- * @property integer $id
+ * @property int $id
  * @property string $name
  * @property string $slug
- * @property integer $category_id
- * @property integer $forum_id
- * @property integer $author_id
- * @property integer $pinned
- * @property integer $updated_at
- * @property integer $created_at
+ * @property int $category_id
+ * @property int $forum_id
+ * @property int $author_id
+ * @property int $pinned
+ * @property int $locked
+ * @property int $posts
+ * @property int $views
+ * @property int $updated_at
+ * @property int $created_at
+ * @property int $new_post_at
+ * @property int $edited_post_at
  */
 class Thread extends ActiveRecord
 {

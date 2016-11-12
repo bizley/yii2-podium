@@ -761,62 +761,63 @@ class BaseForumActionsController extends BaseController
     {
         $dataProvider = null;
         $searchModel = new Vocabulary;
+        
         if ($searchModel->load(Yii::$app->request->get(), '')) {
-            $dataProvider = $searchModel->search();
-        } else {
-            $model = new SearchForm;
-            $model->match = 'all';
-            $model->type = 'posts';
-            $model->display = 'topics';
-            
-            $categories = Category::find()->orderBy(['name' => SORT_ASC]);
-            $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
-            $list = [];
-            foreach ($categories->each() as $cat) {
-                $catlist = [];
-                foreach ($forums->each() as $for) {
-                    if ($for->category_id == $cat->id) {
-                        $catlist[$for->id] = '|-- ' . Html::encode($for->name);
-                    }
-                }
-                $list[Html::encode($cat->name)] = $catlist;
-            }
-            
-            if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-                if (empty($model->query) && empty($model->author)) {
-                    $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
-                } else {
-                    $stop = false;
-                    if (!empty($model->query)) {
-                        $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
-                        $checkedWords = [];
-                        foreach ($words as $word) {
-                            if (mb_strlen($word, 'UTF-8') > 2) {
-                                $checkedWords[] = $word;
-                            }
-                        }
-                        $model->query = implode(' ', $checkedWords);
-                        if (mb_strlen($model->query, 'UTF-8') < 3) {
-                            $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
-                            $stop = true;
-                        }
-                    }
-                    if (!$stop) {
-                        $dataProvider = $model->searchAdvanced();
-                    }
-                }
-            }
             return $this->render('search', [
-                'model'        => $model,
-                'list'         => $list,
-                'dataProvider' => $dataProvider,
-                'query'        => $model->query,
-                'author'       => $model->author,
+                'dataProvider' => $searchModel->search(),
+                'query'        => $searchModel->query,
             ]);
         }
+        
+        $model = new SearchForm;
+        $model->match = 'all';
+        $model->type = 'posts';
+        $model->display = 'topics';
+
+        $categories = Category::find()->orderBy(['name' => SORT_ASC]);
+        $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
+        $list = [];
+        foreach ($categories->each() as $cat) {
+            $catlist = [];
+            foreach ($forums->each() as $for) {
+                if ($for->category_id == $cat->id) {
+                    $catlist[$for->id] = '|-- ' . Html::encode($for->name);
+                }
+            }
+            $list[Html::encode($cat->name)] = $catlist;
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if (empty($model->query) && empty($model->author)) {
+                $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
+            } else {
+                $stop = false;
+                if (!empty($model->query)) {
+                    $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
+                    $checkedWords = [];
+                    foreach ($words as $word) {
+                        if (mb_strlen($word, 'UTF-8') > 2) {
+                            $checkedWords[] = $word;
+                        }
+                    }
+                    $model->query = implode(' ', $checkedWords);
+                    if (mb_strlen($model->query, 'UTF-8') < 3) {
+                        $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
+                        $stop = true;
+                    }
+                }
+                if (!$stop) {
+                    $dataProvider = $model->searchAdvanced();
+                }
+            }
+        }
+        
         return $this->render('search', [
+            'model'        => $model,
+            'list'         => $list,
             'dataProvider' => $dataProvider,
-            'query'        => $searchModel->query,
+            'query'        => $model->query,
+            'author'       => $model->author,
         ]);
     }
     

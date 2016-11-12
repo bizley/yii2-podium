@@ -87,22 +87,21 @@ class SearchForm extends Model
             $query = Thread::find();
             if (Podium::getInstance()->user->isGuest) {
                 $query->joinWith([
-                    'category' => function ($q) {
-                        $q->andWhere([Category::tableName() . '.visible' => 1]);
-                    },
                     'forum' => function ($q) {
-                        $q->andWhere([Forum::tableName() . '.visible' => 1]);
-                    }
+                        $q->andWhere([Forum::tableName() . '.visible' => 1])
+                            ->joinWith(['category' => function ($q) {
+                                $q->andWhere([Category::tableName() . '.visible' => 1]);
+                            }]);
+                    },
                 ]);
             }
             if (!empty($this->query)) {
                 $words = explode(' ', preg_replace('/\s+/', ' ', $this->query));
                 foreach ($words as $word) {
                     if ($this->match == 'all') {
-                        $query->andWhere(['like', 'name', $word]);
-                    }
-                    else {
-                        $query->orWhere(['like', 'name', $word]);
+                        $query->andWhere(['like', Thread::tableName() . '.name', $word]);
+                    } else {
+                        $query->orWhere(['like', Thread::tableName() . '.name', $word]);
                     }
                 }
             }
@@ -148,19 +147,13 @@ class SearchForm extends Model
                 ]
             ];
         } else {
-            $query = Vocabulary::find()->select('post_id, thread_id');
+            $query = Vocabulary::find()->select('post_id, thread_id')->joinWith(['posts.author', 'posts.thread'])->andWhere(['is not', 'post_id', null]);
             if (Podium::getInstance()->user->isGuest) {
-                $query->joinWith(['posts' => function ($q) {
-                    $q->joinWith([
-                        'forum' => function ($qu) {
-                            $qu->andWhere([Forum::tableName() . '.visible' => 1])->joinWith(['category' => function ($que) {
-                                $que->andWhere([Category::tableName() . '.visible' => 1]);
-                            }]);
-                        }
-                    ]);
+                $query->joinWith(['posts.forum' => function ($q) {
+                    $q->andWhere([Forum::tableName() . '.visible' => 1])->joinWith(['category' => function ($q) {
+                        $q->andWhere([Category::tableName() . '.visible' => 1]);
+                    }]);
                 }]);
-            } else {
-                $query->joinWith(['posts']);
             }
             if (!empty($this->query)) {
                 $words = explode(' ', preg_replace('/\s+/', ' ', $this->query));
@@ -175,9 +168,7 @@ class SearchForm extends Model
                 }
             }
             if (!empty($this->author)) {
-                $query->andWhere(['like', 'username', $this->author])->joinWith(['posts' => function($q) {
-                    $q->joinWith(['user']);
-                }]);
+                $query->andWhere(['like', 'username', $this->author]);
             }
             if (!empty($this->date_from) && empty($this->date_to)) {
                 $query->andWhere(['>=', Post::tableName() . '.updated_at', $this->date_from]);
