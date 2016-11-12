@@ -526,7 +526,7 @@ class Maintenance extends Component
      */
     public function clearCache()
     {
-        $this->module->cache->flush();
+        $this->module->podiumCache->flush();
     }
     
     /**

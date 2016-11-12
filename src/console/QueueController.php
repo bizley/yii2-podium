@@ -210,9 +210,9 @@ class QueueController extends Controller
         foreach ($emails as $email) {
             if (!$this->process(
                     $email, 
-                    $this->module->config->get('from_name'), 
-                    $this->module->config->get('from_email'), 
-                    $this->module->config->get('max_attempts')
+                    $this->module->podiumConfig->get('from_name'), 
+                    $this->module->podiumConfig->get('from_email'), 
+                    $this->module->podiumConfig->get('max_attempts')
                 )) {
                 $errors = true;
             }

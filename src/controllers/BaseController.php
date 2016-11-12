@@ -2,7 +2,7 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
@@ -113,7 +113,7 @@ class BaseController extends YiiController
      */
     public function maintenanceCheck($action, $warnings)
     {
-        if ($this->module->config->get('maintenance_mode') == '1') {
+        if ($this->module->podiumConfig->get('maintenance_mode') == '1') {
             if ($action->id !== 'maintenance') {
                 if ($warnings) {
                     foreach ($warnings as $warning) {
@@ -181,7 +181,7 @@ class BaseController extends YiiController
         
         $result = Helper::compareVersions(
             explode('.', $this->module->version), 
-            explode('.', $this->module->config->get('version'))
+            explode('.', $this->module->podiumConfig->get('version'))
         );
         if ($result == '>') {
             $this->warning(static::warnings()['old_version'], false);

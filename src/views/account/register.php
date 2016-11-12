@@ -41,11 +41,11 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
             <div class="form-group">
                 <?= $form->field($model, 'tos')->checkBox()->label('<small>' . Yii::t('podium/view', 'I have read and agree to the Terms and Conditions') . ' <span class="glyphicon glyphicon-circle-arrow-right"></span></small>') ?>
             </div>
-<?php if (Podium::getInstance()->config->get('use_captcha')): ?>
-<?php if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== ''): ?>
+<?php if (Podium::getInstance()->podiumConfig->get('use_captcha')): ?>
+<?php if (Podium::getInstance()->podiumConfig->get('recaptcha_sitekey') !== '' && Podium::getInstance()->podiumConfig->get('recaptcha_secretkey') !== ''): ?>
             <div class="form-group">
                 <?= $form->field($model, 'captcha')->widget(ReCaptcha::className(), [
-                    'siteKey' => Podium::getInstance()->config->get('recaptcha_sitekey'),
+                    'siteKey' => Podium::getInstance()->podiumConfig->get('recaptcha_sitekey'),
                 ]) ?>
             </div>
 <?php else: ?>

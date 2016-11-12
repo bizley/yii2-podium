@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\Html;

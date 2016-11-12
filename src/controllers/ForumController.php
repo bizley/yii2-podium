@@ -265,7 +265,7 @@ class ForumController extends BaseForumActionsController
     public function setMetaTags($keywords = null, $description = null)
     {
         if (empty($keywords)) {
-            $keywords = $this->module->config->get('meta_keywords');
+            $keywords = $this->module->podiumConfig->get('meta_keywords');
         }
         if ($keywords) {
             $this->getView()->registerMetaTag([
@@ -275,7 +275,7 @@ class ForumController extends BaseForumActionsController
         }
         
         if (empty($description)) {
-            $description = $this->module->config->get('meta_description');
+            $description = $this->module->podiumConfig->get('meta_description');
         }
         if ($description) {
             $this->getView()->registerMetaTag([

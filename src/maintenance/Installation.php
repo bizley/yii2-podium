@@ -2,10 +2,10 @@
 
 namespace bizley\podium\maintenance;
 
-use bizley\podium\components\Config;
 use bizley\podium\models\Content;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
+use bizley\podium\PodiumConfig;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
@@ -135,27 +135,27 @@ class Installation extends Maintenance
     {
         try {
             $this->db->createCommand()->batchInsert(
-                    Config::tableName(), 
+                    PodiumConfig::tableName(), 
                     ['name', 'value'], 
                     [
-                        ['name', Config::PODIUM_NAME], 
+                        ['name', PodiumConfig::PODIUM_NAME], 
                         ['version', Podium::getInstance()->version], 
-                        ['hot_minimum', Config::HOT_MINIMUM], 
-                        ['members_visible', Config::FLAG_MEMBERS_VISIBLE],
-                        ['from_email', Config::DEFAULT_FROM_EMAIL],
-                        ['from_name', Config::DEFAULT_FROM_NAME],
-                        ['maintenance_mode', Config::MAINTENANCE_MODE],
-                        ['max_attempts', Config::MAX_SEND_ATTEMPTS],
-                        ['use_captcha', Config::FLAG_USE_CAPTCHA],
-                        ['merge_posts', Config::FLAG_MERGE_POSTS],
+                        ['hot_minimum', PodiumConfig::HOT_MINIMUM], 
+                        ['members_visible', PodiumConfig::FLAG_MEMBERS_VISIBLE],
+                        ['from_email', PodiumConfig::DEFAULT_FROM_EMAIL],
+                        ['from_name', PodiumConfig::DEFAULT_FROM_NAME],
+                        ['maintenance_mode', PodiumConfig::MAINTENANCE_MODE],
+                        ['max_attempts', PodiumConfig::MAX_SEND_ATTEMPTS],
+                        ['use_captcha', PodiumConfig::FLAG_USE_CAPTCHA],
+                        ['merge_posts', PodiumConfig::FLAG_MERGE_POSTS],
                         ['recaptcha_sitekey', ''],
                         ['recaptcha_secretkey', ''],
-                        ['password_reset_token_expire', Config::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],
-                        ['email_token_expire', Config::SECONDS_EMAIL_TOKEN_EXPIRE],
-                        ['activation_token_expire', Config::SECONDS_ACTIVATION_TOKEN_EXPIRE],
-                        ['meta_keywords', Config::META_KEYWORDS],
-                        ['meta_description', Config::META_DESCRIPTION],
-                        ['registration_off', Config::REGISTRATION_OFF],
+                        ['password_reset_token_expire', PodiumConfig::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],
+                        ['email_token_expire', PodiumConfig::SECONDS_EMAIL_TOKEN_EXPIRE],
+                        ['activation_token_expire', PodiumConfig::SECONDS_ACTIVATION_TOKEN_EXPIRE],
+                        ['meta_keywords', PodiumConfig::META_KEYWORDS],
+                        ['meta_description', PodiumConfig::META_DESCRIPTION],
+                        ['registration_off', PodiumConfig::REGISTRATION_OFF],
                     ]
                 )
                 ->execute();

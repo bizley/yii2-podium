@@ -272,7 +272,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
      */
     public static function isActivationTokenValid($token)
     {
-        $expire = Podium::getInstance()->config->get('activation_token_expire');
+        $expire = Podium::getInstance()->podiumConfig->get('activation_token_expire');
         if ($expire === null) {
             $expire = 3 * 24 * 60 * 60;
         }
@@ -286,7 +286,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
      */
     public static function isEmailTokenValid($token)
     {
-        $expire = Podium::getInstance()->config->get('email_token_expire');
+        $expire = Podium::getInstance()->podiumConfig->get('email_token_expire');
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }
@@ -300,7 +300,7 @@ abstract class BaseUser extends ActiveRecord implements IdentityInterface
      */
     public static function isPasswordResetTokenValid($token)
     {
-        $expire = Podium::getInstance()->config->get('password_reset_token_expire');
+        $expire = Podium::getInstance()->podiumConfig->get('password_reset_token_expire');
         if ($expire === null) {
             $expire = 24 * 60 * 60;
         }

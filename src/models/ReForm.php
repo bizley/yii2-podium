@@ -115,7 +115,7 @@ class ReForm extends Model
      */
     protected function sendReactivationEmail(User $user)
     {
-        $forum = Podium::getInstance()->config->get('name');
+        $forum = Podium::getInstance()->podiumConfig->get('name');
         $email = Content::fill(Content::EMAIL_REACTIVATION);
         if ($email !== false) {
             $link = Url::to(['account/activate', 'token' => $user->activation_token], true);        
@@ -138,7 +138,7 @@ class ReForm extends Model
      */
     protected function sendResetEmail(User $user)
     {
-        $forum = Podium::getInstance()->config->get('name');
+        $forum = Podium::getInstance()->podiumConfig->get('name');
         $email = Content::fill(Content::EMAIL_PASSWORD);
         if ($email !== false) {
             $link = Url::to(['account/password', 'token' => $user->password_reset_token], true);        

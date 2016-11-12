@@ -42,7 +42,7 @@ class MembersController extends BaseController
                     ],
                     [
                         'allow' => true,
-                        'roles' => $this->module->config->get('members_visible') ? ['@', '?'] : ['@'],
+                        'roles' => $this->module->podiumConfig->get('members_visible') ? ['@', '?'] : ['@'],
                     ],
                 ],
             ],

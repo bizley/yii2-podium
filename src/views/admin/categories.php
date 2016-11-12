@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\widgets\Modal;
 use kartik\sortable\Sortable;
 use yii\helpers\Url;

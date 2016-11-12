@@ -2,7 +2,7 @@
 
 namespace bizley\podium\widgets\gridview;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use yii\grid\DataColumn as YiiDataColumn;
 
 /**

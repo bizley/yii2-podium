@@ -2,7 +2,7 @@
 
 namespace bizley\podium\widgets;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\models\User;
 use cebe\gravatar\Gravatar;
 use Yii;

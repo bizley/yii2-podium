@@ -83,7 +83,7 @@ class Subscription extends ActiveRecord
     {
         $this->post_seen = self::POST_SEEN;
         if ($this->save()) {
-            Podium::getInstance()->cache->deleteElement('user.subscriptions', User::loggedId());
+            Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
             return true;
         }
         return false;
@@ -97,7 +97,7 @@ class Subscription extends ActiveRecord
     {
         $this->post_seen = self::POST_NEW;
         if ($this->save()) {
-            Podium::getInstance()->cache->deleteElement('user.subscriptions', User::loggedId());
+            Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
             return true;
         }
         return false;
@@ -110,7 +110,7 @@ class Subscription extends ActiveRecord
     public static function notify($thread)
     {
         if (is_numeric($thread) && $thread > 0) {            
-            $forum = Podium::getInstance()->config->get('name');
+            $forum = Podium::getInstance()->podiumConfig->get('name');
             $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
             $subs  = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {

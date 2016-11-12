@@ -135,7 +135,7 @@ class Activity extends ActiveRecord
     {
         $activity = static::find()->where(['user_id' => $id])->limit(1)->one();
         if ($activity && $activity->delete()) {
-            Podium::getInstance()->cache->delete('forum.lastactive');
+            Podium::getInstance()->podiumCache->delete('forum.lastactive');
         } else {
             Log::error('Cannot delete user activity', $id, __METHOD__);
         }
@@ -154,7 +154,7 @@ class Activity extends ActiveRecord
             $activity->username = $username;
             $activity->user_slug = $slug;
             if ($activity->save()) {
-                Podium::getInstance()->cache->delete('forum.lastactive');
+                Podium::getInstance()->podiumCache->delete('forum.lastactive');
             } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
@@ -174,7 +174,7 @@ class Activity extends ActiveRecord
         if ($activity) {
             $activity->user_role = $role;
             if ($activity->save()) {
-                Podium::getInstance()->cache->delete('forum.lastactive');
+                Podium::getInstance()->podiumCache->delete('forum.lastactive');
             } else {
                 Log::error('Cannot update user activity', $id, __METHOD__);
             }
@@ -189,7 +189,7 @@ class Activity extends ActiveRecord
      */
     public static function lastActive()
     {
-        $last = Podium::getInstance()->cache->get('forum.lastactive');
+        $last = Podium::getInstance()->podiumCache->get('forum.lastactive');
         if ($last === false) {
             $last = [
                 'count' => static::find()->where(['>', 'updated_at', time() - 15 * 60])->count(),
@@ -221,7 +221,7 @@ class Activity extends ActiveRecord
                     'slug' => $member->user_slug,
                 ];
             }
-            Podium::getInstance()->cache->set('forum.lastactive', $last, 60);
+            Podium::getInstance()->podiumCache->set('forum.lastactive', $last, 60);
         }
         return $last;
     }
@@ -232,10 +232,10 @@ class Activity extends ActiveRecord
      */
     public static function totalMembers()
     {
-        $members = Podium::getInstance()->cache->get('forum.memberscount');
+        $members = Podium::getInstance()->podiumCache->get('forum.memberscount');
         if ($members === false) {
             $members = User::find()->where(['!=', 'status', User::STATUS_REGISTERED])->count();
-            Podium::getInstance()->cache->set('forum.memberscount', $members);
+            Podium::getInstance()->podiumCache->set('forum.memberscount', $members);
         }
         return $members;
     }
@@ -246,10 +246,10 @@ class Activity extends ActiveRecord
      */
     public static function totalPosts()
     {
-        $posts = Podium::getInstance()->cache->get('forum.postscount');
+        $posts = Podium::getInstance()->podiumCache->get('forum.postscount');
         if ($posts === false) {
             $posts = Post::find()->count();
-            Podium::getInstance()->cache->set('forum.postscount', $posts);
+            Podium::getInstance()->podiumCache->set('forum.postscount', $posts);
         }
         return $posts;
     }
@@ -260,10 +260,10 @@ class Activity extends ActiveRecord
      */
     public static function totalThreads()
     {
-        $threads = Podium::getInstance()->cache->get('forum.threadscount');
+        $threads = Podium::getInstance()->podiumCache->get('forum.threadscount');
         if ($threads === false) {
             $threads = Thread::find()->count();
-            Podium::getInstance()->cache->set('forum.threadscount', $threads);
+            Podium::getInstance()->podiumCache->set('forum.threadscount', $threads);
         }
         return $threads;
     }

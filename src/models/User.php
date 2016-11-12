@@ -2,11 +2,11 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Helper;
 use bizley\podium\db\Query;
+use bizley\podium\helpers\Helper;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
+use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use himiklab\yii2\recaptcha\ReCaptchaValidator;
@@ -103,8 +103,8 @@ class User extends BaseUser
             ['tos', 'compare', 'compareValue' => 1, 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
         ];
         
-        if (Podium::getInstance()->config->get('recaptcha_sitekey') !== '' && Podium::getInstance()->config->get('recaptcha_secretkey') !== '') {
-            $rules[] = ['captcha', ReCaptchaValidator::className(), 'secret' => Podium::getInstance()->config->get('recaptcha_secretkey')];
+        if (Podium::getInstance()->podiumConfig->get('recaptcha_sitekey') !== '' && Podium::getInstance()->podiumConfig->get('recaptcha_secretkey') !== '') {
+            $rules[] = ['captcha', ReCaptchaValidator::className(), 'secret' => Podium::getInstance()->podiumConfig->get('recaptcha_secretkey')];
         } else {
             $rules[] = ['captcha', 'captcha', 'captchaAction' => Podium::getInstance()->id . '/account/captcha'];
         }
@@ -141,7 +141,7 @@ class User extends BaseUser
             'account' => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
             'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
         ];
-        if (Podium::getInstance()->config->get('use_captcha')) {
+        if (Podium::getInstance()->podiumConfig->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
         }
         return $scenarios;
@@ -202,13 +202,13 @@ class User extends BaseUser
      */
     public function getNewMessagesCount()
     {
-        $cache = Podium::getInstance()->cache->getElement('user.newmessages', $this->id);
+        $cache = Podium::getInstance()->podiumCache->getElement('user.newmessages', $this->id);
         if ($cache === false) {
             $cache = (new Query)->from(MessageReceiver::tableName())->where([
                 'receiver_id'     => $this->id,
                 'receiver_status' => Message::STATUS_NEW
             ])->count();
-            Podium::getInstance()->cache->setElement('user.newmessages', $this->id, $cache);
+            Podium::getInstance()->podiumCache->setElement('user.newmessages', $this->id, $cache);
         }
 
         return $cache;
@@ -258,10 +258,10 @@ class User extends BaseUser
      */
     public static function findPostsCount($id)
     {
-        $cache = Podium::getInstance()->cache->getElement('user.postscount', $id);
+        $cache = Podium::getInstance()->podiumCache->getElement('user.postscount', $id);
         if ($cache === false) {
             $cache = (new Query)->from(Post::tableName())->where(['author_id' => $id])->count();
-            Podium::getInstance()->cache->setElement('user.postscount', $id, $cache);
+            Podium::getInstance()->podiumCache->setElement('user.postscount', $id, $cache);
         }
 
         return $cache;
@@ -283,10 +283,10 @@ class User extends BaseUser
      */
     public static function findThreadsCount($id)
     {
-        $cache = Podium::getInstance()->cache->getElement('user.threadscount', $id);
+        $cache = Podium::getInstance()->podiumCache->getElement('user.threadscount', $id);
         if ($cache === false) {
             $cache = (new Query)->from(Thread::tableName())->where(['author_id' => $id])->count();
-            Podium::getInstance()->cache->setElement('user.threadscount', $id, $cache);
+            Podium::getInstance()->podiumCache->setElement('user.threadscount', $id, $cache);
         }
 
         return $cache;
@@ -336,13 +336,13 @@ class User extends BaseUser
      */
     public function getSubscriptionsCount()
     {
-        $cache = Podium::getInstance()->cache->getElement('user.subscriptions', $this->id);
+        $cache = Podium::getInstance()->podiumCache->getElement('user.subscriptions', $this->id);
         if ($cache === false) {
             $cache = (new Query)->from(Subscription::tableName())->where([
                 'user_id'   => $this->id,
                 'post_seen' => Subscription::POST_NEW
             ])->count();
-            Podium::getInstance()->cache->setElement('user.subscriptions', $this->id, $cache);
+            Podium::getInstance()->podiumCache->setElement('user.subscriptions', $this->id, $cache);
         }
         return $cache;
     }
@@ -603,7 +603,7 @@ class User extends BaseUser
             return null;
         }
         $logged = static::loggedId();
-        $cache = Podium::getInstance()->cache->getElement('user.friends', $logged);
+        $cache = Podium::getInstance()->podiumCache->getElement('user.friends', $logged);
         if ($cache === false) {
             $cache = [];
             $friends = static::findMe()->friends;
@@ -612,7 +612,7 @@ class User extends BaseUser
                     $cache[$friend->id] = $friend->getPodiumTag(true);
                 }
             }
-            Podium::getInstance()->cache->setElement('user.friends', $logged, $cache);
+            Podium::getInstance()->podiumCache->setElement('user.friends', $logged, $cache);
         }
         return $cache;
     }
@@ -640,7 +640,7 @@ class User extends BaseUser
                     'user_id'  => $this->id
                 ])->execute();
             }
-            Podium::getInstance()->cache->deleteElement('forum.moderators', $forum_id);
+            Podium::getInstance()->podiumCache->deleteElement('forum.moderators', $forum_id);
             Log::info('Moderator updated', $this->id, __METHOD__);
             return true;
         } catch (Exception $e) {
@@ -688,7 +688,7 @@ class User extends BaseUser
             if (!empty($remove)) {
                 Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute();
             }
-            Podium::getInstance()->cache->delete('forum.moderators');
+            Podium::getInstance()->podiumCache->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
             return true;
         } catch (Exception $e) {
@@ -716,7 +716,7 @@ class User extends BaseUser
                     throw new Exception('Account creating error');
                 }
                 Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $newUser->id);
-                Cache::clearAfter('activate');
+                PodiumCache::clearAfter('activate');
                 Log::info('Inherited account created', $newUser->id, __METHOD__);
                 return true;
             }
@@ -738,7 +738,7 @@ class User extends BaseUser
             return Json::encode(['results' => []]);
         }
         
-        $cache = Podium::getInstance()->cache->get('members.fieldlist');
+        $cache = Podium::getInstance()->podiumCache->get('members.fieldlist');
         if ($cache === false || empty($cache[$query])) {
             if ($cache === false) {
                 $cache = [];
@@ -767,7 +767,7 @@ class User extends BaseUser
                 return Json::encode(['results' => []]);
             }
             $cache[$query] = Json::encode($results);
-            Podium::getInstance()->cache->set('members.fieldlist', $cache);
+            Podium::getInstance()->podiumCache->set('members.fieldlist', $cache);
         }
 
         return $cache[$query];
@@ -818,7 +818,7 @@ class User extends BaseUser
                 Podium::getInstance()->db->createCommand()->insert('{{%podium_user_friend}}', ['user_id' => $friend, 'friend_id' => $this->id])->execute();
                 Log::info('User befriended', $this->id, __METHOD__);
             }
-            Podium::getInstance()->cache->deleteElement('user.friends', $friend);
+            Podium::getInstance()->podiumCache->deleteElement('user.friends', $friend);
             return true;
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
@@ -833,7 +833,7 @@ class User extends BaseUser
      */
     protected function sendActivationEmail()
     {
-        $forum = Podium::getInstance()->config->get('name');
+        $forum = Podium::getInstance()->podiumConfig->get('name');
         $email = Content::fill(Content::EMAIL_REGISTRATION);
         if ($email !== false) {
             $link = Url::to(['account/activate', 'token' => $this->activation_token], true);

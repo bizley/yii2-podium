@@ -2,11 +2,11 @@
 
 namespace bizley\podium;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Config;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Maintenance;
 use bizley\podium\models\Activity;
+use bizley\podium\PodiumCache;
+use bizley\podium\PodiumConfig;
 use Yii;
 use yii\base\Action;
 use yii\base\Application;
@@ -42,12 +42,14 @@ use yii\web\User;
  * For Podium documentation go to
  * https://github.com/bizley/yii2-podium/wiki
  * 
- * @property Cache $cache
- * @property Config $config
+ * @property PodiumCache $podiumCache
+ * @property PodiumConfig $podiumConfig
+ * 
  * @property Formatter $formatter
  * @property DbManager $rbac
  * @property User $user
  * @property Connection $db
+ * @property Cache $cache
  * 
  * @property boolean $installed
  * @property string $version
@@ -127,6 +129,16 @@ class Podium extends Module implements BootstrapInterface
      * @since 0.5
      */
     public $dbComponent = 'db';
+    
+    /**
+     * @var bool|string|array Module cache component.
+     * It can be:
+     * - `false` for not using cache,
+     * - string with inherited component ID,
+     * - array with custom configuration.
+     * @since 0.5
+     */
+    public $cacheComponent = false;
     
     /**
      * @var bool|string URL for user login.
@@ -231,7 +243,7 @@ class Podium extends Module implements BootstrapInterface
      */
     protected function setPodiumLogTarget($app)
     {
-        $dbTarget = new DbTarget;
+        $dbTarget = new DbTarget();
         $dbTarget->logTable = '{{%podium_log}}';
         $dbTarget->categories = ['bizley\podium\*'];
         $dbTarget->logVars = [];
@@ -241,24 +253,26 @@ class Podium extends Module implements BootstrapInterface
 
     /**
      * Returns Podium cache instance.
-     * @return Cache
+     * @return PodiumCache
+     * @since 0.5
      */
-    public function getCache()
+    public function getPodiumCache()
     {
         if (!$this->_cache) {
-            $this->_cache = new Cache;
+            $this->_cache = new PodiumCache();
         }
         return $this->_cache;
     }
     
     /**
      * Returns Podium configuration instance.
-     * @return Config
+     * @return PodiumConfig
+     * @since 0.5
      */
-    public function getConfig()
+    public function getPodiumConfig()
     {
         if (!$this->_config) {
-            $this->_config = new Config(['cache' => $this->cache]);
+            $this->_config = new PodiumConfig();
         }
         return $this->_config;
     }
@@ -304,7 +318,7 @@ class Podium extends Module implements BootstrapInterface
     /**
      * Initializes the module for Web application.
      * Sets Podium alias (@podium) and layout.
-     * Registers user identity, authorization, translations, formatter, and db.
+     * Registers user identity, authorization, translations, formatter, db, and cache.
      * Verifies the installation.
      */
     public function init()
@@ -323,6 +337,9 @@ class Podium extends Module implements BootstrapInterface
         if (!is_string($this->dbComponent) && !is_array($this->dbComponent)) {
             throw InvalidConfigException('Invalid value for the dbComponent parameter.');
         }
+        if ($this->cacheComponent !== false && !is_string($this->cacheComponent) && !is_array($this->cacheComponent)) {
+            throw InvalidConfigException('Invalid value for the cacheComponent parameter.');
+        }
         
         $this->setAliases(['@podium' => '@vendor/bizley/podium/src']);
         
@@ -334,10 +351,11 @@ class Podium extends Module implements BootstrapInterface
         }
 
         if (Yii::$app instanceof WebApplication) {
+            $this->registerDbConnection();
             $this->registerIdentity();
+            $this->registerCache();
             $this->registerAuthorization();
             $this->registerFormatter();
-            $this->registerDbConnection();
             $this->registerTranslations();
 
             $this->layout = self::MAIN_LAYOUT;
@@ -386,7 +404,7 @@ class Podium extends Module implements BootstrapInterface
             'itemChildTable' => '{{%podium_auth_item_child}}',
             'assignmentTable' => '{{%podium_auth_assignment}}',
             'ruleTable' => '{{%podium_auth_rule}}',
-            'cache' => $this->cache->engine
+            'cache' => $this->cache
         ];
         if (is_array($this->rbacComponent)) {
             $configuration = $this->rbacComponent;
@@ -497,5 +515,36 @@ class Podium extends Module implements BootstrapInterface
         if (is_array($this->dbComponent)) {
             $this->set('podium_db', $this->dbComponent);
         }
+    }
+    
+    /**
+     * Returns instance of cache component.
+     * @return Cache
+     * @throws InvalidConfigException
+     * @since 0.5
+     */
+    public function getCache()
+    {
+        return $this->getComponent('cache');
+    }
+    
+    /**
+     * Registers cache.
+     * @since 0.5
+     */
+    public function registerCache()
+    {
+        if (is_string($this->cacheComponent)) {
+            return;
+        }
+        
+        $configuration = [
+            'class' => 'yii\caching\DummyCache',
+        ];
+        if (is_array($this->cacheComponent)) {
+            $configuration = $this->cacheComponent;
+        }
+        
+        $this->set('podium_cache', $configuration);
     }
 }

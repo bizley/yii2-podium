@@ -95,7 +95,7 @@ class Forum extends ActiveRecord
      */
     public function getMods()
     {
-        $mods = Podium::getInstance()->cache->getElement('forum.moderators', $this->id);
+        $mods = Podium::getInstance()->podiumCache->getElement('forum.moderators', $this->id);
         if ($mods === false) {
             $mods = [];
             $modteam = User::find()
@@ -115,7 +115,7 @@ class Forum extends ActiveRecord
                     }
                 }
             }
-            Podium::getInstance()->cache->setElement('forum.moderators', $this->id, $mods);
+            Podium::getInstance()->podiumCache->setElement('forum.moderators', $this->id, $mods);
         }
         return $mods;        
     }

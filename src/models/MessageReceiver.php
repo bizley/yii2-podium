@@ -131,7 +131,7 @@ class MessageReceiver extends ActiveRecord
                     throw new Exception('Message status changing error!');
                 }
                 if ($clearCache) {
-                    Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
+                    Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->receiver_id);
                 }
                 $transaction->commit();
                 return true;
@@ -143,7 +143,7 @@ class MessageReceiver extends ActiveRecord
                     throw new Exception('Message removing error!');
                 }
                 if ($clearCache) {
-                    Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
+                    Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->receiver_id);
                 }
                 if ($deleteParent) {
                     if (!$deleteParent->delete()) {
@@ -247,7 +247,7 @@ class MessageReceiver extends ActiveRecord
         if ($this->receiver_status == Message::STATUS_NEW) {
             $this->receiver_status = Message::STATUS_READ;
             if ($this->save()) {
-                Podium::getInstance()->cache->deleteElement('user.newmessages', $this->receiver_id);
+                Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->receiver_id);
             }
         }
     }

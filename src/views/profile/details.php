@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\Podium;
 use bizley\podium\widgets\Avatar;
 use kartik\select2\Select2;

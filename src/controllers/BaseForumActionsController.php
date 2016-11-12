@@ -2,7 +2,7 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
@@ -675,7 +675,7 @@ class BaseForumActionsController extends BaseController
                 } else {
                     if ($model->podiumNew($previous)) {
                         $this->success(Yii::t('podium/flash', 'New reply has been added.'));
-                        if (!empty($previous) && $previous->author_id == User::loggedId() && Podium::getInstance()->config->get('merge_posts')) {
+                        if (!empty($previous) && $previous->author_id == User::loggedId() && $this->module->podiumConfig->get('merge_posts')) {
                             return $this->redirect(['forum/show', 'id' => $previous->id]);
                         }
                         return $this->redirect(['forum/show', 'id' => $model->id]);
@@ -873,7 +873,7 @@ class BaseForumActionsController extends BaseController
                 }
 
                 $count = 0;
-                $votes = $this->module->cache->get('user.votes.' . User::loggedId());
+                $votes = $this->module->podiumCache->get('user.votes.' . User::loggedId());
                 if ($votes !== false) {
                     if ($votes['expire'] < time()) {
                         $votes = false;

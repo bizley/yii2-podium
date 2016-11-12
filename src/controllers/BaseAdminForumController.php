@@ -2,7 +2,6 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\ConfigForm;
@@ -11,6 +10,7 @@ use bizley\podium\models\Forum;
 use bizley\podium\models\LogSearch;
 use bizley\podium\models\Post;
 use bizley\podium\models\User;
+use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\filters\AccessControl;
@@ -55,7 +55,7 @@ class BaseAdminForumController extends BaseController
      */
     public function actionClear()
     {
-        if ($this->module->cache->flush()) {
+        if ($this->module->podiumCache->flush()) {
             $this->success(Yii::t('podium/flash', 'Cache has been cleared.'));
         } else {
             $this->error(Yii::t('podium/flash', 'Sorry! There was some error while clearing the cache.'));
@@ -104,7 +104,7 @@ class BaseAdminForumController extends BaseController
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             } else {
                 if ($model->delete()) {
-                    Cache::clearAfter('categoryDelete');
+                    PodiumCache::clearAfter('categoryDelete');
                     Log::info('Category deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Category has been deleted.'));
                 } else {
@@ -132,7 +132,7 @@ class BaseAdminForumController extends BaseController
                 $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
             } else {
                 if ($model->delete()) {
-                    Cache::clearAfter('forumDelete');
+                    PodiumCache::clearAfter('forumDelete');
                     Log::info('Forum deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'Forum has been deleted.'));
                 } else {

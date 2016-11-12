@@ -4,7 +4,7 @@
  * Podium Module
  * Yii 2 Forum Module
  */
-namespace bizley\podium\components;
+namespace bizley\podium\helpers;
 
 use bizley\podium\models\Post;
 use bizley\podium\models\User;
@@ -26,7 +26,6 @@ use yii\helpers\Url;
  */
 class Helper
 {
-    
     /**
      * Prepares content for categories administration.
      * @param mixed $category
@@ -273,7 +272,7 @@ class Helper
      */
     public static function title($title)
     {
-        return $title . ' - ' . Podium::getInstance()->config->get('name');
+        return $title . ' - ' . Podium::getInstance()->podiumConfig->get('name');
     }
     
     /**

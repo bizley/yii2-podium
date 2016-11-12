@@ -2,11 +2,11 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Helper;
 use bizley\podium\db\ActiveRecord;
+use bizley\podium\helpers\Helper;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
+use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Exception;
 use Yii;
@@ -234,7 +234,7 @@ class Thread extends ActiveRecord
                 $query->andWhere(['locked' => 1]);
             }
             if (!empty($filters['hot']) && $filters['hot'] == 1) {
-                $query->andWhere(['>=', 'posts', Podium::getInstance()->config->get('hot_minimum')]);
+                $query->andWhere(['>=', 'posts', Podium::getInstance()->podiumConfig->get('hot_minimum')]);
             }
             if (!empty($filters['new']) && $filters['new'] == 1 && !Podium::getInstance()->user->isGuest) {
                 $query->joinWith(['threadView' => function ($q) {
@@ -307,7 +307,7 @@ class Thread extends ActiveRecord
         } elseif ($this->pinned) {
             $icon = self::ICON_PINNED;
             $append = true;
-        } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
+        } elseif ($this->posts >= Podium::getInstance()->podiumConfig->get('hot_minimum')) {
             $icon = self::ICON_HOT;
             $append = true;
         }
@@ -344,7 +344,7 @@ class Thread extends ActiveRecord
         } elseif ($this->pinned) {
             $description = Yii::t('podium/view', 'Pinned Thread');
             $append = true;
-        } elseif ($this->posts >= Podium::getInstance()->config->get('hot_minimum')) {
+        } elseif ($this->posts >= Podium::getInstance()->podiumConfig->get('hot_minimum')) {
             $description = Yii::t('podium/view', 'Hot Thread');
             $append = true;
         }
@@ -467,7 +467,7 @@ class Thread extends ActiveRecord
                     'posts'   => -$this->postsCount
                 ]);
                 $transaction->commit();
-                Cache::clearAfter('threadDelete');
+                PodiumCache::clearAfter('threadDelete');
                 Log::info('Thread deleted', $this->id, __METHOD__);
                 return true;
             }
@@ -516,7 +516,7 @@ class Thread extends ActiveRecord
                 $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
             }
             $transaction->commit();
-            Cache::clearAfter('postDelete');
+            PodiumCache::clearAfter('postDelete');
             Log::info('Posts deleted', null, __METHOD__);
             return true;
         } catch (Exception $e) {
@@ -562,7 +562,7 @@ class Thread extends ActiveRecord
                     Post::updateAll(['forum_id' => $newParent->id], ['thread_id' => $this->id]);
                 }
                 $transaction->commit();
-                Cache::clearAfter('threadMove');
+                PodiumCache::clearAfter('threadMove');
                 Log::info('Thread moved', $this->id, __METHOD__);
                 return true;
             } catch (Exception $e) {
@@ -640,7 +640,7 @@ class Thread extends ActiveRecord
                 $newThread->updateCounters(['posts' => count($posts)]);
                 $newThread->forum->updateCounters(['posts' => count($posts)]);
                 $transaction->commit();
-                Cache::clearAfter('postMove');
+                PodiumCache::clearAfter('postMove');
                 Log::info('Posts moved', null, __METHOD__);
                 return true;
             }
@@ -689,7 +689,7 @@ class Thread extends ActiveRecord
                 }
             }
             $transaction->commit();
-            Cache::clearAfter('newThread');
+            PodiumCache::clearAfter('newThread');
             Log::info('Thread added', $this->id, __METHOD__);
             return true;
         } catch (Exception $e) {

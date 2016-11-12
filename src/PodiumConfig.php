@@ -1,12 +1,13 @@
 <?php
 
-namespace bizley\podium\components;
+namespace bizley\podium;
 
 use bizley\podium\db\Query;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use Exception;
 use yii\base\Component;
+use yii\caching\Cache;
 
 /**
  * Podium configuration component.
@@ -15,12 +16,12 @@ use yii\base\Component;
  * administrator saves Podium settings.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @since 0.1
+ * @since 0.5
  * 
  * @property array $defaults
  * @property array $fromDb
  */
-class Config extends Component
+class PodiumConfig extends Component
 {
     const DEFAULT_FROM_EMAIL = 'no-reply@change.me';
     const DEFAULT_FROM_NAME = 'Podium';
@@ -37,11 +38,6 @@ class Config extends Component
     const SECONDS_ACTIVATION_TOKEN_EXPIRE = 259200;
     const SECONDS_EMAIL_TOKEN_EXPIRE = 86400;
     const SECONDS_PASSWORD_RESET_TOKEN_EXPIRE = 86400;
-    
-    /**
-     * @var Cache cache object instance
-     */
-    public $cache;
     
     /**
      * Returns configuration table name.
@@ -82,6 +78,16 @@ class Config extends Component
             'meta_description' => self::META_DESCRIPTION,
             'registration_off' => self::REGISTRATION_OFF,
         ];
+    }
+    
+    /**
+     * Returns Podium cache instance.
+     * @return Cache
+     * @since 0.5
+     */
+    public function getCache()
+    {
+        return Podium::getInstance()->podiumCache;
     }
     
     /**

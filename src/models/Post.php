@@ -2,12 +2,12 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Cache;
-use bizley\podium\components\Helper;
 use bizley\podium\db\ActiveRecord;
 use bizley\podium\db\Query;
+use bizley\podium\helpers\Helper;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
+use bizley\podium\PodiumCache;
 use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -377,7 +377,7 @@ class Post extends ActiveRecord
         $latest = [];
         
         if (Podium::getInstance()->user->isGuest) {
-            $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'guest');
+            $latest = Podium::getInstance()->podiumCache->getElement('forum.latestposts', 'guest');
             if ($latest === false) {
                 $posts = static::getLatestPostsForGuests($posts);
                 foreach ($posts as $post) {
@@ -388,10 +388,10 @@ class Post extends ActiveRecord
                         'author' => $post->author->podiumTag
                     ];
                 }
-                Podium::getInstance()->cache->setElement('forum.latestposts', 'guest', $latest);
+                Podium::getInstance()->podiumCache->setElement('forum.latestposts', 'guest', $latest);
             }
         } else {
-            $latest = Podium::getInstance()->cache->getElement('forum.latestposts', 'member');
+            $latest = Podium::getInstance()->podiumCache->getElement('forum.latestposts', 'member');
             if ($latest === false) {
                 $posts = static::getLatestPostsForMembers($posts);
                 foreach ($posts as $post) {
@@ -402,7 +402,7 @@ class Post extends ActiveRecord
                         'author' => $post->author->podiumTag
                     ];
                 }
-                Podium::getInstance()->cache->setElement('forum.latestposts', 'member', $latest);
+                Podium::getInstance()->podiumCache->setElement('forum.latestposts', 'member', $latest);
             }
         }
         
@@ -466,7 +466,7 @@ class Post extends ActiveRecord
                     $this->forum->updateCounters(['posts' => -1, 'threads' => -1]);
                 }
                 $transaction->commit();
-                Cache::clearAfter('postDelete');
+                PodiumCache::clearAfter('postDelete');
                 Log::info('Post deleted', !empty($this->id) ? $this->id : '', __METHOD__);
                 return true;
             }
@@ -523,7 +523,7 @@ class Post extends ActiveRecord
         try {
             $id = null;
             $sameAuthor = !empty($previous->author_id) && $previous->author_id == User::loggedId();
-            if ($sameAuthor && Podium::getInstance()->config->get('merge_posts')) {
+            if ($sameAuthor && Podium::getInstance()->podiumConfig->get('merge_posts')) {
                 $previous->content .= '<hr>' . $this->content;
                 $previous->edited = 1;
                 $previous->touch('edited_at');
@@ -556,7 +556,7 @@ class Post extends ActiveRecord
                 $subscription->save();
             }
             $transaction->commit();
-            Cache::clearAfter('newPost');
+            PodiumCache::clearAfter('newPost');
             Log::info('Post added', $id, __METHOD__);
             return true;
         } catch (Exception $e) {
@@ -602,9 +602,9 @@ class Post extends ActiveRecord
                 }
             }
             if ($count == 0) {
-                Podium::getInstance()->cache->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
+                Podium::getInstance()->podiumCache->set('user.votes.' . User::loggedId(), ['count' => 1, 'expire' => time() + 3600]);
             } else {
-                Podium::getInstance()->cache->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
+                Podium::getInstance()->podiumCache->setElement('user.votes.' . User::loggedId(), 'count', $count + 1);
             }
             return true;
         } catch (Exception $e) {

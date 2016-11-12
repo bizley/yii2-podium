@@ -2,13 +2,13 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Activity;
 use bizley\podium\models\Forum;
 use bizley\podium\models\ForumSearch;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
+use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\filters\AccessControl;
@@ -69,7 +69,7 @@ class AdminController extends BaseAdminForumController
             } else {
                 if ($model->status == User::STATUS_ACTIVE) {
                     if ($model->ban()) {
-                        $this->module->cache->delete('members.fieldlist');
+                        $this->module->podiumCache->delete('members.fieldlist');
                         Log::info('User banned', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'User has been banned.'));
                     } else {
@@ -78,7 +78,7 @@ class AdminController extends BaseAdminForumController
                     }
                 } elseif ($model->status == User::STATUS_BANNED) {
                     if ($model->unban()) {
-                        $this->module->cache->delete('members.fieldlist');
+                        $this->module->podiumCache->delete('members.fieldlist');
                         Log::info('User unbanned', $model->id, __METHOD__);
                         $this->success(Yii::t('podium/flash', 'User has been unbanned.'));
                     } else {
@@ -111,7 +111,7 @@ class AdminController extends BaseAdminForumController
                 $this->error(Yii::t('podium/flash', 'Sorry! You can not delete your own account.'));
             } else {
                 if ($model->delete()) {
-                    Cache::clearAfter('userDelete');
+                    PodiumCache::clearAfter('userDelete');
                     Activity::deleteUser($model->id);
                     Log::info('User deleted', $model->id, __METHOD__);
                     $this->success(Yii::t('podium/flash', 'User has been deleted.'));

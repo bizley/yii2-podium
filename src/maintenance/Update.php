@@ -2,7 +2,7 @@
 
 namespace bizley\podium\maintenance;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
@@ -110,7 +110,7 @@ class Update extends Maintenance
         }
         
         try {
-            Podium::getInstance()->config->set($data['name'], $data['value']);
+            Podium::getInstance()->podiumConfig->set($data['name'], $data['value']);
             return Yii::t('podium/flash', 'Config setting {name} has been updated to {value}.', [
                 'name'  => $data['name'],
                 'value' => $data['value'],

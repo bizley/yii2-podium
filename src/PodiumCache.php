@@ -1,18 +1,17 @@
 <?php
 
-namespace bizley\podium\components;
+namespace bizley\podium;
 
 use bizley\podium\models\User;
-use Exception;
+use yii\base\InvalidConfigException;
 use yii\base\Object;
 use yii\base\View;
-use yii\caching\Cache as DefaultCache;
-use yii\caching\DummyCache;
+use yii\caching\Cache;
 use yii\di\Instance;
 use yii\widgets\FragmentCache;
 
 /**
- * Cache helper
+ * Podium Cache helper
  * 
  * Handles the cache component. If cache component is not set in configuration 
  * \yii\caching\DummyCache is used instead.
@@ -28,19 +27,19 @@ use yii\widgets\FragmentCache;
  * forum.threadscount => number of forum threads
  * forum.postscount   => number of forum posts
  * members.fieldlist  => list of active users w/pages
- * user.friends       => list of users' friends
- * user.newmessages   => list of users' new messages count
- * user.postscount    => list of users' posts count
- * user.subscriptions => list of users' subscribed threads with new posts count
- * user.threadscount  => list of users' threads count
+ * user.friends       => list of users friends
+ * user.newmessages   => list of users new messages count
+ * user.postscount    => list of users posts count
+ * user.subscriptions => list of users subscribed threads with new posts count
+ * user.threadscount  => list of users threads count
  * user.votes.ID      => user's votes per hour
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @since 0.1
+ * @since 0.5
  * 
- * @property DefaultCache $engine
+ * @property Cache $engine
  */
-class Cache extends Object
+class PodiumCache extends Object
 {
     /**
      * @var string Podium cache element prefix.
@@ -49,25 +48,14 @@ class Cache extends Object
     protected $_cachePrefix = 'podium.';
     
     /**
-     * @var DefaultCache cache engine.
-     */
-    protected $_engine;
-
-    /**
      * Returns cache engine.
-     * @return DefaultCache
+     * @return Cache
+     * @throws InvalidConfigException
      * @since 0.2
      */
     public function getEngine()
     {
-        if ($this->_engine === null) {
-            try {
-                $this->_engine = Instance::ensure('cache', DefaultCache::className());
-            } catch (Exception $e) {
-                $this->_engine = new DummyCache;
-            }
-        }
-        return $this->_engine;
+        return Instance::ensure(Podium::getInstance()->cache, Cache::className());
     }
     
     /**

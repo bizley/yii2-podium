@@ -2,7 +2,7 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\db\Query;
 use bizley\podium\maintenance\Installation;
 use bizley\podium\maintenance\Update;

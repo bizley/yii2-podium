@@ -2,12 +2,12 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\components\Cache;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
+use bizley\podium\PodiumCache;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -89,7 +89,7 @@ class AccountController extends BaseController
         }
         $model->scenario = 'token';
         if ($model->activate()) {
-            Cache::clearAfter('activate');
+            PodiumCache::clearAfter('activate');
             Log::info('Account activated', $model->id, __METHOD__);
             $this->success(Yii::t('podium/flash', 'Your account has been activated. You can sign in now.'));
         } else {
@@ -213,7 +213,7 @@ class AccountController extends BaseController
             return $this->module->goPodium();
         }
         
-        if ($this->module->config->get('registration_off') == '1') {
+        if ($this->module->podiumConfig->get('registration_off') == '1') {
             $this->info(Yii::t('podium/flash', 'User registration is currently not allowed.'));
             return $this->module->goPodium();
         }

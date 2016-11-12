@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\assets\PodiumAsset;
-use bizley\podium\components\Helper;
+use bizley\podium\helpers\Helper;
 use bizley\podium\widgets\Alert;
 use yii\helpers\Html;
 

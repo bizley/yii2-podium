@@ -77,7 +77,7 @@ class ProfileController extends BaseController
             if ($model->validate()) {
                 if ($model->saveChanges()) {
                     if ($previous_new_email != $model->new_email) {
-                        $forum = $this->module->config->get('name');
+                        $forum = $this->module->podiumConfig->get('name');
                         $email = Content::fill(Content::EMAIL_NEW);
                         if ($email !== false && Email::queue(
                                 $model->new_email, 
@@ -256,7 +256,7 @@ class ProfileController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Subscription with this ID.'));
         } else {
             if ($model->delete()) {
-                $this->module->cache->deleteElement('user.subscriptions', User::loggedId());
+                $this->module->podiumCache->deleteElement('user.subscriptions', User::loggedId());
                 $this->success(Yii::t('podium/flash', 'Thread has been unsubscribed.'));
             } else {
                 Log::error('Error while deleting subscription', $model->id, __METHOD__);

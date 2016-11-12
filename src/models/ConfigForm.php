@@ -2,8 +2,8 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\components\Config;
 use bizley\podium\Podium;
+use bizley\podium\PodiumConfig;
 use yii\base\Model;
 use yii\validators\StringValidator;
 
@@ -16,7 +16,7 @@ use yii\validators\StringValidator;
 class ConfigForm extends Model
 {
     /**
-     * @var Config Configuration instance.
+     * @var PodiumConfig Configuration instance.
      */
     public $config;
     
@@ -36,7 +36,7 @@ class ConfigForm extends Model
     public function init()
     {
         parent::init();
-        $this->config = Podium::getInstance()->config;
+        $this->config = Podium::getInstance()->podiumConfig;
         $this->settings = $this->config->all();
     }
     
