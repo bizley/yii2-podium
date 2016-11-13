@@ -95,8 +95,10 @@ class PodiumCache extends Object
         $cache = new static;
         
         switch ($what) {
-            case 'activate':
             case 'userDelete':
+                $cache->delete('forum.latestposts');
+                // no break
+            case 'activate':
                 $cache->delete('members.fieldlist');
                 $cache->delete('forum.memberscount');
                 break;
@@ -108,11 +110,13 @@ class PodiumCache extends Object
                 $cache->delete('forum.postscount');
                 $cache->delete('user.threadscount');
                 $cache->delete('user.postscount');
+                $cache->delete('forum.latestposts');
                 break;
             case 'threadMove':
             case 'postMove':
                 $cache->delete('forum.threadscount');
                 $cache->delete('forum.postscount');
+                $cache->delete('forum.latestposts');
                 break;
             case 'newThread':
                 $cache->delete('forum.threadscount');

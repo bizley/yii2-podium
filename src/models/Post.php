@@ -411,10 +411,10 @@ class Post extends ActiveRecord
     
     /**
      * Returns the verified post.
-     * @param int $category_id post's category ID
-     * @param int $forum_id post's forum ID
-     * @param int $thread_id post's thread ID
-     * @param int $id post's ID
+     * @param int $category_id post category ID
+     * @param int $forum_id post forum ID
+     * @param int $thread_id post thread ID
+     * @param int $id post ID
      * @return Post
      * @since 0.2
      */
