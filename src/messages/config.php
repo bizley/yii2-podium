@@ -3,6 +3,7 @@
 return [
     'sourcePath' => __DIR__ . DIRECTORY_SEPARATOR . '..',
     'languages' => [
+        'en-US',
         'ru',
         'pl',
     ],
@@ -16,7 +17,6 @@ return [
         '.hgkeep',
         '/messages',
         '/css',
-        '/tests',
     ],
     'messagePath' => __DIR__,
 ];

@@ -12,6 +12,8 @@ body { padding-top:20px; padding-bottom:20px }
 .podium-footer hr { margin-bottom:5px }
 .podium-go-to-new { display:none }
 .podium-gradient { background-image:linear-gradient(to right bottom, white, #c5dee5) }
+.podium-poll { margin-bottom:20px }
+.podium-poll label { font-weight:normal }
 .podium-post { margin-bottom:5px }
 .podium-post .podium-content img { display:block; max-width:100%; height:auto }
 .podium-post blockquote { font-size:inherit !important; border-left:5px solid #337ab7; background-color:#eee; padding:3px 3px 3px 10px !important }

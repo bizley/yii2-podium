@@ -11,6 +11,7 @@ use bizley\podium\models\User;
 use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use bizley\podium\widgets\poll\Poll;
 use bizley\podium\widgets\QuillBasic;
 use bizley\podium\widgets\Readers;
 use yii\bootstrap\ActiveForm;
@@ -153,6 +154,8 @@ if ($thread->locked) {
         </div>
     </div>
 </div><br>
+
+<?= Poll::widget(['model' => $thread->poll]); ?>
 
 <?php Pjax::begin(); ?>
 <?= ListView::widget([

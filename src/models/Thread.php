@@ -50,11 +50,11 @@ class Thread extends ActiveRecord
     /**
      * Icon classes.
      */
-    const ICON_HOT      = 'fire';
-    const ICON_LOCKED   = 'lock';
-    const ICON_NEW      = 'leaf';
-    const ICON_NO_NEW   = 'comment';
-    const ICON_PINNED   = 'pushpin';
+    const ICON_HOT    = 'fire';
+    const ICON_LOCKED = 'lock';
+    const ICON_NEW    = 'leaf';
+    const ICON_NO_NEW = 'comment';
+    const ICON_PINNED = 'pushpin';
 
     /**
      * @var string attached post content
@@ -65,6 +65,42 @@ class Thread extends ActiveRecord
      * @var bool thread subscription flag
      */
     public $subscribe;
+    
+    /**
+     * @var int poll added
+     * @since 0.5
+     */
+    public $poll_added = 0;
+    
+    /**
+     * @var string poll question
+     * @since 0.5
+     */
+    public $poll_question;
+    
+    /**
+     * @var int number of possible poll votes
+     * @since 0.5
+     */
+    public $poll_votes = 1;
+    
+    /**
+     * @var string[] poll answers
+     * @since 0.5
+     */
+    public $poll_answers = [];
+    
+    /**
+     * @var string poll closing date
+     * @since 0.5
+     */
+    public $poll_end;
+    
+    /**
+     * @var int should poll results be hidden before voting
+     * @since 0.5
+     */
+    public $poll_hidden = 0;
 
     /**
      * @inheritdoc
@@ -87,7 +123,7 @@ class Thread extends ActiveRecord
             ],
         ];
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -105,6 +141,51 @@ class Thread extends ActiveRecord
             ['name', 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process(Html::encode($value));
             }],
+            ['poll_question', 'string', 'max' => 255],
+            ['poll_votes', 'integer', 'min' => 1, 'max' => 10],
+            ['poll_answers', 'each', 'rule' => ['string', 'max' => 255]],
+            ['poll_end', 'date', 'format' => 'yyyy-MM-dd'],
+            [['poll_hidden', 'poll_added'], 'boolean'],
+            ['poll_answers', 'requiredPollAnswers'],
+            [['poll_question', 'poll_votes'], 'required', 'when' => function ($model) {
+                return $model->poll_added;
+            }, 'whenClient' => 'function (attribute, value) { return $("#poll_added").val() == 1; }'],
+        ];
+    }
+    
+    /**
+     * Filters and validates poll answers.
+     * @since 0.5
+     */
+    public function requiredPollAnswers()
+    {
+        if ($this->poll_added) {
+            $this->poll_answers = array_unique($this->poll_answers);
+            $filtered = [];
+            foreach ($this->poll_answers as $answer) {
+                if (!empty(trim($answer))) {
+                    $filtered[] = trim($answer);
+                }
+            }
+            $this->poll_answers = $filtered;
+            if (count($this->poll_answers) < 2) {
+                $this->addError('poll_answers', Yii::t('podium/view', 'You have to add at least 2 options.'));
+            }
+        }
+    }
+    
+    /**
+     * Returns poll attribute labels.
+     * @return array
+     * @since 0.5
+     */
+    public function attributeLabels()
+    {
+        return [
+            'poll_question' => Yii::t('podium/view', 'Question'),
+            'poll_votes' => Yii::t('podium/view', 'Number of votes'),
+            'poll_hidden' => Yii::t('podium/view', 'Hide results before voting'),
+            'poll_end' => Yii::t('podium/view', 'Poll ends at'),
         ];
     }
 
@@ -115,6 +196,16 @@ class Thread extends ActiveRecord
     public function getForum()
     {
         return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
+    }
+    
+    /**
+     * Poll relation.
+     * @return Forum
+     * @since 0.5
+     */
+    public function getPoll()
+    {
+        return $this->hasOne(Poll::className(), ['thread_id' => 'id']);
     }
 
     /**
@@ -466,16 +557,17 @@ class Thread extends ActiveRecord
     {
         $transaction = Thread::getDb()->beginTransaction();
         try {
-            if ($this->delete()) {
-                $this->forum->updateCounters([
-                    'threads' => -1, 
-                    'posts'   => -$this->postsCount
-                ]);
-                $transaction->commit();
-                PodiumCache::clearAfter('threadDelete');
-                Log::info('Thread deleted', $this->id, __METHOD__);
-                return true;
+            if (!$this->delete()) {
+                throw new Exception('Thread deleting error!');
             }
+            $this->forum->updateCounters([
+                'threads' => -1, 
+                'posts'   => -$this->postsCount
+            ]);
+            $transaction->commit();
+            PodiumCache::clearAfter('threadDelete');
+            Log::info('Thread deleted', $this->id, __METHOD__);
+            return true;
         } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
@@ -500,16 +592,18 @@ class Thread extends ActiveRecord
                 }
                 $nPost = Post::find()
                             ->where([
-                                'id'        => $post, 
+                                'id' => $post, 
                                 'thread_id' => $this->id, 
-                                'forum_id'  => $this->forum->id
+                                'forum_id' => $this->forum->id
                             ])
                             ->limit(1)
                             ->one();
                 if (!$nPost) {
                     throw new Exception('No post of given ID found');
                 }
-                $nPost->delete();
+                if (!$nPost->delete()) {
+                    throw new Exception('Post deleting error!');
+                }
             }
             $wholeThread = false;
             if ($this->postsCount) {
@@ -517,7 +611,9 @@ class Thread extends ActiveRecord
                 $this->forum->updateCounters(['posts' => -count($posts)]);
             } else {
                 $wholeThread = true;
-                $this->delete();
+                if (!$this->delete()) {
+                    throw new Exception('Thread deleting error!');
+                }
                 $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
             }
             $transaction->commit();
@@ -555,27 +651,29 @@ class Thread extends ActiveRecord
     public function podiumMoveTo($target = null)
     {
         $newParent = Forum::find()->where(['id' => $target])->limit(1)->one();
-        if ($newParent) {
-            $postsCount = $this->postsCount;
-            $transaction = Forum::getDb()->beginTransaction();
-            try {
-                $this->forum->updateCounters(['threads' => -1, 'posts' => -$postsCount]);
-                $newParent->updateCounters(['threads' => 1, 'posts' => $postsCount]);
-                $this->forum_id = $newParent->id;
-                $this->category_id = $newParent->category_id;
-                if ($this->save()) {
-                    Post::updateAll(['forum_id' => $newParent->id], ['thread_id' => $this->id]);
-                }
-                $transaction->commit();
-                PodiumCache::clearAfter('threadMove');
-                Log::info('Thread moved', $this->id, __METHOD__);
-                return true;
-            } catch (Exception $e) {
-                $transaction->rollBack();
-                Log::error($e->getMessage(), null, __METHOD__);
-            }
-        } else {
+        if (empty($newParent)) {
             Log::error('No parent forum of given ID found', $this->id, __METHOD__);
+            return false;
+        }
+            
+        $postsCount = $this->postsCount;
+        $transaction = Forum::getDb()->beginTransaction();
+        try {
+            $this->forum->updateCounters(['threads' => -1, 'posts' => -$postsCount]);
+            $newParent->updateCounters(['threads' => 1, 'posts' => $postsCount]);
+            $this->forum_id = $newParent->id;
+            $this->category_id = $newParent->category_id;
+            if (!$this->save()) {
+                throw new Exception('Thread saving error!');
+            }
+            Post::updateAll(['forum_id' => $newParent->id], ['thread_id' => $this->id]);
+            $transaction->commit();
+            PodiumCache::clearAfter('threadMove');
+            Log::info('Thread moved', $this->id, __METHOD__);
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
     }
@@ -599,56 +697,63 @@ class Thread extends ActiveRecord
                 if (empty($parent)) {
                     throw new Exception('No parent forum of given ID found');
                 }
-                $newThread = new Thread;
+                $newThread = new Thread();
                 $newThread->name = $name;
                 $newThread->posts = 0;
                 $newThread->views = 0;
                 $newThread->category_id = $parent->category_id;
                 $newThread->forum_id = $parent->id;
                 $newThread->author_id = User::loggedId();
-                $newThread->save();                
+                if (!$newThread->save()) {
+                    throw new Exception('Thread saving error!');
+                }
             } else {
                 $newThread = Thread::find()->where(['id' => $target])->limit(1)->one();
                 if (empty($newThread)) {
                     throw new Exception('No thread of given ID found');
                 }
             }
-            if (!empty($newThread)) {
-                foreach ($posts as $post) {
-                    if (!is_numeric($post) || $post < 1) {
-                        throw new Exception('Incorrect post ID');
-                    }
-                    $newPost = Post::find()
-                                ->where([
-                                    'id'        => $post, 
-                                    'thread_id' => $this->id, 
-                                    'forum_id'  => $this->forum->id
-                                ])
-                                ->limit(1)
-                                ->one();
-                    if (empty($newPost)) {
-                        throw new Exception('No post of given ID found');
-                    }
-                    $newPost->thread_id = $newThread->id;
-                    $newPost->forum_id = $newThread->forum_id;
-                    $newPost->save();                    
-                }
-                $wholeThread = false;
-                if ($this->postCount) {
-                    $this->updateCounters(['posts' => -count($posts)]);
-                    $this->forum->updateCounters(['posts' => -count($posts)]);
-                } else {
-                    $wholeThread = true;
-                    $this->delete();
-                    $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
-                }
-                $newThread->updateCounters(['posts' => count($posts)]);
-                $newThread->forum->updateCounters(['posts' => count($posts)]);
-                $transaction->commit();
-                PodiumCache::clearAfter('postMove');
-                Log::info('Posts moved', null, __METHOD__);
-                return true;
+            if (empty($newThread)) {
+                throw new Exception('No target thread selected!');
             }
+            foreach ($posts as $post) {
+                if (!is_numeric($post) || $post < 1) {
+                    throw new Exception('Incorrect post ID');
+                }
+                $newPost = Post::find()
+                            ->where([
+                                'id'        => $post, 
+                                'thread_id' => $this->id, 
+                                'forum_id'  => $this->forum->id
+                            ])
+                            ->limit(1)
+                            ->one();
+                if (empty($newPost)) {
+                    throw new Exception('No post of given ID found');
+                }
+                $newPost->thread_id = $newThread->id;
+                $newPost->forum_id = $newThread->forum_id;
+                if (!$newPost->save()) {
+                    throw new Exception('Post saving error!');
+                }
+            }
+            $wholeThread = false;
+            if ($this->postCount) {
+                $this->updateCounters(['posts' => -count($posts)]);
+                $this->forum->updateCounters(['posts' => -count($posts)]);
+            } else {
+                $wholeThread = true;
+                if (!$this->delete()) {
+                    throw new Exception('Thread deleting error!');
+                }
+                $this->forum->updateCounters(['posts' => -count($posts), 'threads' => -1]);
+            }
+            $newThread->updateCounters(['posts' => count($posts)]);
+            $newThread->forum->updateCounters(['posts' => count($posts)]);
+            $transaction->commit();
+            PodiumCache::clearAfter('postMove');
+            Log::info('Posts moved', null, __METHOD__);
+            return true;
         } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
@@ -658,6 +763,7 @@ class Thread extends ActiveRecord
     
     /**
      * Performs new thread with first post creation and subscription.
+     * Saves thread poll.
      * @return bool
      * @since 0.2
      */
@@ -665,34 +771,65 @@ class Thread extends ActiveRecord
     {
         $transaction = static::getDb()->beginTransaction();
         try {
-            if ($this->save()) {
-                $this->forum->updateCounters(['threads' => 1]);
+            if (!$this->save()) {
+                throw new Exception('Thread saving error!');
+            }
 
-                $post = new Post;
-                $post->content = $this->post;
-                $post->thread_id = $this->id;
-                $post->forum_id = $this->forum_id;
-                $post->author_id = User::loggedId();
-                $post->likes = 0;
-                $post->dislikes = 0;
+            $loggedIn = User::loggedId();
 
-                if ($post->save()) {
-                    $post->markSeen();
-                    $this->forum->updateCounters(['posts' => 1]);
-                    $this->updateCounters(['posts' => 1]);
+            if ($this->poll_added) {
+                $poll = new Poll();
+                $poll->thread_id = $this->id;
+                $poll->question = $this->poll_question;
+                $poll->votes = $this->poll_votes;
+                $poll->hidden = $this->poll_hidden;
+                $poll->end_at = !empty($this->poll_end) ? Podium::getInstance()->formatter->asTimestamp($this->poll_end . ' 23:59:59') : null;
+                $poll->author_id = $loggedIn;
+                if (!$poll->save()) {
+                    throw new Exception('Poll saving error!');
+                }
 
-                    $this->touch('new_post_at');
-                    $this->touch('edited_post_at');
-
-                    if ($this->subscribe) {
-                        $subscription = new Subscription();
-                        $subscription->user_id = User::loggedId();
-                        $subscription->thread_id = $this->id;
-                        $subscription->post_seen = Subscription::POST_SEEN;
-                        $subscription->save();
+                foreach ($this->poll_answers as $answer) {
+                    $pollAnswer = new PollAnswer();
+                    $pollAnswer->poll_id = $poll->id;
+                    $pollAnswer->answer = $answer;
+                    if (!$pollAnswer->save()) {
+                        throw new Exception('Poll Answer saving error!');
                     }
                 }
+                Log::info('Poll added', $poll->id, __METHOD__);
             }
+
+            $this->forum->updateCounters(['threads' => 1]);
+
+            $post = new Post();
+            $post->content = $this->post;
+            $post->thread_id = $this->id;
+            $post->forum_id = $this->forum_id;
+            $post->author_id = $loggedIn;
+            $post->likes = 0;
+            $post->dislikes = 0;
+            if (!$post->save()) {
+                throw new Exception('Post saving error!');
+            }
+
+            $post->markSeen();
+            $this->forum->updateCounters(['posts' => 1]);
+            $this->updateCounters(['posts' => 1]);
+
+            $this->touch('new_post_at');
+            $this->touch('edited_post_at');
+
+            if ($this->subscribe) {
+                $subscription = new Subscription();
+                $subscription->user_id = $loggedIn;
+                $subscription->thread_id = $this->id;
+                $subscription->post_seen = Subscription::POST_SEEN;
+                if (!$subscription->save()) {
+                    throw new Exception('Subscription saving error!');
+                }
+            }
+
             $transaction->commit();
             PodiumCache::clearAfter('newThread');
             Log::info('Thread added', $this->id, __METHOD__);

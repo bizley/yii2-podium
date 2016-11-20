@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\widgets\poll\Poll;
 use bizley\podium\widgets\QuillFull;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
@@ -19,10 +20,17 @@ $this->params['breadcrumbs'][] = ['label' => $forum->name, 'url' => ['forum/foru
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?php if (!empty($preview)): ?>
+<?php if ($preview): ?>
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
-        <?= Alert::widget(['body' => '<strong><small>' . Yii::t('podium/view', 'Post Preview') . '</small></strong>:<hr>' . $preview, 'options' => ['class' => 'alert-info']]); ?>
+        <?= Alert::widget([
+            'body' => '<strong><small>'
+                        . Yii::t('podium/view', 'Post Preview') 
+                        . '</small></strong>:<hr>' 
+                        . $model->post
+                        . Poll::preview($model),
+            'options' => ['class' => 'alert-info']
+        ]); ?>
     </div>
 </div>
 <?php endif; ?>
@@ -34,27 +42,38 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('podium/view', 'Topic')) ?>
+                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('podium/view', 'Topic')); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'post')->label(false)->widget(QuillFull::className()) ?>
+                            <?= $form->field($model, 'post')->label(false)->widget(QuillFull::className()); ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'subscribe')->checkbox()->label(Yii::t('podium/view', 'Subscribe to this thread')) ?>
+                            <?= $form->field($model, 'subscribe')->checkbox()->label(Yii::t('podium/view', 'Subscribe to this thread')); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?= Poll::create($form, $model); ?>
                         </div>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-8">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Create new thread'), ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']) ?>
+                            <?= Html::submitButton(
+                                '<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Create new thread'), 
+                                ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']
+                            ); ?>
                         </div>
                         <div class="col-sm-4">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']) ?>
+                            <?= Html::submitButton(
+                                '<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), 
+                                ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']
+                            ); ?>
                         </div>
                     </div>
                 </div>

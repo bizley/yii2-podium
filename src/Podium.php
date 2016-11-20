@@ -28,7 +28,7 @@ use yii\web\User;
  * Yii 2 Forum Module
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @version 0.5-dev (beta)
+ * @version 0.5 (beta)
  * @license Apache License 2.0
  * 
  * https://github.com/bizley/yii2-podium
@@ -67,7 +67,7 @@ class Podium extends Module implements BootstrapInterface
     /**
      * @var string Module version.
      */
-    protected $_version = '0.4';
+    protected $_version = '0.5';
 
     /**
      * @var null|int Admin account ID if `$userComponent` is not set to `true`.

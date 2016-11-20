@@ -6,6 +6,7 @@ use bizley\podium\helpers\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
+use bizley\podium\models\Poll;
 use bizley\podium\models\Post;
 use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
@@ -526,10 +527,10 @@ class BaseForumActionsController extends BaseController
             return $this->redirect(['forum/index']);
         }
 
-        $model = new Thread;
+        $model = new Thread();
         $model->scenario = 'new';
         $model->subscribe = 1;
-        $preview = '';
+        $preview = false;
         $postData = Yii::$app->request->post();
         if ($model->load($postData)) {
             $model->posts = 0;
@@ -539,7 +540,7 @@ class BaseForumActionsController extends BaseController
             $model->author_id = User::loggedId();
             if ($model->validate()) {
                 if (isset($postData['preview-button'])) {
-                    $preview = $model->post;
+                    $preview = true;
                 } else {
                     if ($model->podiumNew()) {
                         $this->success(Yii::t('podium/flash', 'New thread has been created.'));
@@ -926,5 +927,111 @@ class BaseForumActionsController extends BaseController
 
         $this->error(Yii::t('podium/flash', 'Sorry! There was an error while marking threads as seen. Contact administrator about this problem.'));
         return $this->redirect(['forum/unread-posts']);
+    }
+    
+    /**
+     * Voting in poll.
+     * @return array
+     */
+    public function actionPoll()
+    {
+        if (!Yii::$app->request->isAjax) {
+            return $this->redirect(['forum/index']);
+        }
+
+        $data = [
+            'error' => 1,
+            'msg'   => Html::tag('span', 
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                . ' ' . Yii::t('podium/view', 'Error while voting in this poll!'), 
+                ['class' => 'text-danger']
+            ),
+        ];
+            
+        if (Podium::getInstance()->user->isGuest) {
+            $data['msg'] = Html::tag('span', 
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                . ' ' . Yii::t('podium/view', 'Please sign in to vote in this poll'), 
+                ['class' => 'text-info']
+            );
+            return Json::encode($data);
+        }
+        
+        $pollId = Yii::$app->request->post('poll_id');
+        $votes = Yii::$app->request->post('poll_vote');
+
+        if (is_numeric($pollId) && $pollId > 0 && !empty($votes)) {
+            /* @var $poll Poll */
+            $poll = Poll::find()->where([
+                'and', 
+                ['id' => $pollId],
+                [
+                    'or',
+                    ['>', 'end_at', time()],
+                    ['end_at' => null]
+                ]
+            ])->limit(1)->one();
+            if (empty($poll)) {
+                $data['msg'] = Html::tag('span', 
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                    . ' ' . Yii::t('podium/view', 'This poll is not active.'), 
+                    ['class' => 'text-danger']
+                );
+                return Json::encode($data);
+            }
+            
+            $loggedId = User::loggedId();
+            
+            if ($poll->getUserVoted($loggedId)) {
+                $data['msg'] = Html::tag('span', 
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-info-sign']) 
+                    . ' ' . Yii::t('podium/view', 'You have already voted in this poll.'), 
+                    ['class' => 'text-info']
+                );
+                return Json::encode($data);
+            }
+            
+            $checkedAnswers = [];
+            foreach ($votes as $vote) {
+                if (!$poll->hasAnswer((int)$vote)) {
+                    $data['msg'] = Html::tag('span', 
+                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                        . ' ' . Yii::t('podium/view', 'Invalid poll answer given.'), 
+                        ['class' => 'text-danger']
+                    );
+                    return Json::encode($data);
+                }
+                $checkedAnswers[] = (int)$vote;
+            }
+            if (empty($checkedAnswers)) {
+                $data['msg'] = Html::tag('span', 
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                    . ' ' . Yii::t('podium/view', 'You need to select at least one answer.'), 
+                    ['class' => 'text-warning']
+                );
+                return Json::encode($data);
+            }
+            if (count($checkedAnswers) > $poll->votes) {
+                $data['msg'] = Html::tag('span', 
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
+                    . ' ' . Yii::t('podium/view', 'This poll allows maximum {n, plural, =1{# answer} other{# answers}}.', ['n' => $poll->votes]), 
+                    ['class' => 'text-danger']
+                );
+                return Json::encode($data);
+            }
+            if ($poll->vote($loggedId, $checkedAnswers)) {
+                $data = [
+                    'error' => 0,
+                    'votes' => $poll->currentVotes,
+                    'count' => $poll->votesCount,
+                    'msg'   => Html::tag('span', 
+                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
+                        . ' ' . Yii::t('podium/view', 'Your vote has been saved!'), 
+                        ['class' => 'text-success']
+                    ),
+                ];
+            }
+        }
+        return Json::encode($data);
     }
 }

@@ -112,8 +112,8 @@ $loggedId = User::loggedId();
 <?php Modal::end() ?>
 <?php Modal::begin([
     'id' => 'podiumModalBan',
-    'header' => Yii::t('podium/view', 'Ban user'),
-    'footer' => Yii::t('podium/view', 'Ban user'),
+    'header' => Yii::t('podium/view', 'Ban User'),
+    'footer' => Yii::t('podium/view', 'Ban User'),
     'footerConfirmOptions' => ['class' => 'btn btn-danger'],
     'footerConfirmUrl' => Url::to(['admin/ban', 'id' => $model->id])
  ]) ?>
@@ -123,8 +123,8 @@ $loggedId = User::loggedId();
 <?php Modal::end() ?>
 <?php Modal::begin([
     'id' => 'podiumModalUnBan',
-    'header' => Yii::t('podium/view', 'Unban user'),
-    'footer' => Yii::t('podium/view', 'Unban user'),
+    'header' => Yii::t('podium/view', 'Unban User'),
+    'footer' => Yii::t('podium/view', 'Unban User'),
     'footerConfirmOptions' => ['class' => 'btn btn-success'],
     'footerConfirmUrl' => Url::to(['admin/ban', 'id' => $model->id])
  ]) ?>
@@ -133,8 +133,8 @@ $loggedId = User::loggedId();
 <?php Modal::end() ?>
 <?php Modal::begin([
     'id' => 'podiumModalPromote',
-    'header' => Yii::t('podium/view', 'Promote user'),
-    'footer' => Yii::t('podium/view', 'Promote user'),
+    'header' => Yii::t('podium/view', 'Promote User'),
+    'footer' => Yii::t('podium/view', 'Promote User'),
     'footerConfirmOptions' => ['class' => 'btn btn-success'],
     'footerConfirmUrl' => Url::to(['admin/promote', 'id' => $model->id])
  ]) ?>
@@ -143,8 +143,8 @@ $loggedId = User::loggedId();
 <?php Modal::end() ?>
 <?php Modal::begin([
     'id' => 'podiumModalDemote',
-    'header' => Yii::t('podium/view', 'Demote user'),
-    'footer' => Yii::t('podium/view', 'Demote user'),
+    'header' => Yii::t('podium/view', 'Demote User'),
+    'footer' => Yii::t('podium/view', 'Demote User'),
     'footerConfirmOptions' => ['class' => 'btn btn-danger'],
     'footerConfirmUrl' => Url::to(['admin/demote', 'id' => $model->id])
  ]) ?>
