@@ -777,7 +777,7 @@ class Thread extends ActiveRecord
 
             $loggedIn = User::loggedId();
 
-            if ($this->poll_added) {
+            if ($this->poll_added && Podium::getInstance()->podiumConfig->get('allow_polls')) {
                 $poll = new Poll();
                 $poll->thread_id = $this->id;
                 $poll->question = $this->poll_question;

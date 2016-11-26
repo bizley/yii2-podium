@@ -94,6 +94,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'merge_posts')->checkBox()->label(Yii::t('podium/view', 'Merge reply with post in case of the same author')) ?>
                         </div>
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'allow_polls')->checkBox()->label(Yii::t('podium/view', 'Allow polls adding')) ?>
+                        </div>
                     </div>
                     <h3 id="guests"><span class="label label-primary"><?= Yii::t('podium/view', 'Guests privileges') ?></span></h3>
                     <div class="row">

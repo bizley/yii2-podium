@@ -46,6 +46,7 @@ return [
     'All posts in this thread will be deleted as well. This can not be undone.' => 'Все сообщения темы будут безвовзратно удалены. Действие нельзя отменить.',
     'All users without Administrator privileges will be redirected to {maintenancePage}.' => 'Все пользователи, не обладающие правами администратора, будут перенаправлены на {maintenancePage}.',
     'Allow guests to list members' => 'Разрешить гостям просматривать список участников',
+    'Allow polls adding' => '',
     'Are you sure you want to ban this user?' => 'Вы уверены, что хотите ',
     'Are you sure you want to delete this category?' => 'Вы уверены, что хотите удалить категорию?',
     'Are you sure you want to delete this forum?' => 'Вы уверены, что хотите удалить форум?',

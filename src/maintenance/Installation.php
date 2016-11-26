@@ -156,6 +156,7 @@ class Installation extends Maintenance
                         ['meta_keywords', PodiumConfig::META_KEYWORDS],
                         ['meta_description', PodiumConfig::META_DESCRIPTION],
                         ['registration_off', PodiumConfig::REGISTRATION_OFF],
+                        ['allow_polls', PodiumConfig::FLAG_ALLOW_POLLS],
                     ]
                 )
                 ->execute();

@@ -7,6 +7,7 @@
  * @since 0.1
  */
 
+use bizley\podium\Podium;
 use bizley\podium\widgets\poll\Poll;
 use bizley\podium\widgets\QuillFull;
 use yii\bootstrap\ActiveForm;
@@ -28,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         . Yii::t('podium/view', 'Post Preview') 
                         . '</small></strong>:<hr>' 
                         . $model->post
-                        . Poll::preview($model),
+                        . (Podium::getInstance()->podiumConfig->get('allow_polls') ? Poll::preview($model) : null),
             'options' => ['class' => 'alert-info']
         ]); ?>
     </div>
@@ -55,11 +56,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= $form->field($model, 'subscribe')->checkbox()->label(Yii::t('podium/view', 'Subscribe to this thread')); ?>
                         </div>
                     </div>
+<?php if (Podium::getInstance()->podiumConfig->get('allow_polls')): ?>
                     <div class="row">
                         <div class="col-sm-12">
                             <?= Poll::create($form, $model); ?>
                         </div>
                     </div>
+<?php endif; ?>
                 </div>
                 <div class="panel-footer">
                     <div class="row">

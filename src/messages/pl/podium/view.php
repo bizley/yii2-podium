@@ -46,6 +46,7 @@ return [
     'All posts in this thread will be deleted as well. This can not be undone.' => 'Wszystkie posty w tym wątku zostaną również usunięte. Tej akcji nie będzie można cofnąć.',
     'All users without Administrator privileges will be redirected to {maintenancePage}.' => 'Wszyscy użytkownicy bez uprawnień administratora będą przekierowani na {maintenancePage}.',
     'Allow guests to list members' => 'Pozwalaj gościom na przeglądanie listy forumowiczów',
+    'Allow polls adding' => 'Pozwól na dodawanie sond',
     'Are you sure you want to ban this user?' => 'Czy na pewno chcesz zbanować tego użytkownika?',
     'Are you sure you want to delete this category?' => 'Czy na pewno chcesz usunąć tę kategorię?',
     'Are you sure you want to delete this forum?' => 'Czy na pewno chcesz usunąć to forum?',

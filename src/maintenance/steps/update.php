@@ -212,6 +212,12 @@ return [
         [
             'table' => 'config',
             'call'  => 'updateValue',
+            'name'  => 'allow_polls',
+            'value' => '1'
+        ],
+        [
+            'table' => 'config',
+            'call'  => 'updateValue',
             'name'  => 'version',
             'value' => '0.5'
         ]

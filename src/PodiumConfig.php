@@ -25,6 +25,7 @@ class PodiumConfig extends Component
 {
     const DEFAULT_FROM_EMAIL = 'no-reply@change.me';
     const DEFAULT_FROM_NAME = 'Podium';
+    const FLAG_ALLOW_POLLS = 1;
     const FLAG_USE_CAPTCHA = 1;
     const FLAG_MEMBERS_VISIBLE = 1;
     const FLAG_MERGE_POSTS = 1;
@@ -77,6 +78,7 @@ class PodiumConfig extends Component
             'meta_keywords' => self::META_KEYWORDS,
             'meta_description' => self::META_DESCRIPTION,
             'registration_off' => self::REGISTRATION_OFF,
+            'allow_polls' => self::FLAG_ALLOW_POLLS,
         ];
     }
     
