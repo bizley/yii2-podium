@@ -1,17 +1,21 @@
 <?php
 
 use bizley\podium\models\Poll;
+use bizley\podium\models\User;
 use bizley\podium\Podium;
+use bizley\podium\rbac\Rbac;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 if (!$voted) {
-    $this->registerJs('$(".podium-poll-vote").click(function (e) { e.preventDefault(); var button = $(this); button.removeClass("btn-primary").addClass("disabled text-muted"); $.post("' . Url::to(['forum/poll']) . '", $(".podium-poll-form").serialize(), null, "json").always(function(){ button.addClass("btn-primary").removeClass("disabled text-muted"); }).fail(function(){ console.log("Poll Vote Error!"); }).done(function(data){ $(".podium-poll-info").html(data.msg); if (data.error == 0) { for (var a in data.votes) { if ($(".podium-poll-answer-" + a).length) { var perc = parseInt(data.count) > 0 ? Math.ceil(parseInt(data.votes[a]) * 100 / parseInt(data.count)) : 0; $(".podium-poll-answer-" + a).attr("aria-valuenow", perc); $(".podium-poll-answer-" + a).css("width", perc + "%"); $(".podium-poll-answer-" + a).html(perc + "%"); $(".podium-poll-answer-votes-" + a).html(parseInt(data.votes[a])); }} $(".podium-poll-form").addClass("hide"); $(".podium-poll-show-form").addClass("hide"); $(".podium-poll-results").removeClass("hide"); }}); });');
+    $this->registerJs('$(".podium-poll-vote").click(function(e){e.preventDefault();var button=$(this);button.removeClass("btn-primary").addClass("disabled text-muted");$.post("' . Url::to(['forum/poll']) . '",$(".podium-poll-form").serialize(),null,"json").always(function(){button.addClass("btn-primary").removeClass("disabled text-muted");}).fail(function(){console.log("Poll Vote Error!");}).done(function(data){$(".podium-poll-info").html(data.msg);if(data.error==0){for(var a in data.votes){if($(".podium-poll-answer-"+a).length){var perc=parseInt(data.count)>0?Math.ceil(parseInt(data.votes[a])*100/parseInt(data.count)):0;$(".podium-poll-answer-"+a).attr("aria-valuenow",perc);$(".podium-poll-answer-"+a).css("width",perc+"%");$(".podium-poll-answer-"+a).html(perc+"%");$(".podium-poll-answer-votes-"+a).html(parseInt(data.votes[a]));}}$(".podium-poll-form").addClass("hide");$(".podium-poll-show-form").addClass("hide");$(".podium-poll-results").removeClass("hide");}});});');
     if (!$hidden) {
-        $this->registerJs('$(".podium-poll-show-results").click(function (e) { e.preventDefault(); $(".podium-poll-form").addClass("hide"); $(".podium-poll-results").removeClass("hide"); });');
-        $this->registerJs('$(".podium-poll-show-form").click(function (e) { e.preventDefault(); $(".podium-poll-form").removeClass("hide"); $(".podium-poll-results").addClass("hide"); });');
+        $this->registerJs('$(".podium-poll-show-results").click(function(e){e.preventDefault();$(".podium-poll-form").addClass("hide");$(".podium-poll-results").removeClass("hide");});');
+        $this->registerJs('$(".podium-poll-show-form").click(function(e){e.preventDefault();$(".podium-poll-form").removeClass("hide");$(".podium-poll-results").addClass("hide");});');
     }
 }
+
+$loggedId = User::loggedId();
 
 /* @var $model Poll */
 ?>
@@ -53,6 +57,22 @@ if (!$voted) {
                         <li class="podium-poll-info"></li>
                     </ul>
                 <?= Html::endForm() ?>
+
+<?php if ($display === false && ($model->author_id == $loggedId || User::can(Rbac::PERM_UPDATE_POST, ['item' => $model->thread]))): ?>
+                    <ul class="podium-action-bar list-inline">
+                        <li>
+                            <a href="<?= Url::to(['forum/editpoll', 'cid' => $model->thread->category_id, 'fid' => $model->thread->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs <?= $model->votesCount ? 'disabled text-muted' : '' ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit Poll') ?>">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= Url::to(['forum/deletepoll', 'cid' => $model->thread->category_id, 'fid' => $model->thread->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete Poll') ?>">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </li>
+                    </ul>
+<?php endif; ?>
+
 <?php endif; ?>
                 <div class="podium-poll-results <?= $voted ? '' : 'hide' ?>">
 <?php if (!$hidden || $voted): ?>
@@ -83,6 +103,22 @@ if (!$voted) {
 <?php if (!$hidden && !$voted): ?>
                     <button class="btn btn-default podium-poll-show-form"><?= Yii::t('podium/view', 'Back to poll') ?></button>
 <?php endif; ?>
+
+<?php if ($display === false && ($model->author_id == $loggedId || User::can(Rbac::PERM_UPDATE_POST, ['item' => $model->thread]))): ?>
+                    <ul class="podium-action-bar list-inline">
+                        <li>
+                            <a href="<?= Url::to(['forum/editpoll', 'cid' => $model->thread->category_id, 'fid' => $model->thread->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-info btn-xs <?= $model->votesCount ? 'disabled text-muted' : '' ?>" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Edit Poll') ?>">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= Url::to(['forum/deletepoll', 'cid' => $model->thread->category_id, 'fid' => $model->thread->forum_id, 'tid' => $model->thread_id, 'pid' => $model->id]) ?>" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="<?= Yii::t('podium/view', 'Delete Poll') ?>">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </li>
+                    </ul>
+<?php endif; ?>
+
                 </div>
             </div>
         </div>

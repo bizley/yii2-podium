@@ -4,7 +4,9 @@ namespace bizley\podium\models;
 
 use bizley\podium\db\ActiveRecord;
 use bizley\podium\db\Query;
+use bizley\podium\log\Log;
 use bizley\podium\Podium;
+use Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
@@ -28,6 +30,10 @@ use yii\helpers\ArrayHelper;
  * 
  * @property array $currentVotes
  * @property int $votesCount
+ * @property Thread $thread
+ * @property PollAnswer[] $sortedAnswers
+ * @property PollAnswer[] $answers
+ * @property User $author
  */
 class Poll extends ActiveRecord
 {
@@ -167,5 +173,30 @@ class Poll extends ActiveRecord
             $votes += $answer->votes;
         }
         return $votes;
+    }
+    
+    /**
+     * Performs poll delete with answers and votes.
+     * @return bool
+     */
+    public function podiumDelete()
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            Podium::getInstance()->db->createCommand()->delete('{{%podium_poll_vote}}', ['poll_id' => $this->id])->execute();
+            if (!PollAnswer::deleteAll(['poll_id' => $this->id])) {
+                throw new Exception('Poll Answers deleting error!');
+            }
+            if (!$this->delete()) {
+                throw new Exception('Poll deleting error!');
+            }
+            $transaction->commit();
+            Log::info('Poll deleted', !empty($this->id) ? $this->id : '', __METHOD__);
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
     }
 }

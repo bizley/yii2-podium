@@ -21,6 +21,11 @@ class Poll extends Widget
      * @var PollModel
      */
     public $model;
+    
+    /**
+     * @var bool Display only
+     */
+    public $display = false;
 
 
     /**
@@ -39,7 +44,8 @@ class Poll extends Widget
         return $this->render('view', [
             'model' => $this->model,
             'hidden' => $hidden,
-            'voted' => $this->model->getUserVoted(User::loggedId())
+            'voted' => $this->display ? true : $this->model->getUserVoted(User::loggedId()),
+            'display' => $this->display
         ]);
     }
     

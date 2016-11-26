@@ -114,7 +114,7 @@ class BaseForumActionsController extends BaseController
             return $this->redirect(['forum/thread', 
                 'cid'    => $post->forum->category->id, 
                 'fid'    => $post->forum->id, 
-                'thread' => $post->thread->id, 
+                'id' => $post->thread->id, 
                 'slug'   => $post->thread->slug
             ]);
         }
@@ -150,6 +150,68 @@ class BaseForumActionsController extends BaseController
             }
         }
         return $this->render('deletepost', ['model' => $post]);
+    }
+    
+    /**
+     * Deleting the poll of given category ID, forum ID, thread ID and ID.
+     * @param int $cid category ID
+     * @param int $fid forum ID
+     * @param int $tid thread ID
+     * @param int $pid poll ID
+     * @return string|Response
+     */
+    public function actionDeletepoll($cid = null, $fid = null, $tid = null, $pid = null)
+    {
+        if (Podium::getInstance()->user->isGuest) {
+            $this->warning(Yii::t('podium/flash', 'Please sign in to delete the poll.'));
+            return $this->redirect(['account/login']);
+        }
+
+        $poll = Poll::find()->joinWith('thread')->where([
+            Poll::tableName() . '.id' => $pid, 
+            Poll::tableName() . '.thread_id' => $tid,
+            Thread::tableName() . '.category_id' => $cid,
+            Thread::tableName() . '.forum_id' => $fid,
+        ])->limit(1)->one();
+        if (empty($poll)) {
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the poll you are looking for.'));
+            return $this->redirect(['forum/index']);
+        }
+
+        if ($poll->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $poll->thread])) {
+            $this->info(Yii::t('podium/flash', 'This thread is locked.'));
+            return $this->redirect(['forum/thread', 
+                'cid' => $poll->thread->category_id, 
+                'fid' => $poll->thread->forum_id, 
+                'id' => $poll->thread->id, 
+                'slug' => $poll->thread->slug
+            ]);
+        }
+
+        if ($poll->author_id != User::loggedId() && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $poll->thread])) {
+            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
+            return $this->redirect(['forum/index']);
+        }
+
+        $postData = Yii::$app->request->post('poll');
+        if ($postData) {
+            if ($postData != $poll->id) {
+                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the poll.'));
+            } else {
+                if ($poll->podiumDelete()) {
+                    $this->success(Yii::t('podium/flash', 'Poll has been deleted.'));
+                    return $this->redirect(['forum/thread', 
+                        'cid' => $poll->thread->category_id, 
+                        'fid' => $poll->thread->forum_id, 
+                        'id' => $poll->thread->id, 
+                        'slug' => $poll->thread->slug
+                    ]);
+                }
+                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the poll.'));
+            }
+        }
+        
+        return $this->render('deletepoll', ['model' => $poll]);
     }
     
     /**
