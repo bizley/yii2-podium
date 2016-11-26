@@ -13,23 +13,24 @@ Yii 2 forum module
 This extension allows you to add forum to your app.
 
 > # UPDATE TO VERSION 0.5  
-> **Warning: This future version breaks BC!**  
+> **Warning: This version breaks BC!**  
 > `own` and `inherit` values are no longer valid for `userComponent` and `rbacComponent`!  
 > Also `bizley\podium\Module` has been renamed to `bizley\podium\Podium` - modify your configuration.  
-> Details will be given in [Podium wiki](https://github.com/bizley/yii2-podium/wiki) once it's released.
+> For more information read the [Podium wiki](https://github.com/bizley/yii2-podium/wiki).
 
 Features
 --------
 
 - [Bootstrap](http://getbootstrap.com) responsive layout
 - [Quill](https://github.com/bizley/yii2-quill) WYSIWYG editor
-- Supports cache component
+- Supports Cache, Formatter and Connection components
 - Built-in user identity handling (+supports inherited identity)
 - Built-in RBAC component (+supports inherited RBAC)
 - Console mail queue handling
 - Avatars uploading (+supports Gravatars)
 - Built-in user messages component
 - English, Polish and Russian translation
+- Available with polls system
 
 Installation & configuration
 ----------------------------
