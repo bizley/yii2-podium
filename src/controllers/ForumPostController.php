@@ -6,13 +6,9 @@ use bizley\podium\helpers\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Message;
-use bizley\podium\models\Poll;
 use bizley\podium\models\Post;
-use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
-use bizley\podium\models\Vocabulary;
-use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use Yii;
 use yii\filters\AccessControl;
@@ -22,13 +18,13 @@ use yii\web\Response;
 
 /**
  * Podium Forum controller
- * All actions concerning modifying forums and posts.
+ * All actions concerning posts.
  * Not accessible directly.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @since 0.2
+ * @since 0.5
  */
-class BaseForumActionsController extends BaseController
+class ForumPostController extends ForumThreadController
 {
     /**
      * @inheritdoc
@@ -44,51 +40,6 @@ class BaseForumActionsController extends BaseController
     }
 
     /**
-     * Deleting the thread of given category ID, forum ID, own ID and slug.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @param int $id thread ID
-     * @param string $slug thread slug
-     * @return string|Response
-     */
-    public function actionDelete($cid = null, $fid = null, $id = null, $slug = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to delete the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
-        if (empty($thread)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if (!User::can(Rbac::PERM_DELETE_THREAD, ['item' => $thread])) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-        
-        $postData = Yii::$app->request->post('thread');
-        if ($postData) {
-            if ($postData != $thread->id) {
-                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the thread.'));
-            } else {
-                if ($thread->podiumDelete()) {
-                    $this->success(Yii::t('podium/flash', 'Thread has been deleted.'));
-                    return $this->redirect(['forum/forum', 
-                        'cid'  => $thread->forum->category_id, 
-                        'id'   => $thread->forum->id, 
-                        'slug' => $thread->forum->slug
-                    ]);
-                }
-                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the thread.'));
-            }
-        }
-        return $this->render('delete', ['model' => $thread]);
-    }
-    
-    /**
      * Deleting the post of given category ID, forum ID, thread ID and ID.
      * @param int $cid category ID
      * @param int $fid forum ID
@@ -98,7 +49,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to delete the post.'));
             return $this->redirect(['account/login']);
         }
@@ -153,68 +104,6 @@ class BaseForumActionsController extends BaseController
     }
     
     /**
-     * Deleting the poll of given category ID, forum ID, thread ID and ID.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @param int $tid thread ID
-     * @param int $pid poll ID
-     * @return string|Response
-     */
-    public function actionDeletepoll($cid = null, $fid = null, $tid = null, $pid = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to delete the poll.'));
-            return $this->redirect(['account/login']);
-        }
-
-        $poll = Poll::find()->joinWith('thread')->where([
-            Poll::tableName() . '.id' => $pid, 
-            Poll::tableName() . '.thread_id' => $tid,
-            Thread::tableName() . '.category_id' => $cid,
-            Thread::tableName() . '.forum_id' => $fid,
-        ])->limit(1)->one();
-        if (empty($poll)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the poll you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if ($poll->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $poll->thread])) {
-            $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-            return $this->redirect(['forum/thread', 
-                'cid' => $poll->thread->category_id, 
-                'fid' => $poll->thread->forum_id, 
-                'id' => $poll->thread->id, 
-                'slug' => $poll->thread->slug
-            ]);
-        }
-
-        if ($poll->author_id != User::loggedId() && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $poll->thread])) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        $postData = Yii::$app->request->post('poll');
-        if ($postData) {
-            if ($postData != $poll->id) {
-                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the poll.'));
-            } else {
-                if ($poll->podiumDelete()) {
-                    $this->success(Yii::t('podium/flash', 'Poll has been deleted.'));
-                    return $this->redirect(['forum/thread', 
-                        'cid' => $poll->thread->category_id, 
-                        'fid' => $poll->thread->forum_id, 
-                        'id' => $poll->thread->id, 
-                        'slug' => $poll->thread->slug
-                    ]);
-                }
-                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while deleting the poll.'));
-            }
-        }
-        
-        return $this->render('deletepoll', ['model' => $poll]);
-    }
-    
-    /**
      * Deleting the posts of given category ID, forum ID, thread ID and slug.
      * @param int $cid category ID
      * @param int $fid forum ID
@@ -224,12 +113,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionDeleteposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -282,7 +171,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to edit the post.'));
             return $this->redirect(['account/login']);
         }
@@ -345,118 +234,6 @@ class BaseForumActionsController extends BaseController
     }
 
     /**
-     * Locking / unlocking the thread of given category ID, forum ID, own ID and slug.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @param int $id thread ID
-     * @param string $slug thread slug
-     * @return Response
-     */
-    public function actionLock($cid = null, $fid = null, $id = null, $slug = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
-        if (empty($thread)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if (!User::can(Rbac::PERM_LOCK_THREAD, ['item' => $thread])) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-            
-        if ($thread->podiumLock()) {
-            $this->success($thread->locked 
-                ? Yii::t('podium/flash', 'Thread has been locked.') 
-                : Yii::t('podium/flash', 'Thread has been unlocked.')
-            );
-        } else {
-            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
-        }
-        return $this->redirect(['forum/thread', 
-            'cid'  => $thread->forum->category->id, 
-            'fid'  => $thread->forum->id, 
-            'id'   => $thread->id, 
-            'slug' => $thread->slug
-        ]);
-    }
-    
-    /**
-     * Moving the thread of given category ID, forum ID, own ID and slug.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @param int $id thread ID
-     * @param string $slug thread slug
-     * @return string|Response
-     */
-    public function actionMove($cid = null, $fid = null, $id = null, $slug = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
-        if (empty($thread)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if (!User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-        
-        $forum = Yii::$app->request->post('forum');
-        if ($forum) {
-            if (!is_numeric($forum) || $forum < 1 || $forum == $thread->forum->id) {
-                $this->error(Yii::t('podium/flash', 'You have to select the new forum.'));
-            } else {
-                if ($thread->podiumMoveTo($forum)) {
-                    $this->success(Yii::t('podium/flash', 'Thread has been moved.'));
-                    return $this->redirect(['forum/thread', 
-                        'cid'  => $thread->forum->category->id, 
-                        'fid'  => $thread->forum->id, 
-                        'id'   => $thread->id, 
-                        'slug' => $thread->slug
-                    ]);
-                }
-                $this->error(Yii::t('podium/flash', 'Sorry! There was an error while moving the thread.'));
-            }
-        }
-        
-        $categories = Category::find()->orderBy(['name' => SORT_ASC]);
-        $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
-        $list = [];
-        $options = [];
-        foreach ($categories->each() as $cat) {
-            $catlist = [];
-            foreach ($forums->each() as $for) {
-                if ($for->category_id == $cat->id) {
-                    $catlist[$for->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') 
-                                        . Html::encode($cat->name) 
-                                        . ' &raquo; ' 
-                                        . Html::encode($for->name);
-                    if ($for->id == $thread->forum->id) {
-                        $options[$for->id] = ['disabled' => true];
-                    }
-                }
-            }
-            $list[Html::encode($cat->name)] = $catlist;
-        }
-        return $this->render('move', [
-            'model'   => $thread,
-            'list'    => $list,
-            'options' => $options
-        ]);
-    }
-    
-    /**
      * Moving the posts of given category ID, forum ID, thread ID and slug.
      * @param int $cid category ID
      * @param int $fid forum ID
@@ -466,12 +243,12 @@ class BaseForumActionsController extends BaseController
      */
     public function actionMoveposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
+        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -566,108 +343,6 @@ class BaseForumActionsController extends BaseController
     }
 
     /**
-     * Creating the thread of given category ID and forum ID.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @return string|Response
-     */
-    public function actionNewThread($cid = null, $fid = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to create a new thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
-        if (!User::can(Rbac::PERM_CREATE_THREAD)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-        
-        $forum = Forum::find()->where(['id' => $fid, 'category_id' => $cid])->limit(1)->one();
-        if (empty($forum)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        $model = new Thread();
-        $model->scenario = 'new';
-        $model->subscribe = 1;
-        $preview = false;
-        $postData = Yii::$app->request->post();
-        if ($model->load($postData)) {
-            $model->posts = 0;
-            $model->views = 0;
-            $model->category_id = $forum->category->id;
-            $model->forum_id = $forum->id;
-            $model->author_id = User::loggedId();
-            if ($model->validate()) {
-                if (isset($postData['preview-button'])) {
-                    $preview = true;
-                } else {
-                    if ($model->podiumNew()) {
-                        $this->success(Yii::t('podium/flash', 'New thread has been created.'));
-                        return $this->redirect([
-                            'forum/thread', 
-                            'cid'  => $forum->category->id,
-                            'fid'  => $forum->id, 
-                            'id'   => $model->id,
-                            'slug' => $model->slug
-                        ]);
-                    }
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was an error while creating the thread. Contact administrator about this problem.'));
-                }
-            }
-        }
-        return $this->render('new-thread', [
-            'preview' => $preview,
-            'model'   => $model,
-            'forum'   => $forum,
-        ]);
-    }
-    
-    /**
-     * Pinning the thread of given category ID, forum ID, own ID and slug.
-     * @param int $cid category ID
-     * @param int $fid forum ID
-     * @param int $id thread ID
-     * @param string $slug thread slug
-     * @return Response
-     */
-    public function actionPin($cid = null, $fid = null, $id = null, $slug = null)
-    {
-        if (Podium::getInstance()->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-            
-        $thread = Thread::verify($cid, $fid, $id, $slug, Podium::getInstance()->user->isGuest);
-        if (empty($thread)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if (!User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])) {
-            $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
-            return $this->redirect(['forum/index']);
-        }
-
-        if ($thread->podiumPin()) {
-            $this->success($thread->pinned 
-                ? Yii::t('podium/flash', 'Thread has been pinned.') 
-                : Yii::t('podium/flash', 'Thread has been unpinned.')
-            );
-        } else {
-            $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
-        }
-        return $this->redirect(['forum/thread', 
-            'cid'  => $thread->forum->category->id, 
-            'fid'  => $thread->forum->id, 
-            'id'   => $thread->id, 
-            'slug' => $thread->slug
-        ]);
-    }
-    
-    /**
      * Creating the post of given category ID, forum ID and thread ID.
      * This can be reply to selected post of given ID.
      * @param int $cid category ID
@@ -678,7 +353,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
             return $this->redirect(['account/login']);
         }
@@ -766,7 +441,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionReport($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->warning(Yii::t('podium/flash', 'Please sign in to report the post.'));
             return $this->redirect(['account/login']);
         }
@@ -817,74 +492,6 @@ class BaseForumActionsController extends BaseController
     }
     
     /**
-     * Searching through the forum.
-     * @return string
-     */
-    public function actionSearch()
-    {
-        $dataProvider = null;
-        $searchModel = new Vocabulary;
-        
-        if ($searchModel->load(Yii::$app->request->get(), '')) {
-            return $this->render('search', [
-                'dataProvider' => $searchModel->search(),
-                'query'        => $searchModel->query,
-            ]);
-        }
-        
-        $model = new SearchForm;
-        $model->match = 'all';
-        $model->type = 'posts';
-        $model->display = 'topics';
-
-        $categories = Category::find()->orderBy(['name' => SORT_ASC]);
-        $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
-        $list = [];
-        foreach ($categories->each() as $cat) {
-            $catlist = [];
-            foreach ($forums->each() as $for) {
-                if ($for->category_id == $cat->id) {
-                    $catlist[$for->id] = '|-- ' . Html::encode($for->name);
-                }
-            }
-            $list[Html::encode($cat->name)] = $catlist;
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if (empty($model->query) && empty($model->author)) {
-                $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
-            } else {
-                $stop = false;
-                if (!empty($model->query)) {
-                    $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
-                    $checkedWords = [];
-                    foreach ($words as $word) {
-                        if (mb_strlen($word, 'UTF-8') > 2) {
-                            $checkedWords[] = $word;
-                        }
-                    }
-                    $model->query = implode(' ', $checkedWords);
-                    if (mb_strlen($model->query, 'UTF-8') < 3) {
-                        $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
-                        $stop = true;
-                    }
-                }
-                if (!$stop) {
-                    $dataProvider = $model->searchAdvanced();
-                }
-            }
-        }
-        
-        return $this->render('search', [
-            'model'        => $model,
-            'list'         => $list,
-            'dataProvider' => $dataProvider,
-            'query'        => $model->query,
-            'author'       => $model->author,
-        ]);
-    }
-    
-    /**
      * Voting on the post.
      * @return string|Response
      */
@@ -903,7 +510,7 @@ class BaseForumActionsController extends BaseController
             ),
         ];
             
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $data['msg'] = Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Please sign in to vote on this post'), 
@@ -977,7 +584,7 @@ class BaseForumActionsController extends BaseController
      */
     public function actionMarkSeen()
     {
-        if (Podium::getInstance()->user->isGuest) {
+        if ($this->module->user->isGuest) {
             $this->info(Yii::t('podium/flash', 'This action is available for registered users only.'));
             return $this->redirect(['account/login']);
         }
@@ -989,111 +596,5 @@ class BaseForumActionsController extends BaseController
 
         $this->error(Yii::t('podium/flash', 'Sorry! There was an error while marking threads as seen. Contact administrator about this problem.'));
         return $this->redirect(['forum/unread-posts']);
-    }
-    
-    /**
-     * Voting in poll.
-     * @return array
-     */
-    public function actionPoll()
-    {
-        if (!Yii::$app->request->isAjax) {
-            return $this->redirect(['forum/index']);
-        }
-
-        $data = [
-            'error' => 1,
-            'msg'   => Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Error while voting in this poll!'), 
-                ['class' => 'text-danger']
-            ),
-        ];
-            
-        if (Podium::getInstance()->user->isGuest) {
-            $data['msg'] = Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Please sign in to vote in this poll'), 
-                ['class' => 'text-info']
-            );
-            return Json::encode($data);
-        }
-        
-        $pollId = Yii::$app->request->post('poll_id');
-        $votes = Yii::$app->request->post('poll_vote');
-
-        if (is_numeric($pollId) && $pollId > 0 && !empty($votes)) {
-            /* @var $poll Poll */
-            $poll = Poll::find()->where([
-                'and', 
-                ['id' => $pollId],
-                [
-                    'or',
-                    ['>', 'end_at', time()],
-                    ['end_at' => null]
-                ]
-            ])->limit(1)->one();
-            if (empty($poll)) {
-                $data['msg'] = Html::tag('span', 
-                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                    . ' ' . Yii::t('podium/view', 'This poll is not active.'), 
-                    ['class' => 'text-danger']
-                );
-                return Json::encode($data);
-            }
-            
-            $loggedId = User::loggedId();
-            
-            if ($poll->getUserVoted($loggedId)) {
-                $data['msg'] = Html::tag('span', 
-                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-info-sign']) 
-                    . ' ' . Yii::t('podium/view', 'You have already voted in this poll.'), 
-                    ['class' => 'text-info']
-                );
-                return Json::encode($data);
-            }
-            
-            $checkedAnswers = [];
-            foreach ($votes as $vote) {
-                if (!$poll->hasAnswer((int)$vote)) {
-                    $data['msg'] = Html::tag('span', 
-                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                        . ' ' . Yii::t('podium/view', 'Invalid poll answer given.'), 
-                        ['class' => 'text-danger']
-                    );
-                    return Json::encode($data);
-                }
-                $checkedAnswers[] = (int)$vote;
-            }
-            if (empty($checkedAnswers)) {
-                $data['msg'] = Html::tag('span', 
-                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                    . ' ' . Yii::t('podium/view', 'You need to select at least one answer.'), 
-                    ['class' => 'text-warning']
-                );
-                return Json::encode($data);
-            }
-            if (count($checkedAnswers) > $poll->votes) {
-                $data['msg'] = Html::tag('span', 
-                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                    . ' ' . Yii::t('podium/view', 'This poll allows maximum {n, plural, =1{# answer} other{# answers}}.', ['n' => $poll->votes]), 
-                    ['class' => 'text-danger']
-                );
-                return Json::encode($data);
-            }
-            if ($poll->vote($loggedId, $checkedAnswers)) {
-                $data = [
-                    'error' => 0,
-                    'votes' => $poll->currentVotes,
-                    'count' => $poll->votesCount,
-                    'msg'   => Html::tag('span', 
-                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
-                        . ' ' . Yii::t('podium/view', 'Your vote has been saved!'), 
-                        ['class' => 'text-success']
-                    ),
-                ];
-            }
-        }
-        return Json::encode($data);
     }
 }

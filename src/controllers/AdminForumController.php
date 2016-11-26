@@ -23,9 +23,9 @@ use yii\web\Response;
  * Not accessible directly.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @since 0.2
+ * @since 0.5
  */
-class BaseAdminForumController extends BaseController
+class AdminForumController extends BaseController
 {
     /**
      * @inheritdoc

@@ -21,7 +21,7 @@ use yii\web\Response;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
-class AdminController extends BaseAdminForumController
+class AdminController extends AdminForumController
 {
     /**
      * @inheritdoc
