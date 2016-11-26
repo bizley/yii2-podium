@@ -68,7 +68,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_THREAD, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['forum/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/move', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-warning btn-xs">
                             <span class="glyphicon glyphicon-share-alt"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Thread') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move T') ?></span>
@@ -86,7 +86,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
 <?php endif; ?>
 <?php if (User::can(Rbac::PERM_MOVE_POST, ['item' => $thread])): ?>
                     <li>
-                        <a href="<?= Url::to(['forum/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
+                        <a href="<?= Url::to(['forum/moveposts', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-warning btn-xs">
                             <span class="glyphicon glyphicon-random"></span>
                             <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'Move Posts') ?></span>
                             <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'Move P') ?></span>

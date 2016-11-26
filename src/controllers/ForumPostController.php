@@ -397,7 +397,7 @@ class ForumPostController extends ForumThreadController
             }
         }
 
-        $preview = '';
+        $preview = false;
         $previous = Post::find()
                     ->where(['thread_id' => $thread->id])
                     ->orderBy(['id' => SORT_DESC])
@@ -409,7 +409,7 @@ class ForumPostController extends ForumThreadController
             $model->author_id = User::loggedId();
             if ($model->validate()) {
                 if (isset($postData['preview-button'])) {
-                    $preview = $model->content;
+                    $preview = true;
                 } else {
                     if ($model->podiumNew($previous)) {
                         $this->success(Yii::t('podium/flash', 'New reply has been added.'));

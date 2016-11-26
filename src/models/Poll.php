@@ -7,6 +7,7 @@ use bizley\podium\db\Query;
 use bizley\podium\log\Log;
 use bizley\podium\Podium;
 use Exception;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
@@ -38,6 +39,18 @@ use yii\helpers\ArrayHelper;
 class Poll extends ActiveRecord
 {
     /**
+     * @var string poll closing date
+     * @since 0.5
+     */
+    public $end;
+    
+    /**
+     * @var string[] poll answers
+     * @since 0.5
+     */
+    public $edit_answers = [];
+    
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -62,8 +75,42 @@ class Poll extends ActiveRecord
             [['question', 'votes', 'hidden', 'thread_id', 'author_id'], 'required'],
             ['question', 'string', 'max' => 255],
             ['votes', 'integer', 'min' => 1],
+            ['end', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'end_at'],
             ['end_at', 'integer'],
             ['hidden', 'boolean'],
+            ['edit_answers', 'each', 'rule' => ['string', 'max' => 255]],
+            ['edit_answers', 'requiredAnswers'],
+        ];
+    }
+    
+    /**
+     * Filters and validates poll answers.
+     */
+    public function requiredAnswers()
+    {
+        $this->edit_answers = array_unique($this->edit_answers);
+        $filtered = [];
+        foreach ($this->edit_answers as $answer) {
+            if (!empty(trim($answer))) {
+                $filtered[] = trim($answer);
+            }
+        }
+        $this->edit_answers = $filtered;
+        if (count($this->edit_answers) < 2) {
+            $this->addError('edit_answers', Yii::t('podium/view', 'You have to add at least 2 options.'));
+        }
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'question' => Yii::t('podium/view', 'Question'),
+            'votes' => Yii::t('podium/view', 'Number of votes'),
+            'hidden' => Yii::t('podium/view', 'Hide results before voting'),
+            'end' => Yii::t('podium/view', 'Poll ends at'),
         ];
     }
     
@@ -192,6 +239,52 @@ class Poll extends ActiveRecord
             }
             $transaction->commit();
             Log::info('Poll deleted', !empty($this->id) ? $this->id : '', __METHOD__);
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Log::error($e->getMessage(), null, __METHOD__);
+        }
+        return false;
+    }
+    
+    /**
+     * Performs poll update.
+     * @return bool
+     */
+    public function podiumEdit()
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            if (!$this->save()) {
+                throw new Exception('Poll saving error!');
+            }
+
+            foreach ($this->edit_answers as $answer) {
+                foreach ($this->answers as $oldAnswer) {
+                    if ($answer == $oldAnswer->answer) {
+                        continue(2);
+                    }
+                }
+                $pollAnswer = new PollAnswer();
+                $pollAnswer->poll_id = $this->id;
+                $pollAnswer->answer = $answer;
+                if (!$pollAnswer->save()) {
+                    throw new Exception('Poll Answer saving error!');
+                }
+            }
+            foreach ($this->answers as $oldAnswer) {
+                foreach ($this->edit_answers as $answer) {
+                    if ($answer == $oldAnswer->answer) {
+                        continue(2);
+                    }
+                }
+                if (!$oldAnswer->delete()) {
+                    throw new Exception('Poll Answer deleting error!');
+                }
+            }
+
+            $transaction->commit();
+            Log::info('Poll updated', $this->id, __METHOD__);
             return true;
         } catch (Exception $e) {
             $transaction->rollBack();

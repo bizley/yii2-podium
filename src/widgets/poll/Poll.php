@@ -50,7 +50,7 @@ class Poll extends Widget
     }
     
     /**
-     * Renders poll creation form.
+     * Renders poll create form.
      * @param ActiveForm $form
      * @param Thread $model
      * @return string
@@ -58,6 +58,17 @@ class Poll extends Widget
     public static function create($form, $model)
     {
         return (new static)->render('create', ['form' => $form, 'model' => $model]);
+    }
+    
+    /**
+     * Renders poll update form.
+     * @param ActiveForm $form
+     * @param Poll $model
+     * @return string
+     */
+    public static function update($form, $model)
+    {
+        return (new static)->render('update', ['form' => $form, 'model' => $model]);
     }
     
     /**
