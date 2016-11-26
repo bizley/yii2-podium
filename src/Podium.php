@@ -400,6 +400,7 @@ class Podium extends Module implements BootstrapInterface
         
         $configuration = [
             'class' => 'yii\rbac\DbManager',
+            'db' => $this->db,
             'itemTable' => '{{%podium_auth_item}}',
             'itemChildTable' => '{{%podium_auth_item_child}}',
             'assignmentTable' => '{{%podium_auth_assignment}}',
