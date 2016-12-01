@@ -18,8 +18,12 @@ use yii\caching\Cache;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
  * 
+ * @property Cache $cache
  * @property array $defaults
- * @property array $fromDb
+ * @property array $all
+ * @property array $cached
+ * @property array $notCached
+ * @property array $stored
  */
 class PodiumConfig extends Component
 {
@@ -92,100 +96,130 @@ class PodiumConfig extends Component
         return Podium::getInstance()->podiumCache;
     }
     
+    private $_config;
+    
     /**
-     * Alias for fromCache().
+     * Returns configuration values.
      * @return array
+     * @since 0.6
      */
-    public function all()
+    public function getAll()
     {
-        return $this->fromCache();
+        if ($this->_config !== null) {
+            return $this->_config;
+        }
+        try {
+            $this->_config = $this->cached;
+        } catch (Exception $exc) {
+            Log::warning($exc->getMessage(), null, __METHOD__);
+            $this->_config = $this->stored;
+        }
+        return $this->_config;
     }
     
     /**
-     * Returns all configuration values from cache.
-     * If cache is empty this merges default values with the ones stored in 
-     * database and saves it to cache.
+     * Returns cached configuration values.
      * @return array
+     * @throws Exception
+     * @since 0.6
      */
-    public function fromCache()
+    public function getCached()
     {
+        $cache = $this->cache->get('config');
+        if ($cache === false) {
+            $cache = $this->notCached;
+            $this->cache->set('config', $cache);
+        }
+        return $cache;
+    }
+    
+    /**
+     * Returns not cached configuration values.
+     * If stored configuration is empty default values are returned.
+     * @return array
+     * @since 0.6
+     */
+    public function getNotCached()
+    {
+        return array_merge($this->defaults, $this->stored);
+    }
+    
+    /**
+     * Returns stored configuration values.
+     * These can be empty if configuration has not been modified.
+     * @return array
+     * @since 0.6
+     */
+    public function getStored()
+    {
+        $stored = [];
         try {
-            $cache = $this->cache->get('config');
-            if ($cache === false) {
-                $cache = array_merge($this->defaults, $this->fromDb);
-                $this->cache->set('config', $cache);
+            $query = (new Query())->from(static::tableName())->all();
+            if (!empty($query)) {
+                foreach ($query as $setting) {
+                    $stored[$setting['name']] = $setting['value'];
+                }
             }
-            return $cache;
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
-        return false;
+        return $stored;
     }
     
     /**
-     * Returns configuration value of the given name from cache.
-     * @param string $name configuration name
+     * Returns configuration value of the given name.
+     * @param string $name configuration key
      * @return string|null
      */
     public function get($name)
     {
-        $config = $this->fromCache();
+        $config = $this->all;
         return isset($config[$name]) ? $config[$name] : null;
-    }
-    
-    /**
-     * Returns all configuration values from database.
-     * @return array
-     */
-    public function getFromDb()
-    {
-        $config = [];
-        try {
-            $query = (new Query)->from(static::tableName())->all();
-            foreach ($query as $setting) {
-                $config[$setting['name']] = $setting['value'];
-            }
-        } catch (Exception $e) {
-            Log::warning($e->getMessage(), null, __METHOD__);
-        }
-        return $config;
     }
     
     /**
      * Sets configuration value of the given name.
      * Every change automatically updates the cache.
-     * @param string $name configuration name
+     * Set value to null to restore default one.
+     * @param string $name configuration key
      * @param string $value configuration value
      * @return bool
      */
     public function set($name, $value)
     {
         try {
-            if (is_string($name) && is_string($value)) {
-                if ($value == '') {
-                    if (array_key_exists($name, $this->defaults)) {
-                        $value = $this->defaults[$name];
+            if (is_string($name) && (is_string($value) || $value === null)) {
+                if ($value === null) {
+                    if (!array_key_exists($name, $this->defaults)) {
+                        return false;
                     }
+                    $value = $this->defaults[$name];
                 }
-                if ((new Query)->from(static::tableName())->where(['name' => $name])->exists()) {
+                if ((new Query())->from(static::tableName())->where(['name' => $name])->exists()) {
                     Podium::getInstance()->db->createCommand()->update(
-                            static::tableName(), 
-                            ['value' => $value], 
-                            'name = :name', 
-                            [':name' => $name]
-                        )->execute();
+                        static::tableName(), ['value' => $value], ['name' => $name]
+                    )->execute();
                 } else {
                     Podium::getInstance()->db->createCommand()->insert(
-                            static::tableName(), 
-                            ['name' => $name, 'value' => $value]
-                        )->execute();
+                        static::tableName(), ['name' => $name, 'value' => $value]
+                    )->execute();
                 }
-                $this->cache->set('config', array_merge($this->defaults, $this->fromDb));
+                $this->cache->set('config', $this->notCached);
+                $this->_config = null;
                 return true;
             }      
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
+    }
+    
+    /**
+     * Alias for getAll().
+     * @return array
+     */
+    public function all()
+    {
+        return $this->all;
     }
 }
