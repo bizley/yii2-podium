@@ -4,7 +4,7 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
-use bizley\podium\models\LoginForm;
+use bizley\podium\models\forms\LoginForm;
 use bizley\podium\models\ReForm;
 use bizley\podium\models\User;
 use bizley\podium\PodiumCache;

@@ -3,7 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\helpers\Helper;
-use bizley\podium\db\ActiveRecord;
+use bizley\podium\models\db\ContentActiveRecord;
 use Yii;
 use yii\helpers\HtmlPurifier;
 
@@ -12,13 +12,8 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property integer $id
- * @property string $name
- * @property string $topic
- * @property string $content
  */
-class Content extends ActiveRecord
+class Content extends ContentActiveRecord
 {
     /**
      * Content names.
@@ -29,31 +24,6 @@ class Content extends ActiveRecord
     const EMAIL_NEW          = 'email-new';
     const EMAIL_SUBSCRIPTION = 'email-sub';
     const TERMS_AND_CONDS    = 'terms';
-    
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_content}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['content', 'topic'], 'required'],
-            [['content', 'topic'], 'string', 'min' => 1],
-            ['topic', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value);
-            }],
-            ['content', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
-            }],
-        ];
-    }
     
     /**
      * Returns default content array or its element.
@@ -101,7 +71,7 @@ class Content extends ActiveRecord
 
     /**
      * Returns default content object.
-     * @param string $name content's name
+     * @param string $name content name
      * @return bool|Content
      * @since 0.2
      */
@@ -112,15 +82,15 @@ class Content extends ActiveRecord
             return false;
         }
         
-        $content = new Content;
+        $content = new static;
         $content->topic = $default['topic'];
-        $content->topic = $default['content'];
+        $content->content = $default['content'];
         return $content;
     }
 
     /**
      * Returns email content.
-     * @param string $name content's name
+     * @param string $name content name
      * @return Content
      * @since 0.2
      */

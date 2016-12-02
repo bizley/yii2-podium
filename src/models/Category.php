@@ -2,72 +2,21 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\db\ActiveRecord;
 use bizley\podium\db\Query;
 use bizley\podium\log\Log;
+use bizley\podium\models\db\CategoryActiveRecord;
 use bizley\podium\Podium;
 use Exception;
-use yii\behaviors\SluggableBehavior;
-use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
-use yii\helpers\Html;
-use yii\helpers\HtmlPurifier;
 
 /**
  * Category model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property integer $id
- * @property string $name
- * @property string $slug
- * @property string $keywords
- * @property string $description
- * @property integer $visible
- * @property integer $sort
- * @property integer $updated_at
- * @property integer $created_at
  */
-class Category extends ActiveRecord
+class Category extends CategoryActiveRecord
 {
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_category}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-            [
-                'class' => SluggableBehavior::className(),
-                'attribute' => 'name',
-            ]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['name', 'visible'], 'required'],
-            ['visible', 'boolean'],
-            ['name', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process(Html::encode($value));
-            }],
-            [['keywords', 'description'], 'string'],
-        ];
-    }
-    
     /**
      * Searches users.
      * @return ActiveDataProvider
@@ -98,7 +47,6 @@ class Category extends ActiveRecord
      * Sets new categories order.
      * @param int $order new category sorting order number
      * @return bool
-     * @throws Exception
      * @since 0.2
      */
     public function newOrder($order)
@@ -107,7 +55,7 @@ class Category extends ActiveRecord
             $next = 0;
             $newSort = -1;
             $query = (new Query)
-                        ->from(Category::tableName())
+                        ->from(static::tableName())
                         ->where(['!=', 'id', $this->id])
                         ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
                         ->indexBy('id');
@@ -116,7 +64,9 @@ class Category extends ActiveRecord
                     $newSort = $next;
                     $next++;
                 }
-                Podium::getInstance()->db->createCommand()->update(Category::tableName(), ['sort' => $next], ['id' => $id])->execute();
+                Podium::getInstance()->db->createCommand()->update(
+                        static::tableName(), ['sort' => $next], ['id' => $id]
+                    )->execute();
                 $next++;
             }
             if ($newSort == -1) {

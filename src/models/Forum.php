@@ -2,93 +2,21 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\db\ActiveRecord;
 use bizley\podium\db\Query;
 use bizley\podium\log\Log;
+use bizley\podium\models\db\ForumActiveRecord;
 use bizley\podium\Podium;
 use Exception;
-use yii\behaviors\SluggableBehavior;
-use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveQuery;
-use yii\helpers\Html;
-use yii\helpers\HtmlPurifier;
 
 /**
  * Forum model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property integer $id
- * @property integer $category_id
- * @property string $name
- * @property string $sub
- * @property string $slug
- * @property string $keywords
- * @property string $description
- * @property integer $visible
- * @property integer $sort
- * @property integer $updated_at
- * @property integer $created_at
  */
-class Forum extends ActiveRecord
+class Forum extends ForumActiveRecord
 {
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_forum}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-            [
-                'class' => SluggableBehavior::className(),
-                'attribute' => 'name',
-            ]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['name', 'visible'], 'required'],
-            ['visible', 'boolean'],
-            [['name', 'sub'], 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process(Html::encode($value));
-            }],
-            [['keywords', 'description'], 'string'],
-        ];
-    }
-    
-    /**
-     * Category relation.
-     * @return ActiveQuery
-     */
-    public function getCategory()
-    {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
-    }
-    
-    /**
-     * Post relation. One latest post.
-     * @return ActiveQuery
-     */
-    public function getLatest()
-    {
-        return $this->hasOne(Post::className(), ['forum_id' => 'id'])->orderBy(['id' => SORT_DESC]);
-    }
-    
     /**
      * Returns list of moderators for this forum.
      * @return int[]
@@ -98,21 +26,19 @@ class Forum extends ActiveRecord
         $mods = Podium::getInstance()->podiumCache->getElement('forum.moderators', $this->id);
         if ($mods === false) {
             $mods = [];
-            $modteam = User::find()
-                        ->select(['id', 'role'])
-                        ->where([
-                            'status' => User::STATUS_ACTIVE, 
-                            'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]
-                        ])
-                        ->asArray()
-                        ->all();
-            foreach ($modteam as $user) {
-                if ($user['role'] == User::ROLE_ADMIN) {
-                    $mods[] = $user['id'];
-                } else {
-                    if ((new Query)->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user->id])->exists()) {
-                        $mods[] = $user['id'];
-                    }
+            $modteam = User::find()->select(['id', 'role'])->where([
+                    'status' => User::STATUS_ACTIVE, 
+                    'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]
+                ]);
+            foreach ($modteam->each() as $user) {
+                if ($user->role == User::ROLE_ADMIN) {
+                    $mods[] = $user->id;
+                    continue;
+                }
+                if ((new Query())->from(Mod::tableName())->where([
+                        'forum_id' => $this->id, 'user_id' => $user->id
+                    ])->exists()) {
+                    $mods[] = $user->id;
                 }
             }
             Podium::getInstance()->podiumCache->setElement('forum.moderators', $this->id, $mods);
@@ -122,7 +48,7 @@ class Forum extends ActiveRecord
     
     /**
      * Checks if user is moderator for this forum.
-     * @param int|null $user_id User's ID or null for current signed in.
+     * @param int|null $user_id User ID or null for current signed in.
      * @return bool
      */
     public function isMod($user_id = null)
@@ -153,7 +79,6 @@ class Forum extends ActiveRecord
 
         $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
-
         return $dataProvider;
     }
     
@@ -163,7 +88,7 @@ class Forum extends ActiveRecord
      * @param int $id forum's ID
      * @param string $slug forum's slug
      * @param bool $guest whether caller is guest or registered user
-     * @return Thread
+     * @return Forum
      * @since 0.2
      */
     public static function verify($category_id = null, $id = null, $slug = null,  $guest = true)
@@ -171,29 +96,21 @@ class Forum extends ActiveRecord
         if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             return null;
         }
-        
-        return static::find()
-                ->joinWith([
-                    'category' => function ($query) use ($guest) {
-                        if ($guest) {
-                            $query->andWhere([Category::tableName() . '.visible' => 1]);
-                        }
-                    }
-                ])
-                ->where([
-                    static::tableName() . '.id' => $id, 
-                    static::tableName() . '.slug' => $slug,
-                    static::tableName() . '.category_id' => $category_id,
-                ])
-                ->limit(1)
-                ->one();
+        return static::find()->joinWith(['category' => function ($query) use ($guest) {
+                if ($guest) {
+                    $query->andWhere([Category::tableName() . '.visible' => 1]);
+                }
+            }])->where([
+                static::tableName() . '.id' => $id, 
+                static::tableName() . '.slug' => $slug,
+                static::tableName() . '.category_id' => $category_id,
+            ])->limit(1)->one();
     }
     
     /**
      * Sets new forums order.
      * @param int $order new forum sorting order number
      * @return bool
-     * @throws Exception
      * @since 0.2
      */
     public function newOrder($order)
@@ -201,8 +118,8 @@ class Forum extends ActiveRecord
         try {
             $next = 0;
             $newSort = -1;
-            $query = (new Query)
-                        ->from(Forum::tableName())
+            $query = (new Query())
+                        ->from(static::tableName())
                         ->where(['and',
                             ['!=', 'id', $this->id],
                             ['category_id' => $this->category_id]
@@ -214,7 +131,9 @@ class Forum extends ActiveRecord
                     $newSort = $next;
                     $next++;
                 }
-                Podium::getInstance()->db->createCommand()->update(Forum::tableName(), ['sort' => $next], ['id' => $id])->execute();
+                Podium::getInstance()->db->createCommand()->update(
+                        static::tableName(), ['sort' => $next], ['id' => $id]
+                    )->execute();
                 $next++;
             }
             if ($newSort == -1) {

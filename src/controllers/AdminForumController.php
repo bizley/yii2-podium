@@ -4,8 +4,8 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\log\Log;
 use bizley\podium\models\Category;
-use bizley\podium\models\ConfigForm;
 use bizley\podium\models\Content;
+use bizley\podium\models\forms\ConfigForm;
 use bizley\podium\models\Forum;
 use bizley\podium\models\LogSearch;
 use bizley\podium\models\Post;
