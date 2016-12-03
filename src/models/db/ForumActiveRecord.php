@@ -3,6 +3,8 @@
 namespace bizley\podium\models\db;
 
 use bizley\podium\db\ActiveRecord;
+use bizley\podium\models\Category;
+use bizley\podium\models\Post;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;

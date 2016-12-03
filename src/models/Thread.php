@@ -514,7 +514,7 @@ class Thread extends ActiveRecord
      * @return Thread
      * @since 0.2
      */
-    public static function verify($category_id = null, $forum_id = null, $id = null, $slug = null,  $guest = true)
+    public static function verify($category_id = null, $forum_id = null, $id = null, $slug = null, $guest = true)
     {
         if (!is_numeric($category_id) 
                 || $category_id < 1 

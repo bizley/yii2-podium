@@ -91,7 +91,7 @@ class Forum extends ForumActiveRecord
      * @return Forum
      * @since 0.2
      */
-    public static function verify($category_id = null, $id = null, $slug = null,  $guest = true)
+    public static function verify($category_id = null, $id = null, $slug = null, $guest = true)
     {
         if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             return null;
