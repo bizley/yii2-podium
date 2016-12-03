@@ -4,10 +4,10 @@ namespace bizley\podium\controllers;
 
 use bizley\podium\db\Query;
 use bizley\podium\models\Category;
+use bizley\podium\models\forms\SearchForm;
 use bizley\podium\models\Forum;
 use bizley\podium\models\Poll;
 use bizley\podium\models\Post;
-use bizley\podium\models\SearchForm;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
 use bizley\podium\models\Vocabulary;

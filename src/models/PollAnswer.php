@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\db\ActiveRecord;
+use bizley\podium\models\db\PollAnswerActiveRecord;
 
 /**
  * Poll answer model
@@ -10,33 +10,7 @@ use bizley\podium\db\ActiveRecord;
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
- * 
- * @property int $id
- * @property string $answer
- * @property int $votes
- * @property int $poll_id
  */
-class PollAnswer extends ActiveRecord
+class PollAnswer extends PollAnswerActiveRecord
 {
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_poll_answer}}';
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['answer', 'poll_id'], 'required'],
-            ['answer', 'string', 'max' => 255],
-            ['votes', 'default', 'value' => 0],
-            ['votes', 'integer', 'min' => 0],
-            ['poll_id', 'integer'],
-        ];
-    }
 }

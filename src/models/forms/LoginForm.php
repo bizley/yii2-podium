@@ -9,7 +9,7 @@ use yii\base\Model;
  * LoginForm model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
- * @since 0.1
+ * @since 0.6
  * 
  * @property User $user
  */

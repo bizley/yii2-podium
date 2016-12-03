@@ -2,109 +2,30 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\helpers\Helper;
-use bizley\podium\db\ActiveRecord;
 use bizley\podium\db\Query;
 use bizley\podium\log\Log;
+use bizley\podium\models\db\MessageActiveRecord;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\helpers\Html;
-use yii\helpers\HtmlPurifier;
 
 /**
  * Message model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property integer $id
- * @property integer $sender_id
- * @property string $topic
- * @property string $content
- * @property integer $replyto
- * @property integer $sender_status
- * @property integer $updated_at
- * @property integer $created_at
  */
-class Message extends ActiveRecord
+class Message extends MessageActiveRecord
 {
-    /**
-     * Statuses.
-     */
-    const STATUS_NEW     = 1;
-    const STATUS_READ    = 10;
-    const STATUS_DELETED = 20;
-    
     /**
      * Limits.
      */
     const MAX_RECEIVERS = 10;
     const SPAM_MESSAGES = 10;
     const SPAM_WAIT     = 1;
-    
-    /**
-     * @var int[] Receivers' IDs.
-     */
-    public $receiversId;
-    
-    /**
-     * @var int[] Friends' IDs.
-     * @since 0.2
-     */
-    public $friendsId;
-    
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_message}}';
-    }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [TimestampBehavior::className()];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        return array_merge(
-            parent::scenarios(),
-            [
-                'report' => ['content'],
-                'remove' => ['sender_status'],
-            ]                
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['topic', 'content'], 'required'],
-            [['receiversId', 'friendsId'], 'each', 'rule' => ['integer', 'min' => 1]],
-            ['sender_status', 'in', 'range' => self::getStatuses()],
-            ['topic', 'string', 'max' => 255],
-            ['topic', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value);
-            }],
-            ['content', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
-            }],
-        ];
-    }
-    
     /**
      * Returns Re: prefix for subject.
      * @return string
@@ -114,60 +35,6 @@ class Message extends ActiveRecord
         return Yii::t('podium/view', 'Re:');
     }
 
-    /**
-     * Returns list of statuses.
-     * @return string[]
-     */
-    public static function getStatuses()
-    {
-        return [self::STATUS_NEW, self::STATUS_READ, self::STATUS_DELETED];
-    }
-    
-    /**
-     * Returns list of inbox statuses.
-     * @return string[]
-     */
-    public static function getInboxStatuses()
-    {
-        return [self::STATUS_NEW, self::STATUS_READ];
-    }
-    
-    /**
-     * Returns list of sent statuses.
-     * @return string[]
-     */
-    public static function getSentStatuses()
-    {
-        return [self::STATUS_READ];
-    }
-    
-    /**
-     * Returns list of deleted statuses.
-     * @return string[]
-     */
-    public static function getDeletedStatuses()
-    {
-        return [self::STATUS_DELETED];
-    }
-
-    /**
-     * Sender relation.
-     * @return User
-     */
-    public function getSender()
-    {
-        return $this->hasOne(User::className(), ['id' => 'sender_id']);
-    }
-    
-    /**
-     * Receivers relation.
-     * @return MessageReceiver[]
-     */
-    public function getMessageReceivers()
-    {
-        return $this->hasMany(MessageReceiver::className(), ['message_id' => 'id']);
-    }
-    
     /**
      * Checks if user is a message receiver.
      * @param int $user_id
@@ -184,16 +51,7 @@ class Message extends ActiveRecord
         }
         return false;
     }
-    
-    /**
-     * Returns reply Message.
-     * @return Message
-     */
-    public function getReply()
-    {
-        return $this->hasOne(static::className(), ['id' => 'replyto']);
-    }
-    
+
     /**
      * Sends message.
      * @return bool
@@ -204,11 +62,11 @@ class Message extends ActiveRecord
         try {
             $this->sender_id = User::loggedId();
             $this->sender_status = self::STATUS_READ;
-            
+
             if (!$this->save()) {
                 throw new Exception('Message saving error!');
             }
-            
+
             $count = count($this->receiversId);
             foreach ($this->receiversId as $receiver) {
                 if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
@@ -242,7 +100,7 @@ class Message extends ActiveRecord
         }
         return false;
     }
-    
+
     /**
      * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT 
      * minutes.
@@ -273,7 +131,6 @@ class Message extends ActiveRecord
     /**
      * Removes message.
      * @return bool
-     * @throws Exception
      */
     public function remove()
     {
@@ -293,47 +150,45 @@ class Message extends ActiveRecord
                 }
                 $transaction->commit();
                 return true;
-            } else {
-                $allDeleted = true;
-                foreach ($this->messageReceivers as $mr) {
-                    if ($mr->receiver_status != MessageReceiver::STATUS_DELETED) {
-                        $allDeleted = false;
-                        break;
-                    }
-                }
-                if ($allDeleted) {
-                    foreach ($this->messageReceivers as $mr) {
-                        if (!$mr->delete()) {
-                            throw new Exception('Received message removing error!');
-                        }
-                    }
-                    if (!$this->delete()) {
-                        throw new Exception('Message removing error!');
-                    }
-                    if ($clearCache) {
-                        Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->sender_id);
-                    }
-                    $transaction->commit();
-                    return true;
-                } else {
-                    $this->sender_status = self::STATUS_DELETED;
-                    if (!$this->save()) {
-                        throw new Exception('Message status changing error!');
-                    }
-                    if ($clearCache) {
-                        Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->sender_id);
-                    }
-                    $transaction->commit();
-                    return true;
+            }
+            $allDeleted = true;
+            foreach ($this->messageReceivers as $mr) {
+                if ($mr->receiver_status != MessageReceiver::STATUS_DELETED) {
+                    $allDeleted = false;
+                    break;
                 }
             }
+            if ($allDeleted) {
+                foreach ($this->messageReceivers as $mr) {
+                    if (!$mr->delete()) {
+                        throw new Exception('Received message removing error!');
+                    }
+                }
+                if (!$this->delete()) {
+                    throw new Exception('Message removing error!');
+                }
+                if ($clearCache) {
+                    Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->sender_id);
+                }
+                $transaction->commit();
+                return true;
+            }
+            $this->sender_status = self::STATUS_DELETED;
+            if (!$this->save()) {
+                throw new Exception('Message status changing error!');
+            }
+            if ($clearCache) {
+                Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->sender_id);
+            }
+            $transaction->commit();
+            return true;
         } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), $this->id, __METHOD__);
         }
         return false;
     }
-    
+
     /**
      * Performs post report sending to moderators.
      * @param Post $post reported post
@@ -358,7 +213,7 @@ class Message extends ActiveRecord
             if (!$this->save()) {
                 throw new Exception('Saving complaint error!');
             }
-            
+
             $receivers = [];
             $mods = $post->forum->mods;
             $stamp = time();
@@ -370,11 +225,13 @@ class Message extends ActiveRecord
             if (empty($receivers)) {
                 throw new Exception('No one to send report to');
             }
-            Podium::getInstance()->db->createCommand()->batchInsert(
+            if (!Podium::getInstance()->db->createCommand()->batchInsert(
                     MessageReceiver::tableName(), 
                     ['message_id', 'receiver_id', 'receiver_status', 'created_at', 'updated_at'], 
                     $receivers
-                )->execute();
+                )->execute()) {
+                throw new Exception('Reports saving error!');
+            }
 
             Podium::getInstance()->podiumCache->delete('user.newmessages');
             Log::info('Post reported', $post->id, __METHOD__);
@@ -384,7 +241,7 @@ class Message extends ActiveRecord
         }
         return false;
     }
-    
+
     /**
      * Marks message read.
      * @since 0.2

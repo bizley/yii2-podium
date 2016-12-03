@@ -2,8 +2,8 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\db\ActiveRecord;
 use bizley\podium\log\Log;
+use bizley\podium\models\db\SubscriptionActiveRecord;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
@@ -16,46 +16,15 @@ use yii\helpers\Url;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
- * @property integer $id
- * @property integer $user_id
- * @property integer $thread_id
- * @property integer $post_seen
  */
-class Subscription extends ActiveRecord
+class Subscription extends SubscriptionActiveRecord
 {
     /**
      * Posts read statuses.
      */
     const POST_SEEN = 1;
     const POST_NEW  = 0;
-    
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_subscription}}';
-    }
 
-    /**
-     * User relation.
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
-    }
-    
-    /**
-     * Thread relation.
-     * @return Thread
-     */
-    public function getThread()
-    {
-        return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
-    }
-    
     /**
      * Searches for subscription
      * @return ActiveDataProvider
@@ -71,7 +40,6 @@ class Subscription extends ActiveRecord
         ]);
         $dataProvider->sort->defaultOrder = ['post_seen' => SORT_ASC, 'id' => SORT_DESC];
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
-
         return $dataProvider;
     }
     
@@ -82,13 +50,13 @@ class Subscription extends ActiveRecord
     public function seen()
     {
         $this->post_seen = self::POST_SEEN;
-        if ($this->save()) {
-            Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
-            return true;
+        if (!$this->save()) {
+            return false;
         }
-        return false;
+        Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
+        return true;
     }
-    
+
     /**
      * Marks post as unseen.
      * @return bool
@@ -96,13 +64,13 @@ class Subscription extends ActiveRecord
     public function unseen()
     {
         $this->post_seen = self::POST_NEW;
-        if ($this->save()) {
-            Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
-            return true;
+        if (!$this->save()) {
+            return false;
         }
-        return false;
+        Podium::getInstance()->podiumCache->deleteElement('user.subscriptions', User::loggedId());
+        return true;
     }
-    
+
     /**
      * Prepares notification email.
      * @param int $thread
@@ -112,7 +80,7 @@ class Subscription extends ActiveRecord
         if (is_numeric($thread) && $thread > 0) {            
             $forum = Podium::getInstance()->podiumConfig->get('name');
             $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
-            $subs  = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
+            $subs = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
             foreach ($subs->each() as $sub) {
                 $sub->post_seen = self::POST_NEW;
                 if ($sub->save()) {
@@ -137,10 +105,10 @@ class Subscription extends ActiveRecord
             }
         }
     }
-    
+
     /**
      * Removes threads subscriptions of given IDs.
-     * @param array $threads threads IDs
+     * @param array $threads thread IDs
      * @return bool
      * @since 0.2
      */
@@ -148,15 +116,16 @@ class Subscription extends ActiveRecord
     {
         try {
             if (!empty($threads)) {
-                Podium::getInstance()->db->createCommand()->delete(Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()])->execute();
-                return true;
+                return Podium::getInstance()->db->createCommand()->delete(
+                        Subscription::tableName(), ['id' => $threads, 'user_id' => User::loggedId()]
+                    )->execute();
             }
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
     }
-    
+
     /**
      * Adds subscription for thread.
      * @param int $thread thread ID
@@ -165,15 +134,13 @@ class Subscription extends ActiveRecord
      */
     public static function add($thread)
     {
-        if (!Podium::getInstance()->user->isGuest) {
-            $sub = new Subscription;
-            $sub->thread_id = $thread;
-            $sub->user_id   = User::loggedId();
-            $sub->post_seen = self::POST_SEEN;
-            if ($sub->save()) {
-                return true;
-            }
+        if (Podium::getInstance()->user->isGuest) {
+            return false;
         }
-        return false;
+        $sub = new Subscription();
+        $sub->thread_id = $thread;
+        $sub->user_id = User::loggedId();
+        $sub->post_seen = self::POST_SEEN;
+        return $sub->save();
     }
 }

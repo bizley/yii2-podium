@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\db\ActiveRecord;
+use bizley\podium\models\db\ThreadViewActiveRecord;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
@@ -12,22 +12,9 @@ use yii\db\Expression;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * @property integer $id
- * @property integer $user_id
- * @property integer $thread_id
- * @property integer $new_last_seen
- * @property integer $edited_last_seen
  */
-class ThreadView extends ActiveRecord
+class ThreadView extends ThreadViewActiveRecord
 {
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%podium_thread_view}}';
-    }
-    
     /**
      * Searches for threads with unread posts.
      * @param array $params
