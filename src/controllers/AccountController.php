@@ -171,28 +171,6 @@ class AccountController extends BaseController
     }
 
     /**
-     * Resending the account activation link.
-     * @return string|Response
-     */
-    public function actionReactivate()
-    {
-        if ($this->module->userComponent !== true) {
-            $this->info(Yii::t('podium/flash', 'Please contact the administrator to reactivate your account.'));
-            return $this->module->goPodium();
-        }
-
-        $model = new ReactivateForm();
-        if ($this->runForm($model, [
-                'error' => 'Error while queuing reactivation link',
-                'info' => 'Reactivation link queued',
-                'method' => __METHOD__
-            ])) {
-            return $this->module->goPodium();
-        }
-        return $this->render('reactivate', ['model' => $model]);
-    }
-
-    /**
      * Registering the new account and sending the activation link.
      * @return string|Response
      */
@@ -250,46 +228,68 @@ class AccountController extends BaseController
      */
     public function actionReset()
     {
-        if ($this->module->userComponent !== true) {
-            $this->info(Yii::t('podium/flash', 'Please contact the administrator to reset your account password.'));
-            return $this->module->goPodium();
-        }
-
-        $model = new ResetForm();
-        if ($this->runForm($model, [
+        return $this->reformRun(
+            Yii::t('podium/flash', 'Please contact the administrator to reset your account password.'),
+            new ResetForm(),
+            [
                 'error' => 'Error while queuing password reset link',
                 'info' => 'Password reset link queued',
                 'method' => __METHOD__
-            ])) {
-            return $this->module->goPodium();
-        }
-        return $this->render('reset', ['model' => $model]);
+            ],
+            'reset'
+        );
     }
 
     /**
-     * Runs form.
+     * Resending the account activation link.
+     * @return string|Response
+     */
+    public function actionReactivate()
+    {
+        return $this->reformRun(
+            Yii::t('podium/flash', 'Please contact the administrator to reactivate your account account.'),
+            new ReactivateForm(),
+            [
+                'error' => 'Error while queuing reactivation link',
+                'info' => 'Reactivation link queued',
+                'method' => __METHOD__
+            ],
+            'reactivate'
+        );
+    }
+
+    /**
+     * Runs actions processed with email.
+     * @param string $componentInfo
      * @param Model $model
      * @param array $log
-     * @return bool
+     * @return string|Response
      * @since 0.6
      */
-    public function runForm($model, $log)
+    protected function reformRun($componentInfo, $model, $log, $view)
     {
-        if (!$model->load(Yii::$app->request->post())) {
-            return false;
+        if ($this->module->userComponent !== true) {
+            $this->info($componentInfo);
+            return $this->module->goPodium();
         }
-        list($error, $message, $back) = $model->run();
-        if ($error) {
-            Log::error($log['error'], !empty($model->user->id) ? $model->user->id : null, $log['method']);
-            if (!empty($message)) {
-                $this->error($message);
+
+        if ($model->load(Yii::$app->request->post())) {
+            list($error, $message, $back) = $model->run();
+            if ($error) {
+                Log::error($log['error'], !empty($model->user->id) ? $model->user->id : null, $log['method']);
+                if (!empty($message)) {
+                    $this->error($message);
+                }
+            } else {
+                Log::info($log['info'], $model->user->id, $log['method']);
+                if (!empty($message)) {
+                    $this->success($message);
+                }
             }
-        } else {
-            Log::info($log['info'], $model->user->id, $log['method']);
-            if (!empty($message)) {
-                $this->success($message);
+            if ($back) {
+                return $this->module->goPodium();
             }
         }
-        return $back;
+        return $this->render($view, ['model' => $model]);
     }
 }
