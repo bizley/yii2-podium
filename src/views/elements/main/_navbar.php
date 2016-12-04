@@ -21,41 +21,38 @@ $podiumModule = Podium::getInstance();
 if (Podium::getInstance()->user->isGuest) {
     if (Podium::getInstance()->podiumConfig->get('members_visible')) {
         $items[] = [
-            'label'  => Yii::t('podium/view', 'Members'), 
-            'url'    => ['members/index'],
+            'label' => Yii::t('podium/view', 'Members'), 
+            'url' => ['members/index'],
             'active' => $this->context->id == 'members'
         ];
     }
     if ($podiumModule->userComponent === true) {
-        if (!empty($podiumModule->registerUrl) && $podiumModule->podiumConfig->get('registration_off') != '1') {
+        if ($podiumModule->podiumConfig->get('registration_off') != '1') {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }
-        if (!empty($podiumModule->loginUrl)) {
-            $items[] = ['label' => Yii::t('podium/view', 'Sign in'), 'url' => $podiumModule->loginUrl];
-        }
+        $items[] = ['label' => Yii::t('podium/view', 'Sign in'), 'url' => $podiumModule->loginUrl];
     }
-}
-else {
+} else {
     $podiumUser = User::findMe();
     $messageCount = $podiumUser->newMessagesCount;
     $subscriptionCount = $podiumUser->subscriptionsCount;
-    
+
     if (User::can(Rbac::ROLE_ADMIN)) {
         $items[] = [
-            'label'  => Yii::t('podium/view', 'Administration'), 
-            'url'    => ['admin/index'],
+            'label' => Yii::t('podium/view', 'Administration'), 
+            'url' => ['admin/index'],
             'active' => $this->context->id == 'admin'
         ];
     }
     $items[] = [
-        'label'  => Yii::t('podium/view', 'Members'), 
-        'url'    => ['members/index'],
+        'label' => Yii::t('podium/view', 'Members'), 
+        'url' => ['members/index'],
         'active' => $this->context->id == 'members'
     ];
     $items[] = [
         'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName]) 
                     . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
-        'url'   => ['profile/index'],
+        'url' => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
             ['label' => Yii::t('podium/view', 'Account Details'), 'url' => ['profile/details']],
@@ -65,7 +62,7 @@ else {
     ];
     $items[] = [
         'label' => Yii::t('podium/view', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
-        'url'   => ['messages/inbox'],
+        'url' => ['messages/inbox'],
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],
             ['label' => Yii::t('podium/view', 'Sent'), 'url' => ['messages/sent']],
@@ -78,15 +75,15 @@ else {
 }
 
 NavBar::begin([
-    'brandLabel'            => $podiumModule->podiumConfig->get('name'),
-    'brandUrl'              => ['forum/index'],
-    'options'               => ['class' => 'navbar-inverse navbar-default', 'id' => 'top'],
+    'brandLabel' => $podiumModule->podiumConfig->get('name'),
+    'brandUrl' => ['forum/index'],
+    'options' => ['class' => 'navbar-inverse navbar-default', 'id' => 'top'],
     'innerContainerOptions' => ['class' => 'container-fluid',]
 ]);
 echo Nav::widget([
-    'options'         => ['class' => 'navbar-nav navbar-right'],
-    'encodeLabels'    => false,
+    'options' => ['class' => 'navbar-nav navbar-right'],
+    'encodeLabels' => false,
     'activateParents' => true,
-    'items'           => $items,
+    'items' => $items,
 ]);
 NavBar::end();
