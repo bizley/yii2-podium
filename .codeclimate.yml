@@ -30,7 +30,8 @@ engines:
       Naming/ShortMethodName:
         enabled: true
         minimum: 2
-
+      Naming/BooleanGetMethodName:
+        enabled: false
 ratings:
   paths:
   - "**.js"
