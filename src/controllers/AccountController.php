@@ -5,7 +5,8 @@ namespace bizley\podium\controllers;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\forms\LoginForm;
-use bizley\podium\models\forms\ReForm;
+use bizley\podium\models\forms\ReactivateForm;
+use bizley\podium\models\forms\ResetForm;
 use bizley\podium\models\User;
 use bizley\podium\PodiumCache;
 use Yii;
@@ -56,7 +57,7 @@ class AccountController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -69,7 +70,7 @@ class AccountController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Activating the account based on the provided activation token.
      * @param string $token
@@ -81,7 +82,7 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to activate your account.'));
             return $this->module->goPodium();
         }
-        
+
         $model = User::findByActivationToken($token);
         if (!$model) {
             $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
@@ -109,15 +110,15 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', 'Please use application Login form to sign in.'));
             return $this->module->goPodium();
         }
-        
-        $model = new LoginForm;
+
+        $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->module->goPodium();
         }
 
         return $this->render('login', ['model' => $model]);
     }
-    
+
     /**
      * Activating new email address based on the provided token.
      * @param string $token
@@ -130,7 +131,7 @@ class AccountController extends BaseController
             $this->error(Yii::t('podium/flash', 'The provided activation token is invalid or expired.'));
             return $this->module->goPodium();
         }
-        
+
         $model->scenario = 'token';
         if ($model->changeEmail()) {
             Log::info('Email address changed', $model->id, __METHOD__);
@@ -154,7 +155,7 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to change your account password.'));
             return $this->module->goPodium();
         }
-        
+
         $model = User::findByPasswordResetToken($token);
         if (!$model) {
             $this->error(Yii::t('podium/flash', 'The provided password reset token is invalid or expired.'));
@@ -168,7 +169,7 @@ class AccountController extends BaseController
         }
         return $this->render('password', ['model' => $model]);
     }
-    
+
     /**
      * Resending the account activation link.
      * @return string|Response
@@ -179,29 +180,28 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to reactivate your account.'));
             return $this->module->goPodium();
         }
-        
-        $model = new ReForm;
+
+        $model = new ReactivateForm();
         if ($model->load(Yii::$app->request->post())) {
-            switch ($model->reactivate()) {
-                case ReForm::RESP_OK:
-                    Log::info('Reactivation link queued', $model->user->id, __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_EMAIL_SEND_ERR:
-                    Log::error('Error while queuing reactivation link', $model->user->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_NO_EMAIL_ERR:
-                    Log::error('Error while queuing reactivation link - no email set', $model->user->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about reactivating.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_NO_USER_ERR:
-                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
+            list($error, $message, $back) = $model->reactivate();
+            if ($error) {
+                Log::error('Error while queuing reactivation link', !empty($model->user->id) ? $model->user->id : null, __METHOD__);
+                if (!empty($message)) {
+                    $this->error($message);
+                }
+            } else {
+                Log::info('Reactivation link queued', $model->user->id, __METHOD__);
+                if (!empty($message)) {
+                    $this->success($message);
+                }
+            }
+            if ($back) {
+                return $this->module->goPodium();
             }
         }
         return $this->render('reactivate', ['model' => $model]);
     }
-    
+
     /**
      * Registering the new account and sending the activation link.
      * @return string|Response
@@ -212,13 +212,13 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', "Please use application's Register form to sign up."));
             return $this->module->goPodium();
         }
-        
+
         if ($this->module->podiumConfig->get('registration_off') == '1') {
             $this->info(Yii::t('podium/flash', 'User registration is currently not allowed.'));
             return $this->module->goPodium();
         }
-        
-        $model = new User;
+
+        $model = new User();
         $model->scenario = 'register';
         if ($model->load(Yii::$app->request->post())) {
             switch ($model->register()) {
@@ -247,8 +247,11 @@ class AccountController extends BaseController
             }
         }
         $model->captcha = null;
-        
-        return $this->render('register', ['model' => $model, 'terms' => Content::fill(Content::TERMS_AND_CONDS)]);
+
+        return $this->render('register', [
+            'model' => $model, 
+            'terms' => Content::fill(Content::TERMS_AND_CONDS)]
+        );
     }
 
     /**
@@ -261,24 +264,23 @@ class AccountController extends BaseController
             $this->info(Yii::t('podium/flash', 'Please contact the administrator to reset your account password.'));
             return $this->module->goPodium();
         }
-        
-        $model = new ReForm;
+
+        $model = new ResetForm();
         if ($model->load(Yii::$app->request->post())) {
-            switch ($model->reset()) {
-                case ReForm::RESP_OK:
-                    Log::info('Password reset link queued', $model->user->id, __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'The password reset link has been sent to your e-mail address.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_EMAIL_SEND_ERR:
-                    Log::error('Error while queuing password reset link', $model->user->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_NO_EMAIL_ERR:
-                    Log::error('Error while queuing password reset link - no email set', $model->user->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about resetting password.'));
-                    return $this->module->goPodium();
-                case ReForm::RESP_NO_USER_ERR:
-                    $this->error(Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'));
+            list($error, $message, $back) = $model->reset();
+            if ($error) {
+                Log::error('Error while queuing password reset link', !empty($model->user->id) ? $model->user->id : null, __METHOD__);
+                if (!empty($message)) {
+                    $this->error($message);
+                }
+            } else {
+                Log::info('Password reset link queued', $model->user->id, __METHOD__);
+                if (!empty($message)) {
+                    $this->success($message);
+                }
+            }
+            if ($back) {
+                return $this->module->goPodium();
             }
         }
         return $this->render('reset', ['model' => $model]);

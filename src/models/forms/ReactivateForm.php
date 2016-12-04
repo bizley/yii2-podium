@@ -6,30 +6,22 @@ use bizley\podium\models\Content;
 use bizley\podium\models\Email;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
+use Yii;
 use yii\base\Model;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 /**
- * ReForm model
- * Calls for password reset and new activation link.
+ * Reactivate Form model
+ * Calls for new activation link.
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  * 
  * @property User $user
  */
-class ReForm extends Model
+class ReactivateForm extends Model
 {
-    /**
-     * Responses.
-     */
-    const RESP_ERR = 0;
-    const RESP_OK = 1;
-    const RESP_EMAIL_SEND_ERR = 2;
-    const RESP_NO_EMAIL_ERR = 3;
-    const RESP_NO_USER_ERR = 4;
-
     /**
      * @var string Username or email
      */
@@ -40,15 +32,13 @@ class ReForm extends Model
      */
     public function rules()
     {
-        return [
-            ['username', 'required'],
-        ];
+        return [['username', 'required']];
     }
 
     private $_user = false;
 
     /**
-     * Returns User.
+     * Returns user.
      * @param int $status
      * @return User
      */
@@ -61,51 +51,43 @@ class ReForm extends Model
     }
 
     /**
-     * Generates new password reset token.
-     * @return int
-     */
-    public function reset()
-    {
-        $user = $this->user;
-        if (empty($user)) {
-            return self::RESP_NO_USER_ERR;
-        }
-        $user->scenario = 'token';
-        $user->generatePasswordResetToken();
-        if (!$user->save()) {
-            return self::RESP_ERR;
-        }
-        if (empty($user->email)) {
-            return self::RESP_NO_EMAIL_ERR;
-        }
-        if (!$this->sendResetEmail($user)) {
-            return self::RESP_EMAIL_SEND_ERR;
-        }
-        return self::RESP_OK;
-    }
-
-    /**
      * Generates new activation token.
-     * @return int
+     * @return array $error flag, $message text, $back flag
      */
     public function reactivate()
     {
         $user = $this->getUser(User::STATUS_REGISTERED);
         if (empty($user)) {
-            return self::RESP_NO_USER_ERR;
+            return [
+                true, 
+                Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'),
+                false
+            ];
         }
         $user->scenario = 'token';
         $user->generateActivationToken();
         if (!$user->save()) {
-            return self::RESP_ERR;
+            return [true, null, false];
         }
         if (empty($user->email)) {
-            return self::RESP_NO_EMAIL_ERR;
+            return [
+                true, 
+                Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about reactivating.'),
+                true
+            ];
         }
         if (!$this->sendReactivationEmail($user)) {
-            return self::RESP_EMAIL_SEND_ERR;
+            return [
+                true, 
+                Yii::t('podium/flash', 'Sorry! There was some error while sending you the account activation link. Contact administrator about this problem.'),
+                true
+            ];
         }
-        return self::RESP_OK;
+        return [
+            false, 
+            Yii::t('podium/flash', 'The account activation link has been sent to your e-mail address.'),
+            true
+        ];
     }
 
     /**
@@ -120,29 +102,6 @@ class ReForm extends Model
         $email = Content::fill(Content::EMAIL_REACTIVATION);
         if ($email !== false) {
             $link = Url::to(['account/activate', 'token' => $user->activation_token], true);        
-            return Email::queue(
-                $user->email, 
-                str_replace('{forum}', $forum, $email->topic),
-                str_replace('{forum}', $forum, str_replace('{link}', 
-                    Html::a($link, $link), $email->content)), 
-                !empty($user->id) ? $user->id : null
-            );
-        }
-        return false;
-    }
-
-    /**
-     * Sends reset email.
-     * @param User $user
-     * @return bool
-     * @since 0.2
-     */
-    protected function sendResetEmail(User $user)
-    {
-        $forum = Podium::getInstance()->podiumConfig->get('name');
-        $email = Content::fill(Content::EMAIL_PASSWORD);
-        if ($email !== false) {
-            $link = Url::to(['account/password', 'token' => $user->password_reset_token], true);        
             return Email::queue(
                 $user->email, 
                 str_replace('{forum}', $forum, $email->topic),

@@ -2,6 +2,7 @@
 
 namespace bizley\podium\models\forms;
 
+use bizley\podium\models\User;
 use bizley\podium\Podium;
 use yii\base\Model;
 

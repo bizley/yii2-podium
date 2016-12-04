@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Podium Module
- * Yii 2 Forum Module
- */
 namespace bizley\podium\traits;
 
 use Yii;
@@ -12,7 +8,6 @@ use Yii;
  * Podium Flash Trait
  * Simplifies flash messages adding. Every message is automatically translated.
  * Prepares messages for \bizley\podium\widgets\Alert widget.
- * Former FlashBehavior.
  * 
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
@@ -26,7 +21,7 @@ trait FlashTrait
      */
     public function alert($message, $removeAfterAccess = true)
     {
-        Yii::$app->session->addFlash('warning', $message, $removeAfterAccess);
+        $this->warning($message, $removeAfterAccess);
     }
     
     /**
@@ -46,18 +41,7 @@ trait FlashTrait
      */
     public function error($message, $removeAfterAccess = true)
     {
-        Yii::$app->session->addFlash('danger', $message, $removeAfterAccess);
-    }
-    
-    /**
-     * Adds flash message of given type.
-     * @param string $type the type of flash message.
-     * @param string $message the flash message to be translated.
-     * @param bool $removeAfterAccess message removal after access only.
-     */
-    public function goFlash($type, $message, $removeAfterAccess = true)
-    {
-        Yii::$app->session->addFlash($type, $message, $removeAfterAccess);
+        $this->danger($message, $removeAfterAccess);
     }
     
     /**
@@ -77,7 +61,7 @@ trait FlashTrait
      */
     public function ok($message, $removeAfterAccess = true)
     {
-        Yii::$app->session->addFlash('success', $message, $removeAfterAccess);
+        $this->success($message, $removeAfterAccess);
     }
     
     /**
