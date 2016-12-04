@@ -59,19 +59,20 @@ class Installation extends Maintenance
                 throw new Exception('Error during Administrator privileges setting!');
             }
             $transaction->commit();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Administrator account has been created.') 
+            return $this->returnSuccess(
+                Yii::t('podium/flash', 'Administrator account has been created.') 
                 . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') 
                 . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) 
                 . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') 
                 . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME)
                 . '<br>' 
-                . Html::tag('strong', Yii::t('podium/flash', 'Remember to change these credentials after first login!'), ['class' => 'text-danger']) ;
+                . Html::tag('strong', Yii::t('podium/flash', 'Remember to change these credentials after first login!'), ['class' => 'text-danger'])
+            );
         } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during account creating') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during account creating')
+            );
         }
     }
 
@@ -93,8 +94,7 @@ class Installation extends Maintenance
                 throw new Exception();
             }
         } catch (Exception $e) {
-            $this->type = self::TYPE_WARNING;
-            return Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.');
+            return $this->returnWarning(Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.'));
         }
 
         $transaction = $this->db->beginTransaction();
@@ -115,15 +115,14 @@ class Installation extends Maintenance
                 throw new Exception('Error during Administrator privileges setting!');
             }
             $transaction->commit();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', [
-                    'id' => $this->module->adminId
-                ]);
+            return $this->returnSuccess(Yii::t('podium/flash', 'Administrator privileges have been set for the user of ID {id}.', [
+                'id' => $this->module->adminId
+            ]));
         } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during account creating') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during account creating')
+            );
         }
     }
 
@@ -159,12 +158,11 @@ class Installation extends Maintenance
                         ['allow_polls', PodiumConfig::FLAG_ALLOW_POLLS],
                     ]
                 )->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Default Config settings have been added.');
+            return $this->returnSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during settings adding') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during settings adding')
+            );
         }
     }
 
@@ -212,12 +210,11 @@ class Installation extends Maintenance
                         ],
                     ]
                 )->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Default Content has been added.');
+            return $this->returnSuccess(Yii::t('podium/flash', 'Default Content has been added.'));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during content adding') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during content adding')
+            );
         }
     }
 
@@ -229,12 +226,11 @@ class Installation extends Maintenance
     {
         try {
             (new Rbac())->add($this->authManager);
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Access roles have been created.');
+            return $this->returnSuccess(Yii::t('podium/flash', 'Access roles have been created.'));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during access roles creating') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during access roles creating')
+            );
         }
     }
 

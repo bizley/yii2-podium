@@ -6,7 +6,6 @@ use bizley\podium\helpers\Helper;
 use bizley\podium\Podium;
 use Exception;
 use Yii;
-use yii\helpers\Html;
 
 /**
  * Podium Update
@@ -114,15 +113,14 @@ class Update extends Maintenance
         }
         try {
             Podium::getInstance()->podiumConfig->set($name, $value);
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Config setting {name} has been updated to {value}.', [
+            return $this->returnSuccess(Yii::t('podium/flash', 'Config setting {name} has been updated to {value}.', [
                 'name'  => $name,
                 'value' => $value,
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during configuration updating') 
-                . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during configuration updating')
+            );
         }
     }
 

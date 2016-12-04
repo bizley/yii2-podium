@@ -61,7 +61,47 @@ class Maintenance extends Component
      */
     protected $_table;
 
-
+    /**
+     * Returns success message.
+     * Sets type to success.
+     * @param string $message
+     * @return string
+     * @since 0.6
+     */
+    public function returnSuccess($message)
+    {
+        $this->type = self::TYPE_SUCCESS;
+        return $message;
+    }
+    
+    /**
+     * Returns success message.
+     * Sets type to warning.
+     * @param string $message
+     * @return string
+     * @since 0.6
+     */
+    public function returnWarning($message)
+    {
+        $this->type = self::TYPE_WARNING;
+        return $message;
+    }
+    
+    /**
+     * Returns error message.
+     * Logs error.
+     * @param string $exception exception message
+     * @param string $method method name
+     * @param string $message custom message
+     * @return string
+     * @since 0.6
+     */
+    public function returnError($exception, $method, $message)
+    {
+        Yii::error($exception, $method);
+        return $message . ':' . Html::tag('pre', $exception);
+    }
+    
     /**
      * Adds column to database table.
      * @param string $col column name
@@ -78,12 +118,11 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->addColumn($this->table, $col, $type)->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table column {name} has been added', ['name' => $col]);
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table column {name} has been added', ['name' => $col]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table column {name} adding', ['name' => $col]) 
-                    . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table column {name} adding', ['name' => $col])
+            );
         }
     }
 
@@ -113,15 +152,15 @@ class Maintenance extends Component
                     $this->getForeignName($key), $this->table, $key, 
                     $this->getTableName($ref), $col, $delete, $update
                 )->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table foreign key {name} has been added', [
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table foreign key {name} has been added', [
                 'name' => $this->getForeignName($key)
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table foreign key {name} adding', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table foreign key {name} adding', [
                     'name' => $this->getForeignName($key)
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -142,15 +181,15 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->createIndex($this->getIndexName($name), $this->table, $cols)->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table index {name} has been added', [
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table index {name} has been added', [
                 'name' => $this->getIndexName($name)
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table index {name} adding', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table index {name} adding', [
                     'name' => $this->getIndexName($name)
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -170,12 +209,11 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->alterColumn($this->table, $col, $type)->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table column {name} has been updated', ['name' => $col]);
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table column {name} has been updated', ['name' => $col]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table column {name} updating', ['name' => $col]) 
-                    . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table column {name} updating', ['name' => $col])
+            );
         }
     }
 
@@ -215,10 +253,7 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->createTable($this->table, $schema, $this->tableOptions)->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table {name} has been created', [
-                'name' => $this->rawTable
-            ]);
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table {name} has been created', ['name' => $this->rawTable]));
         } catch (Exception $e) {
             if ($this->_table != 'log') {
                 // in case of creating log table don't try to log error in it if it's not available
@@ -239,17 +274,15 @@ class Maintenance extends Component
         try {
             if ($this->db->schema->getTableSchema($this->table, true) !== null) {
                 $this->db->createCommand()->dropTable($this->table)->execute();
-                $this->type = self::TYPE_WARNING;
-                return Yii::t('podium/flash', 'Table {name} has been dropped', [
-                    'name' => $this->rawTable
-                ]);
+                return $this->returnWarning(Yii::t('podium/flash', 'Table {name} has been dropped', ['name' => $this->rawTable]));
             }
             return true;
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table {name} dropping', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table {name} dropping', [
                     'name' => $this->rawTable
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -265,12 +298,11 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->dropColumn($this->table, $col)->execute();
-            $this->type = self::TYPE_WARNING;
-            return Yii::t('podium/flash', 'Table column {name} has been dropped', ['name' => $col]);
+            return $this->returnWarning(Yii::t('podium/flash', 'Table column {name} has been dropped', ['name' => $col]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table column {name} dropping', ['name' => $col]) 
-                    . ': ' . Html::tag('pre', $e->getMessage());
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table column {name} dropping', ['name' => $col])
+            );
         }
     }
 
@@ -286,15 +318,15 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->dropForeignKey($this->getForeignName($name), $this->table)->execute();
-            $this->type = self::TYPE_WARNING;
-            return Yii::t('podium/flash', 'Table foreign key {name} has been dropped', [
+            return $this->returnWarning(Yii::t('podium/flash', 'Table foreign key {name} has been dropped', [
                 'name' => $this->getForeignName($name)
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table foreign key {name} dropping', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table foreign key {name} dropping', [
                     'name' => $this->getForeignName($name)
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -310,15 +342,15 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->dropIndex($this->getIndexName($name), $this->table)->execute();
-            $this->type = self::TYPE_WARNING;
-            return Yii::t('podium/flash', 'Table index {name} has been dropped', [
+            return $this->returnWarning(Yii::t('podium/flash', 'Table index {name} has been dropped', [
                 'name' => $this->getIndexName($name)
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table index {name} dropping', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table index {name} dropping', [
                     'name' => $this->getIndexName($name)
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -334,17 +366,17 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->renameTable($this->table, $this->getTableName($name))->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table {name} has been renamed to {new}', [
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table {name} has been renamed to {new}', [
                 'name' => $this->rawTable, 
                 'new'  => $this->getTableName($name)
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table {name} renaming to {new}', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table {name} renaming to {new}', [
                     'name' => $this->rawTable, 
                     'new'  => $this->getTableName($name)
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
@@ -364,17 +396,17 @@ class Maintenance extends Component
         }
         try {
             $this->db->createCommand()->renameColumn($this->table, $col, $name)->execute();
-            $this->type = self::TYPE_SUCCESS;
-            return Yii::t('podium/flash', 'Table column {name} has been renamed to {new}', [
+            return $this->returnSuccess(Yii::t('podium/flash', 'Table column {name} has been renamed to {new}', [
                 'name' => $col, 
                 'new'  => $name
-            ]);
+            ]));
         } catch (Exception $e) {
-            Yii::error($e->getMessage(), __METHOD__);
-            return Yii::t('podium/flash', 'Error during table column {name} renaming to {new}', [
+            return $this->returnError($e->getMessage(), __METHOD__,
+                Yii::t('podium/flash', 'Error during table column {name} renaming to {new}', [
                     'name' => $col, 
                     'new'  => $name
-                ]) . ': ' . Html::tag('pre', $e->getMessage());
+                ])
+            );
         }
     }
 
