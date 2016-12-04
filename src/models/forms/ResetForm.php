@@ -54,7 +54,7 @@ class ResetForm extends Model
      * Generates new password reset token.
      * @return int
      */
-    public function reset()
+    public function run()
     {
         $user = $this->user;
         if (empty($user)) {

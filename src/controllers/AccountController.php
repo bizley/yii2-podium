@@ -182,22 +182,12 @@ class AccountController extends BaseController
         }
 
         $model = new ReactivateForm();
-        if ($model->load(Yii::$app->request->post())) {
-            list($error, $message, $back) = $model->reactivate();
-            if ($error) {
-                Log::error('Error while queuing reactivation link', !empty($model->user->id) ? $model->user->id : null, __METHOD__);
-                if (!empty($message)) {
-                    $this->error($message);
-                }
-            } else {
-                Log::info('Reactivation link queued', $model->user->id, __METHOD__);
-                if (!empty($message)) {
-                    $this->success($message);
-                }
-            }
-            if ($back) {
-                return $this->module->goPodium();
-            }
+        if ($this->runForm($model, [
+                'error' => 'Error while queuing reactivation link',
+                'info' => 'Reactivation link queued',
+                'method' => __METHOD__
+            ])) {
+            return $this->module->goPodium();
         }
         return $this->render('reactivate', ['model' => $model]);
     }
@@ -266,23 +256,40 @@ class AccountController extends BaseController
         }
 
         $model = new ResetForm();
-        if ($model->load(Yii::$app->request->post())) {
-            list($error, $message, $back) = $model->reset();
-            if ($error) {
-                Log::error('Error while queuing password reset link', !empty($model->user->id) ? $model->user->id : null, __METHOD__);
-                if (!empty($message)) {
-                    $this->error($message);
-                }
-            } else {
-                Log::info('Password reset link queued', $model->user->id, __METHOD__);
-                if (!empty($message)) {
-                    $this->success($message);
-                }
-            }
-            if ($back) {
-                return $this->module->goPodium();
-            }
+        if ($this->runForm($model, [
+                'error' => 'Error while queuing password reset link',
+                'info' => 'Password reset link queued',
+                'method' => __METHOD__
+            ])) {
+            return $this->module->goPodium();
         }
         return $this->render('reset', ['model' => $model]);
+    }
+
+    /**
+     * Runs form.
+     * @param Model $model
+     * @param array $log
+     * @return bool
+     * @since 0.6
+     */
+    public function runForm($model, $log)
+    {
+        if (!$model->load(Yii::$app->request->post())) {
+            return false;
+        }
+        list($error, $message, $back) = $model->run();
+        if ($error) {
+            Log::error($log['error'], !empty($model->user->id) ? $model->user->id : null, $log['method']);
+            if (!empty($message)) {
+                $this->error($message);
+            }
+        } else {
+            Log::info($log['info'], $model->user->id, $log['method']);
+            if (!empty($message)) {
+                $this->success($message);
+            }
+        }
+        return $back;
     }
 }

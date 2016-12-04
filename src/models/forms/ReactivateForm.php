@@ -54,7 +54,7 @@ class ReactivateForm extends Model
      * Generates new activation token.
      * @return array $error flag, $message text, $back flag
      */
-    public function reactivate()
+    public function run()
     {
         $user = $this->getUser(User::STATUS_REGISTERED);
         if (empty($user)) {
