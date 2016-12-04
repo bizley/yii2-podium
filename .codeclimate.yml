@@ -1,0 +1,39 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+    checks:
+      CleanCode/ElseExpression:
+        enabled: false
+      CleanCode/StaticAccess:
+        enabled: false
+      Controversial/Superglobals:
+        enabled: false
+      Controversial/CamelCasePropertyName:
+        enabled: true
+        allow-underscore: true
+      Naming/ShortVariable:
+        enabled: false
+      Naming/LongVariable:
+        enabled: true
+        maximum: 25
+      Naming/ShortMethodName:
+        enabled: true
+        minimum: 2
+
+ratings:
+  paths:
+  - "**.js"
+  - "**.php"
+exclude_paths:
+- src/messages/
