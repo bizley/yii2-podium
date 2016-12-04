@@ -38,3 +38,4 @@ ratings:
   - "**.php"
 exclude_paths:
 - src/messages/
+- src/maintenance/steps/
