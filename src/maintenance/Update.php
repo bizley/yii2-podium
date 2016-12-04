@@ -22,17 +22,17 @@ class Update extends Maintenance
     const SESSION_KEY = 'podium-update';
     const SESSION_STEPS = 'steps';
     const SESSION_VERSION = 'version';
-    
+
     /**
      * @var array Update steps
      */
     private $_steps;
-    
+
     /**
      * @var array Version steps
      */
     private $_versionSteps;
-    
+
     /**
      * Proceeds next update step.
      * @return array
@@ -45,33 +45,38 @@ class Update extends Maintenance
             Yii::$app->session->set(self::SESSION_STEPS, count($this->versionSteps));
         }
         $maxStep = Yii::$app->session->get(self::SESSION_STEPS, 0);
-        if ($currentStep < $maxStep) {
-            $this->table = '...';
-            if (!isset($this->versionSteps[$currentStep])) {
-                return [
-                    'type'    => self::TYPE_ERROR,
-                    'result'  => Yii::t('podium/flash', 'Update aborted! Can not find the requested update step.'),
-                    'percent' => 100,
-                ];
-            }
-            $this->type = self::TYPE_SUCCESS;
-            $this->table = $this->versionSteps[$currentStep]['table'];
-            $result = call_user_func([$this, $this->versionSteps[$currentStep]['call']], $this->versionSteps[$currentStep]);
-            Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
+
+        $this->table = '...';
+        $this->type = self::TYPE_ERROR;
+
+        if ($currentStep >= $maxStep) {
             return [
-                'type'    => $this->type,
-                'result'  => $result,
-                'table'   => $this->getTable(true),
-                'percent' => $this->countPercent($currentStep, $maxStep),
+                'type' => $this->type,
+                'result' => Yii::t('podium/flash', 'Weird... Update should already complete...'),
+                'percent' => 100
             ];
         }
+
+        if (!isset($this->versionSteps[$currentStep])) {
+            return [
+                'type' => $this->type,
+                'result' => Yii::t('podium/flash', 'Update aborted! Can not find the requested update step.'),
+                'percent' => 100,
+            ];
+        }
+
+        $this->table = $this->versionSteps[$currentStep]['table'];
+        $result = call_user_func_array([$this, $this->versionSteps[$currentStep]['call']], $this->versionSteps[$currentStep]['data']);
+
+        Yii::$app->session->set(self::SESSION_KEY, ++$currentStep);
         return [
-            'type'    => self::TYPE_ERROR,
-            'result'  => Yii::t('podium/flash', 'Weird... Update should already complete...'),
-            'percent' => 100
+            'type' => $this->type,
+            'result' => $result,
+            'table' => $this->rawTable,
+            'percent' => $this->countPercent($currentStep, $maxStep),
         ];
     }
-    
+
     /**
      * Returns update steps from next new version.
      * @return array
@@ -91,38 +96,36 @@ class Update extends Maintenance
         }
         return $this->_versionSteps;
     }
-    
+
     /**
      * Updates database value in config table.
-     * @param array $data
-     * @return string result message.
+     * @param string $name config key
+     * @param string $value config value
+     * @return string result message
      * @since 0.2
      */
-    protected function updateValue($data)
+    protected function updateValue($name, $value)
     {
-        if (!isset($data['name'])) {
-            $this->type = self::TYPE_ERROR;
+        if (empty($name)) {
             return Yii::t('podium/flash', 'Installation aborted! Column name missing.');
         }
-        if (!isset($data['value'])) {
-            $this->type = self::TYPE_ERROR;
+        if ($value === null) {
             return Yii::t('podium/flash', 'Installation aborted! Column value missing.');
         }
-        
         try {
-            Podium::getInstance()->podiumConfig->set($data['name'], $data['value']);
+            Podium::getInstance()->podiumConfig->set($name, $value);
+            $this->type = self::TYPE_SUCCESS;
             return Yii::t('podium/flash', 'Config setting {name} has been updated to {value}.', [
-                'name'  => $data['name'],
-                'value' => $data['value'],
+                'name'  => $name,
+                'value' => $value,
             ]);
         } catch (Exception $e) {
             Yii::error($e->getMessage(), __METHOD__);
-            $this->type = self::TYPE_ERROR;
             return Yii::t('podium/flash', 'Error during configuration updating') 
                 . ': ' . Html::tag('pre', $e->getMessage());
         }
     }
-    
+
     /**
      * Update steps.
      * @since 0.2
