@@ -11,26 +11,8 @@ engines:
     enabled: true
   phpmd:
     enabled: true
-    checks:
-      CleanCode/ElseExpression:
-        enabled: false
-      CleanCode/StaticAccess:
-        enabled: false
-      Controversial/Superglobals:
-        enabled: false
-      Controversial/CamelCasePropertyName:
-        enabled: true
-        allow-underscore: true
-      Naming/ShortVariable:
-        enabled: false
-      Naming/LongVariable:
-        enabled: true
-        maximum: 25
-      Naming/ShortMethodName:
-        enabled: true
-        minimum: 2
-      Naming/BooleanGetMethodName:
-        enabled: false
+    config:
+      rulesets: "codesize,design,unusedcode,phpmd_ruleset.xml"
 ratings:
   paths:
   - "**.js"
