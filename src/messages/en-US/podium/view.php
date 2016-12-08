@@ -502,5 +502,5 @@ return [
     '{n, plural, =1{# anonymous user} other{# anonymous users}}' => '',
     '{n, plural, =1{# guest} other{# guests}}' => '',
     '{n, plural, =1{# member} other{# members}}' => '',
-    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} with Github-Flavored {Markdown} mode will be used instead.' => '',
+    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {CodeMirror} with Github-Flavored {Markdown} mode will be used instead.' => '',
 ];

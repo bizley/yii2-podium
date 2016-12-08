@@ -502,5 +502,5 @@ return [
     '{n, plural, =1{# anonymous user} other{# anonymous users}}' => '{n, plural, =1{# anonimowy użytkownik} other{# anonimowych użytkowników}}',
     '{n, plural, =1{# guest} other{# guests}}' => '{n, plural, =1{# gość} other{# gości}}',
     '{n, plural, =1{# member} other{# members}}' => '{n, plural, =1{# forumowicz} other{# forumowiczów}}',
-    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} in {Markdown} mode will be used instead.' => '{WYSIWYG} to akronim angielskiego określenia "dostaniesz to, co widzisz" i Podium używa edytora {Quill}, aby można było dodawać posty w taki sposób. Możesz go wyłączyć, aby używać edytora {Codemirror} w trybie {Markdown}.',
+    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {CodeMirror} in {Markdown} mode will be used instead.' => '{WYSIWYG} to akronim angielskiego określenia "dostaniesz to, co widzisz" i Podium używa edytora {Quill}, aby można było dodawać posty w taki sposób. Możesz go wyłączyć, aby używać edytora {CodeMirror} w trybie {Markdown}.',
 ];

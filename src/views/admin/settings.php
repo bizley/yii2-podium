@@ -99,10 +99,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="col-sm-12">
                             <?= $form->field($model, 'use_wysiwyg')->checkBox()->label(Yii::t('podium/view', 'Use WYSIWYG editor'))
-                                ->hint(Yii::t('podium/view', '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} in {Markdown} mode will be used instead.', [
+                                ->hint(Yii::t('podium/view', '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {CodeMirror} in {Markdown} mode will be used instead.', [
                                     'WYSIWYG' => Html::a('WYSIWYG', 'https://en.wikipedia.org/wiki/WYSIWYG'),
                                     'Quill' => Html::a('Quill', 'https://quilljs.com'),
-                                    'Codemirror' => Html::a('Quill', 'https://codemirror.net'),
+                                    'CodeMirror' => Html::a('CodeMirror', 'https://codemirror.net'),
                                     'Markdown' => Html::a('Markdown', 'https://en.wikipedia.org/wiki/Markdown')
                                 ])) ?>
                         </div>
