@@ -24,7 +24,9 @@
         "kartik-v/yii2-sortable": "*",
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-datepicker": "*",
-        "himiklab/yii2-recaptcha-widget": "^1.0"
+        "himiklab/yii2-recaptcha-widget": "^1.0",
+        "bower-asset/codemirror": "^5.0",
+        "bower-asset/codemirror-buttons": "^1.0"
     },
     "autoload": {
         "psr-4": {

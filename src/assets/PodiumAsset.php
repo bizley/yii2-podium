@@ -16,17 +16,17 @@ class PodiumAsset extends AssetBundle
      * @inheritdoc
      */
     public $sourcePath = '@podium/css';
-    
+
     /**
      * @inheritdoc
      */
     public $css = ['podium.css'];
-    
+
     /**
      * @inheritdoc
      */
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-    ];    
+    ];
 }
