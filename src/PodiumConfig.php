@@ -30,9 +30,10 @@ class PodiumConfig extends Component
     const DEFAULT_FROM_EMAIL = 'no-reply@change.me';
     const DEFAULT_FROM_NAME = 'Podium';
     const FLAG_ALLOW_POLLS = 1;
-    const FLAG_USE_CAPTCHA = 1;
     const FLAG_MEMBERS_VISIBLE = 1;
     const FLAG_MERGE_POSTS = 1;
+    const FLAG_USE_CAPTCHA = 1;
+    const FLAG_USE_WYSIWYG = 1;
     const HOT_MINIMUM = 20;
     const MAINTENANCE_MODE = 0;
     const MAX_SEND_ATTEMPTS = 5;
@@ -64,25 +65,26 @@ class PodiumConfig extends Component
     public function getDefaults()
     {
         return [
-            'name' => self::PODIUM_NAME,
-            'version' => Podium::getInstance()->version,
-            'hot_minimum' => self::HOT_MINIMUM,
-            'members_visible' => self::FLAG_MEMBERS_VISIBLE,
+            'activation_token_expire' => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
+            'allow_polls' => self::FLAG_ALLOW_POLLS,
+            'email_token_expire' => self::SECONDS_EMAIL_TOKEN_EXPIRE,
             'from_email' => self::DEFAULT_FROM_EMAIL,
             'from_name' => self::DEFAULT_FROM_NAME,
+            'hot_minimum' => self::HOT_MINIMUM,
             'maintenance_mode' => self::MAINTENANCE_MODE,
             'max_attempts' => self::MAX_SEND_ATTEMPTS,
-            'use_captcha' => self::FLAG_USE_CAPTCHA,
+            'members_visible' => self::FLAG_MEMBERS_VISIBLE,
             'merge_posts' => self::FLAG_MERGE_POSTS,
-            'recaptcha_sitekey' => '',
-            'recaptcha_secretkey' => '',
-            'password_reset_token_expire' => self::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE,
-            'email_token_expire' => self::SECONDS_EMAIL_TOKEN_EXPIRE,
-            'activation_token_expire' => self::SECONDS_ACTIVATION_TOKEN_EXPIRE,
-            'meta_keywords' => self::META_KEYWORDS,
             'meta_description' => self::META_DESCRIPTION,
+            'meta_keywords' => self::META_KEYWORDS,
+            'name' => self::PODIUM_NAME,
+            'password_reset_token_expire' => self::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE,
+            'recaptcha_secretkey' => '',
+            'recaptcha_sitekey' => '',
             'registration_off' => self::REGISTRATION_OFF,
-            'allow_polls' => self::FLAG_ALLOW_POLLS,
+            'use_captcha' => self::FLAG_USE_CAPTCHA,
+            'use_wysiwyg' => self::FLAG_USE_WYSIWYG,
+            'version' => Podium::getInstance()->version,
         ];
     }
     

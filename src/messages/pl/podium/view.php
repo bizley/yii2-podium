@@ -442,6 +442,7 @@ return [
     'Use Gravatar image as avatar' => 'Użyj Gravatara jako avatara',
     'Use reCAPTCHA instead of standard Captcha - Enter Secret Key' => 'Użyj reCAPTCHA zamiast standardowej captcha - podaj sekretny klucz',
     'Use reCAPTCHA instead of standard Captcha - Enter Site Key' => 'Użyj reCAPTCHA zamiast standardowej captcha - podaj klucz strony',
+    'Use WYSIWYG editor' => 'Użyj edytora WYSIWYG',
     'User Name or E-mail' => 'Nazwa lub adres e-mail użytkownika',
     'Username' => 'Nazwa użytkownika',
     'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.' => 'Nazwa użytkownika musi zaczynać się literą, składać się tylko z liter, cyfr i podkreślników i mieć przynajmniej 3 znaki długości.',
@@ -501,4 +502,5 @@ return [
     '{n, plural, =1{# anonymous user} other{# anonymous users}}' => '{n, plural, =1{# anonimowy użytkownik} other{# anonimowych użytkowników}}',
     '{n, plural, =1{# guest} other{# guests}}' => '{n, plural, =1{# gość} other{# gości}}',
     '{n, plural, =1{# member} other{# members}}' => '{n, plural, =1{# forumowicz} other{# forumowiczów}}',
+    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} in {Markdown} mode will be used instead.' => '{WYSIWYG} to akronim angielskiego określenia "dostaniesz to, co widzisz" i Podium używa edytora {Quill}, aby można było dodawać posty w taki sposób. Możesz go wyłączyć, aby używać edytora {Codemirror} w trybie {Markdown}.',
 ];

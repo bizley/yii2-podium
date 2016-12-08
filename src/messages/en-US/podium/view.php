@@ -442,6 +442,7 @@ return [
     'Use Gravatar image as avatar' => '',
     'Use reCAPTCHA instead of standard Captcha - Enter Secret Key' => '',
     'Use reCAPTCHA instead of standard Captcha - Enter Site Key' => '',
+    'Use WYSIWYG editor' => '',
     'User Name or E-mail' => '',
     'Username' => '',
     'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.' => '',
@@ -501,4 +502,5 @@ return [
     '{n, plural, =1{# anonymous user} other{# anonymous users}}' => '',
     '{n, plural, =1{# guest} other{# guests}}' => '',
     '{n, plural, =1{# member} other{# members}}' => '',
+    '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} with Github-Flavored {Markdown} mode will be used instead.' => '',
 ];

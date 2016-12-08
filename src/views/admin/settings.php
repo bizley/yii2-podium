@@ -97,6 +97,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'allow_polls')->checkBox()->label(Yii::t('podium/view', 'Allow polls adding')) ?>
                         </div>
+                        <div class="col-sm-12">
+                            <?= $form->field($model, 'use_wysiwyg')->checkBox()->label(Yii::t('podium/view', 'Use WYSIWYG editor'))
+                                ->hint(Yii::t('podium/view', '{WYSIWYG} stands for What You See Is What You Get and Podium uses {Quill} for this way of posting. If you would like to switch it off {Codemirror} in {Markdown} mode will be used instead.', [
+                                    'WYSIWYG' => Html::a('WYSIWYG', 'https://en.wikipedia.org/wiki/WYSIWYG'),
+                                    'Quill' => Html::a('Quill', 'https://quilljs.com'),
+                                    'Codemirror' => Html::a('Quill', 'https://codemirror.net'),
+                                    'Markdown' => Html::a('Markdown', 'https://en.wikipedia.org/wiki/Markdown')
+                                ])) ?>
+                        </div>
                     </div>
                     <h3 id="guests"><span class="label label-primary"><?= Yii::t('podium/view', 'Guests privileges') ?></span></h3>
                     <div class="row">

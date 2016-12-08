@@ -276,4 +276,22 @@ return [
             ],
         ]
     ],
+    '0.6' => [
+        [
+            'table' => 'config',
+            'call' => 'updateValue',
+            'data' => [
+                'name' => 'use_wysiwyg',
+                'value' => '1'
+            ],
+        ],
+        [
+            'table' => 'config',
+            'call' => 'updateValue',
+            'data' => [
+                'name' => 'version',
+                'value' => '0.6'
+            ],
+        ]
+    ],
 ];
