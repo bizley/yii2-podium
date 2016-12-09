@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\widgets\QuillFull;
+use bizley\podium\widgets\editor\EditorFull;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php endif; ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className()) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(EditorFull::className()) ?>
                         </div>
                     </div>
                 </div>

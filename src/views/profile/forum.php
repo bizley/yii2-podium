@@ -9,7 +9,7 @@
 
 use bizley\podium\models\Meta;
 use bizley\podium\widgets\Avatar;
-use bizley\podium\widgets\QuillBasic;
+use bizley\podium\widgets\editor\EditorBasic;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -39,7 +39,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                             <?= $form
                                 ->field($model, 'signature')
                                 ->label(Yii::t('podium/view', 'Signature under each post'))
-                                ->widget(QuillBasic::className()) ?>
+                                ->widget(EditorBasic::className()) ?>
                         </div>
                     </div>
                     <div class="row">

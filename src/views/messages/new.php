@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\widgets\QuillBasic;
+use bizley\podium\widgets\editor\EditorBasic;
 use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -84,7 +84,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
             <div class="row">
                 <div class="col-md-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Content') ?></p></div>
                 <div class="col-md-9">
-                    <?= $form->field($model, 'content')->label(false)->widget(QuillBasic::className()) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(EditorBasic::className()) ?>
                 </div>
             </div>
             <div class="row">

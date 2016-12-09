@@ -1,0 +1,20 @@
+.CodeMirror {
+    border:1px solid #ccc;
+    height:auto;
+    padding:5px;
+}
+.CodeMirror-buttonsPanel {
+    border-top:1px solid #ccc;
+    border-left:1px solid #ccc;
+    border-right:1px solid #ccc;
+    padding:10px 12px;
+}
+.CodeMirror-buttonsPanel button {
+    background-color:#fff;
+    border:0;
+    margin-right:3px;
+    border-radius:5px;
+}
+.CodeMirror-buttonsPanel button:hover {
+    background-color:#eee;
+}

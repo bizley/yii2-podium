@@ -8,8 +8,8 @@
  */
 
 use bizley\podium\Podium;
+use bizley\podium\widgets\editor\EditorFull;
 use bizley\podium\widgets\poll\Poll;
-use bizley\podium\widgets\QuillFull;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 use yii\helpers\Html;
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'post')->label(false)->widget(QuillFull::className()); ?>
+                            <?= $form->field($model, 'post')->label(false)->widget(EditorFull::className()); ?>
                         </div>
                     </div>
                     <div class="row">

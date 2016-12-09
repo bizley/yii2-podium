@@ -1,6 +1,6 @@
 <?php
 
-namespace bizley\podium\widgets\codemirror;
+namespace bizley\podium\widgets\codemirror\assets;
 
 use yii\web\AssetBundle;
 

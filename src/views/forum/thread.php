@@ -11,8 +11,8 @@ use bizley\podium\models\User;
 use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\widgets\Avatar;
+use bizley\podium\widgets\editor\EditorBasic;
 use bizley\podium\widgets\poll\Poll;
-use bizley\podium\widgets\QuillBasic;
 use bizley\podium\widgets\Readers;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -192,7 +192,7 @@ if ($thread->locked) {
                 <?php $form = ActiveForm::begin(['id' => 'new-quick-post-form', 'action' => ['post', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum->id, 'tid' => $thread->id]]); ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'content')->label(false)->widget(QuillBasic::className()) ?>
+                            <?= $form->field($model, 'content')->label(false)->widget(EditorBasic::className()) ?>
                         </div>
                     </div>
 <?php if (!$thread->subscription): ?>

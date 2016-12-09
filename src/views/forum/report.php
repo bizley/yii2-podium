@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-use bizley\podium\widgets\QuillBasic;
+use bizley\podium\widgets\editor\EditorBasic;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-sm-12">
                             <?= $form->field($model, 'content')
                                 ->label(Yii::t('podium/view', 'Complaint'))
-                                ->widget(QuillBasic::className()) ?>
+                                ->widget(EditorBasic::className()) ?>
                         </div>
                     </div>
                 </div>
