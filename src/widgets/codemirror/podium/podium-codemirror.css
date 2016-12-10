@@ -15,6 +15,4 @@
     margin-right:3px;
     border-radius:5px;
 }
-.CodeMirror-buttonsPanel button:hover {
-    background-color:#eee;
-}
+.CodeMirror-buttonsPanel button:hover { background-color:#eee }

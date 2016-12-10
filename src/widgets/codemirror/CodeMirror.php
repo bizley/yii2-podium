@@ -17,6 +17,11 @@ use yii\widgets\InputWidget;
 class CodeMirror extends InputWidget
 {
     /**
+     * @var string Editor type to display
+     */
+    public $type = 'basic';
+    
+    /**
      * @inheritdoc
      */
     public function run()
@@ -27,6 +32,9 @@ class CodeMirror extends InputWidget
                 $this->model->{$this->attribute} = "\n\n\n\n\n\n\n\n";
             }
             return Html::activeTextarea($this->model, $this->attribute, ['id' => 'codemirror']);
+        }
+        if (empty($this->value)) {
+            $this->value = "\n\n\n\n\n\n\n\n";
         }
         return Html::textarea($this->name, $this->value, ['id' => 'codemirror']);
     }
@@ -51,7 +59,7 @@ class CodeMirror extends InputWidget
     link: "' . Yii::t('podium/view', 'Link') . '",
     image: "' . Yii::t('podium/view', 'Image') . '",
     help: "' . Yii::t('podium/view', 'Help') . '",
-};';
+};var CodeMirrorSet = "' . $this->type . '";';
         $view->registerJs($js, View::POS_BEGIN);
     }
 }
