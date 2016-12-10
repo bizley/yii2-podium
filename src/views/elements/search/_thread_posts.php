@@ -16,7 +16,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $postModel = !empty($model->posts[0]) ? $model->posts[0] : $model->postData;
 ?>
 <td class="podium-thread-line">
-    <a href="<?= Url::to(['forum/show', 'id' => $postModel->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($postModel->content)) ?><br><strong><?= $postModel->author->podiumName ?></strong> <?= Podium::getInstance()->formatter->asRelativeTime($postModel->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'Found Post') ?>">
+    <a href="<?= Url::to(['forum/show', 'id' => $postModel->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($postModel->parsedContent)) ?><br><strong><?= $postModel->author->podiumName ?></strong> <?= Podium::getInstance()->formatter->asRelativeTime($postModel->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'Found Post') ?>">
         <span class="glyphicon glyphicon-comment"></span>
     </a>
     <a href="<?= Url::to(['forum/show', 'id' => $postModel->id]) ?>" class="pull-left btn btn-<?= $postModel->thread->getCssClass() ?>" style="margin-right:10px" data-toggle="tooltip" data-placement="top" title="<?= $postModel->thread->getDescription() ?>">

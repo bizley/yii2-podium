@@ -68,10 +68,10 @@ if (strpos($model->content, '<pre class="ql-syntax">') !== false) {
 <?php if (isset($parent) && $parent): ?>
                 <a href="<?= Url::to(['forum/thread', 'cid' => $model->thread->category_id, 'fid' => $model->forum_id, 'id' => $model->thread_id, 'slug' => $model->thread->slug]) ?>"><span class="glyphicon glyphicon-comment"></span> <?= Html::encode($model->thread->name) ?></a><br><br>
 <?php endif; ?>
-                <?= $model->content ?>
+                <?= $model->parsedContent ?>
 <?php if (!empty($model->author->meta->signature)): ?>
                 <div class="podium-footer small text-muted">
-                    <hr><?= $model->author->meta->signature ?>
+                    <hr><?= $model->author->meta->parsedSignature ?>
                 </div>
 <?php endif; ?>
                 <ul class="podium-action-bar list-inline">

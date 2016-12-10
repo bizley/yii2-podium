@@ -17,7 +17,7 @@ $firstToSee = $model->firstToSee();
 
 ?>
 <td class="podium-thread-line">
-    <a href="<?= Url::to(['forum/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($firstToSee->content)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Podium::getInstance()->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
+    <a href="<?= Url::to(['forum/show', 'id' => $firstToSee->id]) ?>" class="podium-go-to-new pull-right" style="margin-right:10px" data-toggle="popover" data-container="body" data-placement="left" data-trigger="hover focus" data-html="true" data-content="<small><?= Html::encode(strip_tags($firstToSee->parsedContent)) ?><br><strong><?= $firstToSee->author->podiumName ?></strong> <?= Podium::getInstance()->formatter->asRelativeTime($firstToSee->updated_at) ?></small>" title="<?= Yii::t('podium/view', 'First New Post') ?>">
         <span class="glyphicon glyphicon-leaf"></span>
     </a>
     <a href="<?= Url::to(['forum/thread', 'cid' => $model->category_id, 'fid' => $model->forum_id, 'id' => $model->id, 'slug' => $model->slug]) ?>" class="pull-left btn btn-<?= $model->getCssClass() ?>" style="margin-right:10px" data-toggle="tooltip" data-placement="top" title="<?= $model->getDescription() ?>">

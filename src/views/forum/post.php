@@ -24,10 +24,15 @@ $this->params['breadcrumbs'][] = $this->title;
 $author = User::findMe();
 
 ?>
-<?php if (!empty($preview)): ?>
+<?php if ($preview): ?>
 <div class="row">
     <div class="col-sm-10 col-sm-offset-2">
-        <?= Alert::widget(['body' => '<strong><small>' . Yii::t('podium/view', 'Post Preview') . '</small></strong>:<hr>' . $preview, 'options' => ['class' => 'alert alert-warning']]); ?>
+        <?= Alert::widget([
+            'body' => '<strong><small>' 
+                        . Yii::t('podium/view', 'Post Preview') 
+                        . '</small></strong>:<hr>' . $model->parsedContent, 
+            'options' => ['class' => 'alert-info']
+        ]) ?>
     </div>
 </div>
 <?php endif; ?>

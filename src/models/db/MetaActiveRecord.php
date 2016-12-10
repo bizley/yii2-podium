@@ -4,8 +4,8 @@ namespace bizley\podium\models\db;
 
 use bizley\podium\db\ActiveRecord;
 use bizley\podium\helpers\Helper;
+use bizley\podium\Podium;
 use yii\behaviors\TimestampBehavior;
-use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -49,11 +49,14 @@ class MetaActiveRecord extends ActiveRecord
         return [
             [['location', 'signature'], 'trim'],        
             ['location', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(Html::encode($value));
+                return HtmlPurifier::process(strip_tags(trim($value)));
             }],            
             ['gravatar', 'boolean'],
             ['signature', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+                    return HtmlPurifier::process(strip_tags(trim($value)));
+                }
+                return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig());
             }],
             ['signature', 'string', 'max' => 512],
         ];

@@ -7,6 +7,7 @@ use bizley\podium\log\Log;
 use bizley\podium\models\db\PostActiveRecord;
 use bizley\podium\Podium;
 use bizley\podium\PodiumCache;
+use cebe\markdown\GithubMarkdown;
 use Exception;
 use yii\data\ActiveDataProvider;
 use yii\helpers\HtmlPurifier;
@@ -16,6 +17,8 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
+ * @property string $parsedContent
  */
 class Post extends PostActiveRecord
 {
@@ -69,7 +72,7 @@ class Post extends PostActiveRecord
      */
     protected function prepareWords()
     {
-        $cleanHtml = HtmlPurifier::process($this->content);
+        $cleanHtml = HtmlPurifier::process(strip_tags(trim($this->content)));
         $purged = preg_replace('/<[^>]+>/', ' ', $cleanHtml);
         $wordsRaw = array_unique(preg_split('/[\s,\.\n]+/', $purged));
         $allWords = [];
@@ -455,7 +458,11 @@ class Post extends PostActiveRecord
             $loggedId = User::loggedId();
             $sameAuthor = !empty($previous->author_id) && $previous->author_id == $loggedId;
             if ($sameAuthor && Podium::getInstance()->podiumConfig->get('merge_posts')) {
-                $previous->content .= '<hr>' . $this->content;
+                $separator = '<hr>';
+                if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+                    $separator = "\n\n---\n";
+                }
+                $previous->content .= $separator . $this->content;
                 $previous->edited = 1;
                 $previous->touch('edited_at');
                 if (!$previous->save()) {
@@ -565,5 +572,20 @@ class Post extends PostActiveRecord
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
+    }
+    
+    /**
+     * Returns content Markdown-parsed if WYSIWYG editor is switched off.
+     * @return string
+     * @since 0.6
+     */
+    public function getParsedContent()
+    {
+        if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+            $parser = new GithubMarkdown();
+            $parser->html5 = true;
+            return $parser->parse($this->content);
+        }
+        return $this->content;
     }
 }

@@ -33,7 +33,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
                 </small>
             </div>
             <div class="popover-content podium-content">
-                <?= $model->content ?>
+                <?= $model->parsedContent ?>
             </div>
         </div>
     </div>

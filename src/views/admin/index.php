@@ -59,7 +59,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                             <a href="<?= Url::to(['forum/show', 'id' => $post->id]) ?>"><?= Html::encode($post->thread->name) ?></a>
                         </td>
                         <td>
-                            <span data-toggle="popover" data-container="body" data-placement="right" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($post->content, 20, '...', true)) ?></small>" title="<?= Yii::t('podium/view', 'Post Preview') ?>">
+                            <span data-toggle="popover" data-container="body" data-placement="right" data-trigger="hover focus" data-html="true" data-content="<small><?= str_replace('"', '&quote;', StringHelper::truncateWords($post->parsedContent, 20, '...', true)) ?></small>" title="<?= Yii::t('podium/view', 'Post Preview') ?>">
                                 <span class="glyphicon glyphicon-leaf"></span>
                             </span>
                         </td>

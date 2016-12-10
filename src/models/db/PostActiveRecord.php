@@ -8,10 +8,10 @@ use bizley\podium\models\Forum;
 use bizley\podium\models\PostThumb;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
+use bizley\podium\Podium;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -66,12 +66,15 @@ class PostActiveRecord extends ActiveRecord
         return [
             ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
             ['topic', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(Html::encode($value));
+                return HtmlPurifier::process(strip_tags(trim($value)));
             }, 'on' => ['firstPost']],
             ['subscribe', 'boolean'],
             ['content', 'required'],
             ['content', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+                if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+                    return HtmlPurifier::process(strip_tags(trim($value)));
+                }
+                return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('full'));
             }],
             ['content', 'string', 'min' => 10],
         ];

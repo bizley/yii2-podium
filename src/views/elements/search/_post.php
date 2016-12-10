@@ -14,19 +14,17 @@ use yii\helpers\Url;
 
 $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
 
-$content = $model->postData->content;
+$content = $model->postData->parsedContent;
 $thread  = Html::encode($model->postData->thread->name);
 if ($type == 'topics') {
     foreach ($words as $word) {
-        $thread = preg_replace("/$word/", '*#*&*?*' . $word . '*%*(*!*', $thread);
+        $thread = preg_replace("/$word/", '<mark>' . $word . '</mark>', $thread);
     }
-    $thread = str_replace(['*#*&*?*', '*%*(*!*'], ['<mark>', '</mark>'], $thread);
 }
 else {
     foreach ($words as $word) {
-        $content = preg_replace("/$word/", '*#*&*?*' . $word . '*%*(*!*', $content);
+        $content = preg_replace("/$word/", '<mark>' . $word . '</mark>', $content);
     }
-    $content = str_replace(['*#*&*?*', '*%*(*!*'], ['<mark>', '</mark>'], $content);
 }
 
 ?>

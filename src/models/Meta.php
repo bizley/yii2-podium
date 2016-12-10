@@ -3,6 +3,8 @@
 namespace bizley\podium\models;
 
 use bizley\podium\models\db\MetaActiveRecord;
+use bizley\podium\Podium;
+use cebe\markdown\GithubMarkdown;
 
 /**
  * Meta model
@@ -10,6 +12,8 @@ use bizley\podium\models\db\MetaActiveRecord;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
+ * @property string $parsedSignature
  */
 class Meta extends MetaActiveRecord
 {
@@ -39,5 +43,20 @@ class Meta extends MetaActiveRecord
                 'maxSize' => self::MAX_SIZE],
             ]
         );
+    }
+    
+    /**
+     * Returns signature Markdown-parsed if WYSIWYG editor is switched off.
+     * @return string
+     * @since 0.6
+     */
+    public function getParsedSignature()
+    {
+        if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+            $parser = new GithubMarkdown();
+            $parser->html5 = true;
+            return $parser->parse($this->signature);
+        }
+        return $this->signature;
     }
 }

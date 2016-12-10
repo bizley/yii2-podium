@@ -6,6 +6,7 @@ use bizley\podium\db\ActiveRecord;
 use bizley\podium\helpers\Helper;
 use bizley\podium\models\MessageReceiver;
 use bizley\podium\models\User;
+use bizley\podium\Podium;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\HtmlPurifier;
@@ -93,10 +94,13 @@ class MessageActiveRecord extends ActiveRecord
             ['sender_status', 'in', 'range' => self::getStatuses()],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value);
+                return HtmlPurifier::process(strip_tags(trim($value)));
             }],
             ['content', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig());
+                if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+                    return HtmlPurifier::process(strip_tags(trim($value)));
+                }
+                return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig());
             }],
         ];
     }

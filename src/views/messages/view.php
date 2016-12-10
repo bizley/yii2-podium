@@ -56,7 +56,7 @@ $loggedId = User::loggedId();
                             <?= Html::encode($model->topic) ?>
                         </div>
                         <div class="popover-content">
-                            <?= $model->content ?>
+                            <?= $model->parsedContent ?>
                             <div class="text-right">
 <?php if ($type == 'received'): ?>
                                 <a href="<?= Url::to(['messages/reply', 'id' => $model->id]) ?>" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?= Yii::t('podium/view', 'Reply to Message') ?>"><span class="glyphicon glyphicon-share-alt"></span></a>

@@ -71,7 +71,7 @@ $loggedId = User::loggedId();
                             <?= Html::encode($reply->topic) ?>
                         </div>
                         <div class="popover-content">
-                            <?= $reply->content ?>
+                            <?= $reply->parsedContent ?>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@ $loggedId = User::loggedId();
                             <?= Html::encode($reply->reply->topic) ?>
                         </div>
                         <div class="popover-content">
-                            <?= $reply->reply->content ?>
+                            <?= $reply->reply->parsedContent ?>
                         </div>
                     </div>
                 </div>

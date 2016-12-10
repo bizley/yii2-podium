@@ -63,10 +63,10 @@ class ForumPostController extends ForumThreadController
         if ($post->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $post->thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
             return $this->redirect(['forum/thread', 
-                'cid'    => $post->forum->category->id, 
-                'fid'    => $post->forum->id, 
+                'cid' => $post->forum->category->id, 
+                'fid' => $post->forum->id, 
                 'id' => $post->thread->id, 
-                'slug'   => $post->thread->slug
+                'slug' => $post->thread->slug
             ]);
         }
 
@@ -91,9 +91,9 @@ class ForumPostController extends ForumThreadController
                     }
                     return $this->redirect([
                         'forum/thread', 
-                        'cid'  => $post->forum->category->id, 
-                        'fid'  => $post->forum->id, 
-                        'id'   => $post->thread->id, 
+                        'cid' => $post->forum->category->id, 
+                        'fid' => $post->forum->id, 
+                        'id' => $post->thread->id, 
                         'slug' => $post->thread->slug
                     ]);
                 }
@@ -146,8 +146,8 @@ class ForumPostController extends ForumThreadController
                     }
                     return $this->redirect([
                         'forum', 
-                        'cid'  => $thread->forum->category->id, 
-                        'id'   => $thread->forum->id, 
+                        'cid' => $thread->forum->category->id, 
+                        'id' => $thread->forum->id, 
                         'slug' => $thread->forum->slug
                     ]);
                 }
@@ -155,8 +155,8 @@ class ForumPostController extends ForumThreadController
             }
         }
         return $this->render('deleteposts', [
-            'model'        => $thread,
-            'dataProvider' => (new Post)->search($thread->forum->id, $thread->id)
+            'model' => $thread,
+            'dataProvider' => (new Post())->search($thread->forum->id, $thread->id)
         ]);
     }
     
@@ -185,9 +185,9 @@ class ForumPostController extends ForumThreadController
         if ($post->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $post->thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
             return $this->redirect(['forum/thread', 
-                'cid'  => $post->forum->category->id, 
-                'fid'  => $post->forum->id, 
-                'id'   => $post->thread->id, 
+                'cid' => $post->forum->category->id, 
+                'fid' => $post->forum->id, 
+                'id' => $post->thread->id, 
                 'slug' => $post->thread->slug
             ]);
         }
@@ -197,14 +197,10 @@ class ForumPostController extends ForumThreadController
         }
         
         $isFirstPost = false;
-        $firstPost = Post::find()
-                        ->where([
-                            'thread_id' => $post->thread->id, 
-                            'forum_id'  => $post->forum->id
-                        ])
-                        ->orderBy(['id' => SORT_ASC])
-                        ->limit(1)
-                        ->one();
+        $firstPost = Post::find()->where([
+                'thread_id' => $post->thread->id, 
+                'forum_id'  => $post->forum->id
+            ])->orderBy(['id' => SORT_ASC])->limit(1)->one();
         if ($firstPost->id == $post->id) {
             $post->scenario = 'firstPost';
             $post->topic = $post->thread->name;
@@ -212,11 +208,11 @@ class ForumPostController extends ForumThreadController
         }   
         
         $postData = Yii::$app->request->post();
-        $preview = '';
+        $preview = false;
         if ($post->load($postData)) {
             if ($post->validate()) {
                 if (isset($postData['preview-button'])) {
-                    $preview = $post->content;
+                    $preview = true;
                 } else {
                     if ($post->podiumEdit($isFirstPost)) {
                         $this->success(Yii::t('podium/flash', 'Post has been updated.'));
@@ -227,8 +223,8 @@ class ForumPostController extends ForumThreadController
             }
         }
         return $this->render('edit', [
-            'preview'     => $preview,
-            'model'       => $post,
+            'preview' => $preview,
+            'model' => $post,
             'isFirstPost' => $isFirstPost
         ]);
     }
@@ -338,7 +334,7 @@ class ForumPostController extends ForumThreadController
             'list'         => $list,
             'options'      => $options,
             'listforum'    => $listforum,
-            'dataProvider' => (new Post)->search($thread->forum->id, $thread->id)
+            'dataProvider' => (new Post())->search($thread->forum->id, $thread->id)
         ]);
     }
 
@@ -358,14 +354,11 @@ class ForumPostController extends ForumThreadController
             return $this->redirect(['account/login']);
         }
         
-        $thread = Thread::find()
-                    ->where([
-                        'id'          => $tid, 
-                        'category_id' => $cid, 
-                        'forum_id'    => $fid
-                    ])
-                    ->limit(1)
-                    ->one();
+        $thread = Thread::find()->where([
+                'id' => $tid, 
+                'category_id' => $cid, 
+                'forum_id' => $fid
+            ])->limit(1)->one();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -374,9 +367,9 @@ class ForumPostController extends ForumThreadController
         if ($thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
             return $this->redirect(['forum/thread', 
-                'cid'  => $thread->forum->category->id, 
-                'fid'  => $thread->forum->id, 
-                'id'   => $thread->id, 
+                'cid' => $thread->forum->category->id, 
+                'fid' => $thread->forum->id, 
+                'id' => $thread->id, 
                 'slug' => $thread->slug
             ]);
         }
@@ -386,7 +379,7 @@ class ForumPostController extends ForumThreadController
             return $this->redirect(['forum/index']);
         }
         
-        $model = new Post;
+        $model = new Post();
         $model->subscribe = 1;
         $postData = Yii::$app->request->post();
         $replyFor = null;
@@ -398,11 +391,7 @@ class ForumPostController extends ForumThreadController
         }
 
         $preview = false;
-        $previous = Post::find()
-                    ->where(['thread_id' => $thread->id])
-                    ->orderBy(['id' => SORT_DESC])
-                    ->limit(1)
-                    ->one();
+        $previous = Post::find()->where(['thread_id' => $thread->id])->orderBy(['id' => SORT_DESC])->limit(1)->one();
         if ($model->load($postData)) {
             $model->thread_id = $thread->id;
             $model->forum_id = $thread->forum->id;
@@ -424,9 +413,9 @@ class ForumPostController extends ForumThreadController
         }
         return $this->render('post', [
             'replyFor' => $replyFor,
-            'preview'  => $preview,
-            'model'    => $model,
-            'thread'   => $thread,
+            'preview' => $preview,
+            'model' => $model,
+            'thread' => $thread,
             'previous' => $previous,
         ]);
     }
@@ -467,22 +456,22 @@ class ForumPostController extends ForumThreadController
                 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.')
             );
             return $this->redirect(['forum/thread', 
-                'cid'  => $post->forum->category->id, 
-                'fid'  => $post->forum->id, 
-                'id'   => $post->thread->id, 
+                'cid' => $post->forum->category->id, 
+                'fid' => $post->forum->id, 
+                'id' => $post->thread->id, 
                 'slug' => $post->thread->slug
             ]);
         }
 
-        $model = new Message;
+        $model = new Message();
         $model->scenario = 'report';
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->podiumReport($post)) {
                 $this->success(Yii::t('podium/flash', 'Thank you for your report. The moderation team will take a look at this post.'));
                 return $this->redirect(['forum/thread', 
-                    'cid'  => $post->forum->category->id, 
-                    'fid'  => $post->forum->id, 
-                    'id'   => $post->thread->id, 
+                    'cid' => $post->forum->category->id, 
+                    'fid' => $post->forum->id, 
+                    'id' => $post->thread->id, 
                     'slug' => $post->thread->slug
                 ]);
             }
@@ -503,7 +492,7 @@ class ForumPostController extends ForumThreadController
 
         $data = [
             'error' => 1,
-            'msg'   => Html::tag('span', 
+            'msg' => Html::tag('span', 
                 Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
                 . ' ' . Yii::t('podium/view', 'Error while voting on this post!'), 
                 ['class' => 'text-danger']
@@ -562,11 +551,11 @@ class ForumPostController extends ForumThreadController
 
                 if ($post->podiumThumb($thumb == 'up', $count)) {
                     $data = [
-                        'error'    => 0,
-                        'likes'    => '+' . $post->likes,
+                        'error' => 0,
+                        'likes' => '+' . $post->likes,
                         'dislikes' => '-' . $post->dislikes,
-                        'summ'     => $post->likes - $post->dislikes,
-                        'msg'      => Html::tag('span', 
+                        'summ' => $post->likes - $post->dislikes,
+                        'msg' => Html::tag('span', 
                             Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
                             . ' ' . Yii::t('podium/view', 'Your vote has been saved!'), 
                             ['class' => 'text-success']

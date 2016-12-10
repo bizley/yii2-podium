@@ -10,12 +10,15 @@ use bizley\podium\Podium;
 use Exception;
 use Yii;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * Message model
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ * 
+ * @property string $parsedContent
  */
 class Message extends MessageActiveRecord
 {
@@ -204,11 +207,19 @@ class Message extends MessageActiveRecord
             $logged = User::loggedId();
             $this->sender_id = $logged;
             $this->topic = Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]);
-            $this->content .= '<hr>' 
+            if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+                $this->content .= "\n\n---\n" 
+                            . '[' . Yii::t('podium/view', 'Direct link to this post') . '](' . Url::to(['forum/show', 'id' => $post->id]) . ')' 
+                            . "\n\n---\n" 
+                            . '**' . Yii::t('podium/view', 'Post contents') . '**'
+                            . $post->content;
+            } else {
+                $this->content .= '<hr>' 
                             . Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) 
                             . '<hr>' 
                             . '<p>' . Yii::t('podium/view', 'Post contents') . '</p>'
                             . '<blockquote>' . $post->content . '</blockquote>';
+            }
             $this->sender_status = self::STATUS_DELETED;
             if (!$this->save()) {
                 throw new Exception('Saving complaint error!');
@@ -254,5 +265,20 @@ class Message extends MessageActiveRecord
                 Podium::getInstance()->podiumCache->deleteElement('user.newmessages', $this->sender_id);
             }
         }
+    }
+    
+    /**
+     * Returns content Markdown-parsed if WYSIWYG editor is switched off.
+     * @return string
+     * @since 0.6
+     */
+    public function getParsedContent()
+    {
+        if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
+            $parser = new GithubMarkdown();
+            $parser->html5 = true;
+            return $parser->parse($this->content);
+        }
+        return $this->content;
     }
 }

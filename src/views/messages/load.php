@@ -24,7 +24,7 @@ use yii\helpers\Html;
                 <?= Html::encode($reply->reply->topic) ?>
             </div>
             <div class="popover-content">
-                <?= $reply->reply->content ?>
+                <?= $reply->reply->parsedContent ?>
             </div>
         </div>
     </div>
