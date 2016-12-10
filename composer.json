@@ -16,14 +16,15 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "*",
-        "yiisoft/yii2-bootstrap": "*",
+        "yiisoft/yii2": "^2.0",
+        "yiisoft/yii2-bootstrap": "^2.0",
         "bizley/quill": "^2.0",
-        "cebe/yii2-gravatar": "*",
-        "kartik-v/yii2-widget-fileinput": "*",
-        "kartik-v/yii2-sortable": "*",
-        "kartik-v/yii2-widget-select2": "*",
-        "kartik-v/yii2-widget-datepicker": "*",
+        "cebe/yii2-gravatar": "^1.0",
+        "cebe/markdown": "^1.0",
+        "kartik-v/yii2-widget-fileinput": "^1.0",
+        "kartik-v/yii2-sortable": "^1.0",
+        "kartik-v/yii2-widget-select2": "^2.0",
+        "kartik-v/yii2-widget-datepicker": "^1.0",
         "himiklab/yii2-recaptcha-widget": "^1.0",
         "bower-asset/codemirror": "^5.0",
         "bower-asset/codemirror-buttons": "^1.0"
