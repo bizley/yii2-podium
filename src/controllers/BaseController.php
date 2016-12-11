@@ -217,8 +217,8 @@ class BaseController extends YiiController
                 if ($user && $user->status == User::STATUS_BANNED) {
                     return $this->redirect(['forum/ban']);
                 }
-                if ($user && !empty($user->timezone)) {
-                    Podium::getInstance()->formatter->timeZone = $user->timezone;
+                if ($user && !empty($user->meta->timezone)) {
+                    Podium::getInstance()->formatter->timeZone = $user->meta->timezone;
                 }
             }
         } catch (Exception $exc) {

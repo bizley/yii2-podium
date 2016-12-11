@@ -59,7 +59,7 @@ class Activity extends ActivityActiveRecord
         $activity->user_slug = $user->podiumSlug;
         $activity->url = $url;
         $activity->ip = $ip;
-        $activity->anonymous = $user->anonymous;
+        $activity->anonymous = $user->meta->anonymous;
 
         return $activity->save();
     }

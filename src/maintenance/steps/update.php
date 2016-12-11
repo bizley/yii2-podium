@@ -278,6 +278,36 @@ return [
     ],
     '0.6' => [
         [
+            'table' => 'user',
+            'call' => 'dropColumn',
+            'data' => [
+                'col' => 'timezone',
+            ],
+        ],
+        [
+            'table' => 'user',
+            'call' => 'dropColumn',
+            'data' => [
+                'col' => 'anonymous',
+            ],
+        ],
+        [
+            'table' => 'user_meta',
+            'call' => 'addColumn',
+            'data' => [
+                'col' => 'timezone',
+                'type' => Schema::TYPE_STRING . '(45)',
+            ],
+        ],
+        [
+            'table' => 'user_meta',
+            'call' => 'addColumn',
+            'data' => [
+                'col' => 'anonymous',
+                'type' => Schema::TYPE_SMALLINT . ' NOT NULL DEFAULT 0',
+            ],
+        ],
+        [
             'table' => 'config',
             'call' => 'updateValue',
             'data' => [

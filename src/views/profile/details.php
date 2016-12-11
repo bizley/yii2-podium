@@ -7,10 +7,8 @@
  * @since 0.1
  */
 
-use bizley\podium\helpers\Helper;
 use bizley\podium\Podium;
 use bizley\podium\widgets\Avatar;
-use kartik\select2\Select2;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
@@ -42,25 +40,6 @@ if (Podium::getInstance()->userComponent === true) {
                                 'data-content'   => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'),
                                 'data-trigger'   => 'focus'
                             ])->label(Yii::t('podium/view', 'Username')) ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'timezone')->widget(Select2::classname(), [
-                                'data'          => Helper::timeZones(),
-                                'theme'         => Select2::THEME_KRAJEE,
-                                'showToggleAll' => false,
-                                'options'       => ['placeholder' => Yii::t('podium/view', 'Select your time zone for proper dates display...')],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])->label(Yii::t('podium/view', 'Time Zone'))
-                            ->hint(Html::a(Yii::t('podium/view', 'What is my time zone?'), 'http://www.timezoneconverter.com/cgi-bin/findzone', ['target' => '_blank'])); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <?= $form->field($model, 'anonymous')->checkbox(['uncheck' => 0])->label(Yii::t('podium/view', 'Hide username while forum viewing')) ?>
                         </div>
                     </div>
                     <div class="row">

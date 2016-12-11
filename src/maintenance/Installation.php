@@ -48,7 +48,6 @@ class Installation extends Maintenance
                 'username' => self::DEFAULT_USERNAME,
                 'status' => User::STATUS_ACTIVE,
                 'role' => User::ROLE_ADMIN,
-                'timezone' => User::DEFAULT_TIMEZONE
             ], false);
             $admin->generateAuthKey();
             $admin->setPassword(self::DEFAULT_USERNAME);
@@ -106,7 +105,6 @@ class Installation extends Maintenance
                 'username' => self::DEFAULT_USERNAME,
                 'status' => User::STATUS_ACTIVE,
                 'role' => User::ROLE_ADMIN,
-                'timezone' => User::DEFAULT_TIMEZONE
             ], false);
             if (!$admin->save()) {
                 throw new Exception(VarDumper::dumpAsString($admin->errors));

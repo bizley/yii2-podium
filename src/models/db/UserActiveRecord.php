@@ -24,8 +24,8 @@ use yii\web\IdentityInterface;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  * 
- * @property integer $id
- * @property integer $inherited_id
+ * @property int $id
+ * @property int $inherited_id
  * @property string $username
  * @property string $slug
  * @property string $password_hash
@@ -34,12 +34,10 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $new_email
  * @property string $auth_key
- * @property integer $status
- * @property integer $role
- * @property integer $anonymous
- * @property string $timezone
- * @property integer $created_at
- * @property integer $updated_at
+ * @property int $status
+ * @property int $role
+ * @property int $created_at
+ * @property int $updated_at
  * 
  * @property Activity $activity
  * @property Meta $meta

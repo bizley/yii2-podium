@@ -31,8 +31,6 @@ class User extends UserActiveRecord
     const ROLE_MODERATOR    = 9;
     const ROLE_ADMIN        = 10;
 
-    const DEFAULT_TIMEZONE = 'UTC';
-
     /**
      * Responses.
      */
@@ -94,9 +92,7 @@ class User extends UserActiveRecord
             ['new_password_repeat', 'compare', 'compareAttribute' => 'new_password'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
-            ['anonymous', 'boolean'],
             ['inherited_id', 'integer'],
-            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
             ['status', 'default', 'value' => self::STATUS_REGISTERED],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['tos', 'compare', 'compareValue' => 1, 'message' => Yii::t('podium/view', 'You have to read and agree on ToS.')],
@@ -123,8 +119,8 @@ class User extends UserActiveRecord
             'role' => [],
             'passwordChange' => ['password', 'password_repeat'],
             'register' => ['email', 'password', 'password_repeat'],
-            'account' => ['username', 'anonymous', 'new_email', 'new_password', 'new_password_repeat', 'timezone', 'current_password'],
-            'accountInherit' => ['username', 'anonymous', 'new_email', 'timezone', 'current_password'],
+            'account' => ['username', 'new_email', 'new_password', 'new_password_repeat', 'current_password'],
+            'accountInherit' => ['username', 'new_email', 'current_password'],
         ];
         if (Podium::getInstance()->podiumConfig->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
@@ -709,7 +705,6 @@ class User extends UserActiveRecord
                 $newUser->inherited_id = Podium::getInstance()->user->id;
                 $newUser->status = self::STATUS_ACTIVE;
                 $newUser->role = self::ROLE_MEMBER;
-                $newUser->timezone = self::DEFAULT_TIMEZONE;
                 if (!$newUser->save()) {
                     throw new Exception('Account creating error');
                 }

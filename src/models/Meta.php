@@ -17,6 +17,8 @@ use cebe\markdown\GithubMarkdown;
  */
 class Meta extends MetaActiveRecord
 {
+    const DEFAULT_TIMEZONE = 'UTC';
+    
     /**
      * Max image sizes.
      */

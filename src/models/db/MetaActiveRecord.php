@@ -14,14 +14,16 @@ use yii\helpers\HtmlPurifier;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  * 
- * @property integer $id
- * @property integer $user_id
+ * @property int $id
+ * @property int $user_id
  * @property string $location
  * @property string $signature
- * @property integer $gravatar
+ * @property int $gravatar
  * @property string $avatar
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $timezone
+ * @property int $anonymous
+ * @property int $created_at
+ * @property int $updated_at
  */
 class MetaActiveRecord extends ActiveRecord
 {
@@ -59,6 +61,8 @@ class MetaActiveRecord extends ActiveRecord
                 return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig());
             }],
             ['signature', 'string', 'max' => 512],
+            ['timezone', 'match', 'pattern' => '/[\w\-]+/'],
+            ['anonymous', 'boolean'],
         ];
     }
 }
