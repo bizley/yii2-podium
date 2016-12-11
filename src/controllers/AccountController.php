@@ -247,7 +247,7 @@ class AccountController extends BaseController
     public function actionReactivate()
     {
         return $this->reformRun(
-            Yii::t('podium/flash', 'Please contact the administrator to reactivate your account account.'),
+            Yii::t('podium/flash', 'Please contact the administrator to reactivate your account.'),
             new ReactivateForm(),
             [
                 'error' => 'Error while queuing reactivation link',
