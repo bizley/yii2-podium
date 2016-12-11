@@ -8,7 +8,7 @@
  */
 
 use bizley\podium\models\Content;
-use bizley\podium\widgets\editor\EditorFull;
+use bizley\podium\widgets\quill\QuillFull;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -53,7 +53,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'content')->label(false)->widget(EditorFull::className()) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className(), ['style' => 'min-height:320px;']) ?>
                 </div>
             </div>
             <div class="row">

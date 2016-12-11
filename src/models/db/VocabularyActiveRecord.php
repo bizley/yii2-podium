@@ -47,7 +47,7 @@ class VocabularyActiveRecord extends ActiveRecord
         return [
             ['query', 'string'],
             ['query', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value);
+                return HtmlPurifier::process(trim($value));
             }],
         ];
     }

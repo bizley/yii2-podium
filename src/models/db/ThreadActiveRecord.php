@@ -118,14 +118,14 @@ class ThreadActiveRecord extends ActiveRecord
             ['post', 'string', 'min' => 10, 'on' => ['new']],
             ['post', 'filter', 'filter' => function ($value) {
                 if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
-                    return HtmlPurifier::process(strip_tags(trim($value)));
+                    return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('markdown'));
                 }
                 return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('full'));
             }, 'on' => ['new']],
             ['pinned', 'boolean'],
             ['subscribe', 'boolean'],
             ['name', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(strip_tags(trim($value)));
+                return HtmlPurifier::process(trim($value));
             }],
             ['poll_question', 'string', 'max' => 255],
             ['poll_votes', 'integer', 'min' => 1, 'max' => 10],

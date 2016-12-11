@@ -72,7 +72,7 @@ class Post extends PostActiveRecord
      */
     protected function prepareWords()
     {
-        $cleanHtml = HtmlPurifier::process(strip_tags(trim($this->content)));
+        $cleanHtml = HtmlPurifier::process(trim($this->content));
         $purged = preg_replace('/<[^>]+>/', ' ', $cleanHtml);
         $wordsRaw = array_unique(preg_split('/[\s,\.\n]+/', $purged));
         $allWords = [];

@@ -5,7 +5,6 @@ namespace bizley\podium\models\db;
 use bizley\podium\db\ActiveRecord;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -57,7 +56,7 @@ class CategoryActiveRecord extends ActiveRecord
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
             ['name', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(Html::encode($value));
+                return HtmlPurifier::process(trim($value));
             }],
             [['keywords', 'description'], 'string'],
         ];

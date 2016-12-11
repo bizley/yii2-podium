@@ -8,7 +8,6 @@ use bizley\podium\models\Post;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -62,7 +61,7 @@ class ForumActiveRecord extends ActiveRecord
             [['name', 'visible'], 'required'],
             ['visible', 'boolean'],
             [['name', 'sub'], 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(Html::encode($value));
+                return HtmlPurifier::process(trim($value));
             }],
             [['keywords', 'description'], 'string'],
         ];

@@ -66,13 +66,13 @@ class PostActiveRecord extends ActiveRecord
         return [
             ['topic', 'required', 'message' => Yii::t('podium/view', 'Topic can not be blank.'), 'on' => ['firstPost']],
             ['topic', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process(strip_tags(trim($value)));
+                return HtmlPurifier::process(trim($value));
             }, 'on' => ['firstPost']],
             ['subscribe', 'boolean'],
             ['content', 'required'],
             ['content', 'filter', 'filter' => function ($value) {
                 if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
-                    return HtmlPurifier::process(strip_tags(trim($value)));
+                    return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('markdown'));
                 }
                 return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('full'));
             }],

@@ -94,11 +94,11 @@ class MessageActiveRecord extends ActiveRecord
             ['sender_status', 'in', 'range' => self::getStatuses()],
             ['topic', 'string', 'max' => 255],
             ['topic', 'filter', 'filter' => function($value) {
-                return HtmlPurifier::process(strip_tags(trim($value)));
+                return HtmlPurifier::process(trim($value));
             }],
             ['content', 'filter', 'filter' => function($value) {
                 if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
-                    return HtmlPurifier::process(strip_tags(trim($value)));
+                    return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('markdown'));
                 }
                 return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig());
             }],

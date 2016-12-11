@@ -36,10 +36,10 @@ class ContentActiveRecord extends ActiveRecord
             [['content', 'topic'], 'required'],
             [['content', 'topic'], 'string', 'min' => 1],
             ['topic', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value);
+                return HtmlPurifier::process(trim($value));
             }],
             ['content', 'filter', 'filter' => function ($value) {
-                return HtmlPurifier::process($value, Helper::podiumPurifierConfig('full'));
+                return HtmlPurifier::process(trim($value), Helper::podiumPurifierConfig('full'));
             }],
         ];
     }
