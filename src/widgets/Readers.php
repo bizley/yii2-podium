@@ -55,7 +55,7 @@ class Readers extends Widget
             $this->_guest = false;
             $me = User::findMe();
             $conditions[] = ['!=', 'user_id', $me->id];
-            if ($me->anonymous == 0) {
+            if (!empty($me->meta) && $me->meta->anonymous == 0) {
                 $out .= $me->podiumTag . ' ';
             } else {
                 $this->_anon = true;
