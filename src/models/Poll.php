@@ -155,7 +155,7 @@ class Poll extends PollActiveRecord
                 throw new Exception('Poll saving error!');
             }
 
-            foreach ($this->edit_answers as $answer) {
+            foreach ($this->editAnswers as $answer) {
                 foreach ($this->answers as $oldAnswer) {
                     if ($answer == $oldAnswer->answer) {
                         continue(2);
@@ -169,7 +169,7 @@ class Poll extends PollActiveRecord
                 }
             }
             foreach ($this->answers as $oldAnswer) {
-                foreach ($this->edit_answers as $answer) {
+                foreach ($this->editAnswers as $answer) {
                     if ($answer == $oldAnswer->answer) {
                         continue(2);
                     }

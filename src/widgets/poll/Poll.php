@@ -78,7 +78,7 @@ class Poll extends Widget
      */
     public static function preview($model)
     {
-        if (!$model->poll_added) {
+        if (!$model->pollAdded) {
             return null;
         }
         return (new static)->render('preview', ['model' => $model]);

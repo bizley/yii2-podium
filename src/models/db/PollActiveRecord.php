@@ -41,9 +41,9 @@ class PollActiveRecord extends ActiveRecord
     
     /**
      * @var string[] poll answers
-     * @since 0.5
+     * @since 0.6
      */
-    public $edit_answers = [];
+    public $editAnswers = [];
     
     /**
      * @inheritdoc
@@ -73,8 +73,8 @@ class PollActiveRecord extends ActiveRecord
             ['end', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'end_at'],
             ['end_at', 'integer'],
             ['hidden', 'boolean'],
-            ['edit_answers', 'each', 'rule' => ['string', 'max' => 255]],
-            ['edit_answers', 'requiredAnswers'],
+            ['editAnswers', 'each', 'rule' => ['string', 'max' => 255]],
+            ['editAnswers', 'requiredAnswers'],
         ];
     }
     
@@ -83,16 +83,16 @@ class PollActiveRecord extends ActiveRecord
      */
     public function requiredAnswers()
     {
-        $this->edit_answers = array_unique($this->edit_answers);
+        $this->editAnswers = array_unique($this->editAnswers);
         $filtered = [];
-        foreach ($this->edit_answers as $answer) {
+        foreach ($this->editAnswers as $answer) {
             if (!empty(trim($answer))) {
                 $filtered[] = trim($answer);
             }
         }
-        $this->edit_answers = $filtered;
-        if (count($this->edit_answers) < 2) {
-            $this->addError('edit_answers', Yii::t('podium/view', 'You have to add at least 2 options.'));
+        $this->editAnswers = $filtered;
+        if (count($this->editAnswers) < 2) {
+            $this->addError('editAnswers', Yii::t('podium/view', 'You have to add at least 2 options.'));
         }
     }
     

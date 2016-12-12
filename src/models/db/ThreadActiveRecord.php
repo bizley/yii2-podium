@@ -51,39 +51,39 @@ class ThreadActiveRecord extends ActiveRecord
     
     /**
      * @var int poll added
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_added = 0;
+    public $pollAdded = 0;
     
     /**
      * @var string poll question
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_question;
+    public $pollQuestion;
     
     /**
      * @var int number of possible poll votes
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_votes = 1;
+    public $pollVotes = 1;
     
     /**
      * @var string[] poll answers
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_answers = [];
+    public $pollAnswers = [];
     
     /**
      * @var string poll closing date
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_end;
+    public $pollEnd;
     
     /**
      * @var int should poll results be hidden before voting
-     * @since 0.5
+     * @since 0.6
      */
-    public $poll_hidden = 0;
+    public $pollHidden = 0;
 
     /**
      * @inheritdoc
@@ -127,14 +127,14 @@ class ThreadActiveRecord extends ActiveRecord
             ['name', 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process(trim($value));
             }],
-            ['poll_question', 'string', 'max' => 255],
-            ['poll_votes', 'integer', 'min' => 1, 'max' => 10],
-            ['poll_answers', 'each', 'rule' => ['string', 'max' => 255]],
-            ['poll_end', 'date', 'format' => 'yyyy-MM-dd'],
-            [['poll_hidden', 'poll_added'], 'boolean'],
-            ['poll_answers', 'requiredPollAnswers'],
-            [['poll_question', 'poll_votes'], 'required', 'when' => function ($model) {
-                return $model->poll_added;
+            ['pollQuestion', 'string', 'max' => 255],
+            ['pollVotes', 'integer', 'min' => 1, 'max' => 10],
+            ['pollAnswers', 'each', 'rule' => ['string', 'max' => 255]],
+            ['pollEnd', 'date', 'format' => 'yyyy-MM-dd'],
+            [['pollHidden', 'pollAdded'], 'boolean'],
+            ['pollAnswers', 'requiredPollAnswers'],
+            [['pollQuestion', 'pollVotes'], 'required', 'when' => function ($model) {
+                return $model->pollAdded;
             }, 'whenClient' => 'function (attribute, value) { return $("#poll_added").val() == 1; }'],
         ];
     }
@@ -145,17 +145,17 @@ class ThreadActiveRecord extends ActiveRecord
      */
     public function requiredPollAnswers()
     {
-        if ($this->poll_added) {
-            $this->poll_answers = array_unique($this->poll_answers);
+        if ($this->pollAdded) {
+            $this->pollAnswers = array_unique($this->pollAnswers);
             $filtered = [];
-            foreach ($this->poll_answers as $answer) {
+            foreach ($this->pollAnswers as $answer) {
                 if (!empty(trim($answer))) {
                     $filtered[] = trim($answer);
                 }
             }
-            $this->poll_answers = $filtered;
-            if (count($this->poll_answers) < 2) {
-                $this->addError('poll_answers', Yii::t('podium/view', 'You have to add at least 2 options.'));
+            $this->pollAnswers = $filtered;
+            if (count($this->pollAnswers) < 2) {
+                $this->addError('pollAnswers', Yii::t('podium/view', 'You have to add at least 2 options.'));
             }
         }
     }
@@ -168,10 +168,10 @@ class ThreadActiveRecord extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'poll_question' => Yii::t('podium/view', 'Question'),
-            'poll_votes' => Yii::t('podium/view', 'Number of votes'),
-            'poll_hidden' => Yii::t('podium/view', 'Hide results before voting'),
-            'poll_end' => Yii::t('podium/view', 'Poll ends at'),
+            'pollAuestion' => Yii::t('podium/view', 'Question'),
+            'pollVotes' => Yii::t('podium/view', 'Number of votes'),
+            'pollHidden' => Yii::t('podium/view', 'Hide results before voting'),
+            'pollEnd' => Yii::t('podium/view', 'Poll ends at'),
         ];
     }
 

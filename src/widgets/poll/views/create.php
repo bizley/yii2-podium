@@ -28,13 +28,13 @@ $fieldLayoutShort = [
     'template' => "{label}\n<div class=\"col-sm-3\">{input}\n{hint}\n{error}</div>"
 ];
 
-echo Html::activeHiddenInput($model, 'poll_added', ['id' => 'poll_added']);
+echo Html::activeHiddenInput($model, 'pollAdded', ['id' => 'poll_added']);
 ?>
-<button class="btn btn-success podium-poll-add <?= $model->poll_added ? 'hide' : '' ?>">
+<button class="btn btn-success podium-poll-add <?= $model->pollAdded ? 'hide' : '' ?>">
     <span class="glyphicon glyphicon-tasks"></span> <?= Yii::t('podium/view', 'Add poll to this thread'); ?>
 </button>
 
-<div class="new-poll <?= $model->poll_added ? '' : 'hide' ?>">
+<div class="new-poll <?= $model->pollAdded ? '' : 'hide' ?>">
     <div class="panel panel-default">
         <div class="panel-heading">
             <button class="btn btn-xs btn-danger pull-right podium-poll-discard"><span class="glyphicon glyphicon-remove"></span> <?= Yii::t('podium/view', 'Discard poll'); ?></button>
@@ -42,32 +42,32 @@ echo Html::activeHiddenInput($model, 'poll_added', ['id' => 'poll_added']);
         </div>
         <div class="panel-body">
             <div class="row">
-                <?= $form->field($model, 'poll_question', $fieldLayoutLong); ?>
+                <?= $form->field($model, 'pollQuestion', $fieldLayoutLong); ?>
             </div>
             <div class="row">
-                <?= $form->field($model, 'poll_votes', $fieldLayoutShort); ?>
+                <?= $form->field($model, 'pollVotes', $fieldLayoutShort); ?>
             </div>
             <div class="row">
-                <?= $form->field($model, 'poll_hidden', [
+                <?= $form->field($model, 'pollHidden', [
                     'checkboxTemplate' => "<div class=\"col-sm-offset-3 col-sm-9\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>"
                 ])->checkbox(); ?>
             </div>
             <div class="row">
-                <?= $form->field($model, 'poll_end', $fieldLayoutShort)->widget(DatePicker::classname(), [
+                <?= $form->field($model, 'pollEnd', $fieldLayoutShort)->widget(DatePicker::classname(), [
                     'removeButton' => false, 'pluginOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']
                 ]); ?>
             </div>
 <?php $opts = ['placeholder' => Yii::t('podium/view', 'Leave empty to remove')]; ?>
 <?php $answers = 0; for ($a = 1; $a <= 10; $a++):
     $opts['id'] = 'thread-poll_answers' . ($a > 1 ? '_' . $a : '');
-    if (!empty($model->poll_answers[$a - 1])):
-        $opts['value'] = $model->poll_answers[$a - 1];
+    if (!empty($model->pollAnswers[$a - 1])):
+        $opts['value'] = $model->pollAnswers[$a - 1];
         $answers++;
     else:
         $opts['value'] = null;
     endif; ?>
             <div class="row <?= $a > 2 ? 'podium-poll-opt-' . $a : '' ?> <?= $opts['value'] === null && $a > 2 ? 'hide' : '' ?>">
-                <?= $form->field($model, 'poll_answers[]', $fieldLayoutLong)
+                <?= $form->field($model, 'pollAnswers[]', $fieldLayoutLong)
                         ->label(Yii::t('podium/view', 'Option #{n}', ['n' => $a]), ['for' => $opts['id']])
                         ->textInput($opts); ?>
             </div>

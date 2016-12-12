@@ -520,19 +520,19 @@ class Thread extends ThreadActiveRecord
 
             $loggedIn = User::loggedId();
 
-            if ($this->poll_added && Podium::getInstance()->podiumConfig->get('allow_polls')) {
+            if ($this->pollAdded && Podium::getInstance()->podiumConfig->get('allow_polls')) {
                 $poll = new Poll();
                 $poll->thread_id = $this->id;
-                $poll->question = $this->poll_question;
-                $poll->votes = $this->poll_votes;
-                $poll->hidden = $this->poll_hidden;
-                $poll->end_at = !empty($this->poll_end) ? Podium::getInstance()->formatter->asTimestamp($this->poll_end . ' 23:59:59') : null;
+                $poll->question = $this->pollQuestion;
+                $poll->votes = $this->pollVotes;
+                $poll->hidden = $this->pollHidden;
+                $poll->end_at = !empty($this->pollEnd) ? Podium::getInstance()->formatter->asTimestamp($this->pollEnd . ' 23:59:59') : null;
                 $poll->author_id = $loggedIn;
                 if (!$poll->save()) {
                     throw new Exception('Poll saving error!');
                 }
 
-                foreach ($this->poll_answers as $answer) {
+                foreach ($this->pollAnswers as $answer) {
                     $pollAnswer = new PollAnswer();
                     $pollAnswer->poll_id = $poll->id;
                     $pollAnswer->answer = $answer;

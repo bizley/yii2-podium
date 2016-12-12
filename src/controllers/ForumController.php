@@ -598,7 +598,7 @@ class ForumController extends ForumPostController
         }
         
         foreach ($poll->answers as $answer) {
-            $poll->edit_answers[] = $answer->answer;
+            $poll->editAnswers[] = $answer->answer;
         }
         
         $postData = Yii::$app->request->post();

@@ -36,14 +36,14 @@ $fieldLayoutShort = [
 <?php $opts = ['placeholder' => Yii::t('podium/view', 'Leave empty to remove')]; ?>
 <?php $answers = 0; for ($a = 1; $a <= 10; $a++):
     $opts['id'] = 'thread-poll_answers' . ($a > 1 ? '_' . $a : '');
-    if (!empty($model->edit_answers[$a - 1])):
-        $opts['value'] = $model->edit_answers[$a - 1];
+    if (!empty($model->editAnswers[$a - 1])):
+        $opts['value'] = $model->editAnswers[$a - 1];
         $answers++;
     else:
         $opts['value'] = null;
     endif; ?>
             <div class="row <?= $a > 2 ? 'podium-poll-opt-' . $a : '' ?> <?= $opts['value'] === null && $a > 2 ? 'hide' : '' ?>">
-                <?= $form->field($model, 'edit_answers[]', $fieldLayoutLong)
+                <?= $form->field($model, 'editAnswers[]', $fieldLayoutLong)
                         ->label(Yii::t('podium/view', 'Option #{n}', ['n' => $a]), ['for' => $opts['id']])
                         ->textInput($opts); ?>
             </div>
