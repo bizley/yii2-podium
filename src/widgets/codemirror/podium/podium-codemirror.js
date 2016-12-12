@@ -1,134 +1,135 @@
 CodeMirror.findModeByName("php").mime = "text/x-php";
-var CodeMirrorButtons = [
+var CmWrap = function (cm, chars) {
+    var selection = cm.getSelection();
+    cm.replaceSelection(chars + selection + chars);
+    if (!selection) {
+        var cursorPos = cm.getCursor();
+        cm.setCursor(cursorPos.line, cursorPos.ch - chars.length);
+    }
+};
+var CmPrefix = function (cm, char) {
+    cm.replaceSelection(char + " " + cm.getSelection());
+};
+var CmWrapTwo = function (cm, char) {
+    var selection = cm.getSelection();
+    var text = "";
+    var link = "";
+    if (selection.match(/^https?:\/\//)) {
+        link = selection;
+    } else {
+        text = selection;
+    }
+    cm.replaceSelection(char + text + "](" + link + ")");
+    var cursorPos = cm.getCursor();
+    if (!selection) {
+        cm.setCursor(cursorPos.line, cursorPos.ch - 3);
+    } else if (link) {
+        cm.setCursor(cursorPos.line, cursorPos.ch - (3 + link.length));
+    } else {
+        cm.setCursor(cursorPos.line, cursorPos.ch - 1);
+    }
+};
+var basicButtons = [
     {
         hotkey: "Ctrl-B",
-        label: "<span class=\"glyphicon glyphicon-bold\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.bold + "\"></span></div>",
-        callback: function (cm) {
-            var selection = cm.getSelection();
-            cm.replaceSelection("**" + selection + "**");
-            if (!selection) {
-                var cursorPos = cm.getCursor();
-                cm.setCursor(cursorPos.line, cursorPos.ch - 2);
-            }
+        icon: "bold",
+        title: CodeMirrorLabels.bold,
+        callback: function (cm) { 
+            CmWrap(cm, "**");
         }
     },
     {
         hotkey: "Ctrl-I",
-        label: "<span class=\"glyphicon glyphicon-italic\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.italic + "\"></span>",
+        icon: "italic",
+        title: CodeMirrorLabels.italic,
         callback: function (cm) {
-            var selection = cm.getSelection();
-            cm.replaceSelection("*" + selection + "*");
-            if (!selection) {
-                var cursorPos = cm.getCursor();
-                cm.setCursor(cursorPos.line, cursorPos.ch - 1);
-            }
+            CmWrap(cm, "*");
         }
     },
     {
-        label: "<span class=\"glyphicon glyphicon-list\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.bulletedlist + "\"></span>",
+        icon: "list",
+        title: CodeMirrorLabels.bulletedlist,
         callback: function (cm) {
-            cm.replaceSelection("- " + cm.getSelection());
+            CmPrefix(cm, "-");
         }
     },
     {
-        label: "<span class=\"glyphicon glyphicon-list-alt\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.orderedlist + "\"></span>",
+        icon: "list-alt",
+        title: CodeMirrorLabels.orderedlist,
         callback: function (cm) {
-            cm.replaceSelection("1. " + cm.getSelection());
+            CmPrefix(cm, "1.");
         }
     },
     {
-        label: "<span class=\"glyphicon glyphicon-link\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.link + "\"></span>",
+        icon: "link",
+        title: CodeMirrorLabels.link,
         callback: function (cm) {
-            var selection = cm.getSelection();
-            var text = "";
-            var link = "";
-
-            if (selection.match(/^https?:\/\//)) {
-                link = selection;
-            } else {
-                text = selection;
-            }
-            cm.replaceSelection("[" + text + "](" + link + ")");
-
-            var cursorPos = cm.getCursor();
-            if (!selection) {
-                cm.setCursor(cursorPos.line, cursorPos.ch - 3);
-            } else if (link) {
-                cm.setCursor(cursorPos.line, cursorPos.ch - (3 + link.length));
-            } else {
-                cm.setCursor(cursorPos.line, cursorPos.ch - 1);
-            }
+            CmWrapTwo(cm, "[")
         }
     }
 ];
-if (CodeMirrorSet === 'full') {
-    CodeMirrorButtons = CodeMirrorButtons.concat([
-        {
-            label: "<span class=\"glyphicon glyphicon-option-horizontal\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.inlinecode + "\"></span>",
-            callback: function (cm) {
-                var selection = cm.getSelection();
-                cm.replaceSelection("`" + selection + "`");
-                if (!selection) {
-                    var cursorPos = cm.getCursor();
-                    cm.setCursor(cursorPos.line, cursorPos.ch - 1);
-                }
-            }
-        },
-        {
-            label: "<span class=\"glyphicon glyphicon-option-vertical\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.blockcode + "\"></span>",
-            callback: function (cm) {
-                var selection = cm.getSelection();
-                cm.replaceSelection("```\n" + selection + "\n```\n");
-                if (!selection) {
-                    var cursorPos = cm.getCursor();
-                    cm.setCursor(cursorPos.line - 2, 0);
-                }
-            }
-        },
-        {
-            label: "<span class=\"glyphicon glyphicon-header\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.header + "\"></span>",
-            callback: function (cm) {
-                cm.replaceSelection("# " + cm.getSelection());
-            }
-        },
-        {
-            label: "<span class=\"glyphicon glyphicon-console\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.quote + "\"></span>",
-            callback: function (cm) {
-                cm.replaceSelection("> " + cm.getSelection());
-            }
-        },
-        {
-            label: "<span class=\"glyphicon glyphicon-picture\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.image + "\"></span>",
-            callback: function (cm) {
-                var selection = cm.getSelection();
-                var alt = "";
-                var link = "";
-
-                if (selection.match(/^https?:\/\//)) {
-                    link = selection;
-                } else {
-                    alt = selection;
-                }
-                cm.replaceSelection("![" + alt + "](" + link + ")");
-
+var fullButtons = [
+    {
+        icon: "option-horizontal",
+        title: CodeMirrorLabels.inlinecode,
+        callback: function (cm) {
+            CmWrap(cm, "`");
+        }
+    },
+    {
+        icon: "option-vertical",
+        title: CodeMirrorLabels.blockcode,
+        callback: function (cm) {
+            var selection = cm.getSelection();
+            cm.replaceSelection("```\n" + selection + "\n```\n");
+            if (!selection) {
                 var cursorPos = cm.getCursor();
-                if (!selection) {
-                    cm.setCursor(cursorPos.line, cursorPos.ch - 3);
-                } else if (link) {
-                    cm.setCursor(cursorPos.line, cursorPos.ch - (3 + link.length));
-                } else {
-                    cm.setCursor(cursorPos.line, cursorPos.ch - 1);
-                }
+                cm.setCursor(cursorPos.line - 2, 0);
             }
         }
-    ]);
-}
-CodeMirrorButtons.push({
-    label: "<span class=\"glyphicon glyphicon-question-sign\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + CodeMirrorLabels.help + "\"></span>",
-    callback: function (cm) {
-        window.location.href = "https://guides.github.com/features/mastering-markdown/";
+    },
+    {
+        icon: "header",
+        title: CodeMirrorLabels.header,
+        callback: function (cm) {
+            CmPrefix(cm, "#");
+        }
+    },
+    {
+        icon: "console",
+        title: CodeMirrorLabels.quote,
+        callback: function (cm) {
+            CmPrefix(cm, ">");
+        }
+    },
+    {
+        icon: "picture",
+        title: CodeMirrorLabels.image,
+        callback: function (cm) {
+            CmWrapTwo(cm, "![")
+        }
     }
-});
+];
+var CodeMirrorButtons = [];
+var addButtons = function (arr, buttons) {
+    for (var i in buttons) {
+        var button = {};
+        if (buttons[i].hotkey) {
+            button.hotkey = buttons[i].hotkey;
+        }
+        button.label = "<span class=\"glyphicon glyphicon-" + buttons[i].icon + "\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + buttons[i].title + "\"></span></div>";
+        button.callback = buttons[i].callback;
+        arr.push(button);
+    }
+    return arr;
+};
+addButtons(CodeMirrorButtons, basicButtons);
+if (CodeMirrorSet === 'full') {
+    addButtons(CodeMirrorButtons, fullButtons);
+}
+addButtons(CodeMirrorButtons, [{icon: "question-sign", title: CodeMirrorLabels.help, callback: function (cm) {
+        window.location.href = "https://guides.github.com/features/mastering-markdown/";
+    }}]);
 var CodeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("codemirror"), {
     mode: "gfm",
     theme: "default",
