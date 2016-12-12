@@ -24,7 +24,7 @@ if (!empty($filters)) {
 }
 ?>
 <?= ListView::widget([
-    'dataProvider'     => (new Thread)->search($forum, $filters),
+    'dataProvider'     => (new Thread())->search($forum, $filters),
     'itemView'         => '/elements/forum/_thread',
     'summary'          => '',
     'emptyText'        => $filtersOn 

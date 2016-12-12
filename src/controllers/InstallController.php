@@ -73,7 +73,7 @@ class InstallController extends Controller
         if (Yii::$app->request->isPost) {
             $drop = Yii::$app->request->post('drop');
             if ($drop !== null) {
-                $installation = new Installation;
+                $installation = new Installation();
                 if ((is_bool($drop) && $drop) || $drop === 'true') {
                     $result = $installation->nextDrop();
                 } else {
@@ -113,7 +113,7 @@ class InstallController extends Controller
         $result = ['error' => Yii::t('podium/view', 'Error')];
 
         if (Yii::$app->request->isPost) {
-            $result = (new Update)->nextStep();
+            $result = (new Update())->nextStep();
         }
 
         return Json::encode($result);
@@ -133,7 +133,7 @@ class InstallController extends Controller
         
         $dbVersion = 0;
         $mdVersion = $this->module->version;
-        $dbQuery = (new Query)->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
+        $dbQuery = (new Query())->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
         if (!isset($dbQuery['value'])) {
             $error = Yii::t('podium/flash', 'Error while checking current database version! Please verify your database.');
         } else {

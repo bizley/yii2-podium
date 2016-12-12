@@ -120,7 +120,7 @@ class MembersController extends BaseController
      */
     public function actionIndex()
     {
-        $searchModel  = new UserSearch;
+        $searchModel  = new UserSearch();
         return $this->render('index', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get(), true),
             'searchModel'  => $searchModel
@@ -133,7 +133,7 @@ class MembersController extends BaseController
      */    
     public function actionMods()
     {
-        $searchModel  = new UserSearch;
+        $searchModel  = new UserSearch();
         return $this->render('mods', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get(), true, true),
             'searchModel'  => $searchModel

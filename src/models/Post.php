@@ -164,7 +164,7 @@ class Post extends PostActiveRecord
                     throw new Exception('Words connections saving error!');
                 }
             }
-            $queryJunction = (new Query)->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
+            $queryJunction = (new Query())->from('{{%podium_vocabulary_junction}}')->where(['post_id' => $this->id]);
             foreach ($queryJunction->each() as $junk) {
                 if (!array_key_exists($junk['word_id'], $vocabulary)) {
                     if (!Podium::getInstance()->db->createCommand()->delete(

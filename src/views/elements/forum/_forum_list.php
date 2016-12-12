@@ -12,7 +12,7 @@ use yii\widgets\ListView;
 
 ?>
 <?= ListView::widget([
-    'dataProvider'     => (new Forum)->search($category),
+    'dataProvider'     => (new Forum())->search($category),
     'itemView'         => '/elements/forum/_forum',
     'summary'          => '',
     'emptyText'        => Yii::t('podium/view', 'No forums have been added yet.'),

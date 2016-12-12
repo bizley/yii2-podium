@@ -140,7 +140,7 @@ class ForumController extends ForumPostController
     public function actionIndex()
     {
         $this->setMetaTags();
-        return $this->render('index', ['dataProvider' => (new Category)->search()]);
+        return $this->render('index', ['dataProvider' => (new Category())->search()]);
     }
     
     /**
@@ -211,7 +211,7 @@ class ForumController extends ForumPostController
         ];
 
         try {
-            $count = (new Query)
+            $count = (new Query())
                         ->from(Post::tableName())
                         ->where([
                             'and', 
@@ -252,8 +252,8 @@ class ForumController extends ForumPostController
             $thread->forum->description ?: $thread->forum->category->description
         );
         
-        $dataProvider = (new Post)->search($thread->forum->id, $thread->id);
-        $model = new Post;
+        $dataProvider = (new Post())->search($thread->forum->id, $thread->id);
+        $model = new Post();
         $model->subscribe = 1;
 
         return $this->render('thread', [
@@ -374,7 +374,7 @@ class ForumController extends ForumPostController
     public function actionSearch()
     {
         $dataProvider = null;
-        $searchModel = new Vocabulary;
+        $searchModel = new Vocabulary();
         
         if ($searchModel->load(Yii::$app->request->get(), '')) {
             return $this->render('search', [
@@ -383,7 +383,7 @@ class ForumController extends ForumPostController
             ]);
         }
         
-        $model = new SearchForm;
+        $model = new SearchForm();
         $model->match = 'all';
         $model->type = 'posts';
         $model->display = 'topics';

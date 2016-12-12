@@ -83,7 +83,7 @@ class Rbac
         
         $moderatorRule = $authManager->getRule('isPodiumModerator');
         if (!($moderatorRule instanceof ModeratorRule)) {
-            $moderatorRule = new ModeratorRule;
+            $moderatorRule = new ModeratorRule();
             $authManager->add($moderatorRule);
         }
         
@@ -97,7 +97,7 @@ class Rbac
 
         $authorRule = $authManager->getRule('isPodiumAuthor');
         if (!($authorRule instanceof AuthorRule)) {
-            $authorRule = new AuthorRule;
+            $authorRule = new AuthorRule();
             $authManager->add($authorRule);
         }
 

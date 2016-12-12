@@ -243,7 +243,7 @@ class AdminForumController extends BaseController
      */
     public function actionLogs()
     {
-        $searchModel = new LogSearch;
+        $searchModel = new LogSearch();
         return $this->render('logs', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
             'searchModel'  => $searchModel,
@@ -261,7 +261,7 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/categories']);
         }
             
-        $model = new Category;
+        $model = new Category();
         $model->visible = 1;
         $model->sort = 0;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -293,7 +293,7 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/categories']);
         }
 
-        $model = new Forum;
+        $model = new Forum();
         $model->category_id = $category->id;
         $model->visible = 1;
         $model->sort = 0;
@@ -315,7 +315,7 @@ class AdminForumController extends BaseController
      */
     public function actionSettings()
     {
-        $model = new ConfigForm;
+        $model = new ConfigForm();
         $data = Yii::$app->request->post('ConfigForm');        
         if ($data) {
             if (User::can(Rbac::PERM_CHANGE_SETTINGS)) {

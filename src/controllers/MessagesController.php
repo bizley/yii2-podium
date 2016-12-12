@@ -123,7 +123,7 @@ class MessagesController extends BaseController
      */
     public function actionInbox()
     {
-        $searchModel = new MessageReceiver;
+        $searchModel = new MessageReceiver();
         return $this->render('inbox', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
             'searchModel'  => $searchModel
@@ -152,7 +152,7 @@ class MessagesController extends BaseController
             return $this->redirect(['messages/inbox']);
         }
         
-        $model = new Message;
+        $model = new Message();
         $to = null;
         if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
             $member = User::find()->where(['id' => (int)$user, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
@@ -246,7 +246,7 @@ class MessagesController extends BaseController
             return $this->redirect(['messages/inbox']);
         }
         
-        $model = new Message;
+        $model = new Message();
         $model->topic = Message::re() . ' ' . $reply->topic;
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
@@ -272,7 +272,7 @@ class MessagesController extends BaseController
      */
     public function actionSent()
     {
-        $searchModel  = new MessageSearch;
+        $searchModel  = new MessageSearch();
         return $this->render('sent', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
             'searchModel'  => $searchModel

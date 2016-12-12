@@ -115,7 +115,7 @@ class ProfileController extends BaseController
         $user = User::findMe();
         $model = Meta::find()->where(['user_id' => $user->id])->limit(1)->one();
         if (empty($model)) {
-            $model = new Meta;
+            $model = new Meta();
         }
         
         if ($model->load(Yii::$app->request->post())) {
@@ -208,7 +208,7 @@ class ProfileController extends BaseController
             return $this->refresh();
         }
         return $this->render('subscriptions', [
-            'dataProvider' => (new Subscription)->search(Yii::$app->request->get())
+            'dataProvider' => (new Subscription())->search(Yii::$app->request->get())
         ]);
     }
     

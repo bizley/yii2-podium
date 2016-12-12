@@ -72,13 +72,13 @@ class Message extends MessageActiveRecord
 
             $count = count($this->receiversId);
             foreach ($this->receiversId as $receiver) {
-                if (!(new Query)->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
+                if (!(new Query())->select('id')->from(User::tableName())->where(['id' => $receiver, 'status' => User::STATUS_ACTIVE])->exists()) {
                     if ($count == 1) {
                         throw new Exception('No active receivers to send message to!');
                     }
                     continue;
                 }
-                $message = new MessageReceiver;
+                $message = new MessageReceiver();
                 $message->message_id = $this->id;
                 $message->receiver_id = $receiver;
                 $message->receiver_status = self::STATUS_NEW;

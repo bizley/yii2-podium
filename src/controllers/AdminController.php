@@ -159,7 +159,7 @@ class AdminController extends AdminForumController
      */
     public function actionMembers()
     {
-        $searchModel = new UserSearch;
+        $searchModel = new UserSearch();
         return $this->render('members', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
             'searchModel'  => $searchModel,

@@ -54,7 +54,7 @@ class Category extends CategoryActiveRecord
         try {
             $next = 0;
             $newSort = -1;
-            $query = (new Query)
+            $query = (new Query())
                         ->from(static::tableName())
                         ->where(['!=', 'id', $this->id])
                         ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])

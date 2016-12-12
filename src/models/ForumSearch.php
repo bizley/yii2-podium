@@ -37,7 +37,7 @@ class ForumSearch extends Forum
      */
     public function isMod($user_id = null)
     {
-        return (new Query)->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user_id])->exists();
+        return (new Query())->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user_id])->exists();
     }
     
     /**

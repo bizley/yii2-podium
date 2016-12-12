@@ -12,7 +12,7 @@ use yii\widgets\ListView;
 
 ?>
 <?= ListView::widget([
-    'dataProvider'     => (new Thread)->searchByUser($id),
+    'dataProvider'     => (new Thread())->searchByUser($id),
     'itemView'         => '/elements/forum/_thread',
     'summary'          => '',
     'emptyText'        => Yii::t('podium/view', 'No threads have been added yet.'),

@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <br>
 <?php Pjax::begin();
 echo ListView::widget([
-    'dataProvider'     => (new Post)->searchByUser($user->id),
+    'dataProvider'     => (new Post())->searchByUser($user->id),
     'itemView'         => '/elements/forum/_post',
     'viewParams'       => ['parent' => true],
     'summary'          => '',
