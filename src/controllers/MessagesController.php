@@ -35,15 +35,7 @@ class MessagesController extends BaseController
                     return $this->redirect(['account/login']);
                 },
                 'rules' => [
-                    [
-                        'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
+                    ['class' => 'bizley\podium\filters\InstallRule'],
                     [
                         'allow' => true,
                         'roles' => ['@'],

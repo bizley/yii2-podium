@@ -36,15 +36,7 @@ class AccountController extends BaseController
                     return $this->module->goPodium();
                 },
                 'rules' => [
-                    [
-                        'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
+                    ['class' => 'bizley\podium\filters\InstallRule'],
                     [
                         'allow' => true,
                         'actions' => ['new-email']

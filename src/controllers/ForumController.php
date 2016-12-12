@@ -38,15 +38,7 @@ class ForumController extends ForumPostController
                 'class' => AccessControl::className(),
                 'user' => $this->module->user,
                 'rules' => [
-                    [
-                        'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
+                    ['class' => 'bizley\podium\filters\InstallRule'],
                     ['allow' => true],
                 ],
             ],

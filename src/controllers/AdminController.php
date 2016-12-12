@@ -33,14 +33,30 @@ class AdminController extends AdminForumController
                 'class' => AccessControl::className(),
                 'user' => $this->module->user,
                 'rules' => [
+                    ['class' => 'bizley\podium\filters\InstallRule'],
                     [
-                        'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->getInstalled();
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
+                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
+                        'actions' => ['ban'],
+                        'perm' => Rbac::PERM_BAN_USER,
+                        'redirect' => ['admin/members']
+                    ],
+                    [
+                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
+                        'actions' => ['delete'],
+                        'perm' => Rbac::PERM_DELETE_USER,
+                        'redirect' => ['admin/members']
+                    ],
+                    [
+                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
+                        'actions' => ['demote', 'promote'],
+                        'perm' => Rbac::PERM_PROMOTE_USER,
+                        'redirect' => ['admin/members']
+                    ],
+                    [
+                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
+                        'actions' => ['mod'],
+                        'perm' => Rbac::PERM_PROMOTE_USER,
+                        'redirect' => ['admin/mods']
                     ],
                     [
                         'allow' => true,
@@ -58,10 +74,6 @@ class AdminController extends AdminForumController
      */
     public function actionBan($id = null)
     {
-        if (!User::can(Rbac::PERM_BAN_USER)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/members']);
-        }
         $model = User::find()->where(['id' => $id])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
@@ -104,10 +116,6 @@ class AdminController extends AdminForumController
      */
     public function actionDelete($id = null)
     {
-        if (!User::can(Rbac::PERM_DELETE_USER)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/members']);
-        }
         $model = User::find()->where(['id' => $id])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
@@ -136,10 +144,6 @@ class AdminController extends AdminForumController
      */
     public function actionDemote($id = null)
     {
-        if (!User::can(Rbac::PERM_PROMOTE_USER)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/members']);
-        }
         $model = User::find()->where(['id' => $id])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));
@@ -178,10 +182,6 @@ class AdminController extends AdminForumController
      */
     public function actionMod($uid = null, $fid = null)
     {
-        if (!User::can(Rbac::PERM_PROMOTE_USER)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/mods']);
-        }
         if (!is_numeric($uid) || $uid < 1 || !is_numeric($fid) || $fid < 1) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the moderator or forum with this ID.'));
             return $this->redirect(['admin/mods']);
@@ -257,10 +257,6 @@ class AdminController extends AdminForumController
      */
     public function actionPromote($id = null)
     {
-        if (!User::can(Rbac::PERM_PROMOTE_USER)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/members']);
-        }
         $model = User::find()->where(['id' => $id])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));

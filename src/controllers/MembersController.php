@@ -31,15 +31,7 @@ class MembersController extends BaseController
                     return $this->redirect(['account/login']);
                 },
                 'rules' => [
-                    [
-                        'allow' => false,
-                        'matchCallback' => function ($rule, $action) {
-                            return !$this->module->installed;
-                        },
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(['install/run']);
-                        }
-                    ],
+                    ['class' => 'bizley\podium\filters\InstallRule'],
                     [
                         'allow' => true,
                         'roles' => $this->module->podiumConfig->get('members_visible') ? ['@', '?'] : ['@'],
