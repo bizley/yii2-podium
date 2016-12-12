@@ -189,29 +189,23 @@ class AccountController extends BaseController
         $model = new User();
         $model->scenario = 'register';
         if ($model->load(Yii::$app->request->post())) {
-            switch ($model->register()) {
-                case User::RESP_OK:
-                    Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->success(
-                        Yii::t('podium/flash', 
-                            'Your account has been created but it is not active yet. Click the activation link that will be sent to your e-mail address in few minutes.'
-                        )
-                    );
-                    return $this->module->goPodium();
-                case User::RESP_EMAIL_SEND_ERR:
-                    Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
-                    $this->warning(
-                        Yii::t('podium/flash', 
-                            'Your account has been created but it is not active yet. Unfortunately there was some error while sending you the activation link. Contact administrator about this or try to {resend the link}.', [
-                                'resend the link' => Html::a(Yii::t('podium/flash', 'resend the link'), ['account/reactivate'])
-                            ]
-                        )
-                    );
-                    return $this->module->goPodium();
-                case User::RESP_NO_EMAIL_ERR:
-                    Log::error('Error while queuing activation link - no email set', $model->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about activating.'));
-                    return $this->module->goPodium();
+            $result = $model->register();
+            if ($result == User::RESP_OK) {
+                Log::info('Activation link queued', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->success(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Click the activation link that will be sent to your e-mail address in few minutes.'));
+                return $this->module->goPodium();
+            }
+            if ($result == User::RESP_EMAIL_SEND_ERR) {
+                Log::warning('Error while queuing activation link', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->warning(Yii::t('podium/flash', 'Your account has been created but it is not active yet. Unfortunately there was some error while sending you the activation link. Contact administrator about this or try to {resend the link}.', [
+                    'resend the link' => Html::a(Yii::t('podium/flash', 'resend the link'), ['account/reactivate'])
+                ]));
+                return $this->module->goPodium();
+            }
+            if ($result == User::RESP_NO_EMAIL_ERR) {
+                Log::error('Error while queuing activation link - no email set', !empty($model->id) ? $model->id : '', __METHOD__);
+                $this->error(Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about activating.'));
+                return $this->module->goPodium();
             }
         }
         $model->captcha = null;
