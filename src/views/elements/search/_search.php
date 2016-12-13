@@ -33,10 +33,10 @@ use yii\helpers\Html;
     <div class="row">
         <div class="form-group">
             <div class="col-sm-4 col-sm-offset-2">
-                <?= $form->field($model, 'date_from')->widget(DatePicker::classname(), ['removeButton' => false, 'pluginOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])->label(Yii::t('podium/view', 'Date from')) ?>
+                <?= $form->field($model, 'dateFrom')->widget(DatePicker::classname(), ['removeButton' => false, 'pluginOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])->label(Yii::t('podium/view', 'Date from')) ?>
             </div>
             <div class="col-sm-4">
-                <?= $form->field($model, 'date_to')->widget(DatePicker::classname(), ['removeButton' => false, 'pluginOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])->label(Yii::t('podium/view', 'Date to')) ?>
+                <?= $form->field($model, 'dateTo')->widget(DatePicker::classname(), ['removeButton' => false, 'pluginOptions' => ['autoclose' => true, 'format' => 'yyyy-mm-dd']])->label(Yii::t('podium/view', 'Date to')) ?>
             </div>
         </div>
     </div>

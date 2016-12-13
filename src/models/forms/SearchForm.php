@@ -10,6 +10,7 @@ use bizley\podium\models\Vocabulary;
 use bizley\podium\Podium;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\helpers\HtmlPurifier;
 
 /**
@@ -39,12 +40,24 @@ class SearchForm extends Model
     /**
      * @var string Date from [yyyy-MM-dd]
      */
-    public $date_from;
+    public $dateFrom;
+    
+    /**
+     * @var int Date from stamp
+     * @ince 0.6
+     */
+    public $dateFromStamp;
     
     /**
      * @var string Date to [yyyy-MM-dd]
      */
-    public $date_to;
+    public $dateTo;
+    
+    /**
+     * @var int Date to stamp
+     * @since 0.6
+     */
+    public $dateToStamp;
     
     /**
      * @var string Whether to search for posts or topics
@@ -74,14 +87,59 @@ class SearchForm extends Model
             ['query', 'string', 'min' => 3],
             ['author', 'string', 'min' => 2],
             [['match'], 'in', 'range' => ['all', 'any']],
-            [['date_from', 'date_to'], 'default', 'value' => null],
-            ['date_from', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'date_from'],
-            ['date_to', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'date_to'],
+            [['dateFrom', 'dateTo'], 'default', 'value' => null],
+            ['dateFrom', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'dateFromStamp'],
+            ['dateTo', 'date', 'format' => 'yyyy-MM-dd', 'timestampAttribute' => 'dateToStamp'],
+            [['dateFromStamp', 'dateToStamp'], 'integer'],
             [['forums'], 'each', 'rule' => ['integer']],
             [['type', 'display'], 'in', 'range' => ['posts', 'topics']],
         ];
     }
 
+    /**
+     * Prepares query conditions.
+     * @param ActiveQuery $query
+     * @param bool $topics
+     * @since 0.6
+     */
+    protected function prepareQuery($query, $topics = false)
+    {
+        $field = $topics 
+                ? Thread::tableName() . '.created_at' 
+                : Post::tableName() . '.updated_at';
+        if (!empty($this->author)) {
+            $query->andWhere(['like', 'username', $this->author])->joinWith(['author']);
+        }
+        if (!empty($this->dateFromStamp) && empty($this->dateToStamp)) {
+            $query->andWhere(['>=', $field, $this->dateFromStamp]);
+        } elseif (!empty($this->dateToStamp) && empty($this->dateFromStamp)) {
+            $this->dateToStamp += 23 * 3600 + 59 * 60 + 59; // 23:59:59
+            $query->andWhere(['<=', $field, $this->dateToStamp]);
+        } elseif (!empty($this->dateToStamp) && !empty($this->dateFromStamp)) {
+            if ($this->dateFromStamp > $this->dateToStamp) {
+                $tmp = $this->dateToStamp;
+                $this->dateToStamp = $this->dateFromStamp;
+                $this->dateFromStamp = $tmp;
+            }
+            $this->dateToStamp += 23 * 3600 + 59 * 60 + 59; // 23:59:59
+            $query->andWhere(['<=', $field, $this->dateToStamp]);
+            $query->andWhere(['>=', $field, $this->dateFromStamp]);
+        }
+        if (!empty($this->forums)) {
+            if (is_array($this->forums)) {
+                $forums = [];
+                foreach ($this->forums as $f) {
+                    if (is_numeric($f)) {
+                        $forums[] = (int)$f;
+                    }
+                }
+                if (!empty($forums)) {
+                    $query->andWhere(['forum_id' => $forums]);
+                }
+            }
+        }
+    }
+    
     /**
      * Advanced topics search.
      * @return ActiveDataProvider
@@ -107,43 +165,13 @@ class SearchForm extends Model
                 }
             }
         }
-        if (!empty($this->author)) {
-            $query->andWhere(['like', 'username', $this->author])->joinWith(['author']);
-        }
-        if (!empty($this->date_from) && empty($this->date_to)) {
-            $query->andWhere(['>=', Thread::tableName() . '.created_at', $this->date_from]);
-        } elseif (!empty($this->date_to) && empty($this->date_from)) {
-            $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
-            $query->andWhere(['<=', Thread::tableName() . '.created_at', $this->date_to]);
-        } elseif (!empty($this->date_to) && !empty($this->date_from)) {
-            if ($this->date_from > $this->date_to) {
-                $tmp = $this->date_to;
-                $this->date_to = $this->date_from;
-                $this->date_from = $tmp;
-            }
-            $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
-            $query->andWhere(['<=', Thread::tableName() . '.created_at', $this->date_to]);
-            $query->andWhere(['>=', Thread::tableName() . '.created_at', $this->date_from]);
-        }
-        if (!empty($this->forums)) {
-            if (is_array($this->forums)) {
-                $forums = [];
-                foreach ($this->forums as $f) {
-                    if (is_numeric($f)) {
-                        $forums[] = (int)$f;
-                    }
-                }
-                if (!empty($forums)) {
-                    $query->andWhere(['forum_id' => $forums]);
-                }
-            }
-        }
+        $this->prepareQuery($query, true);
         $sort = [
             'defaultOrder' => [Thread::tableName() . '.id' => SORT_DESC],
             'attributes' => [
                 Thread::tableName() . '.id' => [
-                    'asc'     => [Thread::tableName() . '.id' => SORT_ASC],
-                    'desc'    => [Thread::tableName() . '.id' => SORT_DESC],
+                    'asc' => [Thread::tableName() . '.id' => SORT_ASC],
+                    'desc' => [Thread::tableName() . '.id' => SORT_DESC],
                     'default' => SORT_DESC,
                 ],
             ]
@@ -181,43 +209,13 @@ class SearchForm extends Model
                 $query->select(['post_id', 'thread_id', 'COUNT(post_id) AS c'])->having(['>', 'c', $countWords - 1]);
             }
         }
-        if (!empty($this->author)) {
-            $query->andWhere(['like', 'username', $this->author]);
-        }
-        if (!empty($this->date_from) && empty($this->date_to)) {
-            $query->andWhere(['>=', Post::tableName() . '.updated_at', $this->date_from]);
-        } elseif (!empty($this->date_to) && empty($this->date_from)) {
-            $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
-            $query->andWhere(['<=', Post::tableName() . '.updated_at', $this->date_to]);
-        } elseif (!empty($this->date_to) && !empty($this->date_from)) {
-            if ($this->date_from > $this->date_to) {
-                $tmp = $this->date_to;
-                $this->date_to   = $this->date_from;
-                $this->date_from = $tmp;
-            }
-            $this->date_to += 23 * 3600 + 59 * 60 + 59; // 23:59:59
-            $query->andWhere(['<=', Post::tableName() . '.updated_at', $this->date_to]);
-            $query->andWhere(['>=', Post::tableName() . '.updated_at', $this->date_from]);
-        }
-        if (!empty($this->forums)) {
-            if (is_array($this->forums)) {
-                $forums = [];
-                foreach ($this->forums as $f) {
-                    if (is_numeric($f)) {
-                        $forums[] = (int)$f;
-                    }
-                }
-                if (!empty($forums)) {
-                    $query->andWhere(['forum_id' => $forums]);
-                }
-            }
-        }
+        $this->prepareQuery($query);
         $sort = [
             'defaultOrder' => ['post_id' => SORT_DESC],
             'attributes' => [
                 'post_id' => [
-                    'asc'     => ['post_id' => SORT_ASC],
-                    'desc'    => ['post_id' => SORT_DESC],
+                    'asc' => ['post_id' => SORT_ASC],
+                    'desc' => ['post_id' => SORT_DESC],
                     'default' => SORT_DESC,
                 ],
             ]
