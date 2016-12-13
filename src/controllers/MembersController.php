@@ -69,14 +69,11 @@ class MembersController extends BaseController
             return $this->redirect(['forum/index']);
         }
             
-        $model = User::find()
-                    ->where([
-                        'and', 
-                        ['id' => (int)$id], 
-                        ['!=', 'status', User::STATUS_REGISTERED]
-                    ])
-                    ->limit(1)
-                    ->one();
+        $model = User::find()->where([
+                'and', 
+                ['id' => (int)$id], 
+                ['!=', 'status', User::STATUS_REGISTERED]
+            ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
@@ -112,10 +109,10 @@ class MembersController extends BaseController
      */
     public function actionIndex()
     {
-        $searchModel  = new UserSearch();
+        $searchModel = new UserSearch();
         return $this->render('index', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get(), true),
-            'searchModel'  => $searchModel
+            'searchModel' => $searchModel
         ]);
     }
     
@@ -125,10 +122,10 @@ class MembersController extends BaseController
      */    
     public function actionMods()
     {
-        $searchModel  = new UserSearch();
+        $searchModel = new UserSearch();
         return $this->render('mods', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get(), true, true),
-            'searchModel'  => $searchModel
+            'searchModel' => $searchModel
         ]);
     }
     
@@ -182,14 +179,11 @@ class MembersController extends BaseController
      */
     public function actionView($id = null, $slug = null)
     {
-        $model = User::find()
-                    ->where([
-                        'and', 
-                        ['id' => $id, 'slug' => [$slug, null, '']], 
-                        ['!=', 'status', User::STATUS_REGISTERED]
-                    ])
-                    ->limit(1)
-                    ->one();
+        $model = User::find()->where([
+                'and', 
+                ['id' => $id, 'slug' => [$slug, null, '']], 
+                ['!=', 'status', User::STATUS_REGISTERED]
+            ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
@@ -209,14 +203,11 @@ class MembersController extends BaseController
             return $this->redirect(['forum/index']);
         }
     
-        $model = User::find()
-                    ->where([
-                        'and', 
-                        ['id' => $id], 
-                        ['!=', 'status', User::STATUS_REGISTERED]
-                    ])
-                    ->limit(1)
-                    ->one();
+        $model = User::find()->where([
+                'and', 
+                ['id' => $id], 
+                ['!=', 'status', User::STATUS_REGISTERED]
+            ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);

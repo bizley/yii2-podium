@@ -94,12 +94,10 @@ class InstallController extends Controller
         Yii::$app->session->set(Installation::SESSION_KEY, 0);
         
         if ($this->module->userComponent !== true && empty($this->module->adminId)) {
-            $this->warning(
-                Yii::t('podium/flash', "{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", [
-                    'userComponent' => '$userComponent',
-                    'adminId'       => '$adminId'
-                ])
-            );
+            $this->warning(Yii::t('podium/flash', "{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", [
+                'userComponent' => '$userComponent',
+                'adminId' => '$adminId'
+            ]));
         }
         return $this->render('run', ['version' => $this->module->version]);
     }
@@ -115,7 +113,6 @@ class InstallController extends Controller
         if (Yii::$app->request->isPost) {
             $result = (new Update())->nextStep();
         }
-
         return Json::encode($result);
     }
     
@@ -129,8 +126,7 @@ class InstallController extends Controller
         Yii::$app->session->set(Update::SESSION_KEY, 0);
         
         $error = '';
-        $info  = '';
-        
+        $info = '';
         $dbVersion = 0;
         $mdVersion = $this->module->version;
         $dbQuery = (new Query())->from('{{%podium_config}}')->select('value')->where(['name' => 'version'])->limit(1)->one();
@@ -150,9 +146,9 @@ class InstallController extends Controller
         
         return $this->render('level-up', [
             'currentVersion' => $mdVersion, 
-            'dbVersion'      => $dbVersion, 
-            'error'          => $error, 
-            'info'           => $info
+            'dbVersion' => $dbVersion, 
+            'error' => $error, 
+            'info' => $info
         ]);
     }
 }
