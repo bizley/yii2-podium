@@ -49,11 +49,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionDeletepost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to delete the post.'));
-            return $this->redirect(['account/login']);
-        }
-
         $post = Post::verify($cid, $fid, $tid, $pid);
         if (empty($post)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -62,7 +57,8 @@ class ForumPostController extends ForumThreadController
 
         if ($post->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $post->thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-            return $this->redirect(['forum/thread', 
+            return $this->redirect([
+                'forum/thread', 
                 'cid' => $post->forum->category->id, 
                 'fid' => $post->forum->id, 
                 'id' => $post->thread->id, 
@@ -83,9 +79,10 @@ class ForumPostController extends ForumThreadController
                 if ($post->podiumDelete()) {
                     $this->success(Yii::t('podium/flash', 'Post has been deleted.'));
                     if (Thread::find()->where(['id' => $post->thread->id])->exists()) {
-                        return $this->redirect(['forum/forum', 
-                            'cid'  => $post->forum->category->id, 
-                            'id'   => $post->forum->id, 
+                        return $this->redirect([
+                            'forum/forum', 
+                            'cid' => $post->forum->category->id, 
+                            'id' => $post->forum->id, 
                             'slug' => $post->forum->slug
                         ]);
                     }
@@ -113,11 +110,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionDeleteposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
         $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
@@ -137,10 +129,11 @@ class ForumPostController extends ForumThreadController
                 if ($thread->podiumDeletePosts($posts)) {
                     $this->success(Yii::t('podium/flash', 'Posts have been deleted.'));
                     if (Thread::find()->where(['id' => $thread->id])->exists()) {
-                        return $this->redirect(['forum/thread', 
-                            'cid'  => $thread->forum->category->id, 
-                            'fid'  => $thread->forum->id, 
-                            'id'   => $thread->id, 
+                        return $this->redirect([
+                            'forum/thread', 
+                            'cid' => $thread->forum->category->id, 
+                            'fid' => $thread->forum->id, 
+                            'id' => $thread->id, 
                             'slug' => $thread->slug
                         ]);
                     }
@@ -171,11 +164,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionEdit($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to edit the post.'));
-            return $this->redirect(['account/login']);
-        }
-        
         $post = Post::verify($cid, $fid, $tid, $pid);
         if (empty($post)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -184,7 +172,8 @@ class ForumPostController extends ForumThreadController
         
         if ($post->thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $post->thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-            return $this->redirect(['forum/thread', 
+            return $this->redirect([
+                'forum/thread', 
                 'cid' => $post->forum->category->id, 
                 'fid' => $post->forum->id, 
                 'id' => $post->thread->id, 
@@ -239,11 +228,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionMoveposts($cid = null, $fid = null, $id = null, $slug = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
         $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
@@ -275,16 +259,18 @@ class ForumPostController extends ForumThreadController
                             if ($thread->podiumMovePostsTo($newthread, $posts, $newname, $newforum)) {
                                 $this->success(Yii::t('podium/flash', 'Posts have been moved.'));
                                 if (Thread::find()->where(['id' => $thread->id])->exists()) {
-                                    return $this->redirect(['forum/thread', 
-                                        'cid'  => $thread->forum->category->id, 
-                                        'fid'  => $thread->forum->id, 
-                                        'id'   => $thread->id, 
+                                    return $this->redirect([
+                                        'forum/thread', 
+                                        'cid' => $thread->forum->category->id, 
+                                        'fid' => $thread->forum->id, 
+                                        'id' => $thread->id, 
                                         'slug' => $thread->slug
                                     ]);
                                 }
-                                return $this->redirect(['forum/forum', 
-                                    'cid'  => $thread->forum->category->id, 
-                                    'id'   => $thread->forum->id, 
+                                return $this->redirect([
+                                    'forum/forum', 
+                                    'cid' => $thread->forum->category->id, 
+                                    'id' => $thread->forum->id, 
                                     'slug' => $thread->forum->slug
                                 ]);
                             }
@@ -330,10 +316,10 @@ class ForumPostController extends ForumThreadController
             $listforum[Html::encode($cat->name)] = $catlist;
         }
         return $this->render('moveposts', [
-            'model'        => $thread,
-            'list'         => $list,
-            'options'      => $options,
-            'listforum'    => $listforum,
+            'model' => $thread,
+            'list' => $list,
+            'options' => $options,
+            'listforum' => $listforum,
             'dataProvider' => (new Post())->search($thread->forum->id, $thread->id)
         ]);
     }
@@ -349,11 +335,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionPost($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to update the thread.'));
-            return $this->redirect(['account/login']);
-        }
-        
         $thread = Thread::find()->where([
                 'id' => $tid, 
                 'category_id' => $cid, 
@@ -366,7 +347,8 @@ class ForumPostController extends ForumThreadController
         
         if ($thread->locked == 1 && !User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread])) {
             $this->info(Yii::t('podium/flash', 'This thread is locked.'));
-            return $this->redirect(['forum/thread', 
+            return $this->redirect([
+                'forum/thread', 
                 'cid' => $thread->forum->category->id, 
                 'fid' => $thread->forum->id, 
                 'id' => $thread->id, 
@@ -430,11 +412,6 @@ class ForumPostController extends ForumThreadController
      */
     public function actionReport($cid = null, $fid = null, $tid = null, $pid = null)
     {
-        if ($this->module->user->isGuest) {
-            $this->warning(Yii::t('podium/flash', 'Please sign in to report the post.'));
-            return $this->redirect(['account/login']);
-        }
-        
         $post = Post::verify($cid, $fid, $tid, $pid);
         if (empty($post)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the post you are looking for.'));
@@ -443,7 +420,8 @@ class ForumPostController extends ForumThreadController
 
         if (User::can(Rbac::PERM_UPDATE_POST, ['item' => $post])) {
             $this->info(Yii::t('podium/flash', "You don't have to report this post since you are allowed to modify it."));
-            return $this->redirect(['forum/edit', 
+            return $this->redirect([
+                'forum/edit', 
                 'cid' => $post->forum->category->id, 
                 'fid' => $post->forum->id, 
                 'tid' => $post->thread->id, 
@@ -452,10 +430,9 @@ class ForumPostController extends ForumThreadController
         }
         
         if ($post->author_id == User::loggedId()) {
-            $this->info(Yii::t('podium/flash', 
-                'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.')
-            );
-            return $this->redirect(['forum/thread', 
+            $this->info(Yii::t('podium/flash', 'You can not report your own post. Please contact the administrator or moderators if you have got any concerns regarding your post.'));
+            return $this->redirect([
+                'forum/thread', 
                 'cid' => $post->forum->category->id, 
                 'fid' => $post->forum->id, 
                 'id' => $post->thread->id, 
@@ -468,7 +445,8 @@ class ForumPostController extends ForumThreadController
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->podiumReport($post)) {
                 $this->success(Yii::t('podium/flash', 'Thank you for your report. The moderation team will take a look at this post.'));
-                return $this->redirect(['forum/thread', 
+                return $this->redirect([
+                    'forum/thread', 
                     'cid' => $post->forum->category->id, 
                     'fid' => $post->forum->id, 
                     'id' => $post->thread->id, 
@@ -573,16 +551,10 @@ class ForumPostController extends ForumThreadController
      */
     public function actionMarkSeen()
     {
-        if ($this->module->user->isGuest) {
-            $this->info(Yii::t('podium/flash', 'This action is available for registered users only.'));
-            return $this->redirect(['account/login']);
-        }
-        
         if (Thread::podiumMarkAllSeen()) {
             $this->success(Yii::t('podium/flash', 'All unread threads have been marked as seen.'));
             return $this->redirect(['forum/index']);
         }
-
         $this->error(Yii::t('podium/flash', 'Sorry! There was an error while marking threads as seen. Contact administrator about this problem.'));
         return $this->redirect(['forum/unread-posts']);
     }
