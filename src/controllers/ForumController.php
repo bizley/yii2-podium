@@ -58,20 +58,12 @@ class ForumController extends ForumPostController
                         'message' => Yii::t('podium/flash', 'Please sign in to delete the post.')
                     ],
                     [
-                        'actions' => ['deleteposts'],
+                        'actions' => ['deleteposts', 'moveposts', 'post', 'lock', 'move', 'pin'],
                         'message' => Yii::t('podium/flash', 'Please sign in to update the thread.')
                     ],
                     [
                         'actions' => ['edit'],
                         'message' => Yii::t('podium/flash', 'Please sign in to edit the post.')
-                    ],
-                    [
-                        'actions' => ['moveposts'],
-                        'message' => Yii::t('podium/flash', 'Please sign in to update the thread.')
-                    ],
-                    [
-                        'actions' => ['post'],
-                        'message' => Yii::t('podium/flash', 'Please sign in to update the thread.')
                     ],
                     [
                         'actions' => ['report'],
@@ -81,6 +73,14 @@ class ForumController extends ForumPostController
                         'actions' => ['mark-seen'],
                         'type' => 'info',
                         'message' => Yii::t('podium/flash', 'This action is available for registered users only.')
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'message' => Yii::t('podium/flash', 'Please sign in to delete the thread.')
+                    ],
+                    [
+                        'actions' => ['new-thread'],
+                        'message' => Yii::t('podium/flash', 'Please sign in to create a new thread.')
                     ],
                     [
                         'class' => 'yii\filters\AccessRule',
