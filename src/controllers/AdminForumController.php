@@ -96,22 +96,18 @@ class AdminForumController extends BaseController
      */
     public function actionDeleteCategory($id = null)
     {
-        if (!User::can(Rbac::PERM_DELETE_CATEGORY)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
+        $model = Category::find()->where(['id' => $id])->limit(1)->one();
+        if (empty($model)) {
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
+            return $this->redirect(['admin/categories']);
+        }
+        if ($model->delete()) {
+            PodiumCache::clearAfter('categoryDelete');
+            Log::info('Category deleted', $model->id, __METHOD__);
+            $this->success(Yii::t('podium/flash', 'Category has been deleted.'));
         } else {
-            $model = Category::find()->where(['id' => $id])->limit(1)->one();
-            if (empty($model)) {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
-            } else {
-                if ($model->delete()) {
-                    PodiumCache::clearAfter('categoryDelete');
-                    Log::info('Category deleted', $model->id, __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'Category has been deleted.'));
-                } else {
-                    Log::error('Error while deleting category', $model->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the category.'));
-                }
-            }
+            Log::error('Error while deleting category', $model->id, __METHOD__);
+            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the category.'));
         }
         return $this->redirect(['admin/categories']);
     }
@@ -124,22 +120,18 @@ class AdminForumController extends BaseController
      */
     public function actionDeleteForum($cid = null, $id = null)
     {
-        if (!User::can(Rbac::PERM_DELETE_FORUM)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
+        $model = Forum::find()->where(['id' => $id, 'category_id' => $cid])->limit(1)->one();
+        if (empty($model)) {
+            $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
+            return $this->redirect(['admin/forums', 'cid' => $cid]);
+        }
+        if ($model->delete()) {
+            PodiumCache::clearAfter('forumDelete');
+            Log::info('Forum deleted', $model->id, __METHOD__);
+            $this->success(Yii::t('podium/flash', 'Forum has been deleted.'));
         } else {
-            $model = Forum::find()->where(['id' => $id, 'category_id' => $cid])->limit(1)->one();
-            if (empty($model)) {
-                $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
-            } else {
-                if ($model->delete()) {
-                    PodiumCache::clearAfter('forumDelete');
-                    Log::info('Forum deleted', $model->id, __METHOD__);
-                    $this->success(Yii::t('podium/flash', 'Forum has been deleted.'));
-                } else {
-                    Log::error('Error while deleting forum', $model->id, __METHOD__);
-                    $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the forum.'));
-                }
-            }
+            Log::error('Error while deleting forum', $model->id, __METHOD__);
+            $this->error(Yii::t('podium/flash', 'Sorry! There was some error while deleting the forum.'));
         }
         return $this->redirect(['admin/forums', 'cid' => $cid]);
     }
@@ -151,10 +143,6 @@ class AdminForumController extends BaseController
      */
     public function actionEditCategory($id = null)
     {
-        if (!User::can(Rbac::PERM_UPDATE_CATEGORY)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/categories']);
-        }
         $model = Category::find()->where(['id' => $id])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
@@ -169,7 +157,7 @@ class AdminForumController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the category.'));
         }
         return $this->render('category', [
-            'model'      => $model,
+            'model' => $model,
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
@@ -182,10 +170,6 @@ class AdminForumController extends BaseController
      */
     public function actionEditForum($cid = null, $id = null)
     {
-        if (!User::can(Rbac::PERM_UPDATE_FORUM)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/forums', 'cid' => $cid]);
-        }
         $model = Forum::find()->where(['id' => $id, 'category_id' => $cid])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Forum with this ID.'));
@@ -200,8 +184,8 @@ class AdminForumController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the forum.'));
         }
         return $this->render('forum', [
-            'model'      => $model,
-            'forums'     => Forum::find()->where(['category_id' => $cid])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+            'model' => $model,
+            'forums' => Forum::find()->where(['category_id' => $cid])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
@@ -219,9 +203,9 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/categories']);
         }
         return $this->render('forums', [
-            'model'      => $model,
+            'model' => $model,
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
-            'forums'     => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
+            'forums' => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
     
@@ -233,7 +217,7 @@ class AdminForumController extends BaseController
     {
         return $this->render('index', [
             'members' => User::find()->orderBy(['id' => SORT_DESC])->limit(10)->all(),
-            'posts'   => Post::find()->orderBy(['id' => SORT_DESC])->limit(10)->all()
+            'posts' => Post::find()->orderBy(['id' => SORT_DESC])->limit(10)->all()
         ]);
     }
 
@@ -246,7 +230,7 @@ class AdminForumController extends BaseController
         $searchModel = new LogSearch();
         return $this->render('logs', [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
-            'searchModel'  => $searchModel,
+            'searchModel' => $searchModel,
         ]);
     }
     
@@ -256,11 +240,6 @@ class AdminForumController extends BaseController
      */
     public function actionNewCategory()
     {
-        if (!User::can(Rbac::PERM_CREATE_CATEGORY)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/categories']);
-        }
-            
         $model = new Category();
         $model->visible = 1;
         $model->sort = 0;
@@ -270,7 +249,7 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/categories']);
         }
         return $this->render('category', [
-            'model'      => $model,
+            'model' => $model,
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
@@ -282,17 +261,11 @@ class AdminForumController extends BaseController
      */
     public function actionNewForum($cid = null)
     {
-        if (!User::can(Rbac::PERM_CREATE_FORUM)) {
-            $this->error(Yii::t('podium/flash', 'You are not allowed to perform this action.'));
-            return $this->redirect(['admin/forums', 'cid' => $cid]);
-        }
-        
         $category = Category::find()->where(['id' => $cid])->limit(1)->one();
         if (empty($category)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Category with this ID.'));
             return $this->redirect(['admin/categories']);
         }
-
         $model = new Forum();
         $model->category_id = $category->id;
         $model->visible = 1;
@@ -303,8 +276,8 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/forums', 'cid' => $category->id]);
         }
         return $this->render('forum', [
-            'model'      => $model,
-            'forums'     => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
+            'model' => $model,
+            'forums' => Forum::find()->where(['category_id' => $category->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all(),
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }

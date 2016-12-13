@@ -32,33 +32,61 @@ class AdminController extends AdminForumController
             'access' => [
                 'class' => AccessControl::className(),
                 'user' => $this->module->user,
+                'ruleConfig' => ['class' => 'bizley\podium\filters\PermissionDeniedRule'],
                 'rules' => [
                     ['class' => 'bizley\podium\filters\InstallRule'],
                     [
-                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
                         'actions' => ['ban'],
                         'perm' => Rbac::PERM_BAN_USER,
                         'redirect' => ['admin/members']
                     ],
                     [
-                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
                         'actions' => ['delete'],
                         'perm' => Rbac::PERM_DELETE_USER,
                         'redirect' => ['admin/members']
                     ],
                     [
-                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
                         'actions' => ['demote', 'promote'],
                         'perm' => Rbac::PERM_PROMOTE_USER,
                         'redirect' => ['admin/members']
                     ],
                     [
-                        'class' => 'bizley\podium\filters\PermissionDeniedRule',
                         'actions' => ['mod'],
                         'perm' => Rbac::PERM_PROMOTE_USER,
                         'redirect' => ['admin/mods']
                     ],
                     [
+                        'actions' => ['delete-category'],
+                        'perm' => Rbac::PERM_DELETE_CATEGORY,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'actions' => ['delete-forum'],
+                        'perm' => Rbac::PERM_DELETE_FORUM,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'actions' => ['edit-category'],
+                        'perm' => Rbac::PERM_UPDATE_CATEGORY,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'actions' => ['edit-forum'],
+                        'perm' => Rbac::PERM_UPDATE_FORUM,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'actions' => ['new-category'],
+                        'perm' => Rbac::PERM_CREATE_CATEGORY,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'actions' => ['new-forum'],
+                        'perm' => Rbac::PERM_CREATE_FORUM,
+                        'redirect' => ['admin/categories']
+                    ],
+                    [
+                        'class' => 'yii\filters\AccessRule',
                         'allow' => true,
                         'roles' => [Rbac::ROLE_ADMIN]
                     ],
