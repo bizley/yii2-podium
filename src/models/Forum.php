@@ -3,10 +3,9 @@
 namespace bizley\podium\models;
 
 use bizley\podium\db\Query;
-use bizley\podium\log\Log;
 use bizley\podium\models\db\ForumActiveRecord;
 use bizley\podium\Podium;
-use Exception;
+use bizley\podium\services\Sorter;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -115,39 +114,17 @@ class Forum extends ForumActiveRecord
      */
     public function newOrder($order)
     {
-        try {
-            $next = 0;
-            $newSort = -1;
-            $query = (new Query())
-                        ->from(static::tableName())
-                        ->where(['and',
-                            ['!=', 'id', $this->id],
-                            ['category_id' => $this->category_id]
-                        ])
-                        ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
-                        ->indexBy('id');
-            foreach ($query->each() as $id => $forum) {
-                if ($next == $order) {
-                    $newSort = $next;
-                    $next++;
-                }
-                Podium::getInstance()->db->createCommand()->update(
-                        static::tableName(), ['sort' => $next], ['id' => $id]
-                    )->execute();
-                $next++;
-            }
-            if ($newSort == -1) {
-                $newSort = $next;
-            }
-            $this->sort = $newSort;
-            if (!$this->save()) {
-                throw new Exception('Forums order saving error');
-            }
-            Log::info('Forums orded updated', $this->id, __METHOD__);
-            return true;
-        } catch (Exception $e) {
-            Log::error($e->getMessage(), null, __METHOD__);
-        }
-        return false;
+        $sorter = new Sorter();
+        $sorter->target = $this;
+        $sorter->order = $order;
+        $sorter->query = (new Query())
+                            ->from(static::tableName())
+                            ->where(['and',
+                                ['!=', 'id', $this->id],
+                                ['category_id' => $this->category_id]
+                            ])
+                            ->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])
+                            ->indexBy('id');
+        return $sorter->run();
     }
 }
