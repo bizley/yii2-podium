@@ -53,7 +53,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className(), ['style' => 'min-height:320px;']) ?>
+                    <?= $form->field($model, 'content')->label(false)->widget(QuillFull::className(), ['options' => ['style' => 'min-height:320px;']]) ?>
                 </div>
             </div>
             <div class="row">

@@ -406,10 +406,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $podium = Podium::getInstance();
         if ($podium->userComponent !== true) {
-            $password_hash = Podium::FIELD_PASSWORD;
-            if (!empty($podium->userPasswordField)) {
-                $password_hash = $podium->userPasswordField;
-            }
+            $password_hash = empty($podium->userPasswordField) ? 'password_hash' : $podium->userPasswordField;
             if (!empty($podium->user->identity->$password_hash)) {
                 return Yii::$app->security->validatePassword($password, $podium->user->identity->$password_hash);
             }
