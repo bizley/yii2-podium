@@ -12,6 +12,7 @@ use bizley\podium\models\Thread;
 use bizley\podium\models\User;
 use bizley\podium\models\Vocabulary;
 use bizley\podium\rbac\Rbac;
+use bizley\podium\services\ThreadVerifier;
 use Exception;
 use Yii;
 use yii\filters\AccessControl;
@@ -275,7 +276,12 @@ class ForumController extends ForumPostController
      */
     public function actionThread($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
+        $thread = (new ThreadVerifier([
+            'categoryId' => $cid, 
+            'forumId' => $fid,
+            'threadId' => $id, 
+            'threadSlug' => $slug
+        ]))->verify();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);

@@ -7,6 +7,7 @@ use bizley\podium\models\Forum;
 use bizley\podium\models\Thread;
 use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
+use bizley\podium\services\ThreadVerifier;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
@@ -45,7 +46,12 @@ class ForumThreadController extends BaseController
      */
     public function actionDelete($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
+        $thread = (new ThreadVerifier([
+            'categoryId' => $cid, 
+            'forumId' => $fid,
+            'threadId' => $id, 
+            'threadSlug' => $slug
+        ]))->verify();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -86,7 +92,12 @@ class ForumThreadController extends BaseController
      */
     public function actionLock($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
+        $thread = (new ThreadVerifier([
+            'categoryId' => $cid, 
+            'forumId' => $fid,
+            'threadId' => $id, 
+            'threadSlug' => $slug
+        ]))->verify();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -124,7 +135,12 @@ class ForumThreadController extends BaseController
      */
     public function actionMove($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
+        $thread = (new ThreadVerifier([
+            'categoryId' => $cid, 
+            'forumId' => $fid,
+            'threadId' => $id, 
+            'threadSlug' => $slug
+        ]))->verify();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);
@@ -245,7 +261,12 @@ class ForumThreadController extends BaseController
      */
     public function actionPin($cid = null, $fid = null, $id = null, $slug = null)
     {
-        $thread = Thread::verify($cid, $fid, $id, $slug, $this->module->user->isGuest);
+        $thread = (new ThreadVerifier([
+            'categoryId' => $cid, 
+            'forumId' => $fid,
+            'threadId' => $id, 
+            'threadSlug' => $slug
+        ]))->verify();
         if (empty($thread)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the thread you are looking for.'));
             return $this->redirect(['forum/index']);

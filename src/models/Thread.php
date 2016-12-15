@@ -248,50 +248,6 @@ class Thread extends ThreadActiveRecord
     }
     
     /**
-     * Returns the verified thread.
-     * @param int $category_id thread category ID
-     * @param int $forum_id thread forum ID
-     * @param int $id thread ID
-     * @param string $slug thread slug
-     * @param bool $guest whether caller is guest or registered user
-     * @return Thread
-     * @since 0.2
-     */
-    public static function verify($category_id = null, $forum_id = null, $id = null, $slug = null, $guest = true)
-    {
-        if (!is_numeric($category_id) 
-                || $category_id < 1 
-                || !is_numeric($forum_id) 
-                || $forum_id < 1 
-                || !is_numeric($id) 
-                || $id < 1 
-                || empty($slug)) {
-            return null;
-        }
-        return static::find()
-                ->joinWith([
-                    'forum' => function ($query) use ($guest) {
-                        if ($guest) {
-                            $query->andWhere([Forum::tableName() . '.visible' => 1]);
-                        }
-                        $query->joinWith(['category' => function ($query) use ($guest) {
-                            if ($guest) {
-                                $query->andWhere([Category::tableName() . '.visible' => 1]);
-                            }
-                        }]);
-                    }
-                ])
-                ->where([
-                    static::tableName() . '.id' => $id, 
-                    static::tableName() . '.slug' => $slug,
-                    static::tableName() . '.forum_id' => $forum_id,
-                    static::tableName() . '.category_id' => $category_id,
-                ])
-                ->limit(1)
-                ->one();
-    }
-    
-    /**
      * Performs thread delete with parent forum counters update.
      * @return bool
      * @since 0.2
