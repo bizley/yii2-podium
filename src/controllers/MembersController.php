@@ -42,6 +42,25 @@ class MembersController extends BaseController
     }
 
     /**
+     * Returns separated admin actions.
+     * @return array
+     * @since 0.6
+     */
+    public function actions()
+    {
+        return [
+            'posts' => [
+                'class' => 'bizley\podium\actions\MemberAction',
+                'view' => 'posts',
+            ],
+            'threads' => [
+                'class' => 'bizley\podium\actions\MemberAction',
+                'view' => 'threads',
+            ],
+        ];
+    }
+    
+    /**
      * Listing the active users for ajax.
      * Entering 'forum#XX' (or any last part of 'forum' with #XX) looks for 
      * member of the XX ID without username.
@@ -128,49 +147,7 @@ class MembersController extends BaseController
             'searchModel' => $searchModel
         ]);
     }
-    
-    /**
-     * Listing posts created by user of given ID and slug.
-     * @param int $id
-     * @param string $slug
-     * @return string|Response
-     */
-    public function actionPosts($id = null, $slug = null)
-    {
-        if (!is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
-            return $this->redirect(['members/index']);
-        }
 
-        $user = User::find()->where(['id' => $id, 'slug' => [$slug, null, '']])->limit(1)->one();
-        if (empty($user)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
-            return $this->redirect(['members/index']);
-        }
-        return $this->render('posts', ['user' => $user]);
-    }
-    
-    /**
-     * Listing threads started by user of given ID and slug.
-     * @param int $id
-     * @param string $slug
-     * @return string|Response
-     */
-    public function actionThreads($id = null, $slug = null)
-    {
-        if (!is_numeric($id) || $id < 1 || empty($slug)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
-            return $this->redirect(['members/index']);
-        }
-
-        $user = User::find()->where(['id' => $id, 'slug' => [$slug, null, '']])->limit(1)->one();
-        if (empty($user)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the user you are looking for.'));
-            return $this->redirect(['members/index']);
-        }
-        return $this->render('threads', ['user' => $user]);
-    }
-    
     /**
      * Viewing profile of user of given ID and slug.
      * @param int $id
@@ -179,10 +156,14 @@ class MembersController extends BaseController
      */
     public function actionView($id = null, $slug = null)
     {
-        $model = User::find()->where([
-                'and', 
-                ['id' => $id, 'slug' => [$slug, null, '']], 
-                ['!=', 'status', User::STATUS_REGISTERED]
+        $model = User::find()->where(['and', 
+                ['id' => $id],
+                ['!=', 'status', User::STATUS_REGISTERED],
+                ['or',
+                    ['slug' => $slug],
+                    ['slug' => ''],
+                    ['slug' => null],
+                ]
             ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
@@ -203,8 +184,7 @@ class MembersController extends BaseController
             return $this->redirect(['forum/index']);
         }
     
-        $model = User::find()->where([
-                'and', 
+        $model = User::find()->where(['and', 
                 ['id' => $id], 
                 ['!=', 'status', User::STATUS_REGISTERED]
             ])->limit(1)->one();
