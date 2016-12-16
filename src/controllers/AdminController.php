@@ -94,6 +94,35 @@ class AdminController extends AdminForumController
             ],
         ];
     }
+    
+    /**
+     * Returns separated admin actions.
+     * @return array
+     * @since 0.6
+     */
+    public function actions()
+    {
+        return [
+            'promote' => [
+                'class' => 'bizley\podium\actions\AdminAction',
+                'fromRole' => User::ROLE_MEMBER,
+                'toRole' => User::ROLE_MODERATOR,
+                'method' => 'promoteTo',
+                'restrictMessage' => Yii::t('podium/flash', 'You can only promote Members to Moderators.'),
+                'successMessage' => Yii::t('podium/flash', 'User has been promoted.'),
+                'errorMessage' => Yii::t('podium/flash', 'Sorry! There was an error while promoting the user.')
+            ],
+            'demote' => [
+                'class' => 'bizley\podium\actions\AdminAction',
+                'fromRole' => User::ROLE_MODERATOR,
+                'toRole' => User::ROLE_MEMBER,
+                'method' => 'demoteTo',
+                'restrictMessage' => Yii::t('podium/flash', 'You can only demote Moderators to Members.'),
+                'successMessage' => Yii::t('podium/flash', 'User has been demoted.'),
+                'errorMessage' => Yii::t('podium/flash', 'Sorry! There was an error while demoting the user.')
+            ],
+        ];
+    }
 
     /**
      * Banning the user of given ID.
@@ -164,31 +193,7 @@ class AdminController extends AdminForumController
         }
         return $this->redirect(['admin/members']);
     }
-    
-    /**
-     * Demoting the user of given ID.
-     * @param int $id
-     * @return Response
-     */
-    public function actionDemote($id = null)
-    {
-        $model = User::find()->where(['id' => $id])->limit(1)->one();
-        if (empty($model)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));
-            return $this->redirect(['admin/members']);
-        }
-        if ($model->role != User::ROLE_MODERATOR) {
-            $this->error(Yii::t('podium/flash', 'You can only demote Moderators to Members.'));
-            return $this->redirect(['admin/members']);
-        }
-        if ($model->demoteTo(User::ROLE_MEMBER)) {
-            $this->success(Yii::t('podium/flash', 'User has been demoted.'));
-            return $this->redirect(['admin/members']);
-        }
-        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while demoting the user.'));
-        return $this->redirect(['admin/members']);
-    }
-    
+
     /**
      * Listing the users.
      * @return string
@@ -277,31 +282,7 @@ class AdminController extends AdminForumController
             'dataProvider' => $dataProvider,
         ]);
     }
-    
-    /**
-     * Promoting the user of given ID.
-     * @param int $id
-     * @return Response
-     */
-    public function actionPromote($id = null)
-    {
-        $model = User::find()->where(['id' => $id])->limit(1)->one();
-        if (empty($model)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find User with this ID.'));
-            return $this->redirect(['admin/members']);
-        }
-        if ($model->role != User::ROLE_MEMBER) {
-            $this->error(Yii::t('podium/flash', 'You can only promote Members to Moderators.'));
-            return $this->redirect(['admin/members']);
-        }
-        if ($model->promoteTo(User::ROLE_MODERATOR)) {
-            $this->success(Yii::t('podium/flash', 'User has been promoted.'));
-            return $this->redirect(['admin/mods', 'id' => $model->id]);
-        }
-        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while promoting the user.'));
-        return $this->redirect(['admin/members']);
-    }
-    
+
     /**
      * Listing the details of user of given ID.
      * @param int $id
