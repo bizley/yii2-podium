@@ -18,7 +18,7 @@ $this->title = Yii::t('podium/view', 'Messages Inbox');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); var url = button.data('url'); $('#deleteUrl').attr('href', url); });");
+$this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); var url = button.data('url'); $('#deleteUrl').attr('href', url); });");
 
 ?>
 <div class="row">
@@ -31,7 +31,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
-    'rowOptions' => function($model) {
+    'rowOptions' => function ($model) {
         return $model->receiver_status == Message::STATUS_NEW ? ['class' => 'warning'] : null;
     },
     'columns' => [
@@ -39,7 +39,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'senderName',
             'label' => Yii::t('podium/view', 'From'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 return $model->message->sender->podiumTag;
             }
         ],
@@ -47,7 +47,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'topic',
             'label' => Yii::t('podium/view', 'Topic'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 return Html::a(Html::encode($model->message->topic), ['messages/view-received', 'id' => $model->id], ['data-pjax' => '0']);
             }
         ],
@@ -55,7 +55,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'created_at',
             'label' => Yii::t('podium/view', 'Sent'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 return Html::tag('span', Podium::getInstance()->formatter->asRelativeTime($model->message->created_at), [
                     'data-toggle' => 'tooltip', 
                     'data-placement' => 'top', 
@@ -67,22 +67,22 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'class' => ActionColumn::className(),
             'template' => '{view-received} {reply} {delete-received}',
             'buttons' => [
-                'view-received' => function($url) {
+                'view-received' => function ($url) {
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ActionColumn::buttonOptions([
                         'title' => Yii::t('podium/view', 'View Message')
                     ]));
                 },
-                'reply' => function($url, $model) {
+                'reply' => function ($url) {
                     return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ActionColumn::buttonOptions([
                         'class' => 'btn btn-success btn-xs', 
                         'title' => Yii::t('podium/view', 'Reply to Message')
                     ]));
                 },
-                'delete-received' => function($url) {
+                'delete-received' => function ($url) {
                     return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ActionColumn::buttonOptions([
                         'class' => 'btn btn-danger btn-xs', 
                         'title' => Yii::t('podium/view', 'Delete Message')
-                    ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModal', 'data-url' => $url]);
+                    ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                 },
             ],
         ]

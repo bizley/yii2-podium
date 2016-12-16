@@ -7,6 +7,7 @@ use bizley\podium\log\Log;
 use bizley\podium\models\db\MessageActiveRecord;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
+use cebe\markdown\GithubMarkdown;
 use Exception;
 use Yii;
 use yii\helpers\Html;

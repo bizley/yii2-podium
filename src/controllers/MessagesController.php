@@ -2,7 +2,6 @@
 
 namespace bizley\podium\controllers;
 
-use bizley\podium\log\Log;
 use bizley\podium\models\Message;
 use bizley\podium\models\MessageReceiver;
 use bizley\podium\models\MessageSearch;
@@ -44,65 +43,28 @@ class MessagesController extends BaseController
             ],
         ];
     }
+    
+    /**
+     * Returns separated messages actions.
+     * @return array
+     * @since 0.6
+     */
+    public function actions()
+    {
+        return [
+            'delete-received' => [
+                'class' => 'bizley\podium\actions\MessageAction',
+                'redirectRoute' => ['messages/inbox'],
+                'type' => 'receiver',
+            ],
+            'delete-sent' => [
+                'class' => 'bizley\podium\actions\MessageAction',
+                'redirectRoute' => ['messages/sent'],
+                'type' => 'sender',
+            ],
+        ];
+    }
 
-    /**
-     * Deleting the sent message of given ID.
-     * @param int $id
-     * @return Response
-     */
-    public function actionDeleteSent($id = null)
-    {
-        if (!is_numeric($id) || $id < 1) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
-            return $this->redirect(['messages/sent']);
-        }
-        $model = Message::find()->where([
-                'and', 
-                ['id' => $id, 'sender_id' => User::loggedId()], 
-                ['!=', 'sender_status', Message::STATUS_DELETED]
-            ])->limit(1)->one();
-        if (empty($model)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            return $this->redirect(['messages/sent']);
-        }
-        if ($model->remove()) {
-            $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
-        } else {
-            Log::error('Error while deleting sent message', $model->id, __METHOD__);
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
-        }            
-        return $this->redirect(['messages/sent']);
-    }
-    
-    /**
-     * Deleting the received message of given ID.
-     * @param int $id
-     * @return Response
-     */
-    public function actionDeleteReceived($id = null)
-    {
-        if (!is_numeric($id) || $id < 1) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message you are looking for.'));
-            return $this->redirect(['messages/inbox']);
-        }
-        $model = MessageReceiver::find()->where([
-                'and', 
-                ['id' => $id, 'receiver_id' => User::loggedId()], 
-                ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]
-            ])->limit(1)->one();
-        if (empty($model)) {
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
-            return $this->redirect(['messages/inbox']);
-        }
-        if ($model->remove()) {
-            $this->success(Yii::t('podium/flash', 'Message has been deleted.'));
-        } else {
-            Log::error('Error while deleting received message', $model->id, __METHOD__);
-            $this->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
-        }            
-        return $this->redirect(['messages/inbox']);
-    }
-    
     /**
      * Listing the messages inbox.
      * @return string

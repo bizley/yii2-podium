@@ -17,7 +17,7 @@ $this->title = Yii::t('podium/view', 'Sent Messages');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); var url = button.data('url'); $('#deleteUrl').attr('href', url); });");
+$this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var button = $(e.relatedTarget); var url = button.data('url'); $('#deleteUrl').attr('href', url); });");
 
 ?>
 <div class="row">
@@ -35,7 +35,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'receiverName',
             'label' => Yii::t('podium/view', 'To'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 $list = [];
                 foreach ($model->messageReceivers as $mr) {
                     $list[] = $mr->receiver->podiumTag;
@@ -47,7 +47,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'topic',
             'label' => Yii::t('podium/view', 'Topic'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 return Html::a(Html::encode($model->topic), ['messages/view-sent', 'id' => $model->id], ['data-pjax' => '0']);
             }
         ],
@@ -55,7 +55,7 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'attribute' => 'created_at',
             'label' => Yii::t('podium/view', 'Sent'),
             'format' => 'raw',
-            'value' => function($model) {
+            'value' => function ($model) {
                 return Html::tag('span', Podium::getInstance()->formatter->asRelativeTime($model->created_at), [
                     'data-toggle' => 'tooltip', 
                     'data-placement' => 'top', 
@@ -67,16 +67,16 @@ $this->registerJs("$('#podiumModal').on('show.bs.modal', function(e) { var butto
             'class' => ActionColumn::className(),
             'template' => '{view-sent} {delete-sent}',
             'buttons' => [
-                'view-sent' => function($url) {
+                'view-sent' => function ($url) {
                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ActionColumn::buttonOptions([
                         'title' => Yii::t('podium/view', 'View Message')
                     ]));
                 },
-                'delete-sent' => function($url) {
+                'delete-sent' => function ($url) {
                     return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ActionColumn::buttonOptions([
                         'class' => 'btn btn-danger btn-xs', 
                         'title' => Yii::t('podium/view', 'Delete Message')
-                    ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModal', 'data-url' => $url]);
+                    ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                 },
             ],
         ]
