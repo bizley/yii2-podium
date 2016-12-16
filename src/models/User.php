@@ -47,7 +47,7 @@ class User extends UserActiveRecord
     /**
      * @var string Current password for profile update (write-only).
      */
-    public $current_password;
+    public $currentPassword;
 
     /**
      * @var string Un-encrypted password (write-only).
@@ -57,17 +57,17 @@ class User extends UserActiveRecord
     /**
      * @var string Un-encrypted password for change (write-only).
      */
-    public $new_password;
+    public $newPassword;
 
     /**
      * @var string Un-encrypted password repeated (write-only).
      */
-    public $password_repeat;
+    public $passwordRepeat;
 
     /**
      * @var string Un-encrypted password repeated for change (write-only).
      */
-    public $new_password_repeat;
+    public $newPasswordRepeat;
 
     /**
      * @var int Terms of service agreement flag (write-only).
@@ -80,16 +80,16 @@ class User extends UserActiveRecord
     public function rules()
     {
         $rules = [
-            [['email', 'password', 'password_repeat', 'tos'], 'required', 'except' => ['account']],
-            ['current_password', 'required'],
-            ['current_password', 'validateCurrentPassword'],
+            [['email', 'password', 'passwordRepeat', 'tos'], 'required', 'except' => ['account']],
+            ['currentPassword', 'required'],
+            ['currentPassword', 'validateCurrentPassword'],
             [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
             [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
             ['email', 'unique'],
             ['new_email', 'unique', 'targetAttribute' => 'email'],
-            [['password', 'new_password'], 'passwordRequirements'],
-            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
-            ['new_password_repeat', 'compare', 'compareAttribute' => 'new_password'],
+            [['password', 'newPassword'], 'passwordRequirements'],
+            ['passwordRepeat', 'compare', 'compareAttribute' => 'password'],
+            ['newPasswordRepeat', 'compare', 'compareAttribute' => 'newPassword'],
             ['username', 'unique'],
             ['username', 'validateUsername'],
             ['inherited_id', 'integer'],
@@ -117,10 +117,10 @@ class User extends UserActiveRecord
             'token' => [],
             'ban' => [],
             'role' => [],
-            'passwordChange' => ['password', 'password_repeat'],
-            'register' => ['email', 'password', 'password_repeat'],
-            'account' => ['username', 'new_email', 'new_password', 'new_password_repeat', 'current_password'],
-            'accountInherit' => ['username', 'new_email', 'current_password'],
+            'passwordChange' => ['password', 'passwordRepeat'],
+            'register' => ['email', 'password', 'passwordRepeat'],
+            'account' => ['username', 'new_email', 'newPassword', 'newPasswordRepeat', 'currentPassword'],
+            'accountInherit' => ['username', 'new_email', 'currentPassword'],
         ];
         if (Podium::getInstance()->podiumConfig->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
@@ -329,14 +329,14 @@ class User extends UserActiveRecord
 
     /**
      * Finds out if user is befriended by another.
-     * @param int $user_id user ID
+     * @param int $userId user ID
      * @return bool
      * @since 0.2
      */
-    public function isBefriendedBy($user_id)
+    public function isBefriendedBy($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
-                'user_id' => $user_id, 
+                'user_id' => $userId, 
                 'friend_id' => $this->id
             ])->exists()) {
             return true;
@@ -346,15 +346,15 @@ class User extends UserActiveRecord
 
     /**
      * Finds out if user is befriending another.
-     * @param int $user_id user ID
+     * @param int $userId user ID
      * @return bool
      * @since 0.2
      */
-    public function isFriendOf($user_id)
+    public function isFriendOf($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
                 'user_id' => $this->id, 
-                'friend_id' => $user_id
+                'friend_id' => $userId
             ])->exists()) {
             return true;
         }
@@ -363,13 +363,13 @@ class User extends UserActiveRecord
 
     /**
      * Finds out if user is ignored by another.
-     * @param int $user_id user ID
+     * @param int $userId user ID
      * @return bool
      */
-    public function isIgnoredBy($user_id)
+    public function isIgnoredBy($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_ignore}}')->where([
-                'user_id' => $user_id, 
+                'user_id' => $userId, 
                 'ignored_id' => $this->id
             ])->exists()) {
             return true;
@@ -537,8 +537,8 @@ class User extends UserActiveRecord
      */
     public function saveChanges()
     {
-        if (!empty($this->new_password)) {
-            $this->setPassword($this->new_password);
+        if (!empty($this->newPassword)) {
+            $this->setPassword($this->newPassword);
         }
         if (!empty($this->new_email)) {
             $this->generateEmailToken();
@@ -611,28 +611,28 @@ class User extends UserActiveRecord
 
     /**
      * Updates moderator assignment for given forum.
-     * @param int $forum_id forum ID
+     * @param int $forumId forum ID
      * @return bool
      * @since 0.2
      */
-    public function updateModeratorForOne($forum_id = null)
+    public function updateModeratorForOne($forumId = null)
     {
         try {
             if ((new Query())->from(Mod::tableName())->where([
-                    'forum_id' => $forum_id, 
+                    'forum_id' => $forumId, 
                     'user_id' => $this->id
                 ])->exists()) {
                 Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), [
-                    'forum_id' => $forum_id, 
+                    'forum_id' => $forumId, 
                     'user_id' => $this->id
                 ])->execute();
             } else {
                 Podium::getInstance()->db->createCommand()->insert(Mod::tableName(), [
-                    'forum_id' => $forum_id, 
+                    'forum_id' => $forumId, 
                     'user_id' => $this->id
                 ])->execute();
             }
-            Podium::getInstance()->podiumCache->deleteElement('forum.moderators', $forum_id);
+            Podium::getInstance()->podiumCache->deleteElement('forum.moderators', $forumId);
             Log::info('Moderator updated', $this->id, __METHOD__);
             return true;
         } catch (Exception $e) {

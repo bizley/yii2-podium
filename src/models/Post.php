@@ -182,24 +182,24 @@ class Post extends PostActiveRecord
 
     /**
      * Verifies if user is this forum's moderator.
-     * @param int|null $user_id user ID or null for current signed in.
+     * @param int|null $userId user ID or null for current signed in.
      * @return bool
      */
-    public function isMod($user_id = null)
+    public function isMod($userId = null)
     {
-        return $this->forum->isMod($user_id);
+        return $this->forum->isMod($userId);
     }
 
     /**
      * Searches for posts.
-     * @param int $forum_id
-     * @param int $thread_id
+     * @param int $forumId
+     * @param int $threadId
      * @return ActiveDataProvider
      */
-    public function search($forum_id, $thread_id)
+    public function search($forumId, $threadId)
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => static::find()->where(['forum_id' => $forum_id, 'thread_id' => $thread_id]),
+            'query' => static::find()->where(['forum_id' => $forumId, 'thread_id' => $threadId]),
             'pagination' => [
                 'defaultPageSize' => 10,
                 'pageSizeLimit' => false,
@@ -212,13 +212,13 @@ class Post extends PostActiveRecord
 
     /**
      * Searches for posts added by given user.
-     * @param int $user_id
+     * @param int $userId
      * @return ActiveDataProvider
      */
-    public function searchByUser($user_id)
+    public function searchByUser($userId)
     {
         $query = static::find();
-        $query->where(['author_id' => $user_id]);
+        $query->where(['author_id' => $userId]);
         if (Podium::getInstance()->user->isGuest) {
             $query->joinWith(['forum' => function ($q) {
                 $q->where([Forum::tableName() . '.visible' => 1]);
@@ -345,27 +345,27 @@ class Post extends PostActiveRecord
 
     /**
      * Returns the verified post.
-     * @param int $category_id post category ID
-     * @param int $forum_id post forum ID
-     * @param int $thread_id post thread ID
+     * @param int $categoryId post category ID
+     * @param int $forumId post forum ID
+     * @param int $threadId post thread ID
      * @param int $id post ID
      * @return Post
      * @since 0.2
      */
-    public static function verify($category_id = null, $forum_id = null, $thread_id = null, $id = null)
+    public static function verify($categoryId = null, $forumId = null, $threadId = null, $id = null)
     {
-        if (!is_numeric($category_id) || $category_id < 1 
-                || !is_numeric($forum_id) || $forum_id < 1 
-                || !is_numeric($thread_id) || $thread_id < 1 
+        if (!is_numeric($categoryId) || $categoryId < 1 
+                || !is_numeric($forumId) || $forumId < 1 
+                || !is_numeric($threadId) || $threadId < 1 
                 || !is_numeric($id) || $id < 1) {
             return null;
         }
-        return static::find()->joinWith(['thread', 'forum' => function ($query) use ($category_id) {
-                $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $category_id]);
+        return static::find()->joinWith(['thread', 'forum' => function ($query) use ($categoryId) {
+                $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $categoryId]);
             }])->where([
                 static::tableName() . '.id' => $id, 
-                static::tableName() . '.thread_id' => $thread_id,
-                static::tableName() . '.forum_id' => $forum_id,
+                static::tableName() . '.thread_id' => $threadId,
+                static::tableName() . '.forum_id' => $forumId,
             ])->limit(1)->one();
     }
 

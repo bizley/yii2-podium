@@ -36,7 +36,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 ])->label(false) ?>
             </div>
             <div class="form-group">
-                <?= $form->field($model, 'password_repeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat password')])->label(false) ?>
+                <?= $form->field($model, 'passwordRepeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat password')])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= $form->field($model, 'tos')->checkBox()->label('<small>' . Yii::t('podium/view', 'I have read and agree to the Terms and Conditions') . ' <span class="glyphicon glyphicon-circle-arrow-right"></span></small>') ?>

@@ -62,7 +62,7 @@ class ProfileController extends BaseController
         }
 
         $model->scenario = Podium::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
-        $model->current_password = null;
+        $model->currentPassword = null;
         $previous_new_email = $model->new_email;
         
         if ($model->load(Yii::$app->request->post())) {
@@ -94,7 +94,7 @@ class ProfileController extends BaseController
                 }
             }
         }
-        $model->current_password = null;
+        $model->currentPassword = null;
         return $this->render('details', ['model' => $model]);
     }
     

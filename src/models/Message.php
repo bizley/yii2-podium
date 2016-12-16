@@ -41,14 +41,14 @@ class Message extends MessageActiveRecord
 
     /**
      * Checks if user is a message receiver.
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isMessageReceiver($user_id)
+    public function isMessageReceiver($userId)
     {
         if ($this->messageReceivers) {
             foreach ($this->messageReceivers as $receiver) {
-                if ($receiver->receiver_id == $user_id) {
+                if ($receiver->receiver_id == $userId) {
                     return true;
                 }
             }
@@ -108,12 +108,12 @@ class Message extends MessageActiveRecord
     /**
      * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT 
      * minutes.
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public static function tooMany($user_id)
+    public static function tooMany($userId)
     {
-        $sessionKey = 'messages.' . $user_id;
+        $sessionKey = 'messages.' . $userId;
         if (Yii::$app->session->has($sessionKey)) {
             $sentAlready = explode('|', Yii::$app->session->get($sessionKey));
             $validated = [];

@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 $this->registerJs("$('#show-email').click(function (e) { e.preventDefault(); $('#details-email').removeClass('hide'); $('#user-new_email').prop('disabled', false); $(this).addClass('hide'); });");
 if (Podium::getInstance()->userComponent === true) {
-    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-new_password').prop('disabled', false); $('#user-new_password_repeat').prop('disabled', false); $(this).addClass('hide'); });");
+    $this->registerJs("$('#show-password').click(function (e) { e.preventDefault(); $('#details-password').removeClass('hide'); $('#user-newPassword').prop('disabled', false); $('#user-newPasswordRepeat').prop('disabled', false); $(this).addClass('hide'); });");
 }
 
 ?>
@@ -51,7 +51,7 @@ if (Podium::getInstance()->userComponent === true) {
 <?php if (Podium::getInstance()->userComponent === true): ?>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <button class="btn btn-warning btn-block <?= !empty($model->new_password) ? 'hide' : '' ?>" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
+                                <button class="btn btn-warning btn-block <?= !empty($model->newPassword) ? 'hide' : '' ?>" id="show-password"><span class="glyphicon glyphicon-lock"></span> <?= Yii::t('podium/view', 'Change password') ?></button>
                             </div>
                         </div>
 <?php endif; ?>
@@ -71,10 +71,10 @@ if (Podium::getInstance()->userComponent === true) {
                         </div>
                     </div>
 <?php if (Podium::getInstance()->userComponent === true): ?>
-                    <div id="details-password" class="<?= empty($model->new_password) ? 'hide' : '' ?>">
+                    <div id="details-password" class="<?= empty($model->newPassword) ? 'hide' : '' ?>">
                         <div class="row">
                             <div class="col-sm-12">
-                                <?= $form->field($model, 'new_password')->passwordInput([
+                                <?= $form->field($model, 'newPassword')->passwordInput([
                                     'placeholder'    => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                     'data-container' => 'body',
                                     'data-toggle'    => 'popover',
@@ -82,16 +82,16 @@ if (Podium::getInstance()->userComponent === true) {
                                     'data-content'   => Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'),
                                     'data-trigger'   => 'focus',
                                     'autocomplete'   => 'off',
-                                    'disabled'       => empty($model->new_password) ? true : false
+                                    'disabled'       => empty($model->newPassword) ? true : false
                                 ])->label(Yii::t('podium/view', 'New password')) ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
-                                <?= $form->field($model, 'new_password_repeat')->passwordInput([
+                                <?= $form->field($model, 'newPasswordRepeat')->passwordInput([
                                         'autocomplete' => 'off', 
                                         'placeholder'  => Yii::t('podium/view', "Leave empty if you don't want to change it"),
-                                        'disabled'     => empty($model->new_password) ? true : false
+                                        'disabled'     => empty($model->newPassword) ? true : false
                                     ])->label(Yii::t('podium/view', 'Repeat new password')) ?>
                             </div>
                         </div>
@@ -101,7 +101,7 @@ if (Podium::getInstance()->userComponent === true) {
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'current_password')->passwordInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Current password')) ?>
+                            <?= $form->field($model, 'currentPassword')->passwordInput(['autocomplete' => 'off'])->label(Yii::t('podium/view', 'Current password')) ?>
                         </div>
                     </div>
                     <div class="row">

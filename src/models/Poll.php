@@ -33,29 +33,29 @@ class Poll extends PollActiveRecord
 
     /**
      * Checks if user has already voted in poll.
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function getUserVoted($user_id)
+    public function getUserVoted($userId)
     {
         return (new Query())->from('{{%podium_poll_vote}}')->where([
             'poll_id' => $this->id,
-            'caster_id' => $user_id
+            'caster_id' => $userId
         ])->count('id') ? true : false;
     }
 
     /**
      * Votes in poll.
-     * @param int $user_id
+     * @param int $userId
      * @param array $answers
      * @return bool
      */
-    public function vote($user_id, $answers)
+    public function vote($userId, $answers)
     {
         $votes = [];
         $time = time();
         foreach ($answers as $answer) {
-            $votes[] = [$this->id, $answer, $user_id, $time];
+            $votes[] = [$this->id, $answer, $userId, $time];
         }
         if (!empty($votes)) {
             $transaction = static::getDb()->beginTransaction();
@@ -80,13 +80,13 @@ class Poll extends PollActiveRecord
 
     /**
      * Checks if poll has given answer.
-     * @param int $answer_id
+     * @param int $answerId
      * @return bool
      */
-    public function hasAnswer($answer_id)
+    public function hasAnswer($answerId)
     {
         foreach ($this->answers as $answer) {
-            if ($answer->id == $answer_id) {
+            if ($answer->id == $answerId) {
                 return true;
             }
         }

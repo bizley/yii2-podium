@@ -47,12 +47,12 @@ class Forum extends ForumActiveRecord
     
     /**
      * Checks if user is moderator for this forum.
-     * @param int|null $user_id User ID or null for current signed in.
+     * @param int|null $userId user ID or null for current signed in.
      * @return bool
      */
-    public function isMod($user_id = null)
+    public function isMod($userId = null)
     {
-        if (in_array($user_id ?: User::loggedId(), $this->getMods())) {
+        if (in_array($userId ?: User::loggedId(), $this->getMods())) {
             return true;
         }
         return false;
@@ -60,14 +60,14 @@ class Forum extends ForumActiveRecord
     
     /**
      * Searches forums.
-     * @param int|null $category_id
+     * @param int|null $categoryId
      * @return ActiveDataProvider
      */
-    public function search($category_id = null, $onlyVisible = false)
+    public function search($categoryId = null, $onlyVisible = false)
     {
         $query = static::find();
-        if ($category_id) {
-            $query->andWhere(['category_id' => $category_id]);
+        if ($categoryId) {
+            $query->andWhere(['category_id' => $categoryId]);
         }
         if ($onlyVisible) {
             $query->joinWith(['category' => function ($query) {
@@ -83,16 +83,16 @@ class Forum extends ForumActiveRecord
     
     /**
      * Returns the verified forum.
-     * @param int $category_id forum's category ID
-     * @param int $id forum's ID
-     * @param string $slug forum's slug
+     * @param int $categoryId forum category ID
+     * @param int $id forum ID
+     * @param string $slug forum slug
      * @param bool $guest whether caller is guest or registered user
      * @return Forum
      * @since 0.2
      */
-    public static function verify($category_id = null, $id = null, $slug = null, $guest = true)
+    public static function verify($categoryId = null, $id = null, $slug = null, $guest = true)
     {
-        if (!is_numeric($category_id) || $category_id < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
+        if (!is_numeric($categoryId) || $categoryId < 1 || !is_numeric($id) || $id < 1 || empty($slug)) {
             return null;
         }
         return static::find()->joinWith(['category' => function ($query) use ($guest) {
@@ -102,7 +102,7 @@ class Forum extends ForumActiveRecord
             }])->where([
                 static::tableName() . '.id' => $id, 
                 static::tableName() . '.slug' => $slug,
-                static::tableName() . '.category_id' => $category_id,
+                static::tableName() . '.category_id' => $categoryId,
             ])->limit(1)->one();
     }
     

@@ -56,14 +56,14 @@ class Thread extends ThreadActiveRecord
 
     /**
      * Searches for thread.
-     * @param int $forum_id
+     * @param int $forumId
      * @return ActiveDataProvider
      */
-    public function search($forum_id = null, $filters = null)
+    public function search($forumId = null, $filters = null)
     {
         $query = static::find();
-        if ($forum_id) {
-            $query->where(['forum_id' => (int)$forum_id]);
+        if ($forumId) {
+            $query->where(['forum_id' => (int)$forumId]);
         }
         if (!empty($filters)) {
             if (!empty($filters['pin']) && $filters['pin'] == 1) {
@@ -106,15 +106,15 @@ class Thread extends ThreadActiveRecord
     
     /**
      * Searches for threads created by user of given ID.
-     * @param int $user_id
+     * @param int $userId
      * @return ActiveDataProvider
      */
-    public function searchByUser($user_id)
+    public function searchByUser($userId)
     {
         $query = static::find();
-        $query->where(['author_id' => (int)$user_id]);
+        $query->where(['author_id' => $userId]);
         if (Podium::getInstance()->user->isGuest) {
-            $query->joinWith(['forum' => function($q) {
+            $query->joinWith(['forum' => function ($q) {
                 $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
         }
@@ -233,15 +233,15 @@ class Thread extends ThreadActiveRecord
     
     /**
      * Checks if user is this thread moderator.
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isMod($user_id = null)
+    public function isMod($userId = null)
     {
         if (User::can(Rbac::ROLE_ADMIN)) {
             return true;
         }
-        if (in_array($user_id, $this->forum->getMods())) {
+        if (in_array($userId, $this->forum->getMods())) {
             return true;
         }
         return false;

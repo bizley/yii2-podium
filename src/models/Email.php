@@ -19,20 +19,19 @@ class Email extends EmailActiveRecord
      * @param string $address
      * @param string $subject
      * @param string $content
-     * @param int|null $user_id
+     * @param int|null $userId
      * @return bool
      */
-    public static function queue($address, $subject, $content, $user_id = null)
+    public static function queue($address, $subject, $content, $userId = null)
     {
         try {
             $email = new static;
-            $email->user_id = $user_id;
+            $email->user_id = $userId;
             $email->email = $address;
             $email->subject = $subject;
             $email->content = $content;
             $email->status = self::STATUS_PENDING;
             $email->attempt = 0;
-
             return $email->save();
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);

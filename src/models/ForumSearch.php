@@ -31,13 +31,13 @@ class ForumSearch extends Forum
     }
 
     /**
-     * Checks if User of given ID is moderator of this forum.
-     * @param int $user_id
+     * Checks if user of given ID is moderator of this forum.
+     * @param int $userId
      * @return bool
      */
-    public function isMod($user_id = null)
+    public function isMod($userId = null)
     {
-        return (new Query())->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $user_id])->exists();
+        return (new Query())->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $userId])->exists();
     }
     
     /**

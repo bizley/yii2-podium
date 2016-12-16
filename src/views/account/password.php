@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'New password')])->label(false) ?>
             </div>
             <div class="form-group">
-                <?= $form->field($model, 'password_repeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat new password')])->label(false) ?>
+                <?= $form->field($model, 'passwordRepeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat new password')])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Change password'), ['class' => 'btn btn-block btn-danger', 'name' => 'password-button']) ?>
