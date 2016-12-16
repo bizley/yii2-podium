@@ -50,41 +50,20 @@ class SchemaOperation extends Component
     protected $_table;
 
     /**
-     * Returns success message.
-     * Sets type to success.
-     * @param string $message
-     * @return string
+     * @var string table name prefix.
      */
-    public function returnSuccess($message)
-    {
-        $this->type = self::TYPE_SUCCESS;
-        return $message;
-    }
+    protected $_prefix = 'podium_';
 
     /**
-     * Returns success message.
-     * Sets type to warning.
-     * @param string $message
-     * @return string
+     * Initialize component.
      */
-    public function returnWarning($message)
+    public function init()
     {
-        $this->type = self::TYPE_WARNING;
-        return $message;
-    }
-
-    /**
-     * Returns error message.
-     * Logs error.
-     * @param string $exception exception message
-     * @param string $method method name
-     * @param string $message custom message
-     * @return string
-     */
-    public function returnError($exception, $method, $message)
-    {
-        Yii::error($exception, $method);
-        return $message . ':' . Html::tag('pre', $exception);
+        parent::init();
+        $this->db = Instance::ensure($this->module->db, Connection::className());
+        if ($this->db->driverName === 'mysql') {
+            $this->tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+        }
     }
 
     /**
@@ -379,7 +358,7 @@ class SchemaOperation extends Component
      */
     public function getForeignName($name)
     {
-        return 'fk-' . $this->_table . '-' . (is_array($name) ? implode('_', $name) : $name);
+        return 'fk-' . $this->rawTable . '-' . (is_array($name) ? implode('_', $name) : $name);
     }
 
     /**
@@ -389,7 +368,7 @@ class SchemaOperation extends Component
      */
     public function getIndexName($name)
     {
-        return 'idx-' . $this->_table . '-' . $name;
+        return 'idx-' . $this->rawTable . '-' . $name;
     }
 
     /**
@@ -408,7 +387,7 @@ class SchemaOperation extends Component
      */
     public function getRawTable()
     {
-        return $this->_table;
+        return $this->_prefix . $this->_table;
     }
 
     /**
@@ -427,19 +406,7 @@ class SchemaOperation extends Component
      */
     public function getTableName($name)
     {
-        return '{{%podium_' . $name . '}}';
-    }
-
-    /**
-     * Initialize component.
-     */
-    public function init()
-    {
-        parent::init();
-        $this->db = Instance::ensure($this->module->db, Connection::className());
-        if ($this->db->driverName === 'mysql') {
-            $this->tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        }
+        return '{{%' . $this->_prefix . $name . '}}';
     }
 
     /**
@@ -449,5 +416,43 @@ class SchemaOperation extends Component
     public function setTable($value)
     {
         $this->_table = $value;
+    }
+
+    /**
+     * Returns success message.
+     * Sets type to success.
+     * @param string $message
+     * @return string
+     */
+    public function returnSuccess($message)
+    {
+        $this->type = self::TYPE_SUCCESS;
+        return $message;
+    }
+
+    /**
+     * Returns success message.
+     * Sets type to warning.
+     * @param string $message
+     * @return string
+     */
+    public function returnWarning($message)
+    {
+        $this->type = self::TYPE_WARNING;
+        return $message;
+    }
+
+    /**
+     * Returns error message.
+     * Logs error.
+     * @param string $exception exception message
+     * @param string $method method name
+     * @param string $message custom message
+     * @return string
+     */
+    public function returnError($exception, $method, $message)
+    {
+        Yii::error($exception, $method);
+        return $message . ':' . Html::tag('pre', $exception);
     }
 }
