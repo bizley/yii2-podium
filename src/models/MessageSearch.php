@@ -71,7 +71,13 @@ class MessageSearch extends Message
         if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($this->receiverName), $matches)) {
             $dataProvider->query->joinWith(['messageReceivers' => function($q) use ($matches) {
                 $q->joinWith(['receiver' => function ($q) use ($matches) {
-                    $q->andFilterWhere(['username' => ['', null], User::tableName() . '.id' => $matches[2]]);
+                    $q->andFilterWhere(['and', 
+                        [User::tableName() . '.id' => $matches[2]], 
+                        ['or', 
+                            ['username' => ''], 
+                            ['username' => null]
+                        ]
+                    ]);
                 }]);
             }]);
         } elseif (preg_match('/^([0-9]+)$/', $this->receiverName, $matches)) {
@@ -79,10 +85,13 @@ class MessageSearch extends Message
                 $q->joinWith(['receiver' => function ($q) use ($matches) {
                     $q->andFilterWhere(['or', 
                         ['like', 'username', $this->receiverName],
-                        [
-                            'username' => ['', null],
-                            'id'       => $matches[1]
-                        ]
+                        ['and', 
+                            ['id' => $matches[1]], 
+                            ['or', 
+                                ['username' => ''], 
+                                ['username' => null]
+                            ]
+                        ],
                     ]);
                 }]);
             }]);

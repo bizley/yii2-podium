@@ -742,11 +742,23 @@ class User extends UserActiveRecord
                 ['!=', 'id', static::loggedId()]
             ]);
             if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
-                $users->andWhere(['username' => ['', null], 'id' => $matches[2]]);
+                $users->andWhere(['and', 
+                    ['id' => $matches[2]], 
+                    ['or', 
+                        ['username' => ''], 
+                        ['username' => null]
+                    ]
+                ]);
             } elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
                 $users->andWhere(['or', 
                     ['like', 'username', $query],
-                    ['username' => ['', null], 'id' => $matches[1]]
+                    ['and', 
+                        ['id' => $matches[1]], 
+                        ['or', 
+                            ['username' => ''], 
+                            ['username' => null]
+                        ]
+                    ],
                 ]);
             } else {
                 $users->andWhere(['like', 'username', $query]);
