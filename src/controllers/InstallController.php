@@ -51,6 +51,9 @@ class InstallController extends Controller
      */
     public function checkAccess()
     {
+        if (YII_ENV === 'test') {
+            return true;
+        }
         $ip = Yii::$app->request->getUserIP();
         foreach ($this->module->allowedIPs as $filter) {
             if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip, $filter, $pos))) {
