@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\forms\LoginForm;
@@ -10,7 +11,6 @@ use bizley\podium\models\forms\ResetForm;
 use bizley\podium\models\User;
 use bizley\podium\PodiumCache;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\Response;
 
@@ -31,7 +31,6 @@ class AccountController extends BaseController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'user' => $this->module->user,
                 'denyCallback' => function ($rule, $action) {
                     return $this->module->goPodium();
                 },
@@ -247,7 +246,7 @@ class AccountController extends BaseController
     /**
      * Runs actions processed with email.
      * @param string $componentInfo
-     * @param Model $model
+     * @param ReactivateForm|ResetForm $model
      * @param array $log
      * @return string|Response
      * @since 0.6

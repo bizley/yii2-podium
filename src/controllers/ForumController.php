@@ -3,6 +3,7 @@
 namespace bizley\podium\controllers;
 
 use bizley\podium\db\Query;
+use bizley\podium\filters\AccessControl;
 use bizley\podium\models\Category;
 use bizley\podium\models\forms\SearchForm;
 use bizley\podium\models\Forum;
@@ -15,7 +16,6 @@ use bizley\podium\rbac\Rbac;
 use bizley\podium\services\ThreadVerifier;
 use Exception;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\Response;
@@ -37,7 +37,6 @@ class ForumController extends ForumPostController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'user' => $this->module->user,
                 'ruleConfig' => ['class' => 'bizley\podium\filters\LoginRequiredRule'],
                 'rules' => [
                     ['class' => 'bizley\podium\filters\InstallRule'],
@@ -84,7 +83,7 @@ class ForumController extends ForumPostController
                         'message' => Yii::t('podium/flash', 'Please sign in to create a new thread.')
                     ],
                     [
-                        'class' => 'yii\filters\AccessRule',
+                        'class' => 'bizley\podium\filters\PodiumRoleRule',
                         'allow' => true
                     ],
                 ],

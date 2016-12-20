@@ -3,7 +3,7 @@
 namespace bizley\podium\filters;
 
 use bizley\podium\Podium;
-use yii\filters\AccessRule;
+use Yii;
 
 /**
  * Installation access rule
@@ -12,7 +12,7 @@ use yii\filters\AccessRule;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */
-class InstallRule extends AccessRule
+class InstallRule extends PodiumRoleRule
 {
     /**
      * @var boolean whether this is an 'allow' rule or 'deny' rule.

@@ -2,11 +2,11 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\models\User;
 use bizley\podium\models\UserSearch;
 use bizley\podium\Podium;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Response;
 
 /**
@@ -26,7 +26,6 @@ class MembersController extends BaseController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'user' => $this->module->user,
                 'denyCallback' => function ($rule, $action) {
                     return $this->redirect(['account/login']);
                 },

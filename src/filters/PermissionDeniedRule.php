@@ -4,7 +4,6 @@ namespace bizley\podium\filters;
 
 use bizley\podium\models\User;
 use Yii;
-use yii\filters\AccessRule;
 
 /**
  * Permission denied access rule
@@ -13,7 +12,7 @@ use yii\filters\AccessRule;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */
-class PermissionDeniedRule extends AccessRule
+class PermissionDeniedRule extends PodiumRoleRule
 {
     /**
      * @var boolean whether this is an 'allow' rule or 'deny' rule.

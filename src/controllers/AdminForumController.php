@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\log\Log;
 use bizley\podium\models\Category;
 use bizley\podium\models\Content;
@@ -13,7 +14,6 @@ use bizley\podium\models\User;
 use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\Response;
 

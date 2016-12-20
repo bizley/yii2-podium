@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\log\Log;
 use bizley\podium\models\Content;
 use bizley\podium\models\Email;
@@ -10,7 +11,6 @@ use bizley\podium\models\Subscription;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
@@ -35,7 +35,6 @@ class ProfileController extends BaseController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'user' => $this->module->user,
                 'denyCallback' => function ($rule, $action) {
                     return $this->redirect(['account/login']);
                 },

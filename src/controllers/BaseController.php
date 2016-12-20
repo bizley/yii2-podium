@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\helpers\Helper;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
@@ -10,7 +11,6 @@ use bizley\podium\traits\FlashTrait;
 use Exception;
 use Yii;
 use yii\base\Action;
-use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\Controller as YiiController;
 

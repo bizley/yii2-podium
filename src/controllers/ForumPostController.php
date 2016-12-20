@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\helpers\Helper;
 use bizley\podium\models\Category;
 use bizley\podium\models\Forum;
@@ -12,7 +13,6 @@ use bizley\podium\models\User;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\services\ThreadVerifier;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\Response;

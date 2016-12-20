@@ -2,6 +2,7 @@
 
 namespace bizley\podium\controllers;
 
+use bizley\podium\filters\AccessControl;
 use bizley\podium\log\Log;
 use bizley\podium\models\Activity;
 use bizley\podium\models\Forum;
@@ -11,7 +12,6 @@ use bizley\podium\models\UserSearch;
 use bizley\podium\PodiumCache;
 use bizley\podium\rbac\Rbac;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Response;
 
 /**
@@ -31,7 +31,6 @@ class AdminController extends AdminForumController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'user' => $this->module->user,
                 'ruleConfig' => ['class' => 'bizley\podium\filters\PermissionDeniedRule'],
                 'rules' => [
                     ['class' => 'bizley\podium\filters\InstallRule'],
@@ -86,7 +85,7 @@ class AdminController extends AdminForumController
                         'redirect' => ['admin/categories']
                     ],
                     [
-                        'class' => 'yii\filters\AccessRule',
+                        'class' => 'bizley\podium\filters\PodiumRoleRule',
                         'allow' => true,
                         'roles' => [Rbac::ROLE_ADMIN]
                     ],
