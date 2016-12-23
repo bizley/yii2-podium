@@ -182,6 +182,8 @@ class Podium extends Module implements BootstrapInterface
         if (Yii::$app instanceof WebApplication) {
             $this->podiumComponent->registerComponents();
             $this->layout = 'main';
+        } else {
+            $this->podiumComponent->registerConsoleComponents();
         }
     }
     

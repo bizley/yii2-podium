@@ -13,6 +13,7 @@ use yii\db\Query;
 use yii\di\Instance;
 use yii\helpers\Console;
 use yii\mail\BaseMailer;
+use bizley\podium\Podium;
 
 /**
  * Podium command line tool to send emails.
@@ -26,11 +27,12 @@ class QueueController extends Controller
     const DEFAULT_BATCH_LIMIT = 100;
     
     /**
-     * @var Connection|array|string the DB connection object (or its 
+     * @var Connection|array|string|null the DB connection object (or its 
      * configuration array) or the application component ID of the DB connection 
      * to use when reading emails queue.
+     * By default module DB connection is used. 
      */
-    public $db = 'db';
+    public $db;
     
     /**
      * @var string controller default action ID.
@@ -71,7 +73,7 @@ class QueueController extends Controller
     {
         try {
             if (parent::beforeAction($action)) {
-                $this->db = Instance::ensure($this->db, Connection::className());
+                $this->db = !$this->db ? Podium::getInstance()->getDb() : Instance::ensure($this->db, Connection::className());
                 $this->mailer = Instance::ensure($this->mailer, BaseMailer::className());
                 return true;
             }
@@ -97,7 +99,7 @@ class QueueController extends Controller
                     ->where(['status' => Email::STATUS_PENDING])
                     ->orderBy(['id' => SORT_ASC])
                     ->limit((int)$limit)
-                    ->all();
+                    ->all($this->db);
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
@@ -240,15 +242,15 @@ class QueueController extends Controller
         $pending = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_PENDING])
-                    ->count();
+                    ->count('id', $this->db);
         $sent = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_SENT])
-                    ->count();
+                    ->count('id', $this->db);
         $gaveup = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_GAVEUP])
-                    ->count();
+                    ->count('id', $this->db);
         
         $showPending = $this->ansiFormat($pending, Console::FG_YELLOW);
         $showSent = $this->ansiFormat($sent, Console::FG_GREEN);
