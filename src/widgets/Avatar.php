@@ -59,7 +59,7 @@ class Avatar extends Widget
                         ]
                     ]);
                 } elseif (!empty($meta->avatar)) {
-                    $avatar = Html::img('/avatars/' . $meta->avatar, [
+                    $avatar = Html::img('@web/avatars/' . $meta->avatar, [
                         'class' => 'podium-avatar img-circle img-responsive center-block', 
                         'alt'   => Html::encode($this->author->podiumName)
                     ]);
