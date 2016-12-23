@@ -242,15 +242,15 @@ class QueueController extends Controller
         $pending = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_PENDING])
-                    ->count('*', $this->db);
+                    ->count('id', $this->db);
         $sent = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_SENT])
-                    ->count('*', $this->db);
+                    ->count('id', $this->db);
         $gaveup = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_GAVEUP])
-                    ->count('*', $this->db);
+                    ->count('id', $this->db);
         
         $showPending = $this->ansiFormat($pending, Console::FG_YELLOW);
         $showSent = $this->ansiFormat($sent, Console::FG_GREEN);

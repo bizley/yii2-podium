@@ -44,6 +44,16 @@ class PodiumComponent extends Component
         $this->registerFormatter();
         $this->registerTranslations();
     }
+
+    /**
+     * Registers required console components.
+     */
+    public function registerConsoleComponents()
+    {
+        $this->registerDbConnection();
+        $this->registerCache();
+        $this->registerAuthorization();
+    }
     
     /**
      * Returns instance of component of given name.

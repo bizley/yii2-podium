@@ -7,59 +7,81 @@ use bizley\podium\Podium;
 use bizley\podium\models\User;
 
 /**
- * RBAC cli
+ * Podium command line interface to RBAC managment
+ * 
  * @author pavlm
  */
 class UserController extends Controller
 {
 
     /**
-     * @param integer|string $idOrEmail
-     * @param string $role
+     * Changes forum user role.
+     * @param int|string $idOrEmail internal podium user id or email
+     * @param string $role one of 'podiumUser', 'podiumModerator', 'podiumAdmin' or other application defined role 
      */
     public function actionAssignRole($idOrEmail, $role)
     {
-        if (!$user = is_numeric($idOrEmail) ? User::findOne($idOrEmail) : User::findOne(['email' => $idOrEmail])) {
-            $this->stderr('no user found' . PHP_EOL);
-            return 1;
+        if (!$user = $this->findUser($idOrEmail)) {
+            return self::EXIT_CODE_ERROR;
         }
         $rbac = Podium::getInstance()->getRbac();
         if (!$role = $rbac->getRole($role)) {
-            $this->stderr('no such role' . PHP_EOL);
-            return 1;
+            $this->stderr('No such role.' . PHP_EOL);
+            return self::EXIT_CODE_ERROR;
+        }
+        if (strpos($role->name, 'podium') === 0) {
+            // remove another podium role
+            $userRoles = $rbac->getRolesByUser($user->id);
+            $podiumRoles = array_filter($userRoles, function ($role) {
+                return strpos($role->name, 'podium') === 0;
+            });
+            foreach ($podiumRoles as $podiumRole) {
+                $rbac->revoke($podiumRole, $user->id);
+            }
         }
         $rbac->assign($role, $user->id);
     }
 
     /**
-     * @param integer|string $idOrEmail
+     * Revokes forum user role.
+     * @param int|string $idOrEmail internal podium user id or email
      * @param string $role
      */
     public function actionRevokeRole($idOrEmail, $role)
     {
-        if (!$user = is_numeric($idOrEmail) ? User::findOne($idOrEmail) : User::findOne(['email' => $idOrEmail])) {
-            $this->stderr('no user found' . PHP_EOL);
-            return 1;
+        if (!$user = $this->findUser($idOrEmail)) {
+            return self::EXIT_CODE_ERROR;
         }
         $rbac = Podium::getInstance()->getRbac();
         if (!$role = $rbac->getRole($role)) {
-            $this->stderr('no such role' . PHP_EOL);
-            return 1;
+            $this->stderr('No such role.' . PHP_EOL);
+            return self::EXIT_CODE_ERROR;
         }
         $rbac->revoke($role, $user->id);
     }
     
     /**
-     * @param integer|string $idOrEmail
+     * Shows user roles
+     * @param int|string $idOrEmail internal podium user id or email
      */
     public function actionShowRoles($idOrEmail)
     {
-        if (!$user = is_numeric($idOrEmail) ? User::findOne($idOrEmail) : User::findOne(['email' => $idOrEmail])) {
-            $this->stderr('no user found' . PHP_EOL);
-            return 1;
+        if (!$user = $this->findUser($idOrEmail)) {
+            return self::EXIT_CODE_ERROR;
         }
         $roles = Podium::getInstance()->getRbac()->getRolesByUser($user->id);
         print_r($roles);
     }
     
+    /**
+     * Finds user by id or email
+     * @param int|string $idOrEmail internal podium user id or email
+     */
+    protected function findUser($idOrEmail)
+    {
+        if (!$user = User::find()->andWhere(is_numeric($idOrEmail) ? ['id' => $idOrEmail] : ['email' => $idOrEmail])->limit(1)->one()) {
+            $this->stderr('User not found.' . PHP_EOL);
+        }
+        return $user;
+    }
 }
