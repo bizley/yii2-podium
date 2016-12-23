@@ -26,7 +26,7 @@ if (Podium::getInstance()->user->isGuest) {
             'active' => $this->context->id == 'members'
         ];
     }
-    if ($podiumModule->userComponent === true) {
+    if ($podiumModule->userComponent === true && $this->context->accessType === 1) {
         if ($podiumModule->podiumConfig->get('registration_off') != '1') {
             $items[] = ['label' => Yii::t('podium/view', 'Register'), 'url' => $podiumModule->registerUrl];
         }

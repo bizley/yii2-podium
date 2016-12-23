@@ -145,6 +145,30 @@ class Podium extends Module implements BootstrapInterface
      */
     public $secureIdentityCookie = false;
     
+    /**
+     * @var callable Callback that will be called to determine the type of 
+     * Podium access for user.
+     * The signature of the callback should be as follows:
+     *      function ($user)
+     * where $user is the user component.
+     * The callback should return an integer value indicating access type.
+     *  1 => member access
+     *  0 => guest access
+     * -1 => no access
+     * @since 0.6
+     */
+    public $accessChecker;
+    
+    /**
+     * @var callable Callback that will be called in case Podium access has been 
+     * denied for user.
+     * The signature of the callback should be as follows:
+     *      function ($user, $action)
+     * where $user is the user component, and $action is the current action object.
+     * @since 0.6
+     */
+    public $denyCallback;
+    
 
     /**
      * Initializes the module for Web application.

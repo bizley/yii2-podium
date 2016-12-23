@@ -63,6 +63,23 @@ class AccountController extends BaseController
     }
 
     /**
+     * Redirect in case of guest access type.
+     * @param Action $action the action to be executed
+     * @return bool
+     * @since 0.6
+     */
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+        if ($this->accessType === 0) {
+            return $this->module->goPodium();
+        }
+        return true;
+    }
+    
+    /**
      * Activating the account based on the provided activation token.
      * @param string $token
      * @return Response

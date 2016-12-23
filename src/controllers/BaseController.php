@@ -5,7 +5,6 @@ namespace bizley\podium\controllers;
 use bizley\podium\filters\AccessControl;
 use bizley\podium\helpers\Helper;
 use bizley\podium\models\User;
-use bizley\podium\Podium;
 use bizley\podium\rbac\Rbac;
 use bizley\podium\traits\FlashTrait;
 use Exception;
@@ -27,6 +26,16 @@ class BaseController extends YiiController
 {
     use FlashTrait;
     
+    /**
+     * @var int Podium access type. Possible values are:
+     *  1 => member access
+     *  0 => guest access
+     * -1 => no access
+     * Access type can be modified with $accessChecker property of the module.
+     * @since 0.6
+     */
+    public $accessType = 1;
+
     /**
      * @inheritdoc
      */
@@ -180,29 +189,37 @@ class BaseController extends YiiController
      * Creates inherited user account.
      * Redirects banned user to proper view.
      * Sets user's time zone.
-     * @throws Exception
      */
     public function init()
     {
         parent::init();
         try {
-            if (!Podium::getInstance()->user->isGuest) {
+            if (!empty($this->module->accessChecker)) {
+                $this->accessType = call_user_func($this->module->accessChecker, $this->module->user);
+            }
+            if ($this->accessType === -1) {
+                if (!empty($this->module->denyCallback)) {
+                    call_user_func($this->module->denyCallback, $this->module->user);
+                    return false;
+                }
+                return $this->goHome();
+            }
+            
+            if (!$this->module->user->isGuest) {
                 $user = User::findMe();
-                if ($this->module->userComponent !== true) {
-                    if (!$user) {
-                        if (!User::createInheritedAccount()) {
-                            throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
-                        }
-                        $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
-                            'link' => Html::a(Yii::t('podium/view', 'Profile'))
-                        ]));
+                if ($this->module->userComponent !== true && empty($user) && $this->accessType === 1) {
+                    if (!User::createInheritedAccount()) {
+                        throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
                     }
+                    $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
+                        'link' => Html::a(Yii::t('podium/view', 'Profile'), ['profile/details'])
+                    ]));
                 }
                 if ($user && $user->status == User::STATUS_BANNED) {
                     return $this->redirect(['forum/ban']);
                 }
                 if ($user && !empty($user->meta->timezone)) {
-                    Podium::getInstance()->formatter->timeZone = $user->meta->timezone;
+                    $this->module->formatter->timeZone = $user->meta->timezone;
                 }
             }
         } catch (Exception $exc) {
