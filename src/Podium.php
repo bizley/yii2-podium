@@ -163,8 +163,8 @@ class Podium extends Module implements BootstrapInterface
      * @var callable Callback that will be called in case Podium access has been 
      * denied for user.
      * The signature of the callback should be as follows:
-     *      function ($user, $action)
-     * where $user is the user component, and $action is the current action object.
+     *      function ($user)
+     * where $user is the user component.
      * @since 0.6
      */
     public $denyCallback;
