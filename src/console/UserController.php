@@ -5,6 +5,8 @@ namespace bizley\podium\console;
 use yii\console\Controller;
 use bizley\podium\Podium;
 use bizley\podium\models\User;
+use bizley\podium\rbac\Rbac;
+use yii\rbac\Role;
 
 /**
  * Podium command line interface to RBAC managment
@@ -30,22 +32,17 @@ class UserController extends Controller
             return self::EXIT_CODE_ERROR;
         }
         if (strpos($role->name, 'podium') === 0) {
-            // remove another podium role
-            $userRoles = $rbac->getRolesByUser($user->id);
-            $podiumRoles = array_filter($userRoles, function ($role) {
-                return strpos($role->name, 'podium') === 0;
-            });
-            foreach ($podiumRoles as $podiumRole) {
-                $rbac->revoke($podiumRole, $user->id);
-            }
+            $this->setPodiumUserRole($user, $role);
+        } else {
+            $rbac->assign($role, $user->id);
         }
-        $rbac->assign($role, $user->id);
+        $this->stdout("user#{$user->id} has role '{$role->name}'" . PHP_EOL);
     }
 
     /**
-     * Revokes forum user role.
+     * Revokes specified forum user role, and sets default forum user role 
      * @param int|string $idOrEmail internal podium user id or email
-     * @param string $role
+     * @param string $role one of 'podiumUser', 'podiumModerator', 'podiumAdmin' or other application defined role
      */
     public function actionRevokeRole($idOrEmail, $role)
     {
@@ -57,7 +54,14 @@ class UserController extends Controller
             $this->stderr('No such role.' . PHP_EOL);
             return self::EXIT_CODE_ERROR;
         }
-        $rbac->revoke($role, $user->id);
+        if (strpos($role->name, 'podium') === 0) {
+            $defaultPodiumRole = $rbac->getRole(Rbac::ROLE_USER);
+            $this->setPodiumUserRole($user, $defaultPodiumRole);
+            $this->stdout("user#{$user->id} has role '{$defaultPodiumRole->name}'" . PHP_EOL);
+        } else {
+            $rbac->revoke($role, $user->id);
+            $this->stdout("user#{$user->id} role '{$role->name}' revoked" . PHP_EOL);
+        }
     }
     
     /**
@@ -74,8 +78,27 @@ class UserController extends Controller
     }
     
     /**
+     * Assigns specified role to user, after removing all forum roles (with 'podium' prefix)
+     * @param User $user
+     * @param Role $role
+     */
+    protected function setPodiumUserRole($user, $role)
+    {
+        $rbac = Podium::getInstance()->getRbac();
+        $userRoles = $rbac->getRolesByUser($user->id);
+        $podiumRoles = array_filter($userRoles, function ($role) {
+            return strpos($role->name, 'podium') === 0;
+        });
+        foreach ($podiumRoles as $podiumRole) {
+            $rbac->revoke($podiumRole, $user->id);
+        }
+        $rbac->assign($role, $user->id);
+    }
+    
+    /**
      * Finds user by id or email
      * @param int|string $idOrEmail internal podium user id or email
+     * @return User
      */
     protected function findUser($idOrEmail)
     {
