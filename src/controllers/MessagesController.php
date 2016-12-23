@@ -42,7 +42,7 @@ class MessagesController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Returns separated messages actions.
      * @return array
@@ -76,7 +76,7 @@ class MessagesController extends BaseController
             'searchModel' => $searchModel
         ]);
     }
-    
+
     /**
      * Adding a new message.
      * @param int $user message receiver's ID
@@ -85,7 +85,7 @@ class MessagesController extends BaseController
     public function actionNew($user = null)
     {
         $podiumUser = User::findMe();
-        
+
         if (Message::tooMany($podiumUser->id)) {
             $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', [
                 'max_messages' => Message::SPAM_MESSAGES, 
@@ -93,7 +93,7 @@ class MessagesController extends BaseController
             ]));
             return $this->redirect(['messages/inbox']);
         }
-        
+
         $model = new Message();
         $to = null;
         if (!empty($user) && (int)$user > 0 && (int)$user != $podiumUser->id) {
@@ -103,7 +103,7 @@ class MessagesController extends BaseController
                 $to = $member;
             }
         }
-        
+
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
                 $validated = [];
@@ -115,22 +115,22 @@ class MessagesController extends BaseController
                     );
                 }
                 if (empty($model->receiversId)) {
-                    $this->addError('receiver_id', Yii::t('podium/view', 'You have to select at least one message receiver.'));
+                    $model->addError('receiversId', Yii::t('podium/view', 'You have to select at least one message receiver.'));
                     $errors = true;
                 } else {
                     foreach ($model->receiversId as $r) {
                         if ($r == $podiumUser->id) {
-                            $this->addError('receiver_id', Yii::t('podium/view', 'You can not send message to yourself.'));
+                            $model->addError('receiversId', Yii::t('podium/view', 'You can not send message to yourself.'));
                             $errors = true;
                         } elseif ($podiumUser->isIgnoredBy($r)) {
-                            $this->addError('receiver_id', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
+                            $model->addError('receiversId', Yii::t('podium/view', 'One of the selected members ignores you and has been removed from message receivers.'));
                             $errors = true;
                         } else {
                             $member = User::find()->where(['id' => (int)$r, 'status' => User::STATUS_ACTIVE])->limit(1)->one();
                             if ($member) {
                                 $validated[] = $member->id;
                                 if (count($validated) > Message::MAX_RECEIVERS) {
-                                    $this->addError('receiver_id', Yii::t('podium/view', 'You can send message up to a maximum of 10 receivers at once.'));
+                                    $model->addError('receiversId', Yii::t('podium/view', 'You can send message up to a maximum of 10 receivers at once.'));
                                     $errors = true;
                                     break;
                                 }
@@ -150,7 +150,7 @@ class MessagesController extends BaseController
         }
         return $this->render('new', ['model' => $model, 'to' => $to, 'friends' => User::friendsList()]);
     }
-    
+
     /**
      * Replying to the message of given ID.
      * @param int $id
@@ -159,7 +159,7 @@ class MessagesController extends BaseController
     public function actionReply($id = null)
     {
         $podiumUser = User::findMe();
-        
+
         if (Message::tooMany($podiumUser->id)) {
             $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', [
                 'max_messages' => Message::SPAM_MESSAGES, 
@@ -167,7 +167,7 @@ class MessagesController extends BaseController
             ]));
             return $this->redirect(['messages/inbox']);
         }
-        
+
         $reply = Message::find()->where([Message::tableName() . '.id' => $id])->joinWith([
                 'messageReceivers' => function ($q) use ($podiumUser) {
                     $q->where(['receiver_id' => $podiumUser->id]);
@@ -176,7 +176,7 @@ class MessagesController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the message with the given ID.'));
             return $this->redirect(['messages/inbox']);
         }
-        
+
         $model = new Message();
         $model->topic = Message::re() . ' ' . $reply->topic;
         if ($model->load(Yii::$app->request->post())) {
@@ -196,7 +196,7 @@ class MessagesController extends BaseController
         $model->receiversId = [$reply->sender_id];
         return $this->render('reply', ['model' => $model, 'reply' => $reply]);
     }
-    
+
     /**
      * Listing the sent messages.
      * @return string
@@ -209,7 +209,7 @@ class MessagesController extends BaseController
             'searchModel' => $searchModel
         ]);
     }
-    
+
     /**
      * Viewing the sent message of given ID.
      * @param int $id
@@ -233,7 +233,7 @@ class MessagesController extends BaseController
             'id' => $model->id
         ]);
     }
-    
+
     /**
      * Viewing the received message of given ID.
      * @param int $id
@@ -257,7 +257,7 @@ class MessagesController extends BaseController
             'id' => $model->id
         ]);
     }
-    
+
     /**
      * Loads older messages in thread.
      * @return string
@@ -267,7 +267,7 @@ class MessagesController extends BaseController
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(['forum/index']);
         }
-            
+
         $result = ['messages' => '', 'more' => 0];
 
         if (!Podium::getInstance()->user->isGuest) {
