@@ -65,8 +65,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'class' => ActionColumn::className(),
             'template' => '{view}' . (!Podium::getInstance()->user->isGuest ? ' {pm}' : ''),
             'buttons' => [
-                'view' => function($url) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ActionColumn::buttonOptions([
+                'view' => function($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug], ActionColumn::buttonOptions([
                         'title' => Yii::t('podium/view', 'View Member')
                     ]));
                 },
