@@ -48,7 +48,7 @@ echo $this->render('/elements/admin/_navbar', ['active' => 'contents']);
         <?php $form = ActiveForm::begin(['id' => 'content-form']); ?>
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Topic')])->label(false) ?>
+                    <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Topic'), 'autofocus' => true])->label(false) ?>
                 </div>
             </div>
             <div class="row">

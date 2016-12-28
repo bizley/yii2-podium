@@ -16,7 +16,7 @@ use yii\helpers\Html;
     <div class="row">
         <div class="form-group">
             <div class="col-sm-8 col-sm-offset-2">
-                <?= $form->field($model, 'query')->textInput(['class' => 'form-control input-lg'])->label(Yii::t('podium/view', 'Find words')) ?>
+                <?= $form->field($model, 'query')->textInput(['class' => 'form-control input-lg', 'autofocus' => true])->label(Yii::t('podium/view', 'Find words')) ?>
             </div>
         </div>
     </div>

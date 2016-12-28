@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php if ($isFirstPost): ?>
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'topic')->textInput()->label(Yii::t('podium/view', 'Topic')) ?>
+                            <?= $form->field($model, 'topic')->textInput(['autofocus' => true])->label(Yii::t('podium/view', 'Topic')) ?>
                         </div>
                     </div>
 <?php endif; ?>

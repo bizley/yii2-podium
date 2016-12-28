@@ -42,7 +42,7 @@ $loggedId = User::loggedId();
             <div class="row">
                 <div class="col-md-3 text-right"><p class="form-control-static"><?= Yii::t('podium/view', 'Message Topic') ?></p></div>
                 <div class="col-md-9">
-                    <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Message Topic')])->label(false) ?>
+                    <?= $form->field($model, 'topic')->textInput(['placeholder' => Yii::t('podium/view', 'Message Topic'), 'autofocus' => true])->label(false) ?>
                 </div>
             </div>
             <div class="row">

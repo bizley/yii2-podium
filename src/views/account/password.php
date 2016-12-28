@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'password-form']); ?>
             <div class="form-group">
-                <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'New password')])->label(false) ?>
+                <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'New password'), 'autofocus' => true])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= $form->field($model, 'passwordRepeat')->passwordInput(['placeholder' => Yii::t('podium/view', 'Repeat new password')])->label(false) ?>

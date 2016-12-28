@@ -35,10 +35,10 @@ if (Podium::getInstance()->userComponent === true) {
                         <div class="col-sm-12">
                             <?= $form->field($model, 'username')->textInput([
                                 'data-container' => 'body',
-                                'data-toggle'    => 'popover',
+                                'data-toggle' => 'popover',
                                 'data-placement' => 'right',
-                                'data-content'   => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'),
-                                'data-trigger'   => 'focus'
+                                'data-content' => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'),
+                                'data-trigger' => 'focus'
                             ])->label(Yii::t('podium/view', 'Username')) ?>
                         </div>
                     </div>
