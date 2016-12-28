@@ -7,3 +7,5 @@ modules:
     enabled:
         - Asserts
         - \podium\Helper\Unit
+        - Yii2:
+            part: [orm, email]
