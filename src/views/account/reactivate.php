@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'reactivate-form']); ?>
             <div class="form-group">
-                <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'User Name or E-mail')])->label(false) ?>
+                <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'User Name or E-mail'), 'autofocus' => true])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Send me the account activation link'), ['class' => 'btn btn-block btn-success', 'name' => 'reactivate-button']) ?>

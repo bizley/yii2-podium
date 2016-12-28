@@ -42,7 +42,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->label(Yii::t('podium/view', "Category's Name")) ?>
+                            <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label(Yii::t('podium/view', "Category's Name")) ?>
                         </div>
                     </div>
                     <div class="row">
