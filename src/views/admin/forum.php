@@ -30,7 +30,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
 <?php if ($category->id == $model->category_id): ?>
 <?php foreach ($forums as $forum): ?>
             <li role="presentation" class="<?= $model->id == $forum->id ? 'active' : '' ?>"><a href="<?= Url::to(['admin/edit-forum', 'id' => $forum->id, 'cid' => $forum->category_id]) ?>"><span class="glyphicon glyphicon-bullhorn"></span> <?= Html::encode($forum->name) ?></a></li>
-<?php endforeach; ?>        
+<?php endforeach; ?>
             <li role="presentation" class="<?= $model->isNewRecord ? 'active' : '' ?>"><a href="<?= Url::to(['admin/new-forum', 'cid' => $category->id]) ?>"><span class="glyphicon glyphicon-plus-sign"></span> <?= Yii::t('podium/view', 'Create new forum') ?></a></li>
 <?php endif; ?>
 <?php endforeach; ?>
@@ -46,7 +46,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->label(Yii::t('podium/view', "Forum's Name")) ?>
+                            <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label(Yii::t('podium/view', "Forum's Name")) ?>
                         </div>
                     </div>
                     <div class="row">

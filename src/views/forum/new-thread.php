@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-10 col-sm-offset-1">
         <?= Alert::widget([
             'body' => '<strong><small>'
-                        . Yii::t('podium/view', 'Post Preview') 
-                        . '</small></strong>:<hr>' 
+                        . Yii::t('podium/view', 'Post Preview')
+                        . '</small></strong>:<hr>'
                         . $model->parsedPost
                         . (Podium::getInstance()->podiumConfig->get('allow_polls') ? Poll::preview($model) : null),
             'options' => ['class' => 'alert-info']
@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'name')->textInput()->label(Yii::t('podium/view', 'Topic')); ?>
+                            <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label(Yii::t('podium/view', 'Topic')); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -68,13 +68,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row">
                         <div class="col-sm-8">
                             <?= Html::submitButton(
-                                '<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Create new thread'), 
+                                '<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Create new thread'),
                                 ['class' => 'btn btn-block btn-primary', 'name' => 'save-button']
                             ); ?>
                         </div>
                         <div class="col-sm-4">
                             <?= Html::submitButton(
-                                '<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'), 
+                                '<span class="glyphicon glyphicon-eye-open"></span> ' . Yii::t('podium/view', 'Preview'),
                                 ['class' => 'btn btn-block btn-default', 'name' => 'preview-button']
                             ); ?>
                         </div>

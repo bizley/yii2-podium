@@ -21,7 +21,7 @@ $this->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
     <div class="col-sm-4 col-sm-offset-4">
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
             <div class="form-group">
-                <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'Username or E-mail')])->label(false) ?>
+                <?= $form->field($model, 'username')->textInput(['placeholder' => Yii::t('podium/view', 'Username or E-mail'), 'autofocus' => true])->label(false) ?>
             </div>
             <div class="form-group">
                 <?= $form->field($model, 'password')->passwordInput(['placeholder' => Yii::t('podium/view', 'Password')])->label(false) ?>
