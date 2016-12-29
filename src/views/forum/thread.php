@@ -144,7 +144,7 @@ if ($thread->locked) {
             <div class="panel-heading">
                 <h3 class="panel-title">
 <?php if ($thread->subscription): ?>
-                    <a href="<?= Url::to(['profile/subscriptions']) ?>" class="btn btn-default btn-lg pull-right" data-toggle="tooltip" data-placement="left" title="<?= Yii::t('podium/view', 'You subscribe this thread') ?>"><span class="glyphicon glyphicon-star"></span></a>
+                    <a href="<?= Url::to(['profile/subscriptions']) ?>" class="btn btn-default btn-xs pull-right" data-toggle="tooltip" data-placement="left" title="<?= Yii::t('podium/view', 'You subscribe this thread') ?>"><span class="glyphicon glyphicon-star"></span></a>
 <?php elseif (!Podium::getInstance()->user->isGuest): ?>
                     <small id="subsription-status" class="pull-right"><button class="add-subscription btn btn-success btn-xs"><span class="glyphicon glyphicon-star-empty"></span> <?= Yii::t('podium/view', 'Subscribe to this thread') ?></button></small>
 <?php endif; ?>
