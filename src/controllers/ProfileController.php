@@ -21,7 +21,7 @@ use yii\web\UploadedFile;
 /**
  * Podium Profile controller
  * All actions concerning member profile.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -48,7 +48,7 @@ class ProfileController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Updating the profile details.
      * @return string|Response
@@ -63,7 +63,7 @@ class ProfileController extends BaseController
         $model->scenario = Podium::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
         $model->currentPassword = null;
         $previous_new_email = $model->new_email;
-        
+
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
                 if ($model->saveChanges()) {
@@ -71,7 +71,7 @@ class ProfileController extends BaseController
                         $forum = $this->module->podiumConfig->get('name');
                         $email = Content::fill(Content::EMAIL_NEW);
                         if ($email !== false && Email::queue(
-                                $model->new_email, 
+                                $model->new_email,
                                 str_replace('{forum}', $forum, $email->topic),
                                 str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                         Url::to(['account/new-email', 'token' => $model->email_token], true),
@@ -96,7 +96,7 @@ class ProfileController extends BaseController
         $model->currentPassword = null;
         return $this->render('details', ['model' => $model]);
     }
-    
+
     /**
      * Updating the forum details.
      * @return string|Response
@@ -108,7 +108,7 @@ class ProfileController extends BaseController
         if (empty($model)) {
             $model = new Meta();
         }
-        
+
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = $user->id;
             $uploadAvatar = false;
@@ -128,8 +128,9 @@ class ProfileController extends BaseController
                             }
                         }
                         if ($folderExists) {
-                            if (!empty($model->avatar)) {
-                                if (!unlink($path . DIRECTORY_SEPARATOR . $model->avatar)) {
+                            $oldAvatarPath = $path . DIRECTORY_SEPARATOR . $model->avatar;
+                            if (!empty($model->avatar) && file_exists($oldAvatarPath)) {
+                                if (!unlink($oldAvatarPath)) {
                                     Log::error('Error while deleting old avatar image', null, __METHOD__);
                                 }
                             }
@@ -169,7 +170,7 @@ class ProfileController extends BaseController
         }
         return $this->render('profile', ['model' => $model]);
     }
-    
+
     /**
      * Signing out.
      * @return Response
@@ -179,7 +180,7 @@ class ProfileController extends BaseController
         Podium::getInstance()->user->logout();
         return $this->module->goPodium();
     }
-    
+
     /**
      * Showing the subscriptions.
      * @return string|Response
@@ -199,7 +200,7 @@ class ProfileController extends BaseController
             'dataProvider' => (new Subscription())->search(Yii::$app->request->get())
         ]);
     }
-    
+
     /**
      * Marking the subscription of given ID.
      * @param int $id
@@ -233,7 +234,7 @@ class ProfileController extends BaseController
         $this->error(Yii::t('podium/flash', 'Sorry! Subscription has got the wrong status.'));
         return $this->redirect(['profile/subscriptions']);
     }
-    
+
     /**
      * Deleting the subscription of given ID.
      * @param int $id
@@ -255,7 +256,7 @@ class ProfileController extends BaseController
         }
         return $this->redirect(['profile/subscriptions']);
     }
-    
+
     /**
      * Subscribing the thread of given ID.
      * @param int $id
@@ -266,39 +267,39 @@ class ProfileController extends BaseController
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(['forum/index']);
         }
-            
+
         $data = [
             'error' => 1,
-            'msg' => Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Error while adding this subscription!'), 
+            'msg' => Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Error while adding this subscription!'),
                 ['class' => 'text-danger']
             ),
         ];
 
         if (Podium::getInstance()->user->isGuest) {
-            $data['msg'] = Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'), 
+            $data['msg'] = Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Please sign in to subscribe to this thread'),
                 ['class' => 'text-info']
             );
         }
-            
+
         if (is_numeric($id) && $id > 0) {
             $subscription = Subscription::find()->where(['thread_id' => $id, 'user_id' => User::loggedId()])->limit(1)->one();
             if (!empty($subscription)) {
-                $data['msg'] = Html::tag('span', 
-                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                    . ' ' . Yii::t('podium/view', 'You are already subscribed to this thread.'), 
+                $data['msg'] = Html::tag('span',
+                    Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                    . ' ' . Yii::t('podium/view', 'You are already subscribed to this thread.'),
                     ['class' => 'text-info']
                 );
             } else {
                 if (Subscription::add((int)$id)) {
                     $data = [
                         'error' => 0,
-                        'msg'   => Html::tag('span', 
-                            Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
-                            . ' ' . Yii::t('podium/view', 'You have subscribed to this thread!'), 
+                        'msg'   => Html::tag('span',
+                            Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle'])
+                            . ' ' . Yii::t('podium/view', 'You have subscribed to this thread!'),
                             ['class' => 'text-success']
                         ),
                     ];
