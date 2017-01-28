@@ -66,3 +66,10 @@ Discussion
 ----------
 
 Join [Gitter](https://gitter.im/bizley/yii2-podium) channel.
+
+Tests
+-----
+
+For Codeception tests run:
+
+    composer exec -v -- codecept -c vendor/bizley/podium run
