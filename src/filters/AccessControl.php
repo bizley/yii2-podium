@@ -25,7 +25,7 @@ class AccessControl extends YiiAccessControl
      */
     public function init()
     {
-        parent::init();
         $this->user = Podium::getInstance()->user;
+        parent::init();
     }
 }
