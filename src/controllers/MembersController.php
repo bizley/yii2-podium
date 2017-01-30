@@ -61,10 +61,6 @@ class MembersController extends BaseController
     
     /**
      * Listing the active users for ajax.
-     * Entering 'forum#XX' (or any last part of 'forum' with #XX) looks for 
-     * member of the XX ID without username.
-     * Entering integer looks for member with XX in username or empty username 
-     * and that ID.
      * @param string $q Username query
      * @return string|Response
      */

@@ -323,7 +323,6 @@ return [
     'Profile ({name})' => 'Профиль ({name})',
     'Promote User' => 'Назначить пользователя',
     'Promote {name} to Moderator' => 'Назначить {name} Модератором',
-    'Provided e-mail address is too long.' => 'Указанный e-mail слишком длинный',
     'Question' => 'Вопрос',
     'Quote' => 'Цитата',
     'Rating' => 'Рейтинг',

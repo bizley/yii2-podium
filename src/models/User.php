@@ -27,9 +27,9 @@ class User extends UserActiveRecord
     /**
      * Roles.
      */
-    const ROLE_MEMBER       = 1;
-    const ROLE_MODERATOR    = 9;
-    const ROLE_ADMIN        = 10;
+    const ROLE_MEMBER = 1;
+    const ROLE_MODERATOR = 9;
+    const ROLE_ADMIN = 10;
 
     /**
      * Responses.
@@ -80,11 +80,10 @@ class User extends UserActiveRecord
     public function rules()
     {
         $rules = [
-            [['email', 'password', 'passwordRepeat', 'tos'], 'required', 'except' => ['account']],
+            [['username', 'email', 'password', 'passwordRepeat', 'tos'], 'required', 'except' => ['account']],
             ['currentPassword', 'required'],
             ['currentPassword', 'validateCurrentPassword'],
             [['email', 'new_email'], 'email', 'message' => Yii::t('podium/view', 'This is not a valid e-mail address.')],
-            [['email', 'new_email'], 'string', 'max' => 255, 'message' => Yii::t('podium/view', 'Provided e-mail address is too long.')],
             ['email', 'unique'],
             ['new_email', 'unique', 'targetAttribute' => 'email'],
             [['password', 'newPassword'], 'passwordRequirements'],
@@ -118,7 +117,7 @@ class User extends UserActiveRecord
             'ban' => [],
             'role' => [],
             'passwordChange' => ['password', 'passwordRepeat'],
-            'register' => ['email', 'password', 'passwordRepeat'],
+            'register' => ['username', 'email', 'password', 'passwordRepeat'],
             'account' => ['username', 'new_email', 'newPassword', 'newPasswordRepeat', 'currentPassword'],
             'accountInherit' => ['username', 'new_email', 'currentPassword'],
         ];
@@ -202,7 +201,7 @@ class User extends UserActiveRecord
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : 'Forum#' . $this->id;
+        return $this->username ? $this->username : 'user_' . $this->id;
     }
 
     /**
@@ -689,7 +688,25 @@ class User extends UserActiveRecord
         }
         return false;
     }
-    
+
+    /**
+     * Generates username for inherited account.
+     * @throws Exception
+     * @since 0.7
+     */
+    protected function generateUsername()
+    {
+        $try = 0;
+        $username = 'user_' . time() . rand(1000, 9999);
+        while ((new Query())->from(static::tableName())->where(['username' => $username])->exists()) {
+            $username = 'user_' . time() . rand(1000, 9999);
+            if ($try++ > 100) {
+                throw new Exception('Failed to generate unique username!');
+            }
+        }
+        $this->username = $username;
+    }
+
     /**
      * Creates inherited account.
      * @return bool
@@ -705,6 +722,7 @@ class User extends UserActiveRecord
                 $newUser->inherited_id = Podium::getInstance()->user->id;
                 $newUser->status = self::STATUS_ACTIVE;
                 $newUser->role = self::ROLE_MEMBER;
+                $newUser->generateUsername();
                 if (!$newUser->save()) {
                     throw new Exception('Account creating error');
                 }
@@ -739,30 +757,9 @@ class User extends UserActiveRecord
         if ($cache === false) {
             $users = static::find()->where(['and',
                 ['status' => self::STATUS_ACTIVE],
-                ['!=', 'id', static::loggedId()]
+                ['!=', 'id', static::loggedId()],
+                ['like', 'username', $query]
             ]);
-            if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($query), $matches)) {
-                $users->andWhere(['and', 
-                    ['id' => $matches[2]], 
-                    ['or', 
-                        ['username' => ''], 
-                        ['username' => null]
-                    ]
-                ]);
-            } elseif (preg_match('/^([0-9]+)$/', $query, $matches)) {
-                $users->andWhere(['or', 
-                    ['like', 'username', $query],
-                    ['and', 
-                        ['id' => $matches[1]], 
-                        ['or', 
-                            ['username' => ''], 
-                            ['username' => null]
-                        ]
-                    ],
-                ]);
-            } else {
-                $users->andWhere(['like', 'username', $query]);
-            }
             $users->orderBy(['username' => SORT_ASC, 'id' => SORT_ASC]);
             $results = ['results' => []];
             foreach ($users->each() as $user) {

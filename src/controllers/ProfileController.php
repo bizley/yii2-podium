@@ -63,6 +63,9 @@ class ProfileController extends BaseController
         $model->scenario = Podium::getInstance()->userComponent !== true ? 'accountInherit' : 'account';
         $model->currentPassword = null;
         $previous_new_email = $model->new_email;
+        if (empty($model->username)) {
+            $model->username = 'user_' . $model->id;
+        }
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {

@@ -323,7 +323,6 @@ return [
     'Profile ({name})' => '',
     'Promote User' => '',
     'Promote {name} to Moderator' => '',
-    'Provided e-mail address is too long.' => '',
     'Question' => '',
     'Quote' => '',
     'Rating' => '',
