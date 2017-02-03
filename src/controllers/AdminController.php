@@ -267,7 +267,7 @@ class AdminController extends AdminForumController
                     if ($mod->updateModeratorForMany($selection, $pre)) {
                         $this->success(Yii::t('podium/flash', 'Moderation list has been saved.'));
                     } else {
-                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while saving the moderatoration list.'));
+                        $this->error(Yii::t('podium/flash', 'Sorry! There was an error while saving the moderation list.'));
                     }
                     return $this->refresh();
                 }
