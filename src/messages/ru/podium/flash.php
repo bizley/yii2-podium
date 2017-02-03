@@ -123,7 +123,7 @@ return [
     'Sorry! There was an error while moving the thread.' => 'При перемещении темы возникла ошибка.',
     'Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.' => 'При попытке отправить сообщение модератору возникла ошибка. Пожалуйста, свяжитесь с администратором.',
     'Sorry! There was an error while promoting the user.' => 'При назначении пользователя модератором возникла ошибка.',
-    'Sorry! There was an error while saving the moderatoration list.' => 'При сохранении списка модераторов возникла ошибка.',
+    'Sorry! There was an error while saving the moderation list.' => 'При сохранении списка модераторов возникла ошибка.',
     'Sorry! There was an error while selecting the moderator ID.' => 'При выборе ID модератора возникла ошибка.',
     'Sorry! There was an error while unsubscribing the thread list.' => 'При отписке от темы возникла ошибка.',
     'Sorry! There was an error while updating the category.' => 'При обновлении категории возникла ошибка.',

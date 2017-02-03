@@ -123,7 +123,7 @@ return [
     'Sorry! There was an error while moving the thread.' => '',
     'Sorry! There was an error while notifying the moderation team. Contact administrator about this problem.' => '',
     'Sorry! There was an error while promoting the user.' => '',
-    'Sorry! There was an error while saving the moderatoration list.' => '',
+    'Sorry! There was an error while saving the moderation list.' => '',
     'Sorry! There was an error while selecting the moderator ID.' => '',
     'Sorry! There was an error while unsubscribing the thread list.' => '',
     'Sorry! There was an error while updating the category.' => '',
