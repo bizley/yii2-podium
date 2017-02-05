@@ -510,7 +510,7 @@ return [
     '{forum} password reset link' => 'Link de restablecimiento de contraseña de {forum}',
     '{max} votes per hour limit reached!' => 'Se ha alcanzado el límite de {max} votos por hora!',
     '{n, plural, =1{# active user} other{# active users}} (in the past 15 minutes)' => '{n, plural, =1{# usuario activo} other{# usuarios activos}} (en los últimos 15 minutos)',
-    '{n, plural, =1{# usuario anónimo} other{# usuarios anónimos}}' => '',
+    '{n, plural, =1{# anonymous user} other{# anonymous users}}' => '{n, plural, =1{# usuario anónimo} other{# usuarios anónimos}}',
     '{n, plural, =1{# guest} other{# guests}}' => '{n, plural, =1{# invitado} other{# invitados}}',
     '{n, plural, =1{# member} other{# members}}' => '{n, plural, =1{# miembro} other{# miembros}}',
 ];
