@@ -25,7 +25,7 @@ Features
 - Console mail queue handling
 - Avatars uploading (+supports Gravatars)
 - Built-in user messages component
-- English, Polish, and Russian translation (+Japanese coming up)
+- English, Polish, Russian, and Spanish translation (+Japanese coming up)
 - Available with polls system
 
 Installation & configuration
