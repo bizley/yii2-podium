@@ -11,7 +11,7 @@ use Yii;
 /**
  * Podium Activity model
  * Members tracking and counting.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -34,7 +34,7 @@ class Activity extends ActivityActiveRecord
         $activity->url = $url;
         return $activity->save();
     }
-    
+
     /**
      * Adds registered user activity.
      * @param string $ip
@@ -44,13 +44,12 @@ class Activity extends ActivityActiveRecord
      */
     protected static function addUser($ip, $url)
     {
-        $user = User::findMe();
-        if (empty($user)) {
+        if (!$user = User::findMe()) {
             return false;
         }
-        
+
         $activity = static::find()->where(['user_id' => $user->id])->limit(1)->one();
-        if (empty($activity)) {
+        if (!$activity) {
             $activity = new static;
             $activity->user_id = $user->id;
         }
@@ -59,7 +58,7 @@ class Activity extends ActivityActiveRecord
         $activity->user_slug = $user->podiumSlug;
         $activity->url = $url;
         $activity->ip = $ip;
-        $activity->anonymous = $user->meta->anonymous;
+        $activity->anonymous = isset($user->meta) ? $user->meta->anonymous : 0;
 
         return $activity->save();
     }
@@ -91,7 +90,7 @@ class Activity extends ActivityActiveRecord
         }
         return false;
     }
-    
+
     /**
      * Deletes user activity.
      * @param int $id
@@ -105,7 +104,7 @@ class Activity extends ActivityActiveRecord
         }
         Podium::getInstance()->podiumCache->delete('forum.lastactive');
     }
-    
+
     /**
      * Updates username after change.
      * @param int $id
@@ -127,7 +126,7 @@ class Activity extends ActivityActiveRecord
         }
         Podium::getInstance()->podiumCache->delete('forum.lastactive');
     }
-    
+
     /**
      * Updates role after change.
      * @param int $id
@@ -159,25 +158,25 @@ class Activity extends ActivityActiveRecord
             $time = time() - 15 * 60;
             $last = [
                 'count' => static::find()->where(['>', 'updated_at', $time])->count(),
-                'members' => static::find()->where(['and', 
-                        ['>', 'updated_at', $time], 
-                        ['is not', 'user_id', null], 
+                'members' => static::find()->where(['and',
+                        ['>', 'updated_at', $time],
+                        ['is not', 'user_id', null],
                         ['anonymous' => 0]
                     ])->count(),
-                'anonymous' => static::find()->where(['and', 
-                        ['>', 'updated_at', $time], 
-                        ['is not', 'user_id', null], 
+                'anonymous' => static::find()->where(['and',
+                        ['>', 'updated_at', $time],
+                        ['is not', 'user_id', null],
                         ['anonymous' => 1]
                     ])->count(),
-                'guests' => static::find()->where(['and', 
-                        ['>', 'updated_at', $time], 
+                'guests' => static::find()->where(['and',
+                        ['>', 'updated_at', $time],
                         ['user_id' => null]
                     ])->count(),
                 'names' => [],
             ];
-            $members = static::find()->where(['and', 
-                    ['>', 'updated_at', $time], 
-                    ['is not', 'user_id', null], 
+            $members = static::find()->where(['and',
+                    ['>', 'updated_at', $time],
+                    ['is not', 'user_id', null],
                     ['anonymous' => 0]
                 ]);
             foreach ($members->each() as $member) {
@@ -191,7 +190,7 @@ class Activity extends ActivityActiveRecord
         }
         return $last;
     }
-    
+
     /**
      * Counts number of registered users.
      * @return int
@@ -205,7 +204,7 @@ class Activity extends ActivityActiveRecord
         }
         return $members;
     }
-    
+
     /**
      * Counts number of created posts.
      * @return int
@@ -219,7 +218,7 @@ class Activity extends ActivityActiveRecord
         }
         return $posts;
     }
-    
+
     /**
      * Counts number of created threads.
      * @return int
