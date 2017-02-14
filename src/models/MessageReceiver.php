@@ -78,8 +78,8 @@ class MessageReceiver extends MessageReceiverActiveRecord
                     ->from(['m1' => Message::tableName()])
                     ->leftJoin(['m2' => Message::tableName()], 'm1.replyto = m2.id')
                     ->where(['is not', 'm2.replyto', null]);
-        $query = static::find()->where(['and', 
-            ['receiver_id' => User::loggedId()], 
+        $query = static::find()->where(['and',
+            ['receiver_id' => User::loggedId()],
             ['!=', 'receiver_status', self::STATUS_DELETED],
             ['not in', 'message_id', $subquery]
         ]);
@@ -88,11 +88,11 @@ class MessageReceiver extends MessageReceiverActiveRecord
         ]);
         $dataProvider->sort->attributes['senderName'] = [
             'asc' => [
-                User::tableName() . '.username' => SORT_ASC, 
+                User::tableName() . '.username' => SORT_ASC,
                 User::tableName() . '.id' => SORT_ASC
             ],
             'desc' => [
-                User::tableName() . '.username' => SORT_DESC, 
+                User::tableName() . '.username' => SORT_DESC,
                 User::tableName() . '.id' => SORT_DESC
             ],
             'default' => SORT_ASC
@@ -112,10 +112,10 @@ class MessageReceiver extends MessageReceiverActiveRecord
         if (preg_match('/^(forum|orum|rum|um|m)?#([0-9]+)$/', strtolower($this->senderName), $matches)) {
             $dataProvider->query->joinWith(['message' => function ($q) use ($matches) {
                 $q->joinWith(['sender' => function ($q) use ($matches) {
-                    $q->andFilterWhere(['and', 
-                        [User::tableName() . '.id' => $matches[2]], 
-                        ['or', 
-                            ['username' => ''], 
+                    $q->andFilterWhere(['and',
+                        [User::tableName() . '.id' => $matches[2]],
+                        ['or',
+                            ['username' => ''],
                             ['username' => null]
                         ]
                     ]);
@@ -124,12 +124,12 @@ class MessageReceiver extends MessageReceiverActiveRecord
         } elseif (preg_match('/^([0-9]+)$/', $this->senderName, $matches)) {
             $dataProvider->query->joinWith(['message' => function ($q) use ($matches) {
                 $q->joinWith(['sender' => function ($q) use ($matches) {
-                    $q->andFilterWhere(['or', 
+                    $q->andFilterWhere(['or',
                         ['like', 'username', $this->senderName],
-                        ['and', 
-                            ['id' => $matches[1]], 
-                            ['or', 
-                                ['username' => ''], 
+                        ['and',
+                            ['id' => $matches[1]],
+                            ['or',
+                                ['username' => ''],
                                 ['username' => null]
                             ]
                         ],

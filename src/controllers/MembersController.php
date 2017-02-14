@@ -12,7 +12,7 @@ use yii\web\Response;
 /**
  * Podium Members controller
  * All actions concerning forum members.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -58,7 +58,7 @@ class MembersController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Listing the active users for ajax.
      * @param string $q Username query
@@ -71,7 +71,7 @@ class MembersController extends BaseController
         }
         return User::getMembersList($q);
     }
-    
+
     /**
      * Ignoring the user of given ID.
      * @param int $id
@@ -82,29 +82,29 @@ class MembersController extends BaseController
         if (Podium::getInstance()->user->isGuest) {
             return $this->redirect(['forum/index']);
         }
-            
+
         $model = User::find()->where([
-                'and', 
-                ['id' => (int)$id], 
+                'and',
+                ['id' => (int)$id],
                 ['!=', 'status', User::STATUS_REGISTERED]
             ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
         }
-        
+
         $logged = User::loggedId();
-        
+
         if ($model->id == $logged) {
             $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore your own account.'));
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
-        
+
         if ($model->id == User::ROLE_ADMIN) {
             $this->error(Yii::t('podium/flash', 'Sorry! You can not ignore Administrator.'));
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
-        
+
         if ($model->updateIgnore($logged)) {
             if ($model->isIgnoredBy($logged)) {
                 $this->success(Yii::t('podium/flash', 'User is now ignored.'));
@@ -129,11 +129,11 @@ class MembersController extends BaseController
             'searchModel' => $searchModel
         ]);
     }
-    
+
     /**
      * Listing the moderation team.
      * @return string
-     */    
+     */
     public function actionMods()
     {
         $searchModel = new UserSearch();
@@ -151,7 +151,7 @@ class MembersController extends BaseController
      */
     public function actionView($id = null, $slug = null)
     {
-        $model = User::find()->where(['and', 
+        $model = User::find()->where(['and',
                 ['id' => $id],
                 ['!=', 'status', User::STATUS_REGISTERED],
                 ['or',
@@ -166,7 +166,7 @@ class MembersController extends BaseController
         }
         return $this->render('view', ['model' => $model]);
     }
-    
+
     /**
      * Adding or removing user as a friend.
      * @param int $id user ID
@@ -178,23 +178,23 @@ class MembersController extends BaseController
         if (Podium::getInstance()->user->isGuest) {
             return $this->redirect(['forum/index']);
         }
-    
-        $model = User::find()->where(['and', 
-                ['id' => $id], 
+
+        $model = User::find()->where(['and',
+                ['id' => $id],
                 ['!=', 'status', User::STATUS_REGISTERED]
             ])->limit(1)->one();
         if (empty($model)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find Member with this ID.'));
             return $this->redirect(['members/index']);
         }
-        
+
         $logged = User::loggedId();
-        
+
         if ($model->id == $logged) {
             $this->error(Yii::t('podium/flash', 'Sorry! You can not befriend your own account.'));
             return $this->redirect(['members/view', 'id' => $model->id, 'slug' => $model->podiumSlug]);
         }
-        
+
         if ($model->updateFriend($logged)) {
             if ($model->isBefriendedBy($logged)) {
                 $this->success(Yii::t('podium/flash', 'User is your friend now.'));

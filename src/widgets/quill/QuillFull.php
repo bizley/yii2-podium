@@ -6,7 +6,7 @@ use bizley\quill\Quill;
 
 /**
  * Podium Quill widget with full toolbar.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
  */
@@ -24,17 +24,17 @@ class QuillFull extends Quill
         ['link', 'image', 'video'],
         ['clean']
     ];
-    
+
     /**
      * @var array Collection of modules to include and respective options.
      */
     public $modules = ['syntax' => true];
-    
+
     /**
      * @var string Highlight.js stylesheet to fetch from https://cdnjs.cloudflare.com
      */
     public $highlightStyle = 'github-gist.min.css';
-    
+
     /**
      * @var string Additional JS code to be called with the editor.
      * @since 0.3

@@ -28,9 +28,9 @@ $author = User::findMe();
 <div class="row">
     <div class="col-sm-10 col-sm-offset-2">
         <?= Alert::widget([
-            'body' => '<strong><small>' 
-                        . Yii::t('podium/view', 'Post Preview') 
-                        . '</small></strong>:<hr>' . $model->parsedContent, 
+            'body' => '<strong><small>'
+                        . Yii::t('podium/view', 'Post Preview')
+                        . '</small></strong>:<hr>' . $model->parsedContent,
             'options' => ['class' => 'alert-info']
         ]) ?>
     </div>

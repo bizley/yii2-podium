@@ -21,7 +21,7 @@ $podiumModule = Podium::getInstance();
 if (Podium::getInstance()->user->isGuest) {
     if (Podium::getInstance()->podiumConfig->get('members_visible')) {
         $items[] = [
-            'label' => Yii::t('podium/view', 'Members'), 
+            'label' => Yii::t('podium/view', 'Members'),
             'url' => ['members/index'],
             'active' => $this->context->id == 'members'
         ];
@@ -39,19 +39,19 @@ if (Podium::getInstance()->user->isGuest) {
 
     if (User::can(Rbac::ROLE_ADMIN)) {
         $items[] = [
-            'label' => Yii::t('podium/view', 'Administration'), 
+            'label' => Yii::t('podium/view', 'Administration'),
             'url' => ['admin/index'],
             'active' => $this->context->id == 'admin'
         ];
     }
     $items[] = [
-        'label' => Yii::t('podium/view', 'Members'), 
+        'label' => Yii::t('podium/view', 'Members'),
         'url' => ['members/index'],
         'active' => $this->context->id == 'members'
     ];
     $items[] = [
-        'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName]) 
-                    . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Profile ({name})', ['name' => $podiumUser->podiumName])
+                    . ($subscriptionCount ? ' ' . Html::tag('span', $subscriptionCount, ['class' => 'badge']) : ''),
         'url' => ['profile/index'],
         'items' => [
             ['label' => Yii::t('podium/view', 'My Profile'), 'url' => ['profile/index']],
@@ -61,7 +61,7 @@ if (Podium::getInstance()->user->isGuest) {
         ]
     ];
     $items[] = [
-        'label' => Yii::t('podium/view', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''), 
+        'label' => Yii::t('podium/view', 'Messages') . ($messageCount ? ' ' . Html::tag('span', $messageCount, ['class' => 'badge']) : ''),
         'url' => ['messages/inbox'],
         'items' => [
             ['label' => Yii::t('podium/view', 'Inbox'), 'url' => ['messages/inbox']],

@@ -17,7 +17,7 @@ class DataColumn extends YiiDataColumn
      * @var boolean whether the header label should be HTML-encoded.
      */
     public $encodeLabel = false;
-    
+
     /**
      * @inheritdoc
      */

@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $user_id
  * @property integer $post_id
@@ -26,7 +26,7 @@ class PostThumbActiveRecord extends ActiveRecord
     {
         return '{{%podium_post_thumb}}';
     }
-    
+
     /**
      * @inheritdoc
      */

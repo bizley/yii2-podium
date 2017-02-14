@@ -13,10 +13,10 @@ use yii\helpers\Html;
 /**
  * Podium Maintenance module
  * Maintenance requires database connection to be configured first.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property string $foreignName
  * @property string $indexName
  * @property Podium $module
@@ -113,7 +113,7 @@ class SchemaOperation extends Component
         }
         try {
             $this->db->createCommand()->addForeignKey(
-                    $this->getForeignName($key), $this->table, $key, 
+                    $this->getForeignName($key), $this->table, $key,
                     $this->getTableName($ref), $col, $delete, $update
                 )->execute();
             return $this->returnSuccess(Yii::t('podium/flash', 'Table foreign key {name} has been added', [
@@ -308,13 +308,13 @@ class SchemaOperation extends Component
         try {
             $this->db->createCommand()->renameTable($this->table, $this->getTableName($name))->execute();
             return $this->returnSuccess(Yii::t('podium/flash', 'Table {name} has been renamed to {new}', [
-                'name' => $this->rawTable, 
+                'name' => $this->rawTable,
                 'new'  => $this->getTableName($name)
             ]));
         } catch (Exception $e) {
             return $this->returnError($e->getMessage(), __METHOD__,
                 Yii::t('podium/flash', 'Error during table {name} renaming to {new}', [
-                    'name' => $this->rawTable, 
+                    'name' => $this->rawTable,
                     'new'  => $this->getTableName($name)
                 ])
             );
@@ -338,13 +338,13 @@ class SchemaOperation extends Component
         try {
             $this->db->createCommand()->renameColumn($this->table, $col, $name)->execute();
             return $this->returnSuccess(Yii::t('podium/flash', 'Table column {name} has been renamed to {new}', [
-                'name' => $col, 
+                'name' => $col,
                 'new'  => $name
             ]));
         } catch (Exception $e) {
             return $this->returnError($e->getMessage(), __METHOD__,
                 Yii::t('podium/flash', 'Error during table column {name} renaming to {new}', [
-                    'name' => $col, 
+                    'name' => $col,
                     'new'  => $name
                 ])
             );

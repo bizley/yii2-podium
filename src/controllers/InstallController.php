@@ -15,19 +15,19 @@ use yii\web\Controller;
 /**
  * Podium Install controller
  * All actions concerning module installation.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class InstallController extends Controller
 {
     use FlashTrait;
-    
+
     /**
      * @var string Layout name
      */
     public $layout = 'installation';
-    
+
     /**
      * @inheritdoc
      */
@@ -41,7 +41,7 @@ class InstallController extends Controller
         }
         return false;
     }
-    
+
     /**
      * Checks if user's IP is on the allowed list.
      * @see Podium::$allowedIPs
@@ -87,7 +87,7 @@ class InstallController extends Controller
 
         return Json::encode($result);
     }
-    
+
     /**
      * Running the installation.
      * @return string
@@ -95,7 +95,7 @@ class InstallController extends Controller
     public function actionRun()
     {
         Yii::$app->session->set(Installation::SESSION_KEY, 0);
-        
+
         if ($this->module->userComponent !== true && empty($this->module->adminId)) {
             $this->warning(Yii::t('podium/flash', "{userComponent} is set to custom but no administrator ID has been set with {adminId} parameter. Administrator privileges will not be set.", [
                 'userComponent' => '$userComponent',
@@ -104,7 +104,7 @@ class InstallController extends Controller
         }
         return $this->render('run', ['version' => $this->module->version]);
     }
-    
+
     /**
      * Updating the databases structures.
      * @return string
@@ -118,7 +118,7 @@ class InstallController extends Controller
         }
         return Json::encode($result);
     }
-    
+
     /**
      * Running the upgrade.
      * @return string
@@ -127,7 +127,7 @@ class InstallController extends Controller
     public function actionLevelUp()
     {
         Yii::$app->session->set(Update::SESSION_KEY, 0);
-        
+
         $error = '';
         $info = '';
         $dbVersion = 0;
@@ -144,13 +144,13 @@ class InstallController extends Controller
                 $error = Yii::t('podium/flash', 'Module version appears to be older than database! Please verify your database.');
             }
         }
-        
+
         Yii::$app->session->set(Update::SESSION_VERSION, $dbVersion);
-        
+
         return $this->render('level-up', [
-            'currentVersion' => $mdVersion, 
-            'dbVersion' => $dbVersion, 
-            'error' => $error, 
+            'currentVersion' => $mdVersion,
+            'dbVersion' => $dbVersion,
+            'error' => $error,
             'info' => $info
         ]);
     }

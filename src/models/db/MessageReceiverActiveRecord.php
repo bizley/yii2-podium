@@ -13,7 +13,7 @@ use yii\db\ActiveQuery;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $message_id
  * @property integer $receiver_id
@@ -29,17 +29,17 @@ class MessageReceiverActiveRecord extends ActiveRecord
     const STATUS_NEW     = 1;
     const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
-    
+
     /**
      * @var string Sender name
      */
     public $senderName;
-    
+
     /**
      * @var string Message topic
      */
     public $topic;
-    
+
     /**
      * @inheritdoc
      */
@@ -66,7 +66,7 @@ class MessageReceiverActiveRecord extends ActiveRecord
             ['remove' => ['receiver_status']]
         );
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -79,7 +79,7 @@ class MessageReceiverActiveRecord extends ActiveRecord
             [['senderName', 'topic'], 'string']
         ];
     }
-    
+
     /**
      * Returns list of statuses.
      * @return string[]
@@ -88,7 +88,7 @@ class MessageReceiverActiveRecord extends ActiveRecord
     {
         return [self::STATUS_NEW, self::STATUS_READ, self::STATUS_DELETED];
     }
-    
+
     /**
      * Message relation.
      * @return ActiveQuery
@@ -97,7 +97,7 @@ class MessageReceiverActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Message::className(), ['id' => 'message_id']);
     }
-    
+
     /**
      * Receiver relation.
      * @return ActiveQuery

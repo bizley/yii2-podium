@@ -13,10 +13,10 @@ use yii\db\ActiveQuery;
 /**
  * Poll model
  * Forum polls.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property int $id
  * @property string $question
  * @property int $votes
@@ -26,7 +26,7 @@ use yii\db\ActiveQuery;
  * @property int $author_id
  * @property int $create_at
  * @property int $updated_at
- * 
+ *
  * @property Thread $thread
  * @property PollAnswer[] $answers
  * @property User $author
@@ -38,13 +38,13 @@ class PollActiveRecord extends ActiveRecord
      * @since 0.5
      */
     public $end;
-    
+
     /**
      * @var string[] poll answers
      * @since 0.6
      */
     public $editAnswers = [];
-    
+
     /**
      * @inheritdoc
      */
@@ -52,7 +52,7 @@ class PollActiveRecord extends ActiveRecord
     {
         return '{{%podium_poll}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -77,7 +77,7 @@ class PollActiveRecord extends ActiveRecord
             ['editAnswers', 'requiredAnswers'],
         ];
     }
-    
+
     /**
      * Filters and validates poll answers.
      */
@@ -95,7 +95,7 @@ class PollActiveRecord extends ActiveRecord
             $this->addError('editAnswers', Yii::t('podium/view', 'You have to add at least 2 options.'));
         }
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -108,7 +108,7 @@ class PollActiveRecord extends ActiveRecord
             'end' => Yii::t('podium/view', 'Poll ends at'),
         ];
     }
-    
+
     /**
      * Thread relation.
      * @return ActiveQuery
@@ -117,7 +117,7 @@ class PollActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
-    
+
     /**
      * Author relation.
      * @return ActiveQuery
@@ -126,7 +126,7 @@ class PollActiveRecord extends ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'author_id']);
     }
-    
+
     /**
      * Answers relation.
      * @return ActiveQuery

@@ -10,6 +10,4 @@ use bizley\podium\models\db\PostThumbActiveRecord;
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
-class PostThumb extends PostThumbActiveRecord
-{
-}
+class PostThumb extends PostThumbActiveRecord {}

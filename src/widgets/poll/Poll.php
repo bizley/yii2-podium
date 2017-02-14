@@ -11,7 +11,7 @@ use yii\bootstrap\ActiveForm;
 /**
  * Podium Poll widget
  * Create new poll and renders votes and results.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
  */
@@ -21,7 +21,7 @@ class Poll extends Widget
      * @var PollModel
      */
     public $model;
-    
+
     /**
      * @var bool Display only
      */
@@ -40,7 +40,7 @@ class Poll extends Widget
         $hidden = $this->model->hidden;
         if ($hidden && !empty($this->model->end_at) && $this->model->end_at < time()) {
             $hidden = 0;
-        }        
+        }
         return $this->render('view', [
             'model' => $this->model,
             'hidden' => $hidden,
@@ -48,7 +48,7 @@ class Poll extends Widget
             'display' => $this->display
         ]);
     }
-    
+
     /**
      * Renders poll create form.
      * @param ActiveForm $form
@@ -59,7 +59,7 @@ class Poll extends Widget
     {
         return (new static)->render('create', ['form' => $form, 'model' => $model]);
     }
-    
+
     /**
      * Renders poll update form.
      * @param ActiveForm $form
@@ -70,7 +70,7 @@ class Poll extends Widget
     {
         return (new static)->render('update', ['form' => $form, 'model' => $model]);
     }
-    
+
     /**
      * Returns rendered preview of the poll.
      * @param Thread $model

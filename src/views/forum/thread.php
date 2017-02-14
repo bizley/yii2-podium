@@ -38,7 +38,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
             <div class="panel-heading">
                 <ul class="list-inline">
                     <li><strong><?= Yii::t('podium/view', 'Moderator options') ?></strong>:</li>
-<?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>                    
+<?php if (User::can(Rbac::PERM_PIN_THREAD, ['item' => $thread])): ?>
                     <li>
                         <a href="<?= Url::to(['forum/pin', 'cid' => $thread->category_id, 'fid' => $thread->forum_id, 'id' => $thread->id, 'slug' => $thread->slug]) ?>" class="btn btn-primary btn-xs">
                             <span class="glyphicon glyphicon-pushpin"></span>
@@ -116,7 +116,7 @@ $this->registerJs("var anchor = window.location.hash; if (anchor.match(/^#post[0
             <li><a href="<?= Url::to(['account/login']) ?>" class="btn btn-primary btn-sm"><?= Yii::t('podium/view', 'Sign in to reply') ?></a></li>
             <li><a href="<?= Url::to(['account/register']) ?>" class="btn btn-success btn-sm"><?= Yii::t('podium/view', 'Register new account') ?></a></li>
 <?php else: ?>
-<?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>            
+<?php if (User::can(Rbac::PERM_CREATE_THREAD)): ?>
             <li><a href="<?= Url::to(['forum/new-thread', 'cid' => $thread->forum->category->id, 'fid' => $thread->forum_id]) ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> <?= Yii::t('podium/view', 'Create new thread') ?></a></li>
 <?php endif; ?>
             <li><a href="<?= Url::to(['forum/unread-posts']) ?>" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-flash"></span> <?= Yii::t('podium/view', 'Unread posts') ?></a></li>
@@ -165,7 +165,7 @@ if ($thread->locked) {
     'emptyText'        => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
     'pager'            => ['options' => ['class' => 'pagination pull-right']]
-]); ?> 
+]); ?>
 <?php Pjax::end(); ?>
 
 <?php if ($thread->locked == 0 || ($thread->locked == 1 && User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $thread]))): ?>

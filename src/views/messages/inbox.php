@@ -57,8 +57,8 @@ $this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var
             'format' => 'raw',
             'value' => function ($model) {
                 return Html::tag('span', Podium::getInstance()->formatter->asRelativeTime($model->message->created_at), [
-                    'data-toggle' => 'tooltip', 
-                    'data-placement' => 'top', 
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'top',
                     'title' => Podium::getInstance()->formatter->asDatetime($model->message->created_at, 'long')
                 ]);
             }
@@ -74,13 +74,13 @@ $this->registerJs("$('#podiumModalDelete').on('show.bs.modal', function(e) { var
                 },
                 'reply' => function ($url) {
                     return Html::a('<span class="glyphicon glyphicon-share-alt"></span>', $url, ActionColumn::buttonOptions([
-                        'class' => 'btn btn-success btn-xs', 
+                        'class' => 'btn btn-success btn-xs',
                         'title' => Yii::t('podium/view', 'Reply to Message')
                     ]));
                 },
                 'delete-received' => function ($url) {
                     return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ActionColumn::buttonOptions([
-                        'class' => 'btn btn-danger btn-xs', 
+                        'class' => 'btn btn-danger btn-xs',
                         'title' => Yii::t('podium/view', 'Delete Message')
                     ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                 },

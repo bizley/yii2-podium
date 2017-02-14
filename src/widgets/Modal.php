@@ -8,7 +8,7 @@ use yii\helpers\Html;
 
 /**
  * Podium Modal widget
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
  */
@@ -37,7 +37,7 @@ class Modal extends YiiModal
         $this->options['aria-labelledby'] = $this->id . 'Label';
         $this->footer = Html::button(Yii::t('podium/view', 'Cancel'), ['class' => 'btn btn-default', 'data-dismiss' => 'modal'])
                 . "\n" . Html::a($this->footer, $this->footerConfirmUrl, $this->footerConfirmOptions);
-        
+
         parent::init();
     }
 }

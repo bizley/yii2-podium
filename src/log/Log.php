@@ -9,7 +9,7 @@ use yii\web\Application;
 
 /**
  * Log helper
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -26,7 +26,7 @@ class Log
         }
         return null;
     }
-    
+
     /**
      * Returns log types.
      * @return array
@@ -39,7 +39,7 @@ class Log
             4 => Yii::t('podium/view', 'info')
         ];
     }
-    
+
     /**
      * Calls for error log.
      * @param mixed $msg Message
@@ -53,7 +53,7 @@ class Log
             'model' => $model,
         ], $category);
     }
-    
+
     /**
      * Calls for info log.
      * @param mixed $msg Message
@@ -67,7 +67,7 @@ class Log
             'model' => $model,
         ], $category);
     }
-    
+
     /**
      * Calls for warning log.
      * @param mixed $msg Message

@@ -79,12 +79,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'mod' => function($url, $model) use ($mod) {
                     if ($model->isMod($mod->id)) {
                         return Html::a('<span class="glyphicon glyphicon-remove"></span> ' . Yii::t('podium/view', 'Remove'), $url, ActionColumn::buttonOptions([
-                            'class' => 'btn btn-danger btn-xs', 
+                            'class' => 'btn btn-danger btn-xs',
                             'title' => Yii::t('podium/view', 'Remove from moderation list')
                         ]));
                     }
                     return Html::a('<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('podium/view', 'Add'), $url, ActionColumn::buttonOptions([
-                        'class' => 'btn btn-success btn-xs', 
+                        'class' => 'btn btn-success btn-xs',
                         'title' => Yii::t('podium/view', 'Add to moderation list')
                     ]));
                 },
@@ -92,15 +92,15 @@ $this->params['breadcrumbs'][] = $this->title;
         ]
     ],
 ]); ?>
-        <?= Html::hiddenInput('mod_id', $mod->id) ?>        
+        <?= Html::hiddenInput('mod_id', $mod->id) ?>
         <div class="row">
             <div class="col-sm-12">
                 <?= Html::submitButton('<span class="glyphicon glyphicon-ok-sign"></span> ' . Yii::t('podium/view', 'Save Selected Moderation List'), [
-                    'class' => 'btn btn-primary btn-sm', 
+                    'class' => 'btn btn-primary btn-sm',
                     'name' => 'save-button'
                 ]) ?>
             </div>
-        </div>        
+        </div>
         <?= Html::endForm(); ?>
     </div>
 </div><br>

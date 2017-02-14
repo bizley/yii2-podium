@@ -10,7 +10,7 @@ use yii\rbac\Role;
 
 /**
  * Podium command line interface to RBAC managment
- * 
+ *
  * @author pavlm
  */
 class UserController extends Controller
@@ -19,7 +19,7 @@ class UserController extends Controller
     /**
      * Changes forum user role.
      * @param int|string $idOrEmail internal podium user id or email
-     * @param string $role one of 'podiumUser', 'podiumModerator', 'podiumAdmin' or other application defined role 
+     * @param string $role one of 'podiumUser', 'podiumModerator', 'podiumAdmin' or other application defined role
      */
     public function actionAssignRole($idOrEmail, $role)
     {
@@ -40,7 +40,7 @@ class UserController extends Controller
     }
 
     /**
-     * Revokes specified forum user role, and sets default forum user role 
+     * Revokes specified forum user role, and sets default forum user role
      * @param int|string $idOrEmail internal podium user id or email
      * @param string $role one of 'podiumUser', 'podiumModerator', 'podiumAdmin' or other application defined role
      */
@@ -63,7 +63,7 @@ class UserController extends Controller
             $this->stdout("user#{$user->id} role '{$role->name}' revoked" . PHP_EOL);
         }
     }
-    
+
     /**
      * Shows user roles
      * @param int|string $idOrEmail internal podium user id or email
@@ -76,7 +76,7 @@ class UserController extends Controller
         $roles = Podium::getInstance()->getRbac()->getRolesByUser($user->id);
         print_r($roles);
     }
-    
+
     /**
      * Assigns specified role to user, after removing all forum roles (with 'podium' prefix)
      * @param User $user
@@ -94,7 +94,7 @@ class UserController extends Controller
         }
         $rbac->assign($role, $user->id);
     }
-    
+
     /**
      * Finds user by id or email
      * @param int|string $idOrEmail internal podium user id or email

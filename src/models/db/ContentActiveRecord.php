@@ -11,7 +11,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property string $name
  * @property string $topic

@@ -9,7 +9,7 @@ use yii\base\Module;
 
 /**
  * Podium component service.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */
@@ -19,8 +19,8 @@ class PodiumComponent extends Component
      * @var Module
      */
     public $module;
-    
-    
+
+
     /**
      * Allows direct reference to parent module.
      * @param Module $module
@@ -31,7 +31,7 @@ class PodiumComponent extends Component
         parent::__construct($config);
         $this->module = $module;
     }
-    
+
     /**
      * Registers required components.
      */
@@ -54,7 +54,7 @@ class PodiumComponent extends Component
         $this->registerCache();
         $this->registerAuthorization();
     }
-    
+
     /**
      * Returns instance of component of given name.
      * @param string $name
@@ -69,14 +69,14 @@ class PodiumComponent extends Component
         }
         return $this->module->get('podium_' . $name);
     }
-    
+
     /**
      * Registers user authorization.
      */
     public function registerAuthorization()
     {
-        if ($this->module->rbacComponent !== true 
-                && !is_string($this->module->rbacComponent) 
+        if ($this->module->rbacComponent !== true
+                && !is_string($this->module->rbacComponent)
                 && !is_array($this->module->rbacComponent)) {
             throw InvalidConfigException('Invalid value for the rbacComponent parameter.');
         }
@@ -95,14 +95,14 @@ class PodiumComponent extends Component
                     'cache' => $this->module->cache
                 ]);
     }
-    
+
     /**
      * Registers formatter with default time zone.
      */
     public function registerFormatter()
     {
-        if ($this->module->formatterComponent !== true 
-                && !is_string($this->module->formatterComponent) 
+        if ($this->module->formatterComponent !== true
+                && !is_string($this->module->formatterComponent)
                 && !is_array($this->module->formatterComponent)) {
             throw InvalidConfigException('Invalid value for the formatterComponent parameter.');
         }
@@ -116,14 +116,14 @@ class PodiumComponent extends Component
                     'timeZone' => 'UTC',
                 ]);
     }
-    
+
     /**
      * Registers user identity.
      */
     public function registerIdentity()
     {
-        if ($this->module->userComponent !== true 
-                && !is_string($this->module->userComponent) 
+        if ($this->module->userComponent !== true
+                && !is_string($this->module->userComponent)
                 && !is_array($this->module->userComponent)) {
             throw InvalidConfigException('Invalid value for the userComponent parameter.');
         }
@@ -138,14 +138,14 @@ class PodiumComponent extends Component
                     'enableAutoLogin' => true,
                     'loginUrl' => $this->module->loginUrl,
                     'identityCookie' => [
-                        'name' => 'podium', 
+                        'name' => 'podium',
                         'httpOnly' => true,
                         'secure' => $this->module->secureIdentityCookie,
                     ],
                     'idParam' => '__id_podium',
                 ]);
     }
-    
+
     /**
      * Registers translations.
      */
@@ -157,13 +157,13 @@ class PodiumComponent extends Component
             'basePath' => '@podium/messages',
         ];
     }
-    
+
     /**
      * Registers DB connection.
      */
     public function registerDbConnection()
     {
-        if (!is_string($this->module->dbComponent) 
+        if (!is_string($this->module->dbComponent)
                 && !is_array($this->module->dbComponent)) {
             throw InvalidConfigException('Invalid value for the dbComponent parameter.');
         }
@@ -171,14 +171,14 @@ class PodiumComponent extends Component
             $this->module->set('podium_db', $this->module->dbComponent);
         }
     }
-    
+
     /**
      * Registers cache.
      */
     public function registerCache()
     {
-        if ($this->module->cacheComponent !== false 
-                && !is_string($this->module->cacheComponent) 
+        if ($this->module->cacheComponent !== false
+                && !is_string($this->module->cacheComponent)
                 && !is_array($this->module->cacheComponent)) {
             throw InvalidConfigException('Invalid value for the cacheComponent parameter.');
         }

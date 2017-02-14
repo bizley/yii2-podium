@@ -21,7 +21,7 @@ use yii\helpers\Url;
 <?php if (!Podium::getInstance()->user->isGuest): ?>
             <li>
                 <a href="<?= Url::to(['forum/forum', 'cid' => $category, 'id' => $forum, 'slug' => $slug, 'toggle' => 'new']) ?>" class="btn btn-success btn-xs <?= !empty($filters['new']) && $filters['new'] ? 'active' : '' ?>">
-                    <span class="glyphicon glyphicon-leaf"></span> 
+                    <span class="glyphicon glyphicon-leaf"></span>
                     <span class="hidden-xs hidden-sm"><?= Yii::t('podium/view', 'New Posts') ?></span>
                     <span class="hidden-xs hidden-md hidden-lg"><?= Yii::t('podium/view', 'New') ?></span>
                 </a>

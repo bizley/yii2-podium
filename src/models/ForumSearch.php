@@ -39,7 +39,7 @@ class ForumSearch extends Forum
     {
         return (new Query())->from(Mod::tableName())->where(['forum_id' => $this->id, 'user_id' => $userId])->exists();
     }
-    
+
     /**
      * Searches for forums on admin page.
      * @param type $params

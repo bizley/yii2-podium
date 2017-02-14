@@ -34,7 +34,7 @@ class MemberAction extends Action
         }
 
         $user = User::find()->where(['and',
-            ['id' => $id], 
+            ['id' => $id],
             ['or',
                 ['slug' => $slug],
                 ['slug' => ''],

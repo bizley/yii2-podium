@@ -11,7 +11,7 @@ use yii\helpers\Html;
 /**
  * Podium Latest Posts widget
  * Renders list of latest posts.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -21,7 +21,7 @@ class LatestPosts extends Widget
      * @var int number of latest posts
      */
     public $posts = 5;
-    
+
     /**
      * Renders the list of posts.
      * @return string
@@ -30,9 +30,9 @@ class LatestPosts extends Widget
     {
         $out = Html::beginTag('div', ['class' => 'panel panel-default']) . "\n";
         $out .= Html::tag('div', Yii::t('podium/view', 'Latest posts'), ['class' => 'panel-heading']) . "\n";
-        
+
         $latest = Post::getLatest(is_numeric($this->posts) && $this->posts > 0 ? $this->posts : 5);
-        
+
         if ($latest) {
             $out .= Html::beginTag('table', ['class' => 'table table-hover']) . "\n";
             foreach ($latest as $post) {
@@ -49,9 +49,9 @@ class LatestPosts extends Widget
             $out .= Html::tag('small', Yii::t('podium/view', 'No posts have been added yet.')) . "\n";
             $out .= Html::endTag('div') . "\n";
         }
-        
+
         $out .= Html::endTag('div') . "\n";
-    
+
         return $out;
     }
 }

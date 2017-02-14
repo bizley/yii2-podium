@@ -22,11 +22,11 @@ JS
 );
 
 $fieldLayoutLong = [
-    'labelOptions' => ['class' => 'control-label col-sm-3'], 
+    'labelOptions' => ['class' => 'control-label col-sm-3'],
     'template' => "{label}\n<div class=\"col-sm-9\">{input}\n{hint}\n{error}</div>"
 ];
 $fieldLayoutShort = [
-    'labelOptions' => ['class' => 'control-label col-sm-3'], 
+    'labelOptions' => ['class' => 'control-label col-sm-3'],
     'template' => "{label}\n<div class=\"col-sm-3\">{input}\n{hint}\n{error}</div>"
 ];
 

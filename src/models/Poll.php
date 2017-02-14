@@ -12,10 +12,10 @@ use yii\helpers\ArrayHelper;
 /**
  * Poll model
  * Forum polls.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
- * 
+ *
  * @property array $currentVotes
  * @property int $votesCount
  * @property PollAnswer[] $sortedAnswers

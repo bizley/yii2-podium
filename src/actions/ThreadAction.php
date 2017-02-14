@@ -56,9 +56,9 @@ class ThreadAction extends Action
     {
         if ($this->_thread === null) {
             $this->_thread = (new ThreadVerifier([
-                    'categoryId' => $cid, 
+                    'categoryId' => $cid,
                     'forumId' => $fid,
-                    'threadId' => $id, 
+                    'threadId' => $id,
                     'threadSlug' => $slug
                 ]))->verify();
         }
@@ -92,10 +92,10 @@ class ThreadAction extends Action
             $this->controller->error(Yii::t('podium/flash', 'Sorry! There was an error while updating the thread.'));
         }
         return $this->controller->redirect([
-            'forum/thread', 
-            'cid' => $thread->forum->category->id, 
-            'fid' => $thread->forum->id, 
-            'id' => $thread->id, 
+            'forum/thread',
+            'cid' => $thread->forum->category->id,
+            'fid' => $thread->forum->id,
+            'id' => $thread->id,
             'slug' => $thread->slug
         ]);
     }

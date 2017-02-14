@@ -19,27 +19,27 @@ class AdminAction extends Action
      * @var int current role
      */
     public $fromRole;
-    
+
     /**
      * @var int target role
      */
     public $toRole;
-    
+
     /**
      * @var string method name
      */
     public $method;
-    
+
     /**
      * @var string
      */
     public $restrictMessage;
-    
+
     /**
      * @var string
      */
     public $successMessage;
-    
+
     /**
      * @var string
      */

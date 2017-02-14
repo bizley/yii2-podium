@@ -21,7 +21,7 @@ use yii\web\Response;
  * Podium Admin controller
  * All actions concerning module forum administration.
  * Not accessible directly.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
  */
@@ -48,7 +48,7 @@ class AdminForumController extends BaseController
     {
         return $this->render('categories', ['dataProvider' => (new Category())->show()]);
     }
-    
+
     /**
      * Clearing all cache.
      * @return string
@@ -62,7 +62,7 @@ class AdminForumController extends BaseController
         }
         return $this->redirect(['admin/settings']);
     }
-    
+
     /**
      * Listing the contents.
      * @param string $name content name
@@ -88,7 +88,7 @@ class AdminForumController extends BaseController
         }
         return $this->render('contents', ['model' => $model]);
     }
-    
+
     /**
      * Deleting the category of given ID.
      * @param int $id
@@ -111,7 +111,7 @@ class AdminForumController extends BaseController
         }
         return $this->redirect(['admin/categories']);
     }
-    
+
     /**
      * Deleting the forum of given ID.
      * @param int $cid parent category ID
@@ -135,7 +135,7 @@ class AdminForumController extends BaseController
         }
         return $this->redirect(['admin/forums', 'cid' => $cid]);
     }
-    
+
     /**
      * Editing the category of given ID.
      * @param int $id
@@ -161,7 +161,7 @@ class AdminForumController extends BaseController
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     /**
      * Editing the forum of given ID.
      * @param int $cid parent category ID
@@ -189,7 +189,7 @@ class AdminForumController extends BaseController
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     /**
      * Listing the forums of given category ID.
      * @param int $cid parent category ID
@@ -208,7 +208,7 @@ class AdminForumController extends BaseController
             'forums' => Forum::find()->where(['category_id' => $model->id])->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     /**
      * Dashboard.
      * @return string
@@ -233,7 +233,7 @@ class AdminForumController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
-    
+
     /**
      * Adding new category.
      * @return string|Response
@@ -253,7 +253,7 @@ class AdminForumController extends BaseController
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     /**
      * Adding new forum.
      * @param int $cid parent category ID
@@ -281,7 +281,7 @@ class AdminForumController extends BaseController
             'categories' => Category::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC])->all()
         ]);
     }
-    
+
     /**
      * Updating the module configuration.
      * @return string|Response
@@ -289,7 +289,7 @@ class AdminForumController extends BaseController
     public function actionSettings()
     {
         $model = new ConfigForm();
-        $data = Yii::$app->request->post('ConfigForm');        
+        $data = Yii::$app->request->post('ConfigForm');
         if ($data) {
             if (User::can(Rbac::PERM_CHANGE_SETTINGS)) {
                 if ($model->update($data)) {
@@ -304,7 +304,7 @@ class AdminForumController extends BaseController
         }
         return $this->render('settings', ['model' => $model]);
     }
-    
+
     /**
      * Updating the categories order.
      * @return string|Response
@@ -315,9 +315,9 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/categories']);
         }
         if (!User::can(Rbac::PERM_UPDATE_CATEGORY)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'),
                 ['class' => 'text-danger']
             );
         }
@@ -325,35 +325,35 @@ class AdminForumController extends BaseController
         $modelId = Yii::$app->request->post('id');
         $new = Yii::$app->request->post('new');
         if (!is_numeric($modelId) || !is_numeric($new)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'),
                 ['class' => 'text-danger']
             );
         }
-            
+
         $moved = Category::find()->where(['id' => $modelId])->limit(1)->one();
         if (empty($moved)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Sorry! We can not find Category with this ID.'),
                 ['class' => 'text-danger']
             );
         }
         if ($moved->newOrder((int)$new)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
-                . ' ' . Yii::t('podium/view', "New categories' order has been saved."), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle'])
+                . ' ' . Yii::t('podium/view', "New categories' order has been saved."),
                 ['class' => 'text-success']
             );
         }
-        return Html::tag('span', 
-            Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-            . ' ' . Yii::t('podium/view', "Sorry! We can not save new categories' order."), 
+        return Html::tag('span',
+            Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+            . ' ' . Yii::t('podium/view', "Sorry! We can not save new categories' order."),
             ['class' => 'text-danger']
         );
     }
-    
+
     /**
      * Updating the forums order.
      * @return string|Response
@@ -364,43 +364,43 @@ class AdminForumController extends BaseController
             return $this->redirect(['admin/forums']);
         }
         if (!User::can(Rbac::PERM_UPDATE_FORUM)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'You are not allowed to perform this action.'),
                 ['class' => 'text-danger']
             );
         }
-        
+
         $modelId = Yii::$app->request->post('id');
         $modelCategory = Yii::$app->request->post('category');
         $new = Yii::$app->request->post('new');
         if (!is_numeric($modelId) || !is_numeric($modelCategory) || !is_numeric($new)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Sorry! Sorting parameters are wrong.'),
                 ['class' => 'text-danger']
             );
         }
-            
+
         $moved = Forum::find()->where(['id' => $modelId])->limit(1)->one();
         $movedCategory = Category::find()->where(['id' => $modelCategory])->limit(1)->one();
         if (empty($moved) || empty($modelCategory) || $moved->category_id != $movedCategory->id) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-                . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+                . ' ' . Yii::t('podium/view', 'Sorry! We can not find Forum with this ID.'),
                 ['class' => 'text-danger']
             );
         }
         if ($moved->newOrder((int)$new)) {
-            return Html::tag('span', 
-                Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle']) 
-                . ' ' . Yii::t('podium/view', "New forums' order has been saved."), 
+            return Html::tag('span',
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-ok-circle'])
+                . ' ' . Yii::t('podium/view', "New forums' order has been saved."),
                 ['class' => 'text-success']
             );
         }
-        return Html::tag('span', 
-            Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign']) 
-            . ' ' . Yii::t('podium/view', "Sorry! We can not save new forums' order."), 
+        return Html::tag('span',
+            Html::tag('span', '', ['class' => 'glyphicon glyphicon-warning-sign'])
+            . ' ' . Yii::t('podium/view', "Sorry! We can not save new forums' order."),
             ['class' => 'text-danger']
         );
     }

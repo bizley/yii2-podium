@@ -23,13 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
 <ul class="nav nav-tabs">
     <li role="presentation" class="active">
         <a href="<?= Url::to(['members/index']) ?>">
-            <span class="glyphicon glyphicon-user"></span> 
+            <span class="glyphicon glyphicon-user"></span>
             <?= Yii::t('podium/view', 'Members List') ?>
         </a>
     </li>
     <li role="presentation">
         <a href="<?= Url::to(['members/mods']) ?>">
-            <span class="glyphicon glyphicon-scissors"></span> 
+            <span class="glyphicon glyphicon-scissors"></span>
             <?= Yii::t('podium/view', 'Moderation Team') ?>
         </a>
     </li>

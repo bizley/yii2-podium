@@ -17,7 +17,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
+ *
  * @property string $parsedContent
  */
 class Post extends PostActiveRecord
@@ -249,7 +249,7 @@ class Post extends PostActiveRecord
             try {
                 $loggedId = User::loggedId();
                 $threadView = ThreadView::find()->where([
-                        'user_id' => $loggedId, 
+                        'user_id' => $loggedId,
                         'thread_id' => $this->thread_id
                     ])->limit(1)->one();
 
@@ -354,16 +354,16 @@ class Post extends PostActiveRecord
      */
     public static function verify($categoryId = null, $forumId = null, $threadId = null, $id = null)
     {
-        if (!is_numeric($categoryId) || $categoryId < 1 
-                || !is_numeric($forumId) || $forumId < 1 
-                || !is_numeric($threadId) || $threadId < 1 
+        if (!is_numeric($categoryId) || $categoryId < 1
+                || !is_numeric($forumId) || $forumId < 1
+                || !is_numeric($threadId) || $threadId < 1
                 || !is_numeric($id) || $id < 1) {
             return null;
         }
         return static::find()->joinWith(['thread', 'forum' => function ($query) use ($categoryId) {
                 $query->joinWith(['category'])->andWhere([Category::tableName() . '.id' => $categoryId]);
             }])->where([
-                static::tableName() . '.id' => $id, 
+                static::tableName() . '.id' => $id,
                 static::tableName() . '.thread_id' => $threadId,
                 static::tableName() . '.forum_id' => $forumId,
             ])->limit(1)->one();
@@ -401,7 +401,7 @@ class Post extends PostActiveRecord
             $transaction->commit();
             PodiumCache::clearAfter('postDelete');
             Log::info('Post deleted', !empty($this->id) ? $this->id : '', __METHOD__);
-            return true;            
+            return true;
         } catch (Exception $e) {
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
@@ -573,7 +573,7 @@ class Post extends PostActiveRecord
         }
         return false;
     }
-    
+
     /**
      * Returns content Markdown-parsed if WYSIWYG editor is switched off.
      * @return string

@@ -67,20 +67,20 @@ $loggedId = User::loggedId();
                     </div>
                 </div>
             </div>
-        
+
 <?php $stack = 0; $reply = clone $model; while ($reply->reply && $stack < 5): $more = 0; ?>
 <?php if ($reply->reply->sender_id == $loggedId && $reply->reply->sender_status == Message::STATUS_DELETED) { $reply = $reply->reply; continue; } ?>
             <?= $this->render('load', ['reply' => $reply]) ?>
 <?php $reply = $reply->reply; if ($reply) { $more = $reply->id; } $stack++; endwhile; ?>
-            
+
             <div id="loadedMessages"></div>
-            
+
 <?php if (!empty($more)): ?>
             <div class="row">
                 <div class="col-sm-12 text-right"><a href="#" data-last="<?= $more ?>" class="load-messages btn btn-default"><?= $loadOlder ?></a></div>
             </div>
 <?php endif; ?>
-            
+
         </div>
     </div>
 </div><br>

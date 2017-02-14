@@ -41,9 +41,9 @@ $loggedId = User::loggedId();
                     <p>
                         <label>
 <?php if ($model->votes > 1): ?>
-                            <?= Html::checkbox('poll_vote[]', false, ['class' => 'podium-poll-answer', 'value' => $answer->id]) ?> 
+                            <?= Html::checkbox('poll_vote[]', false, ['class' => 'podium-poll-answer', 'value' => $answer->id]) ?>
 <?php else: ?>
-                            <?= Html::radio('poll_vote[]', false, ['class' => 'podium-poll-answer', 'value' => $answer->id]) ?> 
+                            <?= Html::radio('poll_vote[]', false, ['class' => 'podium-poll-answer', 'value' => $answer->id]) ?>
 <?php endif; ?>
                             <?= Html::encode($answer->answer) ?>
                         </label>

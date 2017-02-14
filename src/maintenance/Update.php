@@ -9,10 +9,10 @@ use Yii;
 
 /**
  * Podium Update
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
+ *
  * @property array $versionSteps
  * @property array $steps
  */

@@ -13,7 +13,7 @@ class InstallationTest extends Unit
      * @var UnitTester
      */
     public $tester;
-    
+
     public $steps = [
         'createTableTest' => [
             [
@@ -111,13 +111,13 @@ class InstallationTest extends Unit
             ]
         ],
     ];
-    
+
     protected function _before()
     {
         parent::_before();
         \Yii::$app->session->remove(Installation::SESSION_KEY);
     }
-    
+
     public static function tearDownAfterClass()
     {
         $db = (new Installation)->db;
@@ -129,7 +129,7 @@ class InstallationTest extends Unit
         }
         parent::tearDownAfterClass();
     }
-    
+
     public function testCreateTable()
     {
         $install = Stub::construct(Installation::className(), [], ['_steps' => $this->steps['createTableTest']]);
@@ -154,7 +154,7 @@ class InstallationTest extends Unit
         expect($result['table'])->equals('podium_test');
         expect($install->db->schema->getTableSchema("{{%podium_test}}", true)->columns)->hasKey('added');
     }
-    
+
     /**
      * @depends testAddColumn
      */
@@ -168,7 +168,7 @@ class InstallationTest extends Unit
         expect($result['table'])->equals('podium_test');
         expect($install->db->schema->getTableSchema("{{%podium_test}}", true)->columns)->hasntKey('added');
     }
-    
+
     /**
      * @depends testCreateTable
      */
@@ -181,7 +181,7 @@ class InstallationTest extends Unit
         expect($result['result'])->equals('Table index idx-podium_test-sort has been added');
         expect($result['table'])->equals('podium_test');
     }
-    
+
     /**
      * @depends testAddIndex
      */
@@ -194,7 +194,7 @@ class InstallationTest extends Unit
         expect($result['result'])->equals('Table index idx-podium_test-sort has been dropped');
         expect($result['table'])->equals('podium_test');
     }
-    
+
     /**
      * @depends testCreateTable
      */
@@ -211,7 +211,7 @@ class InstallationTest extends Unit
         expect($result['result'])->equals('Table foreign key fk-podium_test-key_f has been added');
         expect($result['table'])->equals('podium_test');
     }
-    
+
     /**
      * @depends testAddForeign
      */
@@ -225,7 +225,7 @@ class InstallationTest extends Unit
         expect($result['table'])->equals('podium_test');
         $install->db->createCommand()->dropTable("{{%podium_test_foreign}}")->execute();
     }
-    
+
     /**
      * @depends testCreateTable
      */
@@ -254,7 +254,7 @@ class InstallationTest extends Unit
         expect($install->db->schema->getTableSchema("{{%podium_test}}", true)->columns)->hasKey('messageRenamed');
     }
 
-    
+
     /**
      * @depends testCreateTable
      */

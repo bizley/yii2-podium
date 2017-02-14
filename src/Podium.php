@@ -25,22 +25,22 @@ use yii\web\User;
 /**
  * Podium Module
  * Yii 2 Forum Module
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @version 0.6 (beta)
  * @license Apache License 2.0
- * 
+ *
  * https://github.com/bizley/yii2-podium
  * Please report all issues at GitHub
  * https://github.com/bizley/yii2-podium/issues
- * 
+ *
  * Podium requires Yii 2
  * http://www.yiiframework.com
  * https://github.com/yiisoft/yii2
- * 
+ *
  * For Podium documentation go to
  * https://github.com/bizley/yii2-podium/wiki
- * 
+ *
  * @property PodiumCache $podiumCache
  * @property PodiumConfig $podiumConfig
  * @property Formatter $formatter
@@ -67,15 +67,15 @@ class Podium extends Module implements BootstrapInterface
     public $adminId;
 
     /**
-     * @var array the list of IPs that are allowed to access installation mode 
-     * of this module. Each array element represents a single IP filter which 
-     * can be either an IP address or an address with wildcard 
+     * @var array the list of IPs that are allowed to access installation mode
+     * of this module. Each array element represents a single IP filter which
+     * can be either an IP address or an address with wildcard
      * (e.g. `192.168.0.*`) to represent a network segment.
-     * The default value is `['127.0.0.1', '::1']`, which means the module can 
+     * The default value is `['127.0.0.1', '::1']`, which means the module can
      * only be accessed by localhost.
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
-    
+
     /**
      * @var bool|string|array Module user component.
      * Since version 0.5 it can be:
@@ -85,28 +85,28 @@ class Podium extends Module implements BootstrapInterface
      *   what Podium uses).
      */
     public $userComponent = true;
-    
+
     /**
      * @var bool|string|array Module RBAC component.
      * Since version 0.5 it can be:
      * - true for own Podium component configuration,
      * - string with inherited component ID,
-     * - array with custom configuration (look at registerAuthorization() to 
+     * - array with custom configuration (look at registerAuthorization() to
      *   see what Podium uses).
      */
     public $rbacComponent = true;
-    
+
     /**
      * @var bool|string|array Module formatter component.
      * It can be:
      * - true for own Podium component configuration,
      * - string with inherited component ID,
-     * - array with custom configuration (look at registerFormatter() to 
+     * - array with custom configuration (look at registerFormatter() to
      *   see what Podium uses).
      * @since 0.5
      */
     public $formatterComponent = true;
-    
+
     /**
      * @var string|array Module db component.
      * It can be:
@@ -115,7 +115,7 @@ class Podium extends Module implements BootstrapInterface
      * @since 0.5
      */
     public $dbComponent = 'db';
-    
+
     /**
      * @var bool|string|array Module cache component.
      * It can be:
@@ -132,21 +132,21 @@ class Podium extends Module implements BootstrapInterface
      * Default value is 'password_hash'.
      */
     public $userPasswordField = 'password_hash';
-    
+
     /**
      * @var string Default route for Podium.
      * @since 0.2
      */
     public $defaultRoute = 'forum';
-    
+
     /**
      * @var bool Value of identity Cookie 'secure' parameter.
      * @since 0.2
      */
     public $secureIdentityCookie = false;
-    
+
     /**
-     * @var callable Callback that will be called to determine the type of 
+     * @var callable Callback that will be called to determine the type of
      * Podium access for user.
      * The signature of the callback should be as follows:
      *      function ($user)
@@ -158,9 +158,9 @@ class Podium extends Module implements BootstrapInterface
      * @since 0.6
      */
     public $accessChecker;
-    
+
     /**
-     * @var callable Callback that will be called in case Podium access has been 
+     * @var callable Callback that will be called in case Podium access has been
      * denied for user.
      * The signature of the callback should be as follows:
      *      function ($user)
@@ -168,7 +168,7 @@ class Podium extends Module implements BootstrapInterface
      * @since 0.6
      */
     public $denyCallback;
-    
+
 
     /**
      * Initializes the module for Web application.
@@ -186,7 +186,7 @@ class Podium extends Module implements BootstrapInterface
             $this->podiumComponent->registerConsoleComponents();
         }
     }
-    
+
     /**
      * Bootstrap method to be called during application bootstrap stage.
      * Adding routing rules and log target.
@@ -196,12 +196,12 @@ class Podium extends Module implements BootstrapInterface
     {
         if ($app instanceof WebApplication) {
             $this->addUrlManagerRules($app);
-            $this->setPodiumLogTarget($app);            
+            $this->setPodiumLogTarget($app);
         } elseif ($app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'bizley\podium\console';
         }
     }
-    
+
     /**
      * Registers user activity after every action.
      * @see Activity::add()
@@ -217,7 +217,7 @@ class Podium extends Module implements BootstrapInterface
         }
         return $parentResult;
     }
-    
+
     /**
      * Adds UrlManager rules.
      * @param Application $app the application currently running
@@ -230,7 +230,7 @@ class Podium extends Module implements BootstrapInterface
                 'rules' => require(__DIR__ . '/url-rules.php'),
             ])], true);
     }
-    
+
     /**
      * Sets Podium log target.
      * @param Application $app the application currently running
@@ -246,7 +246,7 @@ class Podium extends Module implements BootstrapInterface
     }
 
     private $_cache;
-    
+
     /**
      * Returns Podium cache instance.
      * @return PodiumCache
@@ -259,9 +259,9 @@ class Podium extends Module implements BootstrapInterface
         }
         return $this->_cache;
     }
-    
+
     private $_config;
-    
+
     /**
      * Returns Podium configuration instance.
      * @return PodiumConfig
@@ -283,7 +283,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return Maintenance::check();
     }
-    
+
     /**
      * Returns Podium version.
      * @return string
@@ -303,7 +303,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return '/' . $this->id . $route;
     }
-    
+
     /**
      * Redirects to Podium main controller's action.
      * @return Response
@@ -325,7 +325,7 @@ class Podium extends Module implements BootstrapInterface
         }
         return [$this->prepareRoute('/account/login')];
     }
-    
+
     /**
      * Returns registration URL.
      * @return array|null
@@ -338,9 +338,9 @@ class Podium extends Module implements BootstrapInterface
         }
         return [$this->prepareRoute('/account/register')];
     }
-    
+
     private $_component;
-    
+
     /**
      * Returns Podium component service.
      * @return PodiumComponent
@@ -353,7 +353,7 @@ class Podium extends Module implements BootstrapInterface
         }
         return $this->_component;
     }
-    
+
     /**
      * Returns instance of RBAC component.
      * @return DbManager
@@ -364,7 +364,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return $this->podiumComponent->getComponent('rbac');
     }
-    
+
     /**
      * Returns instance of formatter component.
      * @return Formatter
@@ -386,7 +386,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return $this->podiumComponent->getComponent('user');
     }
-    
+
     /**
      * Returns instance of db component.
      * @return Connection
@@ -397,7 +397,7 @@ class Podium extends Module implements BootstrapInterface
     {
         return $this->podiumComponent->getComponent('db');
     }
-    
+
     /**
      * Returns instance of cache component.
      * @return Cache

@@ -9,10 +9,10 @@ use yii\db\ActiveQuery;
 
 /**
  * Activity AR.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $user_id
  * @property string $username
@@ -21,7 +21,7 @@ use yii\db\ActiveQuery;
  * @property string $ip
  * @property integer $created_at
  * @property integer $updated_at
- * 
+ *
  * @property User $user
  */
 class ActivityActiveRecord extends ActiveRecord
@@ -41,7 +41,7 @@ class ActivityActiveRecord extends ActiveRecord
     {
         return [TimestampBehavior::className()];
     }
-    
+
     /**
      * User relation.
      * @return ActiveQuery

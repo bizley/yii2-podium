@@ -12,12 +12,12 @@ use yii\caching\Cache;
 /**
  * Podium configuration component.
  * Handles the module configuration.
- * Every default configuration value is saved in database first time when 
+ * Every default configuration value is saved in database first time when
  * administrator saves Podium settings.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
- * 
+ *
  * @property Cache $cache
  * @property array $defaults
  * @property array $all
@@ -44,7 +44,7 @@ class PodiumConfig extends Component
     const SECONDS_ACTIVATION_TOKEN_EXPIRE = 259200;
     const SECONDS_EMAIL_TOKEN_EXPIRE = 86400;
     const SECONDS_PASSWORD_RESET_TOKEN_EXPIRE = 86400;
-    
+
     /**
      * Returns configuration table name.
      * @return string
@@ -54,10 +54,10 @@ class PodiumConfig extends Component
     {
         return '{{%podium_config}}';
     }
-    
+
     /**
      * Returns list of default configuration values.
-     * These values are stored in cached configuration but saved only when 
+     * These values are stored in cached configuration but saved only when
      * administrator saves Podium settings.
      * @return array
      * @since 0.2
@@ -87,7 +87,7 @@ class PodiumConfig extends Component
             'version' => Podium::getInstance()->version,
         ];
     }
-    
+
     /**
      * Returns Podium cache instance.
      * @return Cache
@@ -97,9 +97,9 @@ class PodiumConfig extends Component
     {
         return Podium::getInstance()->podiumCache;
     }
-    
+
     private $_config;
-    
+
     /**
      * Returns configuration values.
      * @return array
@@ -118,7 +118,7 @@ class PodiumConfig extends Component
         }
         return $this->_config;
     }
-    
+
     /**
      * Returns cached configuration values.
      * @return array
@@ -134,7 +134,7 @@ class PodiumConfig extends Component
         }
         return $cache;
     }
-    
+
     /**
      * Returns not cached configuration values.
      * If stored configuration is empty default values are returned.
@@ -145,7 +145,7 @@ class PodiumConfig extends Component
     {
         return array_merge($this->defaults, $this->stored);
     }
-    
+
     /**
      * Returns stored configuration values.
      * These can be empty if configuration has not been modified.
@@ -167,7 +167,7 @@ class PodiumConfig extends Component
         }
         return $stored;
     }
-    
+
     /**
      * Returns configuration value of the given name.
      * @param string $name configuration key
@@ -178,7 +178,7 @@ class PodiumConfig extends Component
         $config = $this->all;
         return isset($config[$name]) ? $config[$name] : null;
     }
-    
+
     /**
      * Sets configuration value of the given name.
      * Every change automatically updates the cache.
@@ -209,13 +209,13 @@ class PodiumConfig extends Component
                 $this->cache->set('config', $this->notCached);
                 $this->_config = null;
                 return true;
-            }      
+            }
         } catch (Exception $e) {
             Log::error($e->getMessage(), null, __METHOD__);
         }
         return false;
     }
-    
+
     /**
      * Alias for getAll().
      * @return array

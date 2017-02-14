@@ -89,7 +89,7 @@ if (Podium::getInstance()->userComponent === true) {
                         <div class="row">
                             <div class="col-sm-12">
                                 <?= $form->field($model, 'newPasswordRepeat')->passwordInput([
-                                        'autocomplete' => 'off', 
+                                        'autocomplete' => 'off',
                                         'placeholder'  => Yii::t('podium/view', "Leave empty if you don't want to change it"),
                                         'disabled'     => empty($model->newPassword) ? true : false
                                     ])->label(Yii::t('podium/view', 'Repeat new password')) ?>

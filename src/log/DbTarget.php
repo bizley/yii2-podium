@@ -11,7 +11,7 @@ use yii\web\Request;
 /**
  * Database log target
  * Few extra columns.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */

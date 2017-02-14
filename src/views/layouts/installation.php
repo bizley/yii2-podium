@@ -34,7 +34,7 @@ $this->beginPage() ?>
     </div>
     <?= $this->render('/elements/main/_footer') ?>
 <?php $this->endBody() ?>
-    
+
 </body>
 </html>
 <?php $this->endPage() ?>

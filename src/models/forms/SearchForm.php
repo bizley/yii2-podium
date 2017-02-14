@@ -26,49 +26,49 @@ class SearchForm extends Model
      * @var string Query
      */
     public $query;
-    
+
     /**
      * @var string Whether to search for all words or any word
      */
     public $match;
-    
+
     /**
      * @var string Author name
      */
     public $author;
-    
+
     /**
      * @var string Date from [yyyy-MM-dd]
      */
     public $dateFrom;
-    
+
     /**
      * @var int Date from stamp
      * @ince 0.6
      */
     public $dateFromStamp;
-    
+
     /**
      * @var string Date to [yyyy-MM-dd]
      */
     public $dateTo;
-    
+
     /**
      * @var int Date to stamp
      * @since 0.6
      */
     public $dateToStamp;
-    
+
     /**
      * @var string Whether to search for posts or topics
      */
     public $forums;
-    
+
     /**
      * @var string Whether to search for posts or topics
      */
     public $type;
-    
+
     /**
      * @var string Whether to display results as posts or topics
      */
@@ -104,8 +104,8 @@ class SearchForm extends Model
      */
     protected function prepareQuery($query, $topics = false)
     {
-        $field = $topics 
-                ? Thread::tableName() . '.created_at' 
+        $field = $topics
+                ? Thread::tableName() . '.created_at'
                 : Post::tableName() . '.updated_at';
         if (!empty($this->author)) {
             $query->andWhere(['like', 'username', $this->author])->joinWith(['author']);
@@ -139,7 +139,7 @@ class SearchForm extends Model
             }
         }
     }
-    
+
     /**
      * Advanced topics search.
      * @return ActiveDataProvider
@@ -181,7 +181,7 @@ class SearchForm extends Model
             'sort' => $sort,
         ]);
     }
-    
+
     /**
      * Advanced posts search.
      * @return ActiveDataProvider
@@ -225,7 +225,7 @@ class SearchForm extends Model
             'sort' => $sort,
         ]);
     }
-    
+
     /**
      * Advanced search.
      * @return ActiveDataProvider

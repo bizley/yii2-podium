@@ -17,7 +17,7 @@ use yii\helpers\Url;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property User $user
  */
 class ResetForm extends Model
@@ -59,7 +59,7 @@ class ResetForm extends Model
         $user = $this->user;
         if (empty($user)) {
             return [
-                true, 
+                true,
                 Yii::t('podium/flash', 'Sorry! We can not find the account with that user name or e-mail address.'),
                 false
             ];
@@ -71,20 +71,20 @@ class ResetForm extends Model
         }
         if (empty($user->email)) {
             return [
-                true, 
+                true,
                 Yii::t('podium/flash', 'Sorry! There is no e-mail address saved with your account. Contact administrator about resetting password.'),
                 true
             ];
         }
         if (!$this->sendResetEmail($user)) {
             return [
-                true, 
+                true,
                 Yii::t('podium/flash', 'Sorry! There was some error while sending you the password reset link. Contact administrator about this problem.'),
                 true
             ];
         }
         return [
-            false, 
+            false,
             Yii::t('podium/flash', 'The password reset link has been sent to your e-mail address.'),
             true
         ];
@@ -101,12 +101,12 @@ class ResetForm extends Model
         $forum = Podium::getInstance()->podiumConfig->get('name');
         $email = Content::fill(Content::EMAIL_PASSWORD);
         if ($email !== false) {
-            $link = Url::to(['account/password', 'token' => $user->password_reset_token], true);        
+            $link = Url::to(['account/password', 'token' => $user->password_reset_token], true);
             return Email::queue(
-                $user->email, 
+                $user->email,
                 str_replace('{forum}', $forum, $email->topic),
-                str_replace('{forum}', $forum, str_replace('{link}', 
-                    Html::a($link, $link), $email->content)), 
+                str_replace('{forum}', $forum, str_replace('{link}',
+                    Html::a($link, $link), $email->content)),
                 !empty($user->id) ? $user->id : null
             );
         }

@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $user_id
  * @property string $email
@@ -29,7 +29,7 @@ class EmailActiveRecord extends ActiveRecord
     const STATUS_PENDING = 0;
     const STATUS_SENT    = 1;
     const STATUS_GAVEUP  = 9;
-    
+
     /**
      * @inheritdoc
      */
@@ -37,7 +37,7 @@ class EmailActiveRecord extends ActiveRecord
     {
         return '{{%podium_email}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -45,7 +45,7 @@ class EmailActiveRecord extends ActiveRecord
     {
         return [TimestampBehavior::className()];
     }
-    
+
     /**
      * @inheritdoc
      */

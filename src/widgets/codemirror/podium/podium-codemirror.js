@@ -34,7 +34,7 @@ var basicButtons = [
         hotkey: "Ctrl-B",
         icon: "bold",
         title: CodeMirrorLabels.bold,
-        callback: function (cm) { 
+        callback: function (cm) {
             CmWrap(cm, "**");
         }
     },

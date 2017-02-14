@@ -20,17 +20,17 @@ class VocabularyActiveRecord extends ActiveRecord
      * @var string Query
      */
     public $query;
-    
+
     /**
-     * @var int 
+     * @var int
      */
     public $thread_id;
-    
+
     /**
-     * @var int 
+     * @var int
      */
     public $post_id;
-    
+
     /**
      * @inheritdoc
      */
@@ -38,7 +38,7 @@ class VocabularyActiveRecord extends ActiveRecord
     {
         return '{{%podium_vocabulary}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -51,7 +51,7 @@ class VocabularyActiveRecord extends ActiveRecord
             }],
         ];
     }
-    
+
     /**
      * Thread relation.
      * @return ActiveQuery
@@ -60,7 +60,7 @@ class VocabularyActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
-    
+
     /**
      * Post relation.
      * @return ActiveQuery

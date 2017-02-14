@@ -23,7 +23,7 @@ $this->registerJs("$('[data-toggle=\"popover\"]').popover();");
     <div class="col-sm-4">
         <?php $form = ActiveForm::begin(['id' => 'register-form']); ?>
             <?= $form->field($model, 'username')->textInput([
-                'placeholder' => Yii::t('podium/view', 'Username'), 
+                'placeholder' => Yii::t('podium/view', 'Username'),
                 'autofocus' => true,
                 'data-container' => 'body',
                 'data-toggle'    => 'popover',

@@ -17,7 +17,7 @@ use bizley\podium\Podium;
 
 /**
  * Podium command line tool to send emails.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -25,15 +25,15 @@ class QueueController extends Controller
 {
 
     const DEFAULT_BATCH_LIMIT = 100;
-    
+
     /**
-     * @var Connection|array|string|null the DB connection object (or its 
-     * configuration array) or the application component ID of the DB connection 
+     * @var Connection|array|string|null the DB connection object (or its
+     * configuration array) or the application component ID of the DB connection
      * to use when reading emails queue.
-     * By default module DB connection is used. 
+     * By default module DB connection is used.
      */
     public $db;
-    
+
     /**
      * @var string controller default action ID.
      */
@@ -43,19 +43,19 @@ class QueueController extends Controller
      * @var int the limit of emails sent in one batch (default 100).
      */
     public $limit = self::DEFAULT_BATCH_LIMIT;
-    
+
     /**
-     * @var BaseMailer|array|string the BaseMailer object (or its configuration 
-     * array) or the application component ID of the mailer to use when sending 
+     * @var BaseMailer|array|string the BaseMailer object (or its configuration
+     * array) or the application component ID of the mailer to use when sending
      * emails.
      */
     public $mailer = 'mailer';
-    
+
     /**
      * @var string the name of the table for email queue.
      */
     public $queueTable = '{{%podium_email}}';
-    
+
     /**
      * @inheritdoc
      */
@@ -63,7 +63,7 @@ class QueueController extends Controller
     {
         return array_merge(parent::options($actionID), ['queueTable', 'db', 'mailer']);
     }
-    
+
     /**
      * Checks the existence of the db and mailer components.
      * @param Action $action the action to be executed.
@@ -121,8 +121,8 @@ class QueueController extends Controller
             $mailer->setSubject($email['subject']);
             $mailer->setHtmlBody($email['content']);
             $mailer->setTextBody(strip_tags(str_replace(
-                ['<br>', '<br/>', '<br />', '</p>'], 
-                "\n", 
+                ['<br>', '<br/>', '<br />', '</p>'],
+                "\n",
                 $email['content']
             )));
             return $mailer->send();
@@ -147,8 +147,8 @@ class QueueController extends Controller
                     ->db
                     ->createCommand()
                     ->update(
-                        $this->queueTable, 
-                        ['status' => Email::STATUS_SENT], 
+                        $this->queueTable,
+                        ['status' => Email::STATUS_SENT],
                         ['id' => $email['id']]
                     )
                     ->execute();
@@ -161,8 +161,8 @@ class QueueController extends Controller
                     ->db
                     ->createCommand()
                     ->update(
-                        $this->queueTable, 
-                        ['attempt' => $attempt], 
+                        $this->queueTable,
+                        ['attempt' => $attempt],
                         ['id' => $email['id']]
                     )
                     ->execute();
@@ -171,8 +171,8 @@ class QueueController extends Controller
                     ->db
                     ->createCommand()
                     ->update(
-                        $this->queueTable, 
-                        ['status' => Email::STATUS_GAVEUP], 
+                        $this->queueTable,
+                        ['status' => Email::STATUS_GAVEUP],
                         ['id' => $email['id']]
                     )
                     ->execute();
@@ -193,7 +193,7 @@ class QueueController extends Controller
         $version = $this->module->version;
         $this->stdout("\nPodium mail queue v{$version}\n");
         $this->stdout("------------------------------\n");
-        
+
         $emails = $this->getNewBatch($limit);
         if (empty($emails)) {
             $this->stdout("No pending emails in the queue found.\n\n", Console::FG_GREEN);
@@ -202,18 +202,18 @@ class QueueController extends Controller
 
         $total = count($emails);
         $this->stdout(
-            "\n$total pending " 
-                . ($total === 1 ? 'email' : 'emails') 
-                . " to be sent now:\n", 
+            "\n$total pending "
+                . ($total === 1 ? 'email' : 'emails')
+                . " to be sent now:\n",
             Console::FG_YELLOW
         );
 
         $errors = false;
         foreach ($emails as $email) {
             if (!$this->process(
-                    $email, 
-                    $this->module->podiumConfig->get('from_name'), 
-                    $this->module->podiumConfig->get('from_email'), 
+                    $email,
+                    $this->module->podiumConfig->get('from_name'),
+                    $this->module->podiumConfig->get('from_email'),
                     $this->module->podiumConfig->get('max_attempts')
                 )) {
                 $errors = true;
@@ -227,7 +227,7 @@ class QueueController extends Controller
         }
         return self::EXIT_CODE_NORMAL;
     }
-    
+
     /**
      * Checks the current status for the mail queue.
      */
@@ -238,7 +238,7 @@ class QueueController extends Controller
         $this->stdout("------------------------------\n");
         $this->stdout(" EMAILS  | COUNT\n");
         $this->stdout("------------------------------\n");
-        
+
         $pending = (new Query)
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_PENDING])
@@ -251,11 +251,11 @@ class QueueController extends Controller
                     ->from($this->queueTable)
                     ->where(['status' => Email::STATUS_GAVEUP])
                     ->count('id', $this->db);
-        
+
         $showPending = $this->ansiFormat($pending, Console::FG_YELLOW);
         $showSent = $this->ansiFormat($sent, Console::FG_GREEN);
         $showGaveup = $this->ansiFormat($gaveup, Console::FG_RED);
-        
+
         $this->stdout(" pending | $showPending\n");
         $this->stdout(" sent    | $showSent\n");
         $this->stdout(" stucked | $showGaveup\n");

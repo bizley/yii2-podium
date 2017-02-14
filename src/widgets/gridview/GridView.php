@@ -9,7 +9,7 @@ use yii\widgets\Pjax;
 
 /**
  * Podium GridView widget.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
  */
@@ -32,7 +32,7 @@ class GridView extends YiiGridView
      * @var string additional jQuery selector for selecting filter input fields
      */
     public $filterSelector = 'select#per-page';
-    
+
     /**
      * Sets formatter to use Podium component.
      * @since 0.5
@@ -42,7 +42,7 @@ class GridView extends YiiGridView
         parent::init();
         $this->formatter = Podium::getInstance()->formatter;
     }
-    
+
     /**
      * Runs the widget.
      */

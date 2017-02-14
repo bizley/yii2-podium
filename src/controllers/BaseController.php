@@ -18,14 +18,14 @@ use yii\web\Controller as YiiController;
  * Prepares account in case of new inherited identity user.
  * Redirects users in case of maintenance.
  * Not accessible directly.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
 class BaseController extends YiiController
 {
     use FlashTrait;
-    
+
     /**
      * @var int Podium access type. Possible values are:
      *  1 => member access
@@ -48,7 +48,7 @@ class BaseController extends YiiController
             ],
         ];
     }
-    
+
     /**
      * Adds warning for maintenance mode.
      * Redirects all users except administrators (if this mode is on).
@@ -75,7 +75,7 @@ class BaseController extends YiiController
         }
         return true;
     }
-    
+
     /**
      * Returns warning messages.
      * @return array
@@ -97,7 +97,7 @@ class BaseController extends YiiController
             'new_version' => Yii::t('podium/flash', 'Module version appears to be older than database! Please verify your database.')
         ];
     }
-    
+
     /**
      * Performs maintenance check.
      * @param Action $action the action to be executed.
@@ -129,7 +129,7 @@ class BaseController extends YiiController
         }
         return false;
     }
-    
+
     /**
      * Performs email check.
      * @param array $warnings Flash warnings
@@ -151,7 +151,7 @@ class BaseController extends YiiController
         }
         return false;
     }
-    
+
     /**
      * Performs upgrade check.
      * @param array $warnings Flash warnings
@@ -174,7 +174,7 @@ class BaseController extends YiiController
             }
         }
         $result = Helper::compareVersions(
-            explode('.', $this->module->version), 
+            explode('.', $this->module->version),
             explode('.', $this->module->podiumConfig->get('version'))
         );
         if ($result == '>') {
@@ -184,7 +184,7 @@ class BaseController extends YiiController
         }
         return false;
     }
-    
+
     /**
      * Creates inherited user account.
      * Redirects banned user to proper view.
@@ -204,7 +204,7 @@ class BaseController extends YiiController
                 }
                 return $this->goHome();
             }
-            
+
             if (!$this->module->user->isGuest) {
                 $user = User::findMe();
                 if ($this->module->userComponent !== true && empty($user) && $this->accessType === 1) {

@@ -19,7 +19,7 @@ class EditorFull extends InputWidget
      * @var InputWidget
      */
     public $editor;
-    
+
     /**
      * @inheritdoc
      */
@@ -41,8 +41,8 @@ class EditorFull extends InputWidget
             }
             $this->editor = new QuillFull($config);
         }
-    }    
-    
+    }
+
     /**
      * @inheritdoc
      */

@@ -7,10 +7,10 @@ use bizley\podium\db\ActiveRecord;
 /**
  * Poll answer model
  * Forum polls.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property int $id
  * @property string $answer
  * @property int $votes
@@ -25,7 +25,7 @@ class PollAnswerActiveRecord extends ActiveRecord
     {
         return '{{%podium_poll_answer}}';
     }
-    
+
     /**
      * @inheritdoc
      */

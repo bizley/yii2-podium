@@ -42,7 +42,7 @@ class Subscription extends SubscriptionActiveRecord
         $dataProvider->pagination->pageSize = Yii::$app->session->get('per-page', 20);
         return $dataProvider;
     }
-    
+
     /**
      * Marks post as seen.
      * @return bool
@@ -77,7 +77,7 @@ class Subscription extends SubscriptionActiveRecord
      */
     public static function notify($thread)
     {
-        if (is_numeric($thread) && $thread > 0) {            
+        if (is_numeric($thread) && $thread > 0) {
             $forum = Podium::getInstance()->podiumConfig->get('name');
             $email = Content::fill(Content::EMAIL_SUBSCRIPTION);
             $subs = static::find()->where(['thread_id' => $thread, 'post_seen' => self::POST_SEEN]);
@@ -86,7 +86,7 @@ class Subscription extends SubscriptionActiveRecord
                 if ($sub->save()) {
                     if ($email !== false && !empty($sub->user->email)) {
                         if (Email::queue(
-                                $sub->user->email, 
+                                $sub->user->email,
                                 str_replace('{forum}', $forum, $email->topic),
                                 str_replace('{forum}', $forum, str_replace('{link}', Html::a(
                                         Url::to(['forum/last', 'id' => $sub->thread_id], true),

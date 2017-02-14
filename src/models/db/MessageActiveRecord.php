@@ -16,7 +16,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $sender_id
  * @property string $topic
@@ -34,25 +34,25 @@ class MessageActiveRecord extends ActiveRecord
     const STATUS_NEW     = 1;
     const STATUS_READ    = 10;
     const STATUS_DELETED = 20;
-    
+
     /**
      * Limits.
      */
     const MAX_RECEIVERS = 10;
     const SPAM_MESSAGES = 10;
     const SPAM_WAIT     = 1;
-    
+
     /**
      * @var int[] Receivers' IDs.
      */
     public $receiversId;
-    
+
     /**
      * @var int[] Friends' IDs.
      * @since 0.2
      */
     public $friendsId;
-    
+
     /**
      * @inheritdoc
      */
@@ -79,7 +79,7 @@ class MessageActiveRecord extends ActiveRecord
             [
                 'report' => ['content'],
                 'remove' => ['sender_status'],
-            ]                
+            ]
         );
     }
 
@@ -104,7 +104,7 @@ class MessageActiveRecord extends ActiveRecord
             }],
         ];
     }
-    
+
     /**
      * Returns list of statuses.
      * @return string[]
@@ -113,7 +113,7 @@ class MessageActiveRecord extends ActiveRecord
     {
         return [self::STATUS_NEW, self::STATUS_READ, self::STATUS_DELETED];
     }
-    
+
     /**
      * Returns list of inbox statuses.
      * @return string[]
@@ -122,7 +122,7 @@ class MessageActiveRecord extends ActiveRecord
     {
         return [self::STATUS_NEW, self::STATUS_READ];
     }
-    
+
     /**
      * Returns list of sent statuses.
      * @return string[]
@@ -131,7 +131,7 @@ class MessageActiveRecord extends ActiveRecord
     {
         return [self::STATUS_READ];
     }
-    
+
     /**
      * Returns list of deleted statuses.
      * @return string[]
@@ -149,7 +149,7 @@ class MessageActiveRecord extends ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'sender_id']);
     }
-    
+
     /**
      * Receivers relation.
      * @return ActiveQuery
@@ -158,7 +158,7 @@ class MessageActiveRecord extends ActiveRecord
     {
         return $this->hasMany(MessageReceiver::className(), ['message_id' => 'id']);
     }
-    
+
     /**
      * Returns reply Message.
      * @return ActiveQuery

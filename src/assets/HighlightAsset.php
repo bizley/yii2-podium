@@ -6,7 +6,7 @@ use yii\web\AssetBundle;
 
 /**
  * Highlight.js CSS asset.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.2
  */

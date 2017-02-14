@@ -335,7 +335,7 @@ class User extends UserActiveRecord
     public function isBefriendedBy($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
-                'user_id' => $userId, 
+                'user_id' => $userId,
                 'friend_id' => $this->id
             ])->exists()) {
             return true;
@@ -352,7 +352,7 @@ class User extends UserActiveRecord
     public function isFriendOf($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
-                'user_id' => $this->id, 
+                'user_id' => $this->id,
                 'friend_id' => $userId
             ])->exists()) {
             return true;
@@ -368,7 +368,7 @@ class User extends UserActiveRecord
     public function isIgnoredBy($userId)
     {
         if ((new Query())->select('id')->from('{{%podium_user_ignore}}')->where([
-                'user_id' => $userId, 
+                'user_id' => $userId,
                 'ignored_id' => $this->id
             ])->exists()) {
             return true;
@@ -384,7 +384,7 @@ class User extends UserActiveRecord
     public function isIgnoring($user_id)
     {
         if ((new Query())->select('id')->from('{{%podium_user_ignore}}')->where([
-                'user_id' => $this->id, 
+                'user_id' => $this->id,
                 'ignored_id' => $user_id
             ])->exists()) {
             return true;
@@ -458,9 +458,9 @@ class User extends UserActiveRecord
             $transaction->rollBack();
             Log::error($e->getMessage(), null, __METHOD__);
         }
-        return false;        
+        return false;
     }
-    
+
     /**
      * Promotes user to given role.
      * Only moderator supported now.
@@ -618,16 +618,16 @@ class User extends UserActiveRecord
     {
         try {
             if ((new Query())->from(Mod::tableName())->where([
-                    'forum_id' => $forumId, 
+                    'forum_id' => $forumId,
                     'user_id' => $this->id
                 ])->exists()) {
                 Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), [
-                    'forum_id' => $forumId, 
+                    'forum_id' => $forumId,
                     'user_id' => $this->id
                 ])->execute();
             } else {
                 Podium::getInstance()->db->createCommand()->insert(Mod::tableName(), [
-                    'forum_id' => $forumId, 
+                    'forum_id' => $forumId,
                     'user_id' => $this->id
                 ])->execute();
             }
@@ -654,7 +654,7 @@ class User extends UserActiveRecord
             $add = [];
             foreach ($newForums as $forum) {
                 if (!in_array($forum, $oldForums)) {
-                    if ((new Query())->from(Forum::tableName())->where(['id' => $forum])->exists() 
+                    if ((new Query())->from(Forum::tableName())->where(['id' => $forum])->exists()
                         && (new Query())->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists() === false) {
                         $add[] = [$forum, $this->id];
                     }
@@ -847,10 +847,10 @@ class User extends UserActiveRecord
         if ($email !== false) {
             $link = Url::to(['account/activate', 'token' => $this->activation_token], true);
             return Email::queue(
-                $this->email, 
+                $this->email,
                 str_replace('{forum}', $forum, $email->topic),
-                str_replace('{forum}', $forum, str_replace('{link}', 
-                    Html::a($link, $link), $email->content)), 
+                str_replace('{forum}', $forum, str_replace('{link}',
+                    Html::a($link, $link), $email->content)),
                 !empty($this->id) ? $this->id : null
             );
         }

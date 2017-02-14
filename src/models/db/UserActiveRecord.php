@@ -23,7 +23,7 @@ use yii\web\IdentityInterface;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property int $id
  * @property int $inherited_id
  * @property string $username
@@ -38,7 +38,7 @@ use yii\web\IdentityInterface;
  * @property int $role
  * @property int $created_at
  * @property int $updated_at
- * 
+ *
  * @property Activity $activity
  * @property Meta $meta
  * @property Mod[] $mods
@@ -52,7 +52,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     const STATUS_REGISTERED = 1;
     const STATUS_BANNED     = 9;
     const STATUS_ACTIVE     = 10;
-    
+
     /**
      * @inheritdoc
      */
@@ -60,7 +60,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return '{{%podium_user}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -74,7 +74,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
             ],
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -82,7 +82,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return new UserQuery(get_called_class());
     }
-    
+
     /**
      * Finds out if unencrypted password fulfill requirements.
      * @param string $attribute
@@ -97,7 +97,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
             $this->addError($attribute, Yii::t('podium/view', 'Password must contain uppercase and lowercase letter, digit, and be at least 6 characters long.'));
         }
     }
-    
+
     /**
      * Finds registered user by activation token.
      * @param string $token activation token
@@ -110,7 +110,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::find()->where(['activation_token' => $token, 'status' => self::STATUS_REGISTERED])->limit(1)->one();
     }
-    
+
     /**
      * Finds active user by email.
      * @param string $email
@@ -120,7 +120,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return static::find()->where(['email' => $email, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
-    
+
     /**
      * Finds active user by email token.
      * @param string $token activation token
@@ -133,7 +133,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::find()->where(['email_token' => $token, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
-    
+
     /**
      * Finds user of given status by username or email.
      * @param string $keyfield value to compare
@@ -147,7 +147,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::find()->where(['and', ['status' => $status], ['or', ['email' => $keyfield], ['username' => $keyfield]]])->limit(1)->one();
     }
-    
+
     /**
      * Finds user of given status by password reset token
      * @param string $token password reset token
@@ -164,7 +164,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::find()->where(['password_reset_token' => $token, 'status' => $status])->limit(1)->one();
     }
-    
+
     /**
      * Finds active user by username.
      * @param string $username
@@ -174,7 +174,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return static::find()->where(['username' => $username, 'status' => self::STATUS_ACTIVE])->limit(1)->one();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -187,7 +187,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
             return null;
         }
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -195,7 +195,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
-    
+
     /**
      * Generates new activation token.
      */
@@ -203,7 +203,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->activation_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
-    
+
     /**
      * Generates "remember me" authentication key.
      */
@@ -211,7 +211,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
-    
+
     /**
      * Generates new email token.
      */
@@ -219,7 +219,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->email_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
-    
+
     /**
      * Generates new password reset token.
      */
@@ -227,7 +227,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -235,7 +235,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->auth_key;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -243,7 +243,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->getPrimaryKey();
     }
-    
+
     /**
      * Activity relation.
      * @return ActiveQuery
@@ -252,7 +252,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->hasOne(Activity::className(), ['user_id' => 'id']);
     }
-    
+
     /**
      * Friends relation.
      * @return ActiveQuery
@@ -262,7 +262,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->hasMany(static::className(), ['id' => 'friend_id'])->viaTable('{{%podium_user_friend}}', ['user_id' => 'id']);
     }
-    
+
     /**
      * Meta relation.
      * @return ActiveQuery
@@ -271,7 +271,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->hasOne(Meta::className(), ['user_id' => 'id']);
     }
-    
+
     /**
      * Moderated forum relation.
      * @return ActiveQuery
@@ -281,7 +281,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->hasMany(Mod::className(), ['user_id' => 'id']);
     }
-    
+
     /**
      * Finds out if activation token is valid.
      * @param string $token activation token
@@ -295,7 +295,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::isTokenValid($token, $expire);
     }
-    
+
     /**
      * Finds out if email token is valid.
      * @param string $token activation token
@@ -309,7 +309,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::isTokenValid($token, $expire);
     }
-    
+
     /**
      * Finds out if password reset token is valid.
      * @param string $token password reset token
@@ -323,7 +323,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return static::isTokenValid($token, $expire);
     }
-    
+
     /**
      * Finds out if given token type is valid.
      * @param string $token activation token
@@ -339,7 +339,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         $timestamp = (int)end($parts);
         return $timestamp + (int)$expire >= time();
     }
-    
+
     /**
      * Removes activation token.
      */
@@ -347,7 +347,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->activation_token = null;
     }
-    
+
     /**
      * Removes email token.
      */
@@ -355,7 +355,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->email_token = null;
     }
-    
+
     /**
      * Removes password reset token.
      */
@@ -363,7 +363,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->password_reset_token = null;
     }
-    
+
     /**
      * Generates password hash from unencrypted password.
      * @param string $password
@@ -372,7 +372,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -380,7 +380,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
     {
         return $this->getAuthKey() === $authKey;
     }
-    
+
     /**
      * Validates current password.
      * @param string $attribute
@@ -393,11 +393,11 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
             }
         }
     }
-    
+
     /**
      * Validates password.
-     * In case of inherited user component password hash is compared to 
-     * password hash stored in Podium::getInstance()->user->identity so this method should 
+     * In case of inherited user component password hash is compared to
+     * password hash stored in Podium::getInstance()->user->identity so this method should
      * not be used with User instance other than currently logged in one.
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
@@ -414,7 +414,7 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         }
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
-    
+
     /**
      * Validates username.
      * Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.

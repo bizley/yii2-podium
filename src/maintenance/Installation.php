@@ -14,10 +14,10 @@ use yii\helpers\VarDumper;
 
 /**
  * Podium Installation
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
+ *
  * @property array $steps
  */
 class Installation extends Maintenance
@@ -59,12 +59,12 @@ class Installation extends Maintenance
             }
             $transaction->commit();
             return $this->returnSuccess(
-                Yii::t('podium/flash', 'Administrator account has been created.') 
-                . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':') 
-                . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME) 
-                . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':') 
+                Yii::t('podium/flash', 'Administrator account has been created.')
+                . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Login') . ':')
                 . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME)
-                . '<br>' 
+                . ' ' . Html::tag('strong', Yii::t('podium/flash', 'Password') . ':')
+                . ' ' . Html::tag('kbd', self::DEFAULT_USERNAME)
+                . '<br>'
                 . Html::tag('strong', Yii::t('podium/flash', 'Remember to change these credentials after first login!'), ['class' => 'text-danger'])
             );
         } catch (Exception $e) {
@@ -132,29 +132,29 @@ class Installation extends Maintenance
     {
         try {
             $this->db->createCommand()->batchInsert(
-                    PodiumConfig::tableName(), 
-                    ['name', 'value'], 
+                    PodiumConfig::tableName(),
+                    ['name', 'value'],
                     [
                         ['activation_token_expire', PodiumConfig::SECONDS_ACTIVATION_TOKEN_EXPIRE],
                         ['allow_polls', PodiumConfig::FLAG_ALLOW_POLLS],
                         ['email_token_expire', PodiumConfig::SECONDS_EMAIL_TOKEN_EXPIRE],
                         ['from_email', PodiumConfig::DEFAULT_FROM_EMAIL],
                         ['from_name', PodiumConfig::DEFAULT_FROM_NAME],
-                        ['hot_minimum', PodiumConfig::HOT_MINIMUM], 
+                        ['hot_minimum', PodiumConfig::HOT_MINIMUM],
                         ['maintenance_mode', PodiumConfig::MAINTENANCE_MODE],
                         ['max_attempts', PodiumConfig::MAX_SEND_ATTEMPTS],
                         ['members_visible', PodiumConfig::FLAG_MEMBERS_VISIBLE],
                         ['merge_posts', PodiumConfig::FLAG_MERGE_POSTS],
                         ['meta_description', PodiumConfig::META_DESCRIPTION],
                         ['meta_keywords', PodiumConfig::META_KEYWORDS],
-                        ['name', PodiumConfig::PODIUM_NAME], 
+                        ['name', PodiumConfig::PODIUM_NAME],
                         ['password_reset_token_expire', PodiumConfig::SECONDS_PASSWORD_RESET_TOKEN_EXPIRE],
                         ['recaptcha_secretkey', ''],
                         ['recaptcha_sitekey', ''],
                         ['registration_off', PodiumConfig::REGISTRATION_OFF],
                         ['use_captcha', PodiumConfig::FLAG_USE_CAPTCHA],
                         ['use_wysiwyg', PodiumConfig::FLAG_USE_WYSIWYG],
-                        ['version', Podium::getInstance()->version], 
+                        ['version', Podium::getInstance()->version],
                     ]
                 )->execute();
             return $this->returnSuccess(Yii::t('podium/flash', 'Default Config settings have been added.'));
@@ -174,37 +174,37 @@ class Installation extends Maintenance
         try {
             $default = Content::defaultContent();
             $this->db->createCommand()->batchInsert(
-                    Content::tableName(), 
-                    ['name', 'topic', 'content'], 
+                    Content::tableName(),
+                    ['name', 'topic', 'content'],
                     [
                         [
-                            Content::TERMS_AND_CONDS, 
-                            $default[Content::TERMS_AND_CONDS]['topic'], 
+                            Content::TERMS_AND_CONDS,
+                            $default[Content::TERMS_AND_CONDS]['topic'],
                             $default[Content::TERMS_AND_CONDS]['content']
                         ],
                         [
-                            Content::EMAIL_REGISTRATION, 
-                            $default[Content::EMAIL_REGISTRATION]['topic'], 
+                            Content::EMAIL_REGISTRATION,
+                            $default[Content::EMAIL_REGISTRATION]['topic'],
                             $default[Content::EMAIL_REGISTRATION]['content']
                         ],
                         [
-                            Content::EMAIL_PASSWORD, 
-                            $default[Content::EMAIL_PASSWORD]['topic'], 
+                            Content::EMAIL_PASSWORD,
+                            $default[Content::EMAIL_PASSWORD]['topic'],
                             $default[Content::EMAIL_PASSWORD]['content']
                         ],
                         [
-                            Content::EMAIL_REACTIVATION, 
-                            $default[Content::EMAIL_REACTIVATION]['topic'], 
+                            Content::EMAIL_REACTIVATION,
+                            $default[Content::EMAIL_REACTIVATION]['topic'],
                             $default[Content::EMAIL_REACTIVATION]['content']
                         ],
                         [
-                            Content::EMAIL_NEW, 
-                            $default[Content::EMAIL_NEW]['topic'], 
+                            Content::EMAIL_NEW,
+                            $default[Content::EMAIL_NEW]['topic'],
                             $default[Content::EMAIL_NEW]['content']
                         ],
                         [
-                            Content::EMAIL_SUBSCRIPTION, 
-                            $default[Content::EMAIL_SUBSCRIPTION]['topic'], 
+                            Content::EMAIL_SUBSCRIPTION,
+                            $default[Content::EMAIL_SUBSCRIPTION]['topic'],
                             $default[Content::EMAIL_SUBSCRIPTION]['content']
                         ],
                     ]

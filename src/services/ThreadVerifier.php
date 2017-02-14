@@ -20,39 +20,39 @@ class ThreadVerifier extends Component
      * @var int category ID
      */
     public $categoryId;
-    
+
     /**
      * @var int forum ID
      */
     public $forumId;
-    
+
     /**
      * @var int thread ID
      */
     public $threadId;
-    
+
     /**
      * @var string thread slug
      */
     public $threadSlug;
-    
+
     /**
      * Validates parameters.
      * @return bool
      */
     public function validate()
     {
-        if (is_numeric($this->categoryId) && $this->categoryId >= 1 
-                && is_numeric($this->forumId) && $this->forumId >= 1 
-                && is_numeric($this->threadId) && $this->threadId >= 1 
+        if (is_numeric($this->categoryId) && $this->categoryId >= 1
+                && is_numeric($this->forumId) && $this->forumId >= 1
+                && is_numeric($this->threadId) && $this->threadId >= 1
                 && !empty($this->threadSlug)) {
             return true;
         }
         return false;
     }
-    
+
     private $_query;
-    
+
     /**
      * Returns verified thread.
      * @return Thread
@@ -63,7 +63,7 @@ class ThreadVerifier extends Component
             return null;
         }
         $this->_query = Thread::find()->where([
-                            Thread::tableName() . '.id' => $this->threadId, 
+                            Thread::tableName() . '.id' => $this->threadId,
                             Thread::tableName() . '.slug' => $this->threadSlug,
                             Thread::tableName() . '.forum_id' => $this->forumId,
                             Thread::tableName() . '.category_id' => $this->categoryId,
@@ -73,7 +73,7 @@ class ThreadVerifier extends Component
         }
         return $this->getThreadForMembers();
     }
-    
+
     /**
      * Returns thread for guests.
      * @return Thread
@@ -90,7 +90,7 @@ class ThreadVerifier extends Component
                 }
             ])->limit(1)->one();
     }
-    
+
     /**
      * Returns thread for members.
      * @return Thread

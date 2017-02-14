@@ -13,7 +13,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property string $location
@@ -49,10 +49,10 @@ class MetaActiveRecord extends ActiveRecord
     public function rules()
     {
         return [
-            [['location', 'signature'], 'trim'],        
+            [['location', 'signature'], 'trim'],
             ['location', 'filter', 'filter' => function ($value) {
                 return HtmlPurifier::process(trim($value));
-            }],            
+            }],
             ['gravatar', 'boolean'],
             ['signature', 'filter', 'filter' => function ($value) {
                 if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {

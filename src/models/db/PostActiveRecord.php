@@ -19,7 +19,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property string $content
  * @property integer $thread_id
@@ -36,12 +36,12 @@ class PostActiveRecord extends ActiveRecord
      * @var bool Subscription flag.
      */
     public $subscribe;
-    
+
     /**
      * @var string Topic.
      */
     public $topic;
-    
+
     /**
      * @inheritdoc
      */
@@ -88,7 +88,7 @@ class PostActiveRecord extends ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'author_id']);
     }
-    
+
     /**
      * Thread relation.
      * @return ActiveQuery
@@ -97,7 +97,7 @@ class PostActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Thread::className(), ['id' => 'thread_id']);
     }
-    
+
     /**
      * Forum relation.
      * @return ActiveQuery
@@ -106,7 +106,7 @@ class PostActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
     }
-    
+
     /**
      * Thumbs relation.
      * @return ActiveQuery

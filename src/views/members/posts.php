@@ -34,6 +34,6 @@ echo ListView::widget([
     'emptyText'        => Yii::t('podium/view', 'No posts have been added yet.'),
     'emptyTextOptions' => ['tag' => 'h3', 'class' => 'text-muted'],
     'pager'            => ['options' => ['class' => 'pagination pull-right']]
-]); 
+]);
 Pjax::end(); ?>
 <br>

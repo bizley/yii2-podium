@@ -24,10 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
         <?= Alert::widget([
-            'body' => '<strong><small>' 
-                        . Yii::t('podium/view', 'Post Preview') 
-                        . '</small></strong>:<hr>' 
-                        . $model->post, 
+            'body' => '<strong><small>'
+                        . Yii::t('podium/view', 'Post Preview')
+                        . '</small></strong>:<hr>'
+                        . $model->post,
             'options' => ['class' => 'alert-info']
         ]); ?>
     </div>

@@ -10,7 +10,7 @@ use yii\widgets\InputWidget;
 
 /**
  * Podium CodeMirror widget.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */
@@ -20,7 +20,7 @@ class CodeMirror extends InputWidget
      * @var string Editor type to display
      */
     public $type = 'basic';
-    
+
     /**
      * @inheritdoc
      */
@@ -38,7 +38,7 @@ class CodeMirror extends InputWidget
         }
         return Html::textarea($this->name, $this->value, ['id' => 'codemirror']);
     }
-    
+
     /**
      * Registers widget assets.
      * Note that CodeMirror works without jQuery.

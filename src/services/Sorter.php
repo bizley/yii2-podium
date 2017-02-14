@@ -21,17 +21,17 @@ class Sorter extends Component
      * @var ActiveRecord
      */
     public $target;
-    
+
     /**
      * @var Query
      */
     public $query;
-    
+
     /**
      * @var int new order
      */
     public $order;
-    
+
     /**
      * Runs sorter.
      * @return bool

@@ -9,7 +9,7 @@ use yii\rbac\DbManager;
 
 /**
  * Podium Maintenance
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */

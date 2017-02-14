@@ -19,7 +19,7 @@ class EditorBasic extends InputWidget
      * @var InputWidget
      */
     public $editor;
-    
+
     /**
      * @inheritdoc
      */
@@ -40,8 +40,8 @@ class EditorBasic extends InputWidget
             }
             $this->editor = new QuillBasic($config);
         }
-    }    
-    
+    }
+
     /**
      * @inheritdoc
      */

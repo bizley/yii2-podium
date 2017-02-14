@@ -23,7 +23,7 @@ class MessageAction extends Action
      * @var array
      */
     public $redirectRoute;
-    
+
     /**
      * @var string sender or receiver
      */
@@ -40,7 +40,7 @@ class MessageAction extends Action
         }
         return MessageReceiver::STATUS_DELETED;
     }
-    
+
     /**
      * Returns model query based on type.
      * @return ActiveQuery
@@ -52,7 +52,7 @@ class MessageAction extends Action
         }
         return MessageReceiver::find();
     }
-    
+
     /**
      * Runs action.
      * @param int $id
@@ -65,8 +65,8 @@ class MessageAction extends Action
             return $this->controller->redirect($this->redirectRoute);
         }
         $model = $this->modelQuery->where([
-                'and', 
-                ['id' => $id, $this->type . '_id' => User::loggedId()], 
+                'and',
+                ['id' => $id, $this->type . '_id' => User::loggedId()],
                 ['!=', $this->type . '_status', $this->deletedStatus]
             ])->limit(1)->one();
         if (empty($model)) {
@@ -78,7 +78,7 @@ class MessageAction extends Action
         } else {
             Log::error('Error while deleting message', $model->id, __METHOD__);
             $this->controller->error(Yii::t('podium/flash', 'Sorry! We can not delete this message. Contact administrator about this problem.'));
-        }            
+        }
         return $this->controller->redirect($this->redirectRoute);
     }
 }

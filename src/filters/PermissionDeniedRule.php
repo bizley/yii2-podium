@@ -8,7 +8,7 @@ use Yii;
 /**
  * Permission denied access rule
  * Redirects user with error message in case of no permission granted.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */
@@ -18,17 +18,17 @@ class PermissionDeniedRule extends PodiumRoleRule
      * @var boolean whether this is an 'allow' rule or 'deny' rule.
      */
     public $allow = false;
-    
+
     /**
      * @var string permission name.
      */
     public $perm;
-    
+
     /**
      * @var array redirect route.
      */
     public $redirect;
-    
+
     /**
      * Sets match and deny callbacks.
      */

@@ -40,7 +40,7 @@ if (!empty($items)) {
 <?php if ($category->id == $model->id): ?>
 <?php foreach ($forums as $forum): ?>
             <li role="presentation"><a href="<?= Url::to(['admin/edit-forum', 'id' => $forum->id, 'cid' => $forum->category_id]) ?>"><span class="glyphicon glyphicon-bullhorn"></span> <?= Html::encode($forum->name) ?></a></li>
-<?php endforeach; ?>        
+<?php endforeach; ?>
             <li role="presentation"><a href="<?= Url::to(['admin/new-forum', 'cid' => $category->id]) ?>"><span class="glyphicon glyphicon-plus-sign"></span> <?= Yii::t('podium/view', 'Create new forum') ?></a></li>
 <?php endif; ?>
 <?php endforeach; ?>

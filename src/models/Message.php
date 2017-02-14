@@ -18,7 +18,7 @@ use yii\helpers\Url;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
+ *
  * @property string $parsedContent
  */
 class Message extends MessageActiveRecord
@@ -106,7 +106,7 @@ class Message extends MessageActiveRecord
     }
 
     /**
-     * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT 
+     * Checks if user sent already more than SPAM_MESSAGES in last SPAM_WAIT
      * minutes.
      * @param int $userId
      * @return bool
@@ -209,15 +209,15 @@ class Message extends MessageActiveRecord
             $this->sender_id = $logged;
             $this->topic = Yii::t('podium/view', 'Complaint about the post #{id}', ['id' => $post->id]);
             if (Podium::getInstance()->podiumConfig->get('use_wysiwyg') == '0') {
-                $this->content .= "\n\n---\n" 
-                            . '[' . Yii::t('podium/view', 'Direct link to this post') . '](' . Url::to(['forum/show', 'id' => $post->id]) . ')' 
-                            . "\n\n---\n" 
+                $this->content .= "\n\n---\n"
+                            . '[' . Yii::t('podium/view', 'Direct link to this post') . '](' . Url::to(['forum/show', 'id' => $post->id]) . ')'
+                            . "\n\n---\n"
                             . '**' . Yii::t('podium/view', 'Post contents') . '**'
                             . $post->content;
             } else {
-                $this->content .= '<hr>' 
-                            . Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id]) 
-                            . '<hr>' 
+                $this->content .= '<hr>'
+                            . Html::a(Yii::t('podium/view', 'Direct link to this post'), ['forum/show', 'id' => $post->id])
+                            . '<hr>'
                             . '<p>' . Yii::t('podium/view', 'Post contents') . '</p>'
                             . '<blockquote>' . $post->content . '</blockquote>';
             }
@@ -238,8 +238,8 @@ class Message extends MessageActiveRecord
                 throw new Exception('No one to send report to');
             }
             if (!Podium::getInstance()->db->createCommand()->batchInsert(
-                    MessageReceiver::tableName(), 
-                    ['message_id', 'receiver_id', 'receiver_status', 'created_at', 'updated_at'], 
+                    MessageReceiver::tableName(),
+                    ['message_id', 'receiver_id', 'receiver_status', 'created_at', 'updated_at'],
                     $receivers
                 )->execute()) {
                 throw new Exception('Reports saving error!');
@@ -267,7 +267,7 @@ class Message extends MessageActiveRecord
             }
         }
     }
-    
+
     /**
      * Returns content Markdown-parsed if WYSIWYG editor is switched off.
      * @return string

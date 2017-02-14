@@ -9,7 +9,7 @@ use yii\web\User as YiiUser;
 /**
  * Podium role check access rule
  * Overrides matchRole method to ensure use of rbacComponent configuration.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */

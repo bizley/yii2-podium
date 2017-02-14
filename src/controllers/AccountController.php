@@ -17,7 +17,7 @@ use yii\web\Response;
 /**
  * Podium Account controller
  * All actions concerning user account.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -78,7 +78,7 @@ class AccountController extends BaseController
         }
         return true;
     }
-    
+
     /**
      * Activating the account based on the provided activation token.
      * @param string $token
@@ -219,7 +219,7 @@ class AccountController extends BaseController
         $model->captcha = null;
 
         return $this->render('register', [
-            'model' => $model, 
+            'model' => $model,
             'terms' => Content::fill(Content::TERMS_AND_CONDS)]
         );
     }

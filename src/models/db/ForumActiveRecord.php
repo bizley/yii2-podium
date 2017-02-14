@@ -15,7 +15,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property integer $id
  * @property integer $category_id
  * @property string $name
@@ -66,7 +66,7 @@ class ForumActiveRecord extends ActiveRecord
             [['keywords', 'description'], 'string'],
         ];
     }
-    
+
     /**
      * Category relation.
      * @return ActiveQuery
@@ -75,7 +75,7 @@ class ForumActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
-    
+
     /**
      * Post relation. One latest post.
      * @return ActiveQuery

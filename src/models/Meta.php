@@ -12,20 +12,20 @@ use cebe\markdown\GithubMarkdown;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
- * 
+ *
  * @property string $parsedSignature
  */
 class Meta extends MetaActiveRecord
 {
     const DEFAULT_TIMEZONE = 'UTC';
-    
+
     /**
      * Max image sizes.
      */
     const MAX_WIDTH  = 165;
     const MAX_HEIGHT = 165;
     const MAX_SIZE   = 204800;
-    
+
     /**
      * @var mixed Avatar image
      */
@@ -38,15 +38,15 @@ class Meta extends MetaActiveRecord
     {
         return array_merge(
             parent::rules(),
-            [['image', 'image', 
-                'mimeTypes' => 'image/png, image/jpeg, image/gif', 
-                'maxWidth' => self::MAX_WIDTH, 
-                'maxHeight' => self::MAX_HEIGHT, 
+            [['image', 'image',
+                'mimeTypes' => 'image/png, image/jpeg, image/gif',
+                'maxWidth' => self::MAX_WIDTH,
+                'maxHeight' => self::MAX_HEIGHT,
                 'maxSize' => self::MAX_SIZE],
             ]
         );
     }
-    
+
     /**
      * Returns signature Markdown-parsed if WYSIWYG editor is switched off.
      * @return string

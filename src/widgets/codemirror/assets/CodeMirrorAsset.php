@@ -6,7 +6,7 @@ use yii\web\AssetBundle;
 
 /**
  * CodeMirror Assets
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
  */

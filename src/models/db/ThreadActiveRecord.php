@@ -21,7 +21,7 @@ use yii\helpers\HtmlPurifier;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string $slug
@@ -43,42 +43,42 @@ class ThreadActiveRecord extends ActiveRecord
      * @var string attached post content
      */
     public $post;
-    
+
     /**
      * @var bool thread subscription flag
      */
     public $subscribe;
-    
+
     /**
      * @var int poll added
      * @since 0.6
      */
     public $pollAdded = 0;
-    
+
     /**
      * @var string poll question
      * @since 0.6
      */
     public $pollQuestion;
-    
+
     /**
      * @var int number of possible poll votes
      * @since 0.6
      */
     public $pollVotes = 1;
-    
+
     /**
      * @var string[] poll answers
      * @since 0.6
      */
     public $pollAnswers = [];
-    
+
     /**
      * @var string poll closing date
      * @since 0.6
      */
     public $pollEnd;
-    
+
     /**
      * @var int should poll results be hidden before voting
      * @since 0.6
@@ -106,7 +106,7 @@ class ThreadActiveRecord extends ActiveRecord
             ],
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -138,7 +138,7 @@ class ThreadActiveRecord extends ActiveRecord
             }, 'whenClient' => 'function (attribute, value) { return $("#poll_added").val() == 1; }'],
         ];
     }
-    
+
     /**
      * Filters and validates poll answers.
      * @since 0.5
@@ -159,7 +159,7 @@ class ThreadActiveRecord extends ActiveRecord
             }
         }
     }
-    
+
     /**
      * Returns poll attribute labels.
      * @return array
@@ -183,7 +183,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Forum::className(), ['id' => 'forum_id']);
     }
-    
+
     /**
      * Poll relation.
      * @return Forum
@@ -202,7 +202,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return $this->hasOne(ThreadView::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
-    
+
     /**
      * ThreadView relation general.
      * @return ThreadView[]
@@ -211,7 +211,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return $this->hasMany(ThreadView::className(), ['thread_id' => 'id']);
     }
-    
+
     /**
      * Subscription relation.
      * @return Subscription
@@ -220,7 +220,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Subscription::className(), ['thread_id' => 'id'])->where(['user_id' => User::loggedId()]);
     }
-    
+
     /**
      * Latest post relation.
      * @return Post
@@ -239,7 +239,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return Post::find()->where(['thread_id' => $this->id])->count('id');
     }
-    
+
     /**
      * First post relation.
      * @return Post
@@ -248,7 +248,7 @@ class ThreadActiveRecord extends ActiveRecord
     {
         return $this->hasOne(Post::className(), ['thread_id' => 'id'])->orderBy(['id' => SORT_ASC]);
     }
-    
+
     /**
      * First new not seen post relation.
      * @return Post
@@ -260,7 +260,7 @@ class ThreadActiveRecord extends ActiveRecord
                 ->where(['>', 'created_at', $this->userView ? $this->userView->new_last_seen : 0])
                 ->orderBy(['id' => SORT_ASC]);
     }
-    
+
     /**
      * First edited not seen post relation.
      * @return Post
@@ -272,7 +272,7 @@ class ThreadActiveRecord extends ActiveRecord
                 ->where(['>', 'edited_at', $this->userView ? $this->userView->edited_last_seen : 0])
                 ->orderBy(['id' => SORT_ASC]);
     }
-    
+
     /**
      * Author relation.
      * @return User

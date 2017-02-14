@@ -31,12 +31,12 @@ class ActionColumn extends YiiActionColumn
      * @var array html options to be applied to the [[initDefaultButtons()|default buttons]].
      */
     public $buttonOptions = [
-        'class' => 'btn btn-default btn-xs', 
-        'data-pjax' => '0', 
-        'data-toggle' => 'tooltip', 
-        'data-placement' => 'top', 
+        'class' => 'btn btn-default btn-xs',
+        'data-pjax' => '0',
+        'data-toggle' => 'tooltip',
+        'data-placement' => 'top',
     ];
-    
+
     /**
      * @inheritdoc
      */
@@ -46,7 +46,7 @@ class ActionColumn extends YiiActionColumn
         $this->header = Yii::t('podium/view', 'Actions');
         $this->grid->view->registerJs("$('[data-toggle=\"tooltip\"]').tooltip();");
     }
-    
+
     /**
      * Returns button options.
      * @param array $options override
@@ -56,15 +56,15 @@ class ActionColumn extends YiiActionColumn
     {
         return array_merge(
             [
-                'class' => 'btn btn-default btn-xs', 
-                'data-pjax' => '0', 
-                'data-toggle' => 'tooltip', 
-                'data-placement' => 'top', 
+                'class' => 'btn btn-default btn-xs',
+                'data-pjax' => '0',
+                'data-toggle' => 'tooltip',
+                'data-placement' => 'top',
             ],
             $options
         );
     }
-    
+
     /**
      * Returns muted button HTML.
      * @param string $icon class

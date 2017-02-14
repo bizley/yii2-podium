@@ -21,7 +21,7 @@ class LogSearch extends ActiveRecord
     {
         return '{{%podium_log}}';
     }
-    
+
     /**
      * @inheritdoc
      */

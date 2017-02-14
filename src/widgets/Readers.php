@@ -12,7 +12,7 @@ use yii\helpers\Html;
 /**
  * Podium Readers widget
  * Renders list of readers.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -22,19 +22,19 @@ class Readers extends Widget
      * @var string section
      */
     public $what;
-    
+
     /**
      * @var bool anonymous user flag.
      * @since 0.2
      */
     protected $_anon = false;
-    
+
     /**
      * @var bool guest user flag.
      * @since 0.2
      */
     protected $_guest = true;
-    
+
     /**
      * Returns formatted list of named users browsing given url group.
      * @param string $url
@@ -50,7 +50,7 @@ class Readers extends Widget
             ['like', 'url', $url . '%', false],
             ['>=', Activity::tableName() . '.updated_at', time() - 5 * 60]
         ];
-        
+
         if (!Podium::getInstance()->user->isGuest) {
             $this->_guest = false;
             $me = User::findMe();
@@ -61,17 +61,17 @@ class Readers extends Widget
                 $this->_anon = true;
             }
         }
-        
+
         $users = Activity::find()
                     ->joinWith(['user'])
                     ->where($conditions);
         foreach ($users->each() as $user) {
             $out .= $user->user->podiumTag . ' ';
         }
-        
+
         return $out;
     }
-    
+
     /**
      * Returns number of anonymous users browsing given url group.
      * @param string $url
@@ -90,10 +90,10 @@ class Readers extends Widget
         if ($this->_anon) {
             $anons += 1;
         }
-        
+
         return $anons;
     }
-    
+
     /**
      * Returns number of guest users browsing given url group.
      * @param string $url
@@ -112,10 +112,10 @@ class Readers extends Widget
         if ($this->_guest) {
             $guests += 1;
         }
-        
+
         return $guests;
     }
-    
+
     /**
      * Renders the list of users reading current section.
      * @return string
@@ -123,7 +123,7 @@ class Readers extends Widget
     public function run()
     {
         $url = Yii::$app->request->getUrl();
-        
+
         $out = '';
         switch ($this->what) {
             case 'forum':
@@ -141,13 +141,13 @@ class Readers extends Widget
         }
 
         $out .= $this->getNamedUsersList($url);
-        
+
         $anonymous = $this->getAnonymousUsers($url);
         if ($anonymous) {
             $out .= Html::button(
                 Yii::t('podium/view', '{n, plural, =1{# anonymous user} other{# anonymous users}}', [
                     'n' => $anonymous
-                ]), 
+                ]),
                 ['class' => 'btn btn-xs btn-default disabled']
             ) . ' ';
         }
@@ -156,11 +156,11 @@ class Readers extends Widget
             $out .= Html::button(
                 Yii::t('podium/view', '{n, plural, =1{# guest} other{# guests}}', [
                     'n' => $guests
-                ]), 
+                ]),
                 ['class' => 'btn btn-xs btn-default disabled']
             );
         }
-        
+
         return $out;
     }
 }

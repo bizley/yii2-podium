@@ -9,7 +9,7 @@ use yii\helpers\Html;
 /**
  * Podium Page Sizer widget
  * Renders dropdown  list with acceptable page sizes.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -36,13 +36,13 @@ class PageSizer extends Widget
         if (in_array($selected, $this->pageSizes)) {
             $size = $selected;
         }
-        
+
         Yii::$app->session->set('per-page', $size);
-        
-        return Html::tag('div', Html::tag('div', 
-            Html::label(Yii::t('podium/view', 'Results per page'), 'per-page') 
-            . ' ' 
-            . Html::dropDownList('per-page', $size, $this->pageSizes, ['class' => 'form-control input-sm', 'id' => 'per-page']), 
+
+        return Html::tag('div', Html::tag('div',
+            Html::label(Yii::t('podium/view', 'Results per page'), 'per-page')
+            . ' '
+            . Html::dropDownList('per-page', $size, $this->pageSizes, ['class' => 'form-control input-sm', 'id' => 'per-page']),
             ['class' => 'form-group']
         ), ['class' => 'pull-right form-inline']) . '<br><br>';
     }

@@ -15,7 +15,7 @@ use yii\web\Response;
 /**
  * Podium Messages controller
  * All actions concerning members messages.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -88,7 +88,7 @@ class MessagesController extends BaseController
 
         if (Message::tooMany($podiumUser->id)) {
             $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', [
-                'max_messages' => Message::SPAM_MESSAGES, 
+                'max_messages' => Message::SPAM_MESSAGES,
                 'max_minutes' => Message::SPAM_WAIT
             ]));
             return $this->redirect(['messages/inbox']);
@@ -110,7 +110,7 @@ class MessagesController extends BaseController
                 $errors = false;
                 if (!empty($model->friendsId)) {
                     $model->receiversId = array_merge(
-                        is_array($model->receiversId) ? $model->receiversId : [], 
+                        is_array($model->receiversId) ? $model->receiversId : [],
                         is_array($model->friendsId) ? $model->friendsId : []
                     );
                 }
@@ -162,7 +162,7 @@ class MessagesController extends BaseController
 
         if (Message::tooMany($podiumUser->id)) {
             $this->warning(Yii::t('podium/flash', 'You have reached maximum {max_messages, plural, =1{ message} other{ messages}} per {max_minutes, plural, =1{ minute} other{ minutes}} limit. Wait few minutes before sending a new message.', [
-                'max_messages' => Message::SPAM_MESSAGES, 
+                'max_messages' => Message::SPAM_MESSAGES,
                 'max_minutes' => Message::SPAM_WAIT
             ]));
             return $this->redirect(['messages/inbox']);
@@ -214,12 +214,12 @@ class MessagesController extends BaseController
      * Viewing the sent message of given ID.
      * @param int $id
      * @return string|Response
-     */  
+     */
     public function actionViewSent($id = null)
     {
         $model = Message::find()->where([
-                'and', 
-                ['id' => $id, 'sender_id' => User::loggedId()], 
+                'and',
+                ['id' => $id, 'sender_id' => User::loggedId()],
                 ['!=', 'sender_status', Message::STATUS_DELETED]
             ])->limit(1)->one();
         if (empty($model)) {
@@ -228,8 +228,8 @@ class MessagesController extends BaseController
         }
         $model->markRead();
         return $this->render('view', [
-            'model' => $model, 
-            'type' => 'sent', 
+            'model' => $model,
+            'type' => 'sent',
             'id' => $model->id
         ]);
     }
@@ -238,12 +238,12 @@ class MessagesController extends BaseController
      * Viewing the received message of given ID.
      * @param int $id
      * @return string|Response
-     */  
+     */
     public function actionViewReceived($id = null)
     {
         $model = MessageReceiver::find()->where([
-                'and', 
-                ['id' => $id, 'receiver_id' => User::loggedId()], 
+                'and',
+                ['id' => $id, 'receiver_id' => User::loggedId()],
                 ['!=', 'receiver_status', MessageReceiver::STATUS_DELETED]
             ])->limit(1)->one();
         if (empty($model)) {
@@ -252,8 +252,8 @@ class MessagesController extends BaseController
         }
         $model->markRead();
         return $this->render('view', [
-            'model' => $model->message, 
-            'type' => 'received', 
+            'model' => $model->message,
+            'type' => 'received',
             'id' => $model->id
         ]);
     }
@@ -290,7 +290,7 @@ class MessagesController extends BaseController
                     }
                     $stack++;
                 }
-            }                
+            }
         }
         return Json::encode($result);
     }

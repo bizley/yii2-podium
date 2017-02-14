@@ -26,7 +26,7 @@ class Forum extends ForumActiveRecord
         if ($mods === false) {
             $mods = [];
             $modteam = User::find()->select(['id', 'role'])->where([
-                    'status' => User::STATUS_ACTIVE, 
+                    'status' => User::STATUS_ACTIVE,
                     'role' => [User::ROLE_ADMIN, User::ROLE_MODERATOR]
                 ]);
             foreach ($modteam->each() as $user) {
@@ -42,9 +42,9 @@ class Forum extends ForumActiveRecord
             }
             Podium::getInstance()->podiumCache->setElement('forum.moderators', $this->id, $mods);
         }
-        return $mods;        
+        return $mods;
     }
-    
+
     /**
      * Checks if user is moderator for this forum.
      * @param int|null $userId user ID or null for current signed in.
@@ -57,7 +57,7 @@ class Forum extends ForumActiveRecord
         }
         return false;
     }
-    
+
     /**
      * Searches forums.
      * @param int|null $categoryId
@@ -80,7 +80,7 @@ class Forum extends ForumActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
         return $dataProvider;
     }
-    
+
     /**
      * Returns the verified forum.
      * @param int $categoryId forum category ID
@@ -100,12 +100,12 @@ class Forum extends ForumActiveRecord
                     $query->andWhere([Category::tableName() . '.visible' => 1]);
                 }
             }])->where([
-                static::tableName() . '.id' => $id, 
+                static::tableName() . '.id' => $id,
                 static::tableName() . '.slug' => $slug,
                 static::tableName() . '.category_id' => $categoryId,
             ])->limit(1)->one();
     }
-    
+
     /**
      * Sets new forums order.
      * @param int $order new forum sorting order number

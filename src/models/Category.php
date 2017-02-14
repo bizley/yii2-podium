@@ -22,7 +22,7 @@ class Category extends CategoryActiveRecord
      */
     public function search()
     {
-        $query = static::find();        
+        $query = static::find();
         if (Podium::getInstance()->user->isGuest) {
             $query->andWhere(['visible' => 1]);
         }
@@ -30,7 +30,7 @@ class Category extends CategoryActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
         return $dataProvider;
     }
-    
+
     /**
      * Returns categories.
      * @return Category[]
@@ -41,7 +41,7 @@ class Category extends CategoryActiveRecord
         $dataProvider->sort->defaultOrder = ['sort' => SORT_ASC, 'id' => SORT_ASC];
         return $dataProvider->getModels();
     }
-    
+
     /**
      * Sets new categories order.
      * @param int $order new category sorting order number

@@ -11,7 +11,7 @@ use yii\base\Model;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.6
- * 
+ *
  * @property User $user
  */
 class LoginForm extends Model
@@ -20,17 +20,17 @@ class LoginForm extends Model
      * @var string Username or email
      */
     public $username;
-    
+
     /**
      * @var string Password
      */
     public $password;
-    
+
     /**
      * @var bool Remember me flag
      */
     public $rememberMe = false;
-    
+
     /**
      * @inheritdoc
      */
@@ -71,7 +71,7 @@ class LoginForm extends Model
     }
 
     private $_user = false;
-    
+
     /**
      * Returns user.
      * @return User

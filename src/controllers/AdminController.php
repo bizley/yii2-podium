@@ -17,7 +17,7 @@ use yii\web\Response;
 /**
  * Podium Admin controller
  * All actions concerning module administration.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
  */
@@ -93,7 +93,7 @@ class AdminController extends AdminForumController
             ],
         ];
     }
-    
+
     /**
      * Returns separated admin actions.
      * @return array
@@ -164,7 +164,7 @@ class AdminController extends AdminForumController
         $this->error(Yii::t('podium/flash', 'Sorry! User has got the wrong status.'));
         return $this->redirect(['admin/members']);
     }
-    
+
     /**
      * Deleting the user of given ID.
      * @param int $id
@@ -205,7 +205,7 @@ class AdminController extends AdminForumController
             'searchModel'  => $searchModel,
         ]);
     }
-    
+
     /**
      * Adding/removing forum from the moderation list for user of given ID.
      * @param int $uid user ID
@@ -235,7 +235,7 @@ class AdminController extends AdminForumController
         }
         return $this->redirect(['admin/mods', 'id' => $uid]);
     }
-    
+
     /**
      * Listing and updating moderation list for the forum of given ID.
      * @param int $id forum ID

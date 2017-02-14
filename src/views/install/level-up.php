@@ -102,7 +102,7 @@ JS
             'label'      => '0%',
             'barOptions' => ['class' => 'progress-bar progress-bar-striped active', 'style' => 'min-width: 2em;'],
             'options'    => ['class' => 'progress']
-        ]) ?>      
+        ]) ?>
     </div>
     <div class="col-sm-8 col-sm-offset-2 hide" id="installationError">
         <div class="alert alert-danger" role="alert"><?= Yii::t('podium/view', 'There was a major error during update...') ?></div>

@@ -17,7 +17,7 @@ use yii\web\Response;
  * Podium Forum controller
  * All actions concerning threads.
  * Not accessible directly.
- * 
+ *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
  */
@@ -35,7 +35,7 @@ class ForumThreadController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Returns separated thread actions.
      * @return array
@@ -62,7 +62,7 @@ class ForumThreadController extends BaseController
             ],
         ];
     }
-    
+
     /**
      * Deleting the thread of given category ID, forum ID, own ID and slug.
      * @param int $cid category ID
@@ -74,9 +74,9 @@ class ForumThreadController extends BaseController
     public function actionDelete($cid = null, $fid = null, $id = null, $slug = null)
     {
         $thread = (new ThreadVerifier([
-            'categoryId' => $cid, 
+            'categoryId' => $cid,
             'forumId' => $fid,
-            'threadId' => $id, 
+            'threadId' => $id,
             'threadSlug' => $slug
         ]))->verify();
         if (empty($thread)) {
@@ -88,7 +88,7 @@ class ForumThreadController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
             return $this->redirect(['forum/index']);
         }
-        
+
         $postData = Yii::$app->request->post('thread');
         if ($postData) {
             if ($postData != $thread->id) {
@@ -97,9 +97,9 @@ class ForumThreadController extends BaseController
                 if ($thread->podiumDelete()) {
                     $this->success(Yii::t('podium/flash', 'Thread has been deleted.'));
                     return $this->redirect([
-                        'forum/forum', 
-                        'cid' => $thread->forum->category_id, 
-                        'id' => $thread->forum->id, 
+                        'forum/forum',
+                        'cid' => $thread->forum->category_id,
+                        'id' => $thread->forum->id,
                         'slug' => $thread->forum->slug
                     ]);
                 }
@@ -108,7 +108,7 @@ class ForumThreadController extends BaseController
         }
         return $this->render('delete', ['model' => $thread]);
     }
-    
+
     /**
      * Moving the thread of given category ID, forum ID, own ID and slug.
      * @param int $cid category ID
@@ -120,9 +120,9 @@ class ForumThreadController extends BaseController
     public function actionMove($cid = null, $fid = null, $id = null, $slug = null)
     {
         $thread = (new ThreadVerifier([
-            'categoryId' => $cid, 
+            'categoryId' => $cid,
             'forumId' => $fid,
-            'threadId' => $id, 
+            'threadId' => $id,
             'threadSlug' => $slug
         ]))->verify();
         if (empty($thread)) {
@@ -134,7 +134,7 @@ class ForumThreadController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
             return $this->redirect(['forum/index']);
         }
-        
+
         $forum = Yii::$app->request->post('forum');
         if ($forum) {
             if (!is_numeric($forum) || $forum < 1 || $forum == $thread->forum->id) {
@@ -143,17 +143,17 @@ class ForumThreadController extends BaseController
                 if ($thread->podiumMoveTo($forum)) {
                     $this->success(Yii::t('podium/flash', 'Thread has been moved.'));
                     return $this->redirect([
-                        'forum/thread', 
-                        'cid' => $thread->forum->category->id, 
-                        'fid' => $thread->forum->id, 
-                        'id' => $thread->id, 
+                        'forum/thread',
+                        'cid' => $thread->forum->category->id,
+                        'fid' => $thread->forum->id,
+                        'id' => $thread->id,
                         'slug' => $thread->slug
                     ]);
                 }
                 $this->error(Yii::t('podium/flash', 'Sorry! There was an error while moving the thread.'));
             }
         }
-        
+
         $categories = Category::find()->orderBy(['name' => SORT_ASC]);
         $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
         $list = [];
@@ -162,9 +162,9 @@ class ForumThreadController extends BaseController
             $catlist = [];
             foreach ($forums->each() as $for) {
                 if ($for->category_id == $cat->id) {
-                    $catlist[$for->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '') 
-                                        . Html::encode($cat->name) 
-                                        . ' &raquo; ' 
+                    $catlist[$for->id] = (User::can(Rbac::PERM_UPDATE_THREAD, ['item' => $for]) ? '* ' : '')
+                                        . Html::encode($cat->name)
+                                        . ' &raquo; '
                                         . Html::encode($for->name);
                     if ($for->id == $thread->forum->id) {
                         $options[$for->id] = ['disabled' => true];
@@ -179,7 +179,7 @@ class ForumThreadController extends BaseController
             'options' => $options
         ]);
     }
-    
+
     /**
      * Creating the thread of given category ID and forum ID.
      * @param int $cid category ID
@@ -192,7 +192,7 @@ class ForumThreadController extends BaseController
             $this->error(Yii::t('podium/flash', 'Sorry! You do not have the required permission to perform this action.'));
             return $this->redirect(['forum/index']);
         }
-        
+
         $forum = Forum::find()->where(['id' => $fid, 'category_id' => $cid])->limit(1)->one();
         if (empty($forum)) {
             $this->error(Yii::t('podium/flash', 'Sorry! We can not find the forum you are looking for.'));
@@ -217,9 +217,9 @@ class ForumThreadController extends BaseController
                     if ($model->podiumNew()) {
                         $this->success(Yii::t('podium/flash', 'New thread has been created.'));
                         return $this->redirect([
-                            'forum/thread', 
+                            'forum/thread',
                             'cid' => $forum->category->id,
-                            'fid' => $forum->id, 
+                            'fid' => $forum->id,
                             'id' => $model->id,
                             'slug' => $model->slug
                         ]);

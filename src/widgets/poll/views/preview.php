@@ -13,8 +13,8 @@ use yii\helpers\Html;
     <li><small><span class="glyphicon glyphicon-eye-open"></span> <?= Yii::t('podium/view', 'Results visible before voting'); ?></small></li>
 <?php endif; ?>
     <li><small>
-        <span class="glyphicon glyphicon-calendar"></span> 
-        <?= Yii::t('podium/view', 'Poll ends at'); ?>: 
+        <span class="glyphicon glyphicon-calendar"></span>
+        <?= Yii::t('podium/view', 'Poll ends at'); ?>:
         <?= empty($model->pollEnd) ? '-' : Html::encode($model->pollEnd) . ' 23:59' ?>
     </small></li>
 </ul>

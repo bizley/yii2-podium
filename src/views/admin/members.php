@@ -86,12 +86,12 @@ $loggedId = User::loggedId();
                     if ($model->id !== $loggedId) {
                         if ($model->status !== User::STATUS_BANNED) {
                             return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ban-circle"></span>', ActionColumn::buttonOptions([
-                                'class' => 'btn btn-danger btn-xs', 
+                                'class' => 'btn btn-danger btn-xs',
                                 'title' => Yii::t('podium/view', 'Ban Member')
                             ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalBan', 'data-url' => $url]);
                         }
                         return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-ok-circle"></span>', ActionColumn::buttonOptions([
-                            'class' => 'btn btn-success btn-xs', 
+                            'class' => 'btn btn-success btn-xs',
                             'title' => Yii::t('podium/view', 'Unban Member')
                         ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalUnBan', 'data-url' => $url]);
                     }
@@ -100,7 +100,7 @@ $loggedId = User::loggedId();
                 'delete' => function($url, $model) use ($loggedId) {
                     if ($model->id !== $loggedId) {
                         return Html::tag('span', Html::tag('button', '<span class="glyphicon glyphicon-trash"></span>', ActionColumn::buttonOptions([
-                            'class' => 'btn btn-danger btn-xs', 
+                            'class' => 'btn btn-danger btn-xs',
                             'title' => Yii::t('podium/view', 'Delete Member')
                         ])), ['data-toggle' => 'modal', 'data-target' => '#podiumModalDelete', 'data-url' => $url]);
                     }
