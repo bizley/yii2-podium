@@ -109,7 +109,7 @@ class Installation extends Maintenance
             if (!$admin->save()) {
                 throw new Exception(VarDumper::dumpAsString($admin->errors));
             }
-            if (!$this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $this->module->adminId)) {
+            if (!$this->authManager->assign($this->authManager->getRole(Rbac::ROLE_ADMIN), $admin->id)) {
                 throw new Exception('Error during Administrator privileges setting!');
             }
             $transaction->commit();
