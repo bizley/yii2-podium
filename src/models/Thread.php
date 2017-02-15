@@ -574,14 +574,13 @@ class Thread extends ThreadActiveRecord
                 throw new Exception('User ID missing');
             }
             $updateBatch = [];
-            $threadsPrevMarked = Thread::find()->joinWith('threadView')
-                    ->where(['and',
-                        ['user_id' => $loggedId],
-                        ['or',
-                            new Expression('new_last_seen < new_post_at'),
-                            new Expression('edited_last_seen < edited_post_at')
-                        ],
+            $threadsPrevMarked = Thread::find()->joinWith(['threadView' => function ($q) use ($loggedId) {
+                $q->onCondition(['user_id' => $loggedId]);
+                $q->andWhere(['or',
+                        new Expression('new_last_seen < new_post_at'),
+                        new Expression('edited_last_seen < edited_post_at'),
                     ]);
+            }], false);
             $time = time();
             foreach ($threadsPrevMarked->each() as $thread) {
                 $updateBatch[] = $thread->id;
@@ -594,7 +593,10 @@ class Thread extends ThreadActiveRecord
             }
 
             $insertBatch = [];
-            $threadsNew = Thread::find()->joinWith('threadView')->where(['user_id' => null]);
+            $threadsNew = Thread::find()->joinWith(['threadView' => function ($q) use ($loggedId) {
+                $q->onCondition(['user_id' => $loggedId]);
+                $q->andWhere(['new_last_seen' => null]);
+            }], false);
             foreach ($threadsNew->each() as $thread) {
                 $insertBatch[] = [$loggedId, $thread->id, $time, $time];
             }
