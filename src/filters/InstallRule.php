@@ -29,7 +29,7 @@ class InstallRule extends PodiumRoleRule
             return !Podium::getInstance()->getInstalled();
         };
         $this->denyCallback = function () {
-            return Yii::$app->response->redirect(['install/run']);
+            return Yii::$app->response->redirect([Podium::getInstance()->prepareRoute('install/run')]);
         };
     }
 }

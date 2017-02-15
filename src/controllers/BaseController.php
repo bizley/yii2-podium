@@ -223,7 +223,7 @@ class BaseController extends YiiController
                 }
             }
         } catch (Exception $exc) {
-            Yii::$app->response->redirect(['install/run']);
+            Yii::$app->response->redirect([$this->module->prepareRoute('install/run')]);
         }
     }
 }

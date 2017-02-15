@@ -3,6 +3,7 @@
 namespace bizley\podium\filters;
 
 use bizley\podium\models\User;
+use bizley\podium\Podium;
 use Yii;
 
 /**
@@ -25,7 +26,7 @@ class PermissionDeniedRule extends PodiumRoleRule
     public $perm;
 
     /**
-     * @var array redirect route.
+     * @var string redirect route.
      */
     public $redirect;
 
@@ -40,7 +41,7 @@ class PermissionDeniedRule extends PodiumRoleRule
         };
         $this->denyCallback = function () {
             Yii::$app->session->addFlash('danger', Yii::t('podium/flash', 'You are not allowed to perform this action.'), true);
-            return Yii::$app->response->redirect($this->redirect);
+            return Yii::$app->response->redirect([Podium::getInstance()->prepareRoute($this->redirect)]);
         };
     }
 }

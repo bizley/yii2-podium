@@ -37,52 +37,52 @@ class AdminController extends AdminForumController
                     [
                         'actions' => ['ban'],
                         'perm' => Rbac::PERM_BAN_USER,
-                        'redirect' => ['admin/members']
+                        'redirect' => 'admin/members'
                     ],
                     [
                         'actions' => ['delete'],
                         'perm' => Rbac::PERM_DELETE_USER,
-                        'redirect' => ['admin/members']
+                        'redirect' => 'admin/members'
                     ],
                     [
                         'actions' => ['demote', 'promote'],
                         'perm' => Rbac::PERM_PROMOTE_USER,
-                        'redirect' => ['admin/members']
+                        'redirect' => 'admin/members'
                     ],
                     [
                         'actions' => ['mod'],
                         'perm' => Rbac::PERM_PROMOTE_USER,
-                        'redirect' => ['admin/mods']
+                        'redirect' => 'admin/mods'
                     ],
                     [
                         'actions' => ['delete-category'],
                         'perm' => Rbac::PERM_DELETE_CATEGORY,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'actions' => ['delete-forum'],
                         'perm' => Rbac::PERM_DELETE_FORUM,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'actions' => ['edit-category'],
                         'perm' => Rbac::PERM_UPDATE_CATEGORY,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'actions' => ['edit-forum'],
                         'perm' => Rbac::PERM_UPDATE_FORUM,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'actions' => ['new-category'],
                         'perm' => Rbac::PERM_CREATE_CATEGORY,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'actions' => ['new-forum'],
                         'perm' => Rbac::PERM_CREATE_FORUM,
-                        'redirect' => ['admin/categories']
+                        'redirect' => 'admin/categories'
                     ],
                     [
                         'class' => 'bizley\podium\filters\PodiumRoleRule',

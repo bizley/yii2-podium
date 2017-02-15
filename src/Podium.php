@@ -301,7 +301,7 @@ class Podium extends Module implements BootstrapInterface
      */
     public function prepareRoute($route)
     {
-        return '/' . $this->id . $route;
+        return '/' . $this->id . (substr($route, 0, 1) === '/' ? '' : '/') . $route;
     }
 
     /**
@@ -310,7 +310,7 @@ class Podium extends Module implements BootstrapInterface
      */
     public function goPodium()
     {
-        return Yii::$app->response->redirect([$this->prepareRoute('/forum/index')]);
+        return Yii::$app->response->redirect([$this->prepareRoute('forum/index')]);
     }
 
     /**
@@ -323,7 +323,7 @@ class Podium extends Module implements BootstrapInterface
         if ($this->userComponent !== true) {
             return null;
         }
-        return [$this->prepareRoute('/account/login')];
+        return [$this->prepareRoute('account/login')];
     }
 
     /**
@@ -336,7 +336,7 @@ class Podium extends Module implements BootstrapInterface
         if ($this->userComponent !== true) {
             return null;
         }
-        return [$this->prepareRoute('/account/register')];
+        return [$this->prepareRoute('account/register')];
     }
 
     private $_component;
