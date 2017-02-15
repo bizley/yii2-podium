@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'body' => '<strong><small>'
                         . Yii::t('podium/view', 'Post Preview')
                         . '</small></strong>:<hr>'
-                        . $model->post,
+                        . $model->parsedContent,
             'options' => ['class' => 'alert-info']
         ]); ?>
     </div>
