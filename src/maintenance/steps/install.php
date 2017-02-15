@@ -2,7 +2,7 @@
 
 /**
  * Podium installation steps.
- * v0.6
+ * v0.7
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  */
 
