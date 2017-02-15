@@ -163,7 +163,9 @@ class PodiumConfig extends Component
                 }
             }
         } catch (Exception $e) {
-            Log::error($e->getMessage(), null, __METHOD__);
+            if (Podium::getInstance()->getInstalled()) {
+                Log::error($e->getMessage(), null, __METHOD__);
+            }
         }
         return $stored;
     }
