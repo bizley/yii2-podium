@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "^2.0",
+        "yiisoft/yii2": "^2.0.8",
         "yiisoft/yii2-bootstrap": "^2.0",
         "bizley/quill": "^2.0",
         "cebe/yii2-gravatar": "^1.0",
