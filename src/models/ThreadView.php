@@ -23,17 +23,15 @@ class ThreadView extends ThreadViewActiveRecord
     public function search()
     {
         $loggedId = User::loggedId();
-        $query = Thread::find()->joinWith('threadView')->where(['or',
-            ['and',
-                ['user_id' => $loggedId],
-                new Expression('new_last_seen < new_post_at')
-            ],
-            ['and',
-                ['user_id' => $loggedId],
-                new Expression('edited_last_seen < edited_post_at')
-            ],
-            ['user_id' => null],
-        ]);
+        $query = Thread::find()->joinWith(['threadView' => function ($q) use ($loggedId) {
+            $q->onCondition(['user_id' => $loggedId]);
+            $q->andWhere(['or',
+                    new Expression('new_last_seen < new_post_at'),
+                    new Expression('edited_last_seen < edited_post_at'),
+                    ['new_last_seen' => null],
+                    ['edited_last_seen' => null],
+                ]);
+        }], false);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

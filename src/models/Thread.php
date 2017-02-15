@@ -66,6 +66,7 @@ class Thread extends ThreadActiveRecord
             $query->where(['forum_id' => (int)$forumId]);
         }
         if (!empty($filters)) {
+            $loggedId = User::loggedId();
             if (!empty($filters['pin']) && $filters['pin'] == 1) {
                 $query->andWhere(['pinned' => 1]);
             }
@@ -76,18 +77,22 @@ class Thread extends ThreadActiveRecord
                 $query->andWhere(['>=', 'posts', Podium::getInstance()->podiumConfig->get('hot_minimum')]);
             }
             if (!empty($filters['new']) && $filters['new'] == 1 && !Podium::getInstance()->user->isGuest) {
-                $query->joinWith(['threadView' => function ($q) {
-                    $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
-                            new Expression('new_last_seen < new_post_at')
-                        ], ['user_id' => null]]);
-                }]);
+                $query->joinWith(['threadView tvn' => function ($q) use ($loggedId) {
+                    $q->onCondition(['tvn.user_id' => $loggedId]);
+                    $q->andWhere(['or',
+                            new Expression('tvn.new_last_seen < new_post_at'),
+                            ['tvn.new_last_seen' => null]
+                        ]);
+                }], false);
             }
             if (!empty($filters['edit']) && $filters['edit'] == 1 && !Podium::getInstance()->user->isGuest) {
-                $query->joinWith(['threadView' => function ($q) {
-                    $q->andWhere(['or', ['and', ['user_id' => User::loggedId()],
-                            new Expression('edited_last_seen < edited_post_at')
-                        ], ['user_id' => null]]);
-                }]);
+                $query->joinWith(['threadView tve' => function ($q) use ($loggedId) {
+                    $q->onCondition(['tve.user_id' => $loggedId]);
+                    $q->andWhere(['or',
+                            new Expression('tve.edited_last_seen < edited_post_at'),
+                            ['tve.edited_last_seen' => null]
+                        ]);
+                }], false);
             }
         }
 
