@@ -248,7 +248,7 @@ class ForumController extends ForumPostController
         ];
 
         try {
-            $count = (new Query())->from(Post::tableName())->where([
+            $count = (new Query)->from(Post::tableName())->where([
                     'and',
                     ['thread_id' => $post->thread_id],
                     ['<', 'id', $post->id]
@@ -291,9 +291,9 @@ class ForumController extends ForumPostController
             $thread->forum->description ?: $thread->forum->category->description
         );
 
-        $dataProvider = (new Post())->search($thread->forum->id, $thread->id);
-        $model = new Post();
+        $model = new Post;
         $model->subscribe = 1;
+        $dataProvider = $model->search($thread->forum->id, $thread->id);
 
         return $this->render('thread', [
             'model' => $model,
@@ -404,55 +404,69 @@ class ForumController extends ForumPostController
      */
     public function actionSearch()
     {
+        $searchModel = new Vocabulary;
+
+        if (!$searchModel->load(Yii::$app->request->get(), '')) {
+            return $this->redirect(['forum/advanced-search']);
+        }
+
+        return $this->render('search', [
+            'dataProvider' => $searchModel->search(),
+            'query' => $searchModel->query,
+        ]);
+    }
+
+    /**
+     * Advanced searching through the forum.
+     * @return string
+     * @since 0.8
+     */
+    public function actionAdvancedSearch()
+    {
         $dataProvider = null;
-        $searchModel = new Vocabulary();
-
-        if ($searchModel->load(Yii::$app->request->get(), '')) {
-            return $this->render('search', [
-                'dataProvider' => $searchModel->search(),
-                'query' => $searchModel->query,
-            ]);
-        }
-
-        $model = new SearchForm();
-        $model->match = 'all';
-        $model->type = 'posts';
-        $model->display = 'topics';
-
-        $categories = Category::find()->orderBy(['name' => SORT_ASC]);
-        $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
         $list = [];
-        foreach ($categories->each() as $cat) {
-            $catlist = [];
-            foreach ($forums->each() as $for) {
-                if ($for->category_id == $cat->id) {
-                    $catlist[$for->id] = '|-- ' . Html::encode($for->name);
-                }
-            }
-            $list[Html::encode($cat->name)] = $catlist;
-        }
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if (empty($model->query) && empty($model->author)) {
-                $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
-            } else {
-                $stop = false;
-                if (!empty($model->query)) {
-                    $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
-                    $checkedWords = [];
-                    foreach ($words as $word) {
-                        if (mb_strlen($word, 'UTF-8') > 2) {
-                            $checkedWords[] = $word;
+        $model = new SearchForm;
+        $model->setParams();
+
+        if ($model->nextPage) {
+            $dataProvider = $model->searchAdvanced();
+        } else {
+            $categories = Category::find()->orderBy(['name' => SORT_ASC]);
+            $forums = Forum::find()->orderBy(['name' => SORT_ASC]);
+
+            foreach ($categories->each() as $cat) {
+                $catlist = [];
+                foreach ($forums->each() as $for) {
+                    if ($for->category_id == $cat->id) {
+                        $catlist[$for->id] = '|-- ' . Html::encode($for->name);
+                    }
+                }
+                $list[Html::encode($cat->name)] = $catlist;
+            }
+
+            if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+                if (empty($model->query) && empty($model->author)) {
+                    $this->error(Yii::t('podium/flash', "You have to enter words or author's name first."));
+                } else {
+                    $stop = false;
+                    if (!empty($model->query)) {
+                        $words = explode(' ', preg_replace('/\s+/', ' ', $model->query));
+                        $checkedWords = [];
+                        foreach ($words as $word) {
+                            if (mb_strlen($word, 'UTF-8') > 2) {
+                                $checkedWords[] = $word;
+                            }
+                        }
+                        $model->query = implode(' ', $checkedWords);
+                        if (mb_strlen($model->query, 'UTF-8') < 3) {
+                            $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
+                            $stop = true;
                         }
                     }
-                    $model->query = implode(' ', $checkedWords);
-                    if (mb_strlen($model->query, 'UTF-8') < 3) {
-                        $this->error(Yii::t('podium/flash', 'You have to enter word at least 3 characters long.'));
-                        $stop = true;
+                    if (!$stop) {
+                        $dataProvider = $model->searchAdvanced();
                     }
-                }
-                if (!$stop) {
-                    $dataProvider = $model->searchAdvanced();
                 }
             }
         }

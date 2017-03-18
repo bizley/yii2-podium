@@ -30,7 +30,7 @@ class Vocabulary extends VocabularyActiveRecord
                 $q->where([Forum::tableName() . '.visible' => 1]);
             }]);
         }
-        $query->groupBy(['post_id']);
+        $query->groupBy(['post_id', 'word_id']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

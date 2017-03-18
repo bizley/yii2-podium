@@ -8,6 +8,7 @@ use bizley\podium\models\Post;
 use bizley\podium\models\Thread;
 use bizley\podium\models\Vocabulary;
 use bizley\podium\Podium;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -75,6 +76,12 @@ class SearchForm extends Model
     public $display;
 
     /**
+     * @var bool Whether the next search page is being loaded
+     * @since 0.8
+     */
+    public $nextPage = false;
+
+    /**
      * @inheritdoc
      */
     public function rules()
@@ -94,6 +101,33 @@ class SearchForm extends Model
             [['forums'], 'each', 'rule' => ['integer']],
             [['type', 'display'], 'in', 'range' => ['posts', 'topics']],
         ];
+    }
+
+    /**
+     * Sets search parameters based on the session.
+     * @since 0.8
+     */
+    public function setParams()
+    {
+        if (Yii::$app->request->get('page') && Yii::$app->session->has('forum-search')) {
+            $session = Yii::$app->session->get('forum-search');
+            $this->query = $session['query'];
+            $this->match = $session['match'];
+            $this->author = $session['author'];
+            $this->dateFrom = $session['dateFrom'];
+            $this->dateFromStamp = $session['dateFromStamp'];
+            $this->dateTo = $session['dateTo'];
+            $this->dateToStamp = $session['dateToStamp'];
+            $this->forums = $session['forums'];
+            $this->type = $session['type'];
+            $this->display = $session['display'];
+            $this->nextPage = true;
+        } else {
+            $this->match = 'all';
+            $this->type = 'posts';
+            $this->display = 'topics';
+            $this->nextPage = false;
+        }
     }
 
     /**
@@ -232,6 +266,20 @@ class SearchForm extends Model
      */
     public function searchAdvanced()
     {
+        if (!$this->nextPage) {
+            Yii::$app->session->set('forum-search', [
+                'query' => $this->query,
+                'match' => $this->match,
+                'author' => $this->author,
+                'dateFrom' => $this->dateFrom,
+                'dateFromStamp' => $this->dateFromStamp,
+                'dateTo' => $this->dateTo,
+                'dateToStamp' => $this->dateToStamp,
+                'forums' => $this->forums,
+                'type' => $this->type,
+                'display' => $this->display
+            ]);
+        }
         if ($this->type == 'topics') {
             return $this->searchTopics();
         }
