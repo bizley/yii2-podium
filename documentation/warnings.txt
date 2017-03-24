@@ -1,0 +1,122 @@
+Array
+(
+    [0] => Array
+        (
+            [line] => 21
+            [file] => vendor/bizley/yii2-podium/src/PodiumComponent.php
+            [message] => No short description for element '$module'
+        )
+
+    [1] => Array
+        (
+            [line] => 36
+            [file] => vendor/bizley/yii2-podium/src/actions/AdminAction.php
+            [message] => No short description for element '$restrictMessage'
+        )
+
+    [2] => Array
+        (
+            [line] => 41
+            [file] => vendor/bizley/yii2-podium/src/actions/AdminAction.php
+            [message] => No short description for element '$successMessage'
+        )
+
+    [3] => Array
+        (
+            [line] => 46
+            [file] => vendor/bizley/yii2-podium/src/actions/AdminAction.php
+            [message] => No short description for element '$errorMessage'
+        )
+
+    [4] => Array
+        (
+            [line] => 25
+            [file] => vendor/bizley/yii2-podium/src/actions/MessageAction.php
+            [message] => No short description for element '$redirectRoute'
+        )
+
+    [5] => Array
+        (
+            [line] => 27
+            [file] => vendor/bizley/yii2-podium/src/models/db/VocabularyActiveRecord.php
+            [message] => No short description for element '$thread_id'
+        )
+
+    [6] => Array
+        (
+            [line] => 32
+            [file] => vendor/bizley/yii2-podium/src/models/db/VocabularyActiveRecord.php
+            [message] => No short description for element '$post_id'
+        )
+
+    [7] => Array
+        (
+            [line] => 15
+            [file] => vendor/bizley/yii2-podium/src/rbac/AuthorRule.php
+            [message] => No docblock for element '$name'
+        )
+
+    [8] => Array
+        (
+            [line] => 15
+            [file] => vendor/bizley/yii2-podium/src/rbac/AuthorRule.php
+            [message] => No short description for element '$name'
+        )
+
+    [9] => Array
+        (
+            [line] => 15
+            [file] => vendor/bizley/yii2-podium/src/rbac/ModeratorRule.php
+            [message] => No docblock for element '$name'
+        )
+
+    [10] => Array
+        (
+            [line] => 15
+            [file] => vendor/bizley/yii2-podium/src/rbac/ModeratorRule.php
+            [message] => No short description for element '$name'
+        )
+
+    [11] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/services/Sorter.php
+            [message] => No short description for element '$target'
+        )
+
+    [12] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/services/Sorter.php
+            [message] => No short description for element '$query'
+        )
+
+    [13] => Array
+        (
+            [line] => 56
+            [file] => vendor/bizley/yii2-podium/src/widgets/Alert.php
+            [message] => No docblock for element 'init'
+        )
+
+    [14] => Array
+        (
+            [line] => 21
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorBasic.php
+            [message] => No short description for element '$editor'
+        )
+
+    [15] => Array
+        (
+            [line] => 21
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorFull.php
+            [message] => No short description for element '$editor'
+        )
+
+    [16] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/poll/Poll.php
+            [message] => No short description for element '$model'
+        )
+
+)
