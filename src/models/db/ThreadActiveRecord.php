@@ -11,8 +11,8 @@ use bizley\podium\models\Subscription;
 use bizley\podium\models\ThreadView;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
+use bizley\podium\slugs\PodiumSluggableBehavior;
 use Yii;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\HtmlPurifier;
 
@@ -101,8 +101,9 @@ class ThreadActiveRecord extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class' => Podium::getInstance()->slugGenerator,
                 'attribute' => 'name',
+                'type' => PodiumSluggableBehavior::THREAD
             ],
         ];
     }

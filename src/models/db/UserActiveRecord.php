@@ -10,10 +10,10 @@ use bizley\podium\models\Meta;
 use bizley\podium\models\Mod;
 use bizley\podium\models\User;
 use bizley\podium\Podium;
+use bizley\podium\slugs\PodiumSluggableBehavior;
 use Exception;
 use Yii;
 use yii\base\NotSupportedException;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\web\IdentityInterface;
@@ -69,8 +69,9 @@ abstract class UserActiveRecord extends ActiveRecord implements IdentityInterfac
         return [
             TimestampBehavior::className(),
             [
-                'class'     => SluggableBehavior::className(),
+                'class' => Podium::getInstance()->slugGenerator,
                 'attribute' => 'username',
+                'type' => PodiumSluggableBehavior::USER
             ],
         ];
     }
