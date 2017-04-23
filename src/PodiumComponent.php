@@ -20,7 +20,6 @@ class PodiumComponent extends Component
      */
     public $module;
 
-
     /**
      * Allows direct reference to parent module.
      * @param Module $module
@@ -34,6 +33,7 @@ class PodiumComponent extends Component
 
     /**
      * Registers required components.
+     * @throws InvalidConfigException
      */
     public function registerComponents()
     {
@@ -47,6 +47,7 @@ class PodiumComponent extends Component
 
     /**
      * Registers required console components.
+     * @throws InvalidConfigException
      */
     public function registerConsoleComponents()
     {
@@ -58,7 +59,7 @@ class PodiumComponent extends Component
     /**
      * Returns instance of component of given name.
      * @param string $name
-     * @return Component
+     * @return object component of the specified ID
      * @throws InvalidConfigException
      */
     public function getComponent($name)
@@ -72,13 +73,12 @@ class PodiumComponent extends Component
 
     /**
      * Registers user authorization.
+     * @throws InvalidConfigException
      */
     public function registerAuthorization()
     {
-        if ($this->module->rbacComponent !== true
-                && !is_string($this->module->rbacComponent)
-                && !is_array($this->module->rbacComponent)) {
-            throw InvalidConfigException('Invalid value for the rbacComponent parameter.');
+        if ($this->module->rbacComponent !== true && !is_string($this->module->rbacComponent) && !is_array($this->module->rbacComponent)) {
+            throw new InvalidConfigException('Invalid value for the rbacComponent parameter.');
         }
         if (is_string($this->module->rbacComponent)) {
             return;
@@ -98,13 +98,12 @@ class PodiumComponent extends Component
 
     /**
      * Registers formatter with default time zone.
+     * @throws InvalidConfigException
      */
     public function registerFormatter()
     {
-        if ($this->module->formatterComponent !== true
-                && !is_string($this->module->formatterComponent)
-                && !is_array($this->module->formatterComponent)) {
-            throw InvalidConfigException('Invalid value for the formatterComponent parameter.');
+        if ($this->module->formatterComponent !== true && !is_string($this->module->formatterComponent) && !is_array($this->module->formatterComponent)) {
+            throw new InvalidConfigException('Invalid value for the formatterComponent parameter.');
         }
         if (is_string($this->module->formatterComponent)) {
             return;
@@ -119,13 +118,12 @@ class PodiumComponent extends Component
 
     /**
      * Registers user identity.
+     * @throws InvalidConfigException
      */
     public function registerIdentity()
     {
-        if ($this->module->userComponent !== true
-                && !is_string($this->module->userComponent)
-                && !is_array($this->module->userComponent)) {
-            throw InvalidConfigException('Invalid value for the userComponent parameter.');
+        if ($this->module->userComponent !== true && !is_string($this->module->userComponent) && !is_array($this->module->userComponent)) {
+            throw new InvalidConfigException('Invalid value for the userComponent parameter.');
         }
         if (is_string($this->module->userComponent)) {
             return;
@@ -160,12 +158,12 @@ class PodiumComponent extends Component
 
     /**
      * Registers DB connection.
+     * @throws InvalidConfigException
      */
     public function registerDbConnection()
     {
-        if (!is_string($this->module->dbComponent)
-                && !is_array($this->module->dbComponent)) {
-            throw InvalidConfigException('Invalid value for the dbComponent parameter.');
+        if (!is_string($this->module->dbComponent) && !is_array($this->module->dbComponent)) {
+            throw new InvalidConfigException('Invalid value for the dbComponent parameter.');
         }
         if (is_array($this->module->dbComponent)) {
             $this->module->set('podium_db', $this->module->dbComponent);
@@ -174,13 +172,12 @@ class PodiumComponent extends Component
 
     /**
      * Registers cache.
+     * @throws InvalidConfigException
      */
     public function registerCache()
     {
-        if ($this->module->cacheComponent !== false
-                && !is_string($this->module->cacheComponent)
-                && !is_array($this->module->cacheComponent)) {
-            throw InvalidConfigException('Invalid value for the cacheComponent parameter.');
+        if ($this->module->cacheComponent !== false && !is_string($this->module->cacheComponent) && !is_array($this->module->cacheComponent)) {
+            throw new InvalidConfigException('Invalid value for the cacheComponent parameter.');
         }
         if (is_string($this->module->cacheComponent)) {
             return;
