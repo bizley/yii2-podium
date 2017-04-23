@@ -33,13 +33,14 @@ if (Podium::getInstance()->userComponent === true) {
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <?= $form->field($model, 'username')->textInput([
+                            <?= $form->field($model, 'username')->textInput(array_merge([
                                 'data-container' => 'body',
                                 'data-toggle' => 'popover',
                                 'data-placement' => 'right',
                                 'data-content' => Yii::t('podium/view', 'Username must start with a letter, contain only letters, digits and underscores, and be at least 3 characters long.'),
                                 'data-trigger' => 'focus'
-                            ])->label(Yii::t('podium/view', 'Username')) ?>
+                            ], Podium::getInstance()->userComponent !== true && Podium::getInstance()->userNameField !== null ? ['disabled' => true] : []))
+                            ->label(Yii::t('podium/view', 'Username')) ?>
                         </div>
                     </div>
                     <div class="row">

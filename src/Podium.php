@@ -5,8 +5,6 @@ namespace bizley\podium;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Maintenance;
 use bizley\podium\models\Activity;
-use bizley\podium\PodiumCache;
-use bizley\podium\PodiumConfig;
 use bizley\podium\slugs\PodiumSluggableBehavior;
 use Yii;
 use yii\base\Action;
@@ -14,6 +12,7 @@ use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;
 use yii\base\Module;
+use yii\caching\Cache;
 use yii\console\Application as ConsoleApplication;
 use yii\db\Connection;
 use yii\i18n\Formatter;
@@ -59,22 +58,15 @@ use yii\web\User;
 class Podium extends Module implements BootstrapInterface
 {
     /**
-     * @var string Module version.
-     */
-    protected $_version = '0.7';
-
-    /**
      * @var int Admin account ID if $userComponent is not set to true.
      */
     public $adminId;
 
     /**
-     * @var array the list of IPs that are allowed to access installation mode
-     * of this module. Each array element represents a single IP filter which
-     * can be either an IP address or an address with wildcard
+     * @var array List of IPs that are allowed to access installation mode of this module.
+     * Each array element represents a single IP filter which can be either an IP address or an address with wildcard
      * (e.g. `192.168.0.*`) to represent a network segment.
-     * The default value is `['127.0.0.1', '::1']`, which means the module can
-     * only be accessed by localhost.
+     * The default value is `['127.0.0.1', '::1']`, which means the module can only be accessed by localhost.
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
 
@@ -83,8 +75,7 @@ class Podium extends Module implements BootstrapInterface
      * Since version 0.5 it can be:
      * - true for own Podium component configuration,
      * - string with inherited component ID,
-     * - array with custom configuration (look at registerIdentity() to see
-     *   what Podium uses).
+     * - array with custom configuration (look at registerIdentity() to see what Podium uses).
      */
     public $userComponent = true;
 
@@ -93,8 +84,7 @@ class Podium extends Module implements BootstrapInterface
      * Since version 0.5 it can be:
      * - true for own Podium component configuration,
      * - string with inherited component ID,
-     * - array with custom configuration (look at registerAuthorization() to
-     *   see what Podium uses).
+     * - array with custom configuration (look at registerAuthorization() to see what Podium uses).
      */
     public $rbacComponent = true;
 
@@ -103,8 +93,7 @@ class Podium extends Module implements BootstrapInterface
      * It can be:
      * - true for own Podium component configuration,
      * - string with inherited component ID,
-     * - array with custom configuration (look at registerFormatter() to
-     *   see what Podium uses).
+     * - array with custom configuration (look at registerFormatter() to see what Podium uses).
      * @since 0.5
      */
     public $formatterComponent = true;
@@ -129,11 +118,19 @@ class Podium extends Module implements BootstrapInterface
     public $cacheComponent = false;
 
     /**
-     * @var string Module inherited user password_hash field.
-     * This will be used for profile updating confirmation.
+     * @var string Module inherited user password_hash field name.
+     * This is used for profile updating confirmation.
      * Default value is 'password_hash'.
      */
     public $userPasswordField = 'password_hash';
+
+    /**
+     * @var string Module inherited username field name.
+     * When provided value of this field is used as default Podium nickname and can not be changed from within Podium.
+     * If you want to use it and your User name's model field is 'username' set userNameField to 'username'.
+     * @since 0.8
+     */
+    public $userNameField;
 
     /**
      * @var string Default route for Podium.
@@ -148,22 +145,20 @@ class Podium extends Module implements BootstrapInterface
     public $secureIdentityCookie = false;
 
     /**
-     * @var callable Callback that will be called to determine the type of
-     * Podium access for user.
+     * @var callable Callback that will be called to determine the type of Podium access for user.
      * The signature of the callback should be as follows:
      *      function ($user)
      * where $user is the user component.
-     * The callback should return an integer value indicating access type.
-     *  1 => member access
-     *  0 => guest access
-     * -1 => no access
+     * The callback should return an integer value indicating access type:
+     *  1 => member access,
+     *  0 => guest access,
+     * -1 => no access.
      * @since 0.6
      */
     public $accessChecker;
 
     /**
-     * @var callable Callback that will be called in case Podium access has been
-     * denied for user.
+     * @var callable Callback that will be called in case Podium access has been denied for user.
      * The signature of the callback should be as follows:
      *      function ($user)
      * where $user is the user component.
@@ -180,9 +175,18 @@ class Podium extends Module implements BootstrapInterface
     public $slugGenerator;
 
     /**
+     * @inheritdoc
+     */
+    protected function defaultVersion()
+    {
+        return '0.7';
+    }
+
+    /**
      * Initializes the module for Web application.
      * Sets Podium alias (@podium) and layout.
      * Registers user identity, authorization, translations, formatter, db, and cache.
+     * @throws InvalidConfigException
      */
     public function init()
     {
@@ -217,17 +221,16 @@ class Podium extends Module implements BootstrapInterface
     /**
      * Registers user activity after every action.
      * @see Activity::add()
-     * @param Action $action the action just executed.
-     * @param mixed $result the action return result.
-     * @return mixed the processed action result.
+     * @param Action $action the action just executed
+     * @param mixed $result the action return result
+     * @return mixed the processed action result
      */
     public function afterAction($action, $result)
     {
-        $parentResult = parent::afterAction($action, $result);
-        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'level-up'])) {
+        if (Yii::$app instanceof WebApplication && !in_array($action->id, ['import', 'run', 'update', 'level-up'], true)) {
             Activity::add();
         }
-        return $parentResult;
+        return parent::afterAction($action, $result);
     }
 
     /**
@@ -239,7 +242,7 @@ class Podium extends Module implements BootstrapInterface
     {
         $app->urlManager->addRules([new GroupUrlRule([
                 'prefix' => $this->id,
-                'rules' => require(__DIR__ . '/url-rules.php'),
+                'rules' => require __DIR__ . '/url-rules.php',
             ])], true);
     }
 
@@ -250,7 +253,7 @@ class Podium extends Module implements BootstrapInterface
      */
     protected function setPodiumLogTarget($app)
     {
-        $dbTarget = new DbTarget();
+        $dbTarget = new DbTarget;
         $dbTarget->logTable = '{{%podium_log}}';
         $dbTarget->categories = ['bizley\podium\*'];
         $dbTarget->logVars = [];
@@ -267,7 +270,7 @@ class Podium extends Module implements BootstrapInterface
     public function getPodiumCache()
     {
         if ($this->_cache === null) {
-            $this->_cache = new PodiumCache();
+            $this->_cache = new PodiumCache;
         }
         return $this->_cache;
     }
@@ -282,7 +285,7 @@ class Podium extends Module implements BootstrapInterface
     public function getPodiumConfig()
     {
         if ($this->_config === null) {
-            $this->_config = new PodiumConfig();
+            $this->_config = new PodiumConfig;
         }
         return $this->_config;
     }
@@ -294,15 +297,6 @@ class Podium extends Module implements BootstrapInterface
     public function getInstalled()
     {
         return Maintenance::check();
-    }
-
-    /**
-     * Returns Podium version.
-     * @return string
-     */
-    public function getVersion()
-    {
-        return $this->_version;
     }
 
     /**

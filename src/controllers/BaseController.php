@@ -10,8 +10,10 @@ use bizley\podium\traits\FlashTrait;
 use Exception;
 use Yii;
 use yii\base\Action;
+use yii\base\InvalidConfigException;
 use yii\helpers\Html;
 use yii\web\Controller as YiiController;
+use yii\web\Response;
 
 /**
  * Podium base controller
@@ -21,6 +23,8 @@ use yii\web\Controller as YiiController;
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.1
+ *
+ * @property \bizley\podium\Podium $module
  */
 class BaseController extends YiiController
 {
@@ -54,6 +58,7 @@ class BaseController extends YiiController
      * Redirects all users except administrators (if this mode is on).
      * Adds warning about missing email.
      * @param Action $action the action to be executed.
+     * @return bool|Response
      */
     public function beforeAction($action)
     {
@@ -102,7 +107,7 @@ class BaseController extends YiiController
      * Performs maintenance check.
      * @param Action $action the action to be executed.
      * @param array $warnings Flash warnings
-     * @return bool
+     * @return bool|Response
      * @since 0.2
      */
     public function maintenanceCheck($action, $warnings)
@@ -115,7 +120,7 @@ class BaseController extends YiiController
         }
         if ($warnings) {
             foreach ($warnings as $warning) {
-                if ($warning == static::warnings()['maintenance']) {
+                if ($warning === static::warnings()['maintenance']) {
                     if (!User::can(Rbac::ROLE_ADMIN)) {
                         return $this->redirect(['forum/maintenance']);
                     }
@@ -140,7 +145,7 @@ class BaseController extends YiiController
     {
         if ($warnings) {
             foreach ($warnings as $warning) {
-                if ($warning == static::warnings()['email']) {
+                if ($warning === static::warnings()['email']) {
                     return false;
                 }
             }
@@ -165,10 +170,10 @@ class BaseController extends YiiController
         }
         if ($warnings) {
             foreach ($warnings as $warning) {
-                if ($warning == static::warnings()['old_version']) {
+                if ($warning === static::warnings()['old_version']) {
                     return false;
                 }
-                if ($warning == static::warnings()['new_version']) {
+                if ($warning === static::warnings()['new_version']) {
                     return false;
                 }
             }
@@ -177,9 +182,9 @@ class BaseController extends YiiController
             explode('.', $this->module->version),
             explode('.', $this->module->podiumConfig->get('version'))
         );
-        if ($result == '>') {
+        if ($result === '>') {
             $this->warning(static::warnings()['old_version'], false);
-        } elseif ($result == '<') {
+        } elseif ($result === '<') {
             $this->warning(static::warnings()['new_version'], false);
         }
         return false;
@@ -207,13 +212,17 @@ class BaseController extends YiiController
 
             if (!$this->module->user->isGuest) {
                 $user = User::findMe();
-                if ($this->module->userComponent !== true && empty($user) && $this->accessType === 1) {
-                    if (!User::createInheritedAccount()) {
-                        throw new Exception('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
+                if ($this->module->userComponent !== true && $this->accessType === 1) {
+                    if (empty($user)) {
+                        if (!User::createInheritedAccount()) {
+                            throw new InvalidConfigException('There was an error while creating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
+                        }
+                        $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
+                            'link' => Html::a(Yii::t('podium/view', 'Profile'), ['profile/details'])
+                        ]));
+                    } elseif (!User::updateInheritedAccount()) {
+                        throw new InvalidConfigException('There was an error while updating inherited user account. Podium can not run with the current configuration. Please contact administrator about this problem.');
                     }
-                    $this->success(Yii::t('podium/flash', 'Hey! Your new forum account has just been automatically created! Go to {link} to complement it.', [
-                        'link' => Html::a(Yii::t('podium/view', 'Profile'), ['profile/details'])
-                    ]));
                 }
                 if ($user && $user->status == User::STATUS_BANNED) {
                     return $this->redirect(['forum/ban']);

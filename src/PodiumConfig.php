@@ -4,7 +4,6 @@ namespace bizley\podium;
 
 use bizley\podium\db\Query;
 use bizley\podium\log\Log;
-use bizley\podium\Podium;
 use Exception;
 use yii\base\Component;
 use yii\caching\Cache;
@@ -12,8 +11,7 @@ use yii\caching\Cache;
 /**
  * Podium configuration component.
  * Handles the module configuration.
- * Every default configuration value is saved in database first time when
- * administrator saves Podium settings.
+ * Every default configuration value is saved in database first time when administrator saves Podium settings.
  *
  * @author Paweł Bizley Brzozowski <pawel@positive.codes>
  * @since 0.5
@@ -90,7 +88,7 @@ class PodiumConfig extends Component
 
     /**
      * Returns Podium cache instance.
-     * @return Cache
+     * @return PodiumCache
      * @since 0.5
      */
     public function getCache()
@@ -156,7 +154,7 @@ class PodiumConfig extends Component
     {
         $stored = [];
         try {
-            $query = (new Query())->from(static::tableName())->all();
+            $query = (new Query)->from(static::tableName())->all();
             if (!empty($query)) {
                 foreach ($query as $setting) {
                     $stored[$setting['name']] = $setting['value'];
@@ -199,7 +197,7 @@ class PodiumConfig extends Component
                     }
                     $value = $this->defaults[$name];
                 }
-                if ((new Query())->from(static::tableName())->where(['name' => $name])->exists()) {
+                if ((new Query)->from(static::tableName())->where(['name' => $name])->exists()) {
                     Podium::getInstance()->db->createCommand()->update(
                         static::tableName(), ['value' => $value], ['name' => $name]
                     )->execute();
