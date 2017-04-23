@@ -172,12 +172,12 @@ class Podium extends Module implements BootstrapInterface
     public $denyCallback;
 
     /**
-     * @var slugGenerator Name of implementation of PodiumSluggableBehavior.
-     * Extend your class from PodiumSluggableBehavior to have access to the type of
-     * slug being generated.
-     * @since x.x
+     * @var string Qualified name of class responsible for generating Podium slugs.
+     * You can implement your own generator by extending bizley\podium\slugs\PodiumSluggableBehavior -
+     * see this class for details.
+     * @since 0.8
      */
-    public $slugGenerator = false;
+    public $slugGenerator;
 
     /**
      * Initializes the module for Web application.
@@ -191,13 +191,12 @@ class Podium extends Module implements BootstrapInterface
         if (Yii::$app instanceof WebApplication) {
             $this->podiumComponent->registerComponents();
             $this->layout = 'main';
+            if (!is_string($this->slugGenerator)) {
+                $this->slugGenerator = PodiumSluggableBehavior::className();
+            }
         } else {
             $this->podiumComponent->registerConsoleComponents();
         }
-        if (!is_string($this->slugGenerator) || $this->slugGenerator != '') {
-            $this->slugGenerator = PodiumSluggableBehavior::className();
-        }
-
     }
 
     /**
