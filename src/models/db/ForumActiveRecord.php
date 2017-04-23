@@ -5,7 +5,8 @@ namespace bizley\podium\models\db;
 use bizley\podium\db\ActiveRecord;
 use bizley\podium\models\Category;
 use bizley\podium\models\Post;
-use yii\behaviors\SluggableBehavior;
+use bizley\podium\Podium;
+use bizley\podium\slugs\PodiumSluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\HtmlPurifier;
@@ -46,8 +47,9 @@ class ForumActiveRecord extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class' => Podium::getInstance()->slugGenerator,
                 'attribute' => 'name',
+                'type' => PodiumSluggableBehavior::FORUM
             ]
         ];
     }

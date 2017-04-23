@@ -3,9 +3,10 @@
 namespace bizley\podium\models\db;
 
 use bizley\podium\db\ActiveRecord;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\HtmlPurifier;
+use bizley\podium\Podium;
+use bizley\podium\slugs\PodiumSluggableBehavior;
 
 /**
  * Category model
@@ -41,8 +42,9 @@ class CategoryActiveRecord extends ActiveRecord
         return [
             TimestampBehavior::className(),
             [
-                'class' => SluggableBehavior::className(),
+                'class' => Podium::getInstance()->slugGenerator,
                 'attribute' => 'name',
+                'type' => PodiumSluggableBehavior::CATEGORY
             ]
         ];
     }

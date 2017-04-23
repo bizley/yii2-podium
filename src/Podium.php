@@ -5,6 +5,7 @@ namespace bizley\podium;
 use bizley\podium\log\DbTarget;
 use bizley\podium\maintenance\Maintenance;
 use bizley\podium\models\Activity;
+use bizley\podium\slugs\PodiumSluggableBehavior;
 use Yii;
 use yii\base\Action;
 use yii\base\Application;
@@ -52,6 +53,7 @@ use yii\web\User;
  * @property PodiumComponent $podiumComponent
  * @property array $loginUrl
  * @property array $registerUrl
+ * @property string $slugGenerator
  */
 class Podium extends Module implements BootstrapInterface
 {
@@ -165,6 +167,14 @@ class Podium extends Module implements BootstrapInterface
     public $denyCallback;
 
     /**
+     * @var string Qualified name of class responsible for generating Podium slugs.
+     * You can implement your own generator by extending bizley\podium\slugs\PodiumSluggableBehavior -
+     * see this class for details.
+     * @since 0.8
+     */
+    public $slugGenerator;
+
+    /**
      * @inheritdoc
      */
     protected function defaultVersion()
@@ -185,6 +195,9 @@ class Podium extends Module implements BootstrapInterface
         if (Yii::$app instanceof WebApplication) {
             $this->podiumComponent->registerComponents();
             $this->layout = 'main';
+            if (!is_string($this->slugGenerator)) {
+                $this->slugGenerator = PodiumSluggableBehavior::className();
+            }
         } else {
             $this->podiumComponent->registerConsoleComponents();
         }
