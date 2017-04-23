@@ -22,7 +22,6 @@ use yii\web\Application as WebApplication;
 use yii\web\GroupUrlRule;
 use yii\web\Response;
 use yii\web\User;
-use yii\behaviors\SluggableBehavior;
 
 /**
  * Podium Module
