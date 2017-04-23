@@ -12,6 +12,7 @@ use bizley\podium\rbac\Rbac;
 use Exception;
 use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
@@ -119,7 +120,7 @@ class User extends UserActiveRecord
             'passwordChange' => ['password', 'passwordRepeat'],
             'register' => ['username', 'email', 'password', 'passwordRepeat'],
             'account' => ['username', 'new_email', 'newPassword', 'newPasswordRepeat', 'currentPassword'],
-            'accountInherit' => ['username', 'new_email', 'currentPassword'],
+            'accountInherit' => array_merge(Podium::getInstance()->userNameField !== null ? [] : ['username'], ['new_email', 'currentPassword']),
         ];
         if (Podium::getInstance()->podiumConfig->get('use_captcha')) {
             $scenarios['register'][] = 'captcha';
@@ -201,7 +202,7 @@ class User extends UserActiveRecord
      */
     public function getPodiumName()
     {
-        return $this->username ? $this->username : 'user_' . $this->id;
+        return $this->username ?: 'user_' . $this->id;
     }
 
     /**
@@ -220,7 +221,7 @@ class User extends UserActiveRecord
      */
     public function getPodiumSlug()
     {
-        return $this->slug ? $this->slug : 'forum-' . $this->id;
+        return $this->slug ?: 'forum-' . $this->id;
     }
 
     /**
@@ -241,7 +242,7 @@ class User extends UserActiveRecord
     {
         $cache = Podium::getInstance()->podiumCache->getElement('user.postscount', $id);
         if ($cache === false) {
-            $cache = (new Query())->from(Post::tableName())->where(['author_id' => $id])->count();
+            $cache = (new Query)->from(Post::tableName())->where(['author_id' => $id])->count();
             Podium::getInstance()->podiumCache->setElement('user.postscount', $id, $cache);
         }
         return $cache;
@@ -265,7 +266,7 @@ class User extends UserActiveRecord
     {
         $cache = Podium::getInstance()->podiumCache->getElement('user.threadscount', $id);
         if ($cache === false) {
-            $cache = (new Query())->from(Thread::tableName())->where(['author_id' => $id])->count();
+            $cache = (new Query)->from(Thread::tableName())->where(['author_id' => $id])->count();
             Podium::getInstance()->podiumCache->setElement('user.threadscount', $id, $cache);
         }
         return $cache;
@@ -317,7 +318,7 @@ class User extends UserActiveRecord
     {
         $cache = Podium::getInstance()->podiumCache->getElement('user.subscriptions', $this->id);
         if ($cache === false) {
-            $cache = (new Query())->from(Subscription::tableName())->where([
+            $cache = (new Query)->from(Subscription::tableName())->where([
                     'user_id' => $this->id,
                     'post_seen' => Subscription::POST_NEW
                 ])->count();
@@ -334,7 +335,7 @@ class User extends UserActiveRecord
      */
     public function isBefriendedBy($userId)
     {
-        if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where([
                 'user_id' => $userId,
                 'friend_id' => $this->id
             ])->exists()) {
@@ -351,7 +352,7 @@ class User extends UserActiveRecord
      */
     public function isFriendOf($userId)
     {
-        if ((new Query())->select('id')->from('{{%podium_user_friend}}')->where([
+        if ((new Query)->select('id')->from('{{%podium_user_friend}}')->where([
                 'user_id' => $this->id,
                 'friend_id' => $userId
             ])->exists()) {
@@ -367,7 +368,7 @@ class User extends UserActiveRecord
      */
     public function isIgnoredBy($userId)
     {
-        if ((new Query())->select('id')->from('{{%podium_user_ignore}}')->where([
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where([
                 'user_id' => $userId,
                 'ignored_id' => $this->id
             ])->exists()) {
@@ -383,7 +384,7 @@ class User extends UserActiveRecord
      */
     public function isIgnoring($user_id)
     {
-        if ((new Query())->select('id')->from('{{%podium_user_ignore}}')->where([
+        if ((new Query)->select('id')->from('{{%podium_user_ignore}}')->where([
                 'user_id' => $this->id,
                 'ignored_id' => $user_id
             ])->exists()) {
@@ -436,18 +437,16 @@ class User extends UserActiveRecord
             if (!$this->save()) {
                 throw new Exception('User saving error!');
             }
-            if (Podium::getInstance()->rbac->getRolesByUser($this->id)) {
-                if (!Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
-                    throw new Exception('User role revoking error!');
-                }
+            if (Podium::getInstance()->rbac->getRolesByUser($this->id)
+                && !Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
+                throw new Exception('User role revoking error!');
             }
             if (!Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
                 throw new Exception('User role assigning error!');
             }
-            if ((new Query())->from(Mod::tableName())->where(['user_id' => $this->id])->exists()) {
-                if (!Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['user_id' => $this->id])->execute()) {
-                    throw new Exception('Moderator deleting error!');
-                }
+            if ((new Query())->from(Mod::tableName())->where(['user_id' => $this->id])->exists()
+                && !Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['user_id' => $this->id])->execute()) {
+                throw new Exception('Moderator deleting error!');
             }
             Activity::updateRole($this->id, User::ROLE_MEMBER);
 
@@ -476,10 +475,9 @@ class User extends UserActiveRecord
             if (!$this->save()) {
                 throw new Exception('User saving error!');
             }
-            if (Podium::getInstance()->rbac->getRolesByUser($this->id)) {
-                if (!Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
-                    throw new Exception('User role revoking error!');
-                }
+            if (Podium::getInstance()->rbac->getRolesByUser($this->id)
+                && !Podium::getInstance()->rbac->revoke(Podium::getInstance()->rbac->getRole(Rbac::ROLE_USER), $this->id)) {
+                throw new Exception('User role revoking error!');
             }
             if (!Podium::getInstance()->rbac->assign(Podium::getInstance()->rbac->getRole(Rbac::ROLE_MODERATOR), $this->id)) {
                 throw new Exception('User role assigning error!');
@@ -599,6 +597,7 @@ class User extends UserActiveRecord
             $cache = [];
             $friends = static::findMe()->friends;
             if ($friends) {
+                /* @var $friend User */
                 foreach ($friends as $friend) {
                     $cache[$friend->id] = $friend->getPodiumTag(true);
                 }
@@ -653,30 +652,22 @@ class User extends UserActiveRecord
         try {
             $add = [];
             foreach ($newForums as $forum) {
-                if (!in_array($forum, $oldForums)) {
-                    if ((new Query())->from(Forum::tableName())->where(['id' => $forum])->exists()
-                        && (new Query())->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists() === false) {
-                        $add[] = [$forum, $this->id];
-                    }
+                if (!in_array($forum, $oldForums, true) && (new Query)->from(Forum::tableName())->where(['id' => $forum])->exists()
+                        && (new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists() === false) {
+                    $add[] = [$forum, $this->id];
                 }
             }
             $remove = [];
             foreach ($oldForums as $forum) {
-                if (!in_array($forum, $newForums)) {
-                    if ((new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists()) {
-                        $remove[] = $forum;
-                    }
+                if (!in_array($forum, $newForums, true) && (new Query)->from(Mod::tableName())->where(['forum_id' => $forum, 'user_id' => $this->id])->exists()) {
+                    $remove[] = $forum;
                 }
             }
-            if (!empty($add)) {
-                if (!Podium::getInstance()->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute()) {
-                    throw new Exception('Moderators adding error!');
-                }
+            if (!empty($add) && !Podium::getInstance()->db->createCommand()->batchInsert(Mod::tableName(), ['forum_id', 'user_id'], $add)->execute()) {
+                throw new Exception('Moderators adding error!');
             }
-            if (!empty($remove)) {
-                if (!Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute()) {
-                    throw new Exception('Moderators deleting error!');
-                }
+            if (!empty($remove) && !Podium::getInstance()->db->createCommand()->delete(Mod::tableName(), ['forum_id' => $remove, 'user_id' => $this->id])->execute()) {
+                throw new Exception('Moderators deleting error!');
             }
             Podium::getInstance()->podiumCache->delete('forum.moderators');
             Log::info('Moderators updated', null, __METHOD__);
@@ -696,13 +687,20 @@ class User extends UserActiveRecord
      */
     protected function generateUsername()
     {
-        $try = 0;
-        $username = 'user_' . time() . rand(1000, 9999);
-        while ((new Query())->from(static::tableName())->where(['username' => $username])->exists()) {
-            $username = 'user_' . time() . rand(1000, 9999);
-            if ($try++ > 100) {
-                throw new Exception('Failed to generate unique username!');
+        $userNameField = Podium::getInstance()->userNameField;
+        if ($userNameField !== null) {
+            if (empty(Podium::getInstance()->user->identity->$userNameField)) {
+                throw new InvalidConfigException("Non-existing or empty '$userNameField' field!");
             }
+            $username = Podium::getInstance()->user->identity->$userNameField;
+        } else {
+            $try = 0;
+            do {
+                $username = 'user_' . time() . mt_rand(1000, 9999);
+                if ($try++ > 10) {
+                    throw new Exception('Failed to generate unique username!');
+                }
+            } while ((new Query)->from(static::tableName())->where(['username' => $username])->exists());
         }
         $this->username = $username;
     }
@@ -742,6 +740,41 @@ class User extends UserActiveRecord
     }
 
     /**
+     * Updates inherited account's username.
+     * @return bool
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @since 0.8
+     */
+    public static function updateInheritedAccount()
+    {
+        if (!Podium::getInstance()->user->isGuest) {
+            $userNameField = Podium::getInstance()->userNameField;
+            if ($userNameField === null) {
+                return true;
+            }
+            if (empty(Podium::getInstance()->user->identity->$userNameField)) {
+                throw new InvalidConfigException("Non-existing or empty '$userNameField' field!");
+            }
+            $savedUser = static::find()->where(['inherited_id' => Podium::getInstance()->user->id])->limit(1)->one();
+            if (empty($savedUser)) {
+                throw new InvalidConfigException('Can not find inherited account in database!');
+            }
+            if ($savedUser->username === Podium::getInstance()->user->identity->$userNameField) {
+                return true;
+            }
+            $savedUser->scenario = 'installation';
+            $savedUser->username = Podium::getInstance()->user->identity->$userNameField;
+            if ($savedUser->save()) {
+                Log::info('Inherited account updated', $savedUser->id, __METHOD__);
+                return true;
+            }
+            throw new Exception('Inherited account updating error');
+        }
+        return true;
+    }
+
+    /**
      * Returns JSON list of members matching query.
      * @param string $query
      * @return string
@@ -749,7 +782,7 @@ class User extends UserActiveRecord
      */
     public static function getMembersList($query = null)
     {
-        if (is_null($query) || !is_string($query)) {
+        if (null === $query || !is_string($query)) {
             return Json::encode(['results' => []]);
         }
 
@@ -861,7 +894,7 @@ class User extends UserActiveRecord
 
     /**
      * Returns current user based on module configuration.
-     * @return mixed
+     * @return static
      */
     public static function findMe()
     {

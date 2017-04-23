@@ -90,7 +90,11 @@ class Installation extends Maintenance
             $identity = Podium::getInstance()->user->identityClass;
             $inheritedUser = $identity::findIdentity($this->module->adminId);
             if (!$inheritedUser) {
-                throw new Exception();
+                throw new Exception('Can not find administrator account!');
+            }
+            $userNameField = $this->module->userNameField;
+            if ($userNameField !== null && empty($inheritedUser->$userNameField)) {
+                throw new Exception('Can not find administrator username!');
             }
         } catch (Exception $e) {
             return $this->returnWarning(Yii::t('podium/flash', 'Cannot find inherited user of given ID. No administrator privileges have been set.'));
@@ -102,7 +106,7 @@ class Installation extends Maintenance
             $admin->setScenario('installation');
             $admin->setAttributes([
                 'inherited_id' => $this->module->adminId,
-                'username' => self::DEFAULT_USERNAME,
+                'username' => $userNameField ? $inheritedUser->$userNameField : self::DEFAULT_USERNAME,
                 'status' => User::STATUS_ACTIVE,
                 'role' => User::ROLE_ADMIN,
             ], false);

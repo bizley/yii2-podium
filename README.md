@@ -33,8 +33,8 @@ Installation & configuration
 
 Follow instructions at [Podium wiki](https://github.com/bizley/yii2-podium/wiki).
 
-> Warning: This is BETA version of Podium.
-> Any part of this module can change without warning.
+> Warning: This is BETA version of Podium.  
+> Any part of this module can change without warning.  
 > Please report all issues and suggestions [here](https://github.com/bizley/yii2-podium/issues).
 
 Demo
@@ -68,3 +68,5 @@ Tests
 For Codeception tests run:
 
     composer exec -v -- codecept -c vendor/bizley/podium run
+
+More tests coming soon.
