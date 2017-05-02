@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="language" content="en" />
+        <link href="./assets/965c3c75/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/55e46a96/solarized_light.css" rel="stylesheet">
+<link href="./assets/4f59573/style.css" rel="stylesheet">
+<script src="./assets/54b1ac8f/jquery.js"></script>
+<script src="./assets/965c3c75/js/bootstrap.js"></script>
+<script src="./assets/929620f2/jssearch.js"></script>    <title>Post, bizley\podium\models\Post - Yii Framework 2.0 API Documentation</title>
+</head>
+<body>
+
+<div class="wrap">
+    <nav id="w1376" class="navbar-inverse navbar-fixed-top navbar" role="navigation"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w1376-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="./index.html">Yii Framework 2.0 API Documentation</a></div><div id="w1376-collapse" class="collapse navbar-collapse"><ul id="w1377" class="navbar-nav nav"><li><a href="./index.html">Class reference</a></li></ul><div class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input id="searchbox" type="text" class="form-control" placeholder="Search">
+  </div>
+</div>
+</div></nav>
+    <div id="search-resultbox" style="display: none;" class="modal-content">
+        <ul id="search-results">
+        </ul>
+    </div>
+
+    
+<div class="row">
+    <div class="col-md-3">
+                <div id="navigation" class="list-group"><a class="list-group-item" href="#navigation-1352" data-toggle="collapse" data-parent="#navigation">bizley\podium <b class="caret"></b></a><div id="navigation-1352" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-podium.html">Podium</a>
+<a class="list-group-item" href="./bizley-podium-podiumcache.html">PodiumCache</a>
+<a class="list-group-item" href="./bizley-podium-podiumcomponent.html">PodiumComponent</a>
+<a class="list-group-item" href="./bizley-podium-podiumconfig.html">PodiumConfig</a></div>
+<a class="list-group-item" href="#navigation-1353" data-toggle="collapse" data-parent="#navigation">bizley\podium\actions <b class="caret"></b></a><div id="navigation-1353" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-actions-adminaction.html">AdminAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-memberaction.html">MemberAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-messageaction.html">MessageAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-threadaction.html">ThreadAction</a></div>
+<a class="list-group-item" href="#navigation-1354" data-toggle="collapse" data-parent="#navigation">bizley\podium\assets <b class="caret"></b></a><div id="navigation-1354" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-assets-highlightasset.html">HighlightAsset</a>
+<a class="list-group-item" href="./bizley-podium-assets-podiumasset.html">PodiumAsset</a></div>
+<a class="list-group-item" href="#navigation-1355" data-toggle="collapse" data-parent="#navigation">bizley\podium\console <b class="caret"></b></a><div id="navigation-1355" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-console-queuecontroller.html">QueueController</a>
+<a class="list-group-item" href="./bizley-podium-console-usercontroller.html">UserController</a></div>
+<a class="list-group-item" href="#navigation-1356" data-toggle="collapse" data-parent="#navigation">bizley\podium\controllers <b class="caret"></b></a><div id="navigation-1356" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-controllers-accountcontroller.html">AccountController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-admincontroller.html">AdminController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-adminforumcontroller.html">AdminForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-basecontroller.html">BaseController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumcontroller.html">ForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumpostcontroller.html">ForumPostController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumthreadcontroller.html">ForumThreadController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-installcontroller.html">InstallController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-memberscontroller.html">MembersController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-messagescontroller.html">MessagesController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-profilecontroller.html">ProfileController</a></div>
+<a class="list-group-item" href="#navigation-1357" data-toggle="collapse" data-parent="#navigation">bizley\podium\db <b class="caret"></b></a><div id="navigation-1357" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-db-activerecord.html">ActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-db-query.html">Query</a>
+<a class="list-group-item" href="./bizley-podium-db-userquery.html">UserQuery</a></div>
+<a class="list-group-item" href="#navigation-1358" data-toggle="collapse" data-parent="#navigation">bizley\podium\filters <b class="caret"></b></a><div id="navigation-1358" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-filters-accesscontrol.html">AccessControl</a>
+<a class="list-group-item" href="./bizley-podium-filters-installrule.html">InstallRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-loginrequiredrule.html">LoginRequiredRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-permissiondeniedrule.html">PermissionDeniedRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-podiumrolerule.html">PodiumRoleRule</a></div>
+<a class="list-group-item" href="#navigation-1359" data-toggle="collapse" data-parent="#navigation">bizley\podium\helpers <b class="caret"></b></a><div id="navigation-1359" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-helpers-helper.html">Helper</a></div>
+<a class="list-group-item" href="#navigation-1360" data-toggle="collapse" data-parent="#navigation">bizley\podium\log <b class="caret"></b></a><div id="navigation-1360" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-log-dbtarget.html">DbTarget</a>
+<a class="list-group-item" href="./bizley-podium-log-log.html">Log</a></div>
+<a class="list-group-item" href="#navigation-1361" data-toggle="collapse" data-parent="#navigation">bizley\podium\maintenance <b class="caret"></b></a><div id="navigation-1361" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-maintenance-installation.html">Installation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-maintenance.html">Maintenance</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-schemaoperation.html">SchemaOperation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-update.html">Update</a></div>
+<a class="list-group-item active" href="#navigation-1362" data-toggle="collapse" data-parent="#navigation">bizley\podium\models <b class="caret"></b></a><div id="navigation-1362" class="submenu panel-collapse collapse in"><a class="list-group-item" href="./bizley-podium-models-activity.html">Activity</a>
+<a class="list-group-item" href="./bizley-podium-models-category.html">Category</a>
+<a class="list-group-item" href="./bizley-podium-models-content.html">Content</a>
+<a class="list-group-item" href="./bizley-podium-models-email.html">Email</a>
+<a class="list-group-item" href="./bizley-podium-models-forum.html">Forum</a>
+<a class="list-group-item" href="./bizley-podium-models-forumsearch.html">ForumSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-logsearch.html">LogSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-message.html">Message</a>
+<a class="list-group-item" href="./bizley-podium-models-messagereceiver.html">MessageReceiver</a>
+<a class="list-group-item" href="./bizley-podium-models-messagesearch.html">MessageSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-meta.html">Meta</a>
+<a class="list-group-item" href="./bizley-podium-models-mod.html">Mod</a>
+<a class="list-group-item" href="./bizley-podium-models-poll.html">Poll</a>
+<a class="list-group-item" href="./bizley-podium-models-pollanswer.html">PollAnswer</a>
+<a class="list-group-item active" href="./bizley-podium-models-post.html">Post</a>
+<a class="list-group-item" href="./bizley-podium-models-postthumb.html">PostThumb</a>
+<a class="list-group-item" href="./bizley-podium-models-subscription.html">Subscription</a>
+<a class="list-group-item" href="./bizley-podium-models-thread.html">Thread</a>
+<a class="list-group-item" href="./bizley-podium-models-threadview.html">ThreadView</a>
+<a class="list-group-item" href="./bizley-podium-models-user.html">User</a>
+<a class="list-group-item" href="./bizley-podium-models-usersearch.html">UserSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-vocabulary.html">Vocabulary</a></div>
+<a class="list-group-item" href="#navigation-1363" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\db <b class="caret"></b></a><div id="navigation-1363" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-db-activityactiverecord.html">ActivityActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-categoryactiverecord.html">CategoryActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-contentactiverecord.html">ContentActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-emailactiverecord.html">EmailActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-forumactiverecord.html">ForumActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messageactiverecord.html">MessageActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messagereceiveractiverecord.html">MessageReceiverActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-metaactiverecord.html">MetaActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-modactiverecord.html">ModActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollactiverecord.html">PollActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollansweractiverecord.html">PollAnswerActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postactiverecord.html">PostActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postthumbactiverecord.html">PostThumbActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-subscriptionactiverecord.html">SubscriptionActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadactiverecord.html">ThreadActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadviewactiverecord.html">ThreadViewActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-useractiverecord.html">UserActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-vocabularyactiverecord.html">VocabularyActiveRecord</a></div>
+<a class="list-group-item" href="#navigation-1364" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\forms <b class="caret"></b></a><div id="navigation-1364" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-forms-configform.html">ConfigForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-loginform.html">LoginForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-reactivateform.html">ReactivateForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-resetform.html">ResetForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-searchform.html">SearchForm</a></div>
+<a class="list-group-item" href="#navigation-1365" data-toggle="collapse" data-parent="#navigation">bizley\podium\rbac <b class="caret"></b></a><div id="navigation-1365" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-rbac-authorrule.html">AuthorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-moderatorrule.html">ModeratorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-rbac.html">Rbac</a></div>
+<a class="list-group-item" href="#navigation-1366" data-toggle="collapse" data-parent="#navigation">bizley\podium\services <b class="caret"></b></a><div id="navigation-1366" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-services-sorter.html">Sorter</a>
+<a class="list-group-item" href="./bizley-podium-services-threadverifier.html">ThreadVerifier</a></div>
+<a class="list-group-item" href="#navigation-1367" data-toggle="collapse" data-parent="#navigation">bizley\podium\traits <b class="caret"></b></a><div id="navigation-1367" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-traits-flashtrait.html">FlashTrait</a></div>
+<a class="list-group-item" href="#navigation-1368" data-toggle="collapse" data-parent="#navigation">bizley\podium\web <b class="caret"></b></a><div id="navigation-1368" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-web-user.html">User</a></div>
+<a class="list-group-item" href="#navigation-1369" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets <b class="caret"></b></a><div id="navigation-1369" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-alert.html">Alert</a>
+<a class="list-group-item" href="./bizley-podium-widgets-avatar.html">Avatar</a>
+<a class="list-group-item" href="./bizley-podium-widgets-latestposts.html">LatestPosts</a>
+<a class="list-group-item" href="./bizley-podium-widgets-modal.html">Modal</a>
+<a class="list-group-item" href="./bizley-podium-widgets-pagesizer.html">PageSizer</a>
+<a class="list-group-item" href="./bizley-podium-widgets-readers.html">Readers</a></div>
+<a class="list-group-item" href="#navigation-1370" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror <b class="caret"></b></a><div id="navigation-1370" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-codemirror.html">CodeMirror</a></div>
+<a class="list-group-item" href="#navigation-1371" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror\assets <b class="caret"></b></a><div id="navigation-1371" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorasset.html">CodeMirrorAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorbuttonsasset.html">CodeMirrorButtonsAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorconfigasset.html">CodeMirrorConfigAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorextraasset.html">CodeMirrorExtraAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorlibasset.html">CodeMirrorLibAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrormodesasset.html">CodeMirrorModesAsset</a></div>
+<a class="list-group-item" href="#navigation-1372" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\editor <b class="caret"></b></a><div id="navigation-1372" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-editor-editorbasic.html">EditorBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-editor-editorfull.html">EditorFull</a></div>
+<a class="list-group-item" href="#navigation-1373" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\gridview <b class="caret"></b></a><div id="navigation-1373" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-gridview-actioncolumn.html">ActionColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-datacolumn.html">DataColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-gridview.html">GridView</a></div>
+<a class="list-group-item" href="#navigation-1374" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\poll <b class="caret"></b></a><div id="navigation-1374" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-poll-poll.html">Poll</a></div>
+<a class="list-group-item" href="#navigation-1375" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\quill <b class="caret"></b></a><div id="navigation-1375" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-quill-quillbasic.html">QuillBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-quill-quillfull.html">QuillFull</a></div></div>    </div>
+    <div class="col-md-9 api-content" role="main">
+        <h1>Class bizley\podium\models\Post</h1>
+<div class="top-nav">
+    <a href="index.html">All Classes</a>
+            | <a href="#properties">Properties</a>
+                | <a href="#methods">Methods</a>
+            </div>
+
+<table class="summaryTable docClass table table-bordered">
+    <colgroup>
+        <col class="col-name" />
+        <col class="col-value" />
+    </colgroup>
+            <tr><th>Inheritance</th><td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a> &raquo;
+<a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a> &raquo;
+<a href="bizley-podium-db-activerecord.html">bizley\podium\db\ActiveRecord</a> &raquo;
+yii\db\ActiveRecord</td></tr>
+                                        <tr><th>Available since version</th><td>0.1</td></tr>
+            </table>
+
+<div class="class-description">
+    <p><strong>Post model</strong></p>
+    
+    </div>
+
+<a id="properties"></a>
+
+<div class="summary doc-property">
+<h2>Public Properties</h2>
+
+<p><a href="#" class="toggle">Hide inherited properties</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-property" />
+    <col class="col-type" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Property</th><th>Type</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr class="inherited" id="$subscribe">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#$subscribe-detail">$subscribe</a></td>
+        <td><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+        <td>Subscription flag.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="$topic">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#$topic-detail">$topic</a></td>
+        <td><a href="http://www.php.net/language.types.string">string</a></td>
+        <td>Topic.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+    </table>
+</div>
+
+<a id="methods"></a>
+
+<div class="summary doc-method">
+<h2>Public Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+            <tr id="afterSave()">
+        <td><a href="bizley-podium-models-post.html#afterSave()-detail">afterSave()</a></td>
+        <td>Updates post tag words.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr class="inherited" id="behaviors()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#behaviors()-detail">behaviors()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="getAuthor()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#getAuthor()-detail">getAuthor()</a></td>
+        <td>Author relation.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="getDb()">
+        <td><a href="bizley-podium-db-activerecord.html#getDb()-detail">getDb()</a></td>
+        <td>Returns the database connection used by this AR class.</td>
+        <td><a href="bizley-podium-db-activerecord.html">bizley\podium\db\ActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="getForum()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#getForum()-detail">getForum()</a></td>
+        <td>Forum relation.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr id="getLatest()">
+        <td><a href="bizley-podium-models-post.html#getLatest()-detail">getLatest()</a></td>
+        <td>Returns latest post.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="getLatestPostsForGuests()">
+        <td><a href="bizley-podium-models-post.html#getLatestPostsForGuests()-detail">getLatestPostsForGuests()</a></td>
+        <td>Returns latest visible posts for guests.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="getLatestPostsForMembers()">
+        <td><a href="bizley-podium-models-post.html#getLatestPostsForMembers()-detail">getLatestPostsForMembers()</a></td>
+        <td>Returns latest posts for registered users.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="getParsedContent()">
+        <td><a href="bizley-podium-models-post.html#getParsedContent()-detail">getParsedContent()</a></td>
+        <td>Returns content Markdown-parsed if WYSIWYG editor is switched off.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr class="inherited" id="getThread()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#getThread()-detail">getThread()</a></td>
+        <td>Thread relation.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="getThumb()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#getThumb()-detail">getThumb()</a></td>
+        <td>Thumbs relation.</td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+                <tr id="isMod()">
+        <td><a href="bizley-podium-models-post.html#isMod()-detail">isMod()</a></td>
+        <td>Verifies if user is this forum's moderator.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="markSeen()">
+        <td><a href="bizley-podium-models-post.html#markSeen()-detail">markSeen()</a></td>
+        <td>Marks post as seen by current user.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="podiumDelete()">
+        <td><a href="bizley-podium-models-post.html#podiumDelete()-detail">podiumDelete()</a></td>
+        <td>Performs post delete with parent forum and thread counters update.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="podiumEdit()">
+        <td><a href="bizley-podium-models-post.html#podiumEdit()-detail">podiumEdit()</a></td>
+        <td>Performs post update with parent thread topic update in case of first post in thread.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="podiumNew()">
+        <td><a href="bizley-podium-models-post.html#podiumNew()-detail">podiumNew()</a></td>
+        <td>Performs new post creation and subscription.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="podiumThumb()">
+        <td><a href="bizley-podium-models-post.html#podiumThumb()-detail">podiumThumb()</a></td>
+        <td>Performs vote processing.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+                <tr class="inherited" id="rules()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#rules()-detail">rules()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+            <tr id="search()">
+        <td><a href="bizley-podium-models-post.html#search()-detail">search()</a></td>
+        <td>Searches for posts.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr id="searchByUser()">
+        <td><a href="bizley-podium-models-post.html#searchByUser()-detail">searchByUser()</a></td>
+        <td>Searches for posts added by given user.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+            <tr class="inherited" id="tableName()">
+        <td><a href="bizley-podium-models-db-postactiverecord.html#tableName()-detail">tableName()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-postactiverecord.html">bizley\podium\models\db\PostActiveRecord</a></td>
+    </tr>
+                <tr id="verify()">
+        <td><a href="bizley-podium-models-post.html#verify()-detail">verify()</a></td>
+        <td>Returns the verified post.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+    </table>
+</div>
+
+<div class="summary doc-method">
+<h2>Protected Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr id="addNewWords()">
+        <td><a href="bizley-podium-models-post.html#addNewWords()-detail">addNewWords()</a></td>
+        <td>Adds new tag words.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+                                                        <tr id="insertWords()">
+        <td><a href="bizley-podium-models-post.html#insertWords()-detail">insertWords()</a></td>
+        <td>Inserts tag words.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+                                    <tr id="prepareWords()">
+        <td><a href="bizley-podium-models-post.html#prepareWords()-detail">prepareWords()</a></td>
+        <td>Prepares tag words.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+                            <tr id="updateWords()">
+        <td><a href="bizley-podium-models-post.html#updateWords()-detail">updateWords()</a></td>
+        <td>Updates tag words.</td>
+        <td><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+    </tr>
+        </table>
+</div>
+
+<a id="events"></a>
+
+<a id="constants"></a>
+
+<h2>Method Details</h2>
+
+<div class="method-doc">
+
+    <div class="detail-header h3" id="addNewWords()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#addNewWords()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        addNewWords()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Adds new tag words.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-post.html#addNewWords()-detail">addNewWords</a></strong> ( <span style="color: #0000BB">$allWords</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$allWords</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a>[]</td>
+                  <td class="param-desc-col"><p>All words extracted from post</p>
+</td>
+                </tr>
+                                                    <tr>
+                  <th class="param-name-col">throws</th>
+                  <td class="param-type-col"><a href="http://www.php.net/class.exception">Exception</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                        </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="afterSave()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#afterSave()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        afterSave()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Updates post tag words.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-post.html#afterSave()-detail">afterSave</a></strong> ( <span style="color: #0000BB">$insert</span>, <span style="color: #0000BB">$changedAttributes</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$insert</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$changedAttributes</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.array">array</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                    <tr>
+                  <th class="param-name-col">throws</th>
+                  <td class="param-type-col"><a href="http://www.php.net/class.exception">Exception</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                        </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getLatest()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#getLatest()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getLatest()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns latest post.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-models-post.html#getLatest()-detail">getLatest</a></strong> ( <span style="color: #0000BB">$limit&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">5</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$limit</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getLatestPostsForGuests()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#getLatestPostsForGuests()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getLatestPostsForGuests()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns latest visible posts for guests.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a>[]</span> <strong><a href="bizley-podium-models-post.html#getLatestPostsForGuests()-detail">getLatestPostsForGuests</a></strong> ( <span style="color: #0000BB">$limit&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">5</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$limit</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Number of latest posts.</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getLatestPostsForMembers()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#getLatestPostsForMembers()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getLatestPostsForMembers()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns latest posts for registered users.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a>[]</span> <strong><a href="bizley-podium-models-post.html#getLatestPostsForMembers()-detail">getLatestPostsForMembers</a></strong> ( <span style="color: #0000BB">$limit&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">5</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$limit</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Number of latest posts.</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getParsedContent()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#getParsedContent()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getParsedContent()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns content Markdown-parsed if WYSIWYG editor is switched off.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-models-post.html#getParsedContent()-detail">getParsedContent</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="insertWords()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#insertWords()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        insertWords()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Inserts tag words.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-post.html#insertWords()-detail">insertWords</a></strong> ( )</td></tr>
+                                                            <tr>
+                  <th class="param-name-col">throws</th>
+                  <td class="param-type-col"><a href="http://www.php.net/class.exception">Exception</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                        </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="isMod()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#isMod()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        isMod()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Verifies if user is this forum's moderator.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-post.html#isMod()-detail">isMod</a></strong> ( <span style="color: #0000BB">$userId&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$userId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a>|<a href="http://www.php.net/language.types.null">null</a></td>
+                  <td class="param-desc-col"><p>User ID or null for current signed in.</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="markSeen()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#markSeen()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        markSeen()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Marks post as seen by current user.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-post.html#markSeen()-detail">markSeen</a></strong> ( <span style="color: #0000BB">$updateCounters&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">true</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$updateCounters</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"><p>Whether to update view counter</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="podiumDelete()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#podiumDelete()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        podiumDelete()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Performs post delete with parent forum and thread counters update.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-post.html#podiumDelete()-detail">podiumDelete</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="podiumEdit()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#podiumEdit()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        podiumEdit()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Performs post update with parent thread topic update in case of first post in thread.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-post.html#podiumEdit()-detail">podiumEdit</a></strong> ( <span style="color: #0000BB">$isFirstPost&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">false</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$isFirstPost</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"><p>Whether post is first in thread</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="podiumNew()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#podiumNew()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        podiumNew()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Performs new post creation and subscription.</strong></p>
+
+        <p>Depending on the settings previous post can be merged.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-post.html#podiumNew()-detail">podiumNew</a></strong> ( <span style="color: #0000BB">$previous&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$previous</span></td>
+                  <td class="param-type-col"><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></td>
+                  <td class="param-desc-col"><p>Previous post</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="podiumThumb()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#podiumThumb()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        podiumThumb()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Performs vote processing.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-post.html#podiumThumb()-detail">podiumThumb</a></strong> ( <span style="color: #0000BB">$up&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">true</span>, <span style="color: #0000BB">$count&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">0</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$up</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"><p>Whether this is upvote</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$count</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Number of user cached votes</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="prepareWords()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#prepareWords()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        prepareWords()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Prepares tag words.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a>[]</span> <strong><a href="bizley-podium-models-post.html#prepareWords()-detail">prepareWords</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="search()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#search()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        search()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Searches for posts.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\data\ActiveDataProvider</span> <strong><a href="bizley-podium-models-post.html#search()-detail">search</a></strong> ( <span style="color: #0000BB">$forumId</span>, <span style="color: #0000BB">$threadId</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$forumId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$threadId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="searchByUser()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#searchByUser()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        searchByUser()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Searches for posts added by given user.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\data\ActiveDataProvider</span> <strong><a href="bizley-podium-models-post.html#searchByUser()-detail">searchByUser</a></strong> ( <span style="color: #0000BB">$userId</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$userId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="updateWords()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#updateWords()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        updateWords()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Updates tag words.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-post.html#updateWords()-detail">updateWords</a></strong> ( )</td></tr>
+                                                            <tr>
+                  <th class="param-name-col">throws</th>
+                  <td class="param-type-col"><a href="http://www.php.net/class.exception">Exception</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                        </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="verify()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-post.html#verify()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        verify()
+        <span class="detail-header-tag small">
+            public                        static            method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns the verified post.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="bizley-podium-models-post.html">bizley\podium\models\Post</a></span> <strong><a href="bizley-podium-models-post.html#verify()-detail">verify</a></strong> ( <span style="color: #0000BB">$categoryId&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span>, <span style="color: #0000BB">$forumId&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span>, <span style="color: #0000BB">$threadId&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span>, <span style="color: #0000BB">$id&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$categoryId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Post category ID</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$forumId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Post forum ID</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$threadId</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Post thread ID</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$id</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Post ID</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+</div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    /*<![CDATA[*/
+    $("a.toggle").on('click', function () {
+        var $this = $(this);
+        if ($this.hasClass('properties-hidden')) {
+            $this.text($this.text().replace(/Show/,'Hide'));
+            $this.parents(".summary").find(".inherited").show();
+            $this.removeClass('properties-hidden');
+        } else {
+            $this.text($this.text().replace(/Hide/,'Show'));
+            $this.parents(".summary").find(".inherited").hide();
+            $this.addClass('properties-hidden');
+        }
+
+        return false;
+    });
+    /*
+     $(".sourceCode a.show").toggle(function () {
+     $(this).text($(this).text().replace(/show/,'hide'));
+     $(this).parents(".sourceCode").find("div.code").show();
+     },function () {
+     $(this).text($(this).text().replace(/hide/,'show'));
+     $(this).parents(".sourceCode").find("div.code").hide();
+     });
+     $("a.sourceLink").click(function () {
+     $(this).attr('target','_blank');
+     });
+     */
+    /*]]>*/
+</script>
+
+
+</div>
+
+<footer class="footer">
+        <p class="pull-right"><small>Page generated on Fri, 24 Mar 2017 16:27:07 +0000</small></p>
+    Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a></footer>
+
+<script type="text/javascript">jQuery(document).ready(function () {
+    var shiftWindow = function () { scrollBy(0, -50) };
+    if (location.hash) setTimeout(shiftWindow, 1);
+    window.addEventListener("hashchange", shiftWindow);
+var element = document.createElement("script");
+element.src = "./jssearch.index.js";
+document.body.appendChild(element);
+
+var searchBox = $('#searchbox');
+
+// search when typing in search field
+searchBox.on("keyup", function(event) {
+    var query = $(this).val();
+
+    if (query == '' || event.which == 27) {
+        $('#search-resultbox').hide();
+        return;
+    } else if (event.which == 13) {
+        var selectedLink = $('#search-resultbox a.selected');
+        if (selectedLink.length != 0) {
+            document.location = selectedLink.attr('href');
+            return;
+        }
+    } else if (event.which == 38 || event.which == 40) {
+        $('#search-resultbox').show();
+
+        var selected = $('#search-resultbox a.selected');
+        if (selected.length == 0) {
+            $('#search-results').find('a').first().addClass('selected');
+        } else {
+            var next;
+            if (event.which == 40) {
+                next = selected.parent().next().find('a').first();
+            } else {
+                next = selected.parent().prev().find('a').first();
+            }
+            if (next.length != 0) {
+                var resultbox = $('#search-results');
+                var position = next.position();
+
+//              TODO scrolling is buggy and jumps around
+//                resultbox.scrollTop(Math.floor(position.top));
+//                console.log(position.top);
+
+                selected.removeClass('selected');
+                next.addClass('selected');
+            }
+        }
+
+        return;
+    }
+    $('#search-resultbox').show();
+    $('#search-results').html('<li><span class="no-results">No results</span></li>');
+
+    var result = jssearch.search(query);
+
+    if (result.length > 0) {
+        var i = 0;
+        var resHtml = '';
+
+        for (var key in result) {
+            if (i++ > 20) {
+                break;
+            }
+            resHtml = resHtml +
+            '<li><a href="' + result[key].file.u.substr(3) +'"><span class="title">' + result[key].file.t + '</span>' +
+            '<span class="description">' + result[key].file.d + '</span></a></li>';
+        }
+        $('#search-results').html(resHtml);
+    }
+});
+
+// hide the search results on ESC
+$(document).on("keyup", function(event) { if (event.which == 27) { $('#search-resultbox').hide(); } });
+// hide search results on click to document
+$(document).bind('click', function (e) { $('#search-resultbox').hide(); });
+// except the following:
+searchBox.bind('click', function(e) { e.stopPropagation(); });
+$('#search-resultbox').bind('click', function(e) { e.stopPropagation(); });
+
+});</script></body>
+</html>

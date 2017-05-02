@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="language" content="en" />
+        <link href="./assets/965c3c75/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/55e46a96/solarized_light.css" rel="stylesheet">
+<link href="./assets/4f59573/style.css" rel="stylesheet">
+<script src="./assets/54b1ac8f/jquery.js"></script>
+<script src="./assets/965c3c75/js/bootstrap.js"></script>
+<script src="./assets/929620f2/jssearch.js"></script>    <title>UserActiveRecord, bizley\podium\models\db\UserActiveRecord - Yii Framework 2.0 API Documentation</title>
+</head>
+<body>
+
+<div class="wrap">
+    <nav id="w1064" class="navbar-inverse navbar-fixed-top navbar" role="navigation"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w1064-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="./index.html">Yii Framework 2.0 API Documentation</a></div><div id="w1064-collapse" class="collapse navbar-collapse"><ul id="w1065" class="navbar-nav nav"><li><a href="./index.html">Class reference</a></li></ul><div class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input id="searchbox" type="text" class="form-control" placeholder="Search">
+  </div>
+</div>
+</div></nav>
+    <div id="search-resultbox" style="display: none;" class="modal-content">
+        <ul id="search-results">
+        </ul>
+    </div>
+
+    
+<div class="row">
+    <div class="col-md-3">
+                <div id="navigation" class="list-group"><a class="list-group-item" href="#navigation-1040" data-toggle="collapse" data-parent="#navigation">bizley\podium <b class="caret"></b></a><div id="navigation-1040" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-podium.html">Podium</a>
+<a class="list-group-item" href="./bizley-podium-podiumcache.html">PodiumCache</a>
+<a class="list-group-item" href="./bizley-podium-podiumcomponent.html">PodiumComponent</a>
+<a class="list-group-item" href="./bizley-podium-podiumconfig.html">PodiumConfig</a></div>
+<a class="list-group-item" href="#navigation-1041" data-toggle="collapse" data-parent="#navigation">bizley\podium\actions <b class="caret"></b></a><div id="navigation-1041" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-actions-adminaction.html">AdminAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-memberaction.html">MemberAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-messageaction.html">MessageAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-threadaction.html">ThreadAction</a></div>
+<a class="list-group-item" href="#navigation-1042" data-toggle="collapse" data-parent="#navigation">bizley\podium\assets <b class="caret"></b></a><div id="navigation-1042" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-assets-highlightasset.html">HighlightAsset</a>
+<a class="list-group-item" href="./bizley-podium-assets-podiumasset.html">PodiumAsset</a></div>
+<a class="list-group-item" href="#navigation-1043" data-toggle="collapse" data-parent="#navigation">bizley\podium\console <b class="caret"></b></a><div id="navigation-1043" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-console-queuecontroller.html">QueueController</a>
+<a class="list-group-item" href="./bizley-podium-console-usercontroller.html">UserController</a></div>
+<a class="list-group-item" href="#navigation-1044" data-toggle="collapse" data-parent="#navigation">bizley\podium\controllers <b class="caret"></b></a><div id="navigation-1044" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-controllers-accountcontroller.html">AccountController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-admincontroller.html">AdminController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-adminforumcontroller.html">AdminForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-basecontroller.html">BaseController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumcontroller.html">ForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumpostcontroller.html">ForumPostController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumthreadcontroller.html">ForumThreadController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-installcontroller.html">InstallController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-memberscontroller.html">MembersController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-messagescontroller.html">MessagesController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-profilecontroller.html">ProfileController</a></div>
+<a class="list-group-item" href="#navigation-1045" data-toggle="collapse" data-parent="#navigation">bizley\podium\db <b class="caret"></b></a><div id="navigation-1045" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-db-activerecord.html">ActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-db-query.html">Query</a>
+<a class="list-group-item" href="./bizley-podium-db-userquery.html">UserQuery</a></div>
+<a class="list-group-item" href="#navigation-1046" data-toggle="collapse" data-parent="#navigation">bizley\podium\filters <b class="caret"></b></a><div id="navigation-1046" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-filters-accesscontrol.html">AccessControl</a>
+<a class="list-group-item" href="./bizley-podium-filters-installrule.html">InstallRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-loginrequiredrule.html">LoginRequiredRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-permissiondeniedrule.html">PermissionDeniedRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-podiumrolerule.html">PodiumRoleRule</a></div>
+<a class="list-group-item" href="#navigation-1047" data-toggle="collapse" data-parent="#navigation">bizley\podium\helpers <b class="caret"></b></a><div id="navigation-1047" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-helpers-helper.html">Helper</a></div>
+<a class="list-group-item" href="#navigation-1048" data-toggle="collapse" data-parent="#navigation">bizley\podium\log <b class="caret"></b></a><div id="navigation-1048" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-log-dbtarget.html">DbTarget</a>
+<a class="list-group-item" href="./bizley-podium-log-log.html">Log</a></div>
+<a class="list-group-item" href="#navigation-1049" data-toggle="collapse" data-parent="#navigation">bizley\podium\maintenance <b class="caret"></b></a><div id="navigation-1049" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-maintenance-installation.html">Installation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-maintenance.html">Maintenance</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-schemaoperation.html">SchemaOperation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-update.html">Update</a></div>
+<a class="list-group-item" href="#navigation-1050" data-toggle="collapse" data-parent="#navigation">bizley\podium\models <b class="caret"></b></a><div id="navigation-1050" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-activity.html">Activity</a>
+<a class="list-group-item" href="./bizley-podium-models-category.html">Category</a>
+<a class="list-group-item" href="./bizley-podium-models-content.html">Content</a>
+<a class="list-group-item" href="./bizley-podium-models-email.html">Email</a>
+<a class="list-group-item" href="./bizley-podium-models-forum.html">Forum</a>
+<a class="list-group-item" href="./bizley-podium-models-forumsearch.html">ForumSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-logsearch.html">LogSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-message.html">Message</a>
+<a class="list-group-item" href="./bizley-podium-models-messagereceiver.html">MessageReceiver</a>
+<a class="list-group-item" href="./bizley-podium-models-messagesearch.html">MessageSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-meta.html">Meta</a>
+<a class="list-group-item" href="./bizley-podium-models-mod.html">Mod</a>
+<a class="list-group-item" href="./bizley-podium-models-poll.html">Poll</a>
+<a class="list-group-item" href="./bizley-podium-models-pollanswer.html">PollAnswer</a>
+<a class="list-group-item" href="./bizley-podium-models-post.html">Post</a>
+<a class="list-group-item" href="./bizley-podium-models-postthumb.html">PostThumb</a>
+<a class="list-group-item" href="./bizley-podium-models-subscription.html">Subscription</a>
+<a class="list-group-item" href="./bizley-podium-models-thread.html">Thread</a>
+<a class="list-group-item" href="./bizley-podium-models-threadview.html">ThreadView</a>
+<a class="list-group-item" href="./bizley-podium-models-user.html">User</a>
+<a class="list-group-item" href="./bizley-podium-models-usersearch.html">UserSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-vocabulary.html">Vocabulary</a></div>
+<a class="list-group-item active" href="#navigation-1051" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\db <b class="caret"></b></a><div id="navigation-1051" class="submenu panel-collapse collapse in"><a class="list-group-item" href="./bizley-podium-models-db-activityactiverecord.html">ActivityActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-categoryactiverecord.html">CategoryActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-contentactiverecord.html">ContentActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-emailactiverecord.html">EmailActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-forumactiverecord.html">ForumActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messageactiverecord.html">MessageActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messagereceiveractiverecord.html">MessageReceiverActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-metaactiverecord.html">MetaActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-modactiverecord.html">ModActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollactiverecord.html">PollActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollansweractiverecord.html">PollAnswerActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postactiverecord.html">PostActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postthumbactiverecord.html">PostThumbActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-subscriptionactiverecord.html">SubscriptionActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadactiverecord.html">ThreadActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadviewactiverecord.html">ThreadViewActiveRecord</a>
+<a class="list-group-item active" href="./bizley-podium-models-db-useractiverecord.html">UserActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-vocabularyactiverecord.html">VocabularyActiveRecord</a></div>
+<a class="list-group-item" href="#navigation-1052" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\forms <b class="caret"></b></a><div id="navigation-1052" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-forms-configform.html">ConfigForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-loginform.html">LoginForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-reactivateform.html">ReactivateForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-resetform.html">ResetForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-searchform.html">SearchForm</a></div>
+<a class="list-group-item" href="#navigation-1053" data-toggle="collapse" data-parent="#navigation">bizley\podium\rbac <b class="caret"></b></a><div id="navigation-1053" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-rbac-authorrule.html">AuthorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-moderatorrule.html">ModeratorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-rbac.html">Rbac</a></div>
+<a class="list-group-item" href="#navigation-1054" data-toggle="collapse" data-parent="#navigation">bizley\podium\services <b class="caret"></b></a><div id="navigation-1054" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-services-sorter.html">Sorter</a>
+<a class="list-group-item" href="./bizley-podium-services-threadverifier.html">ThreadVerifier</a></div>
+<a class="list-group-item" href="#navigation-1055" data-toggle="collapse" data-parent="#navigation">bizley\podium\traits <b class="caret"></b></a><div id="navigation-1055" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-traits-flashtrait.html">FlashTrait</a></div>
+<a class="list-group-item" href="#navigation-1056" data-toggle="collapse" data-parent="#navigation">bizley\podium\web <b class="caret"></b></a><div id="navigation-1056" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-web-user.html">User</a></div>
+<a class="list-group-item" href="#navigation-1057" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets <b class="caret"></b></a><div id="navigation-1057" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-alert.html">Alert</a>
+<a class="list-group-item" href="./bizley-podium-widgets-avatar.html">Avatar</a>
+<a class="list-group-item" href="./bizley-podium-widgets-latestposts.html">LatestPosts</a>
+<a class="list-group-item" href="./bizley-podium-widgets-modal.html">Modal</a>
+<a class="list-group-item" href="./bizley-podium-widgets-pagesizer.html">PageSizer</a>
+<a class="list-group-item" href="./bizley-podium-widgets-readers.html">Readers</a></div>
+<a class="list-group-item" href="#navigation-1058" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror <b class="caret"></b></a><div id="navigation-1058" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-codemirror.html">CodeMirror</a></div>
+<a class="list-group-item" href="#navigation-1059" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror\assets <b class="caret"></b></a><div id="navigation-1059" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorasset.html">CodeMirrorAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorbuttonsasset.html">CodeMirrorButtonsAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorconfigasset.html">CodeMirrorConfigAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorextraasset.html">CodeMirrorExtraAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorlibasset.html">CodeMirrorLibAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrormodesasset.html">CodeMirrorModesAsset</a></div>
+<a class="list-group-item" href="#navigation-1060" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\editor <b class="caret"></b></a><div id="navigation-1060" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-editor-editorbasic.html">EditorBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-editor-editorfull.html">EditorFull</a></div>
+<a class="list-group-item" href="#navigation-1061" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\gridview <b class="caret"></b></a><div id="navigation-1061" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-gridview-actioncolumn.html">ActionColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-datacolumn.html">DataColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-gridview.html">GridView</a></div>
+<a class="list-group-item" href="#navigation-1062" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\poll <b class="caret"></b></a><div id="navigation-1062" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-poll-poll.html">Poll</a></div>
+<a class="list-group-item" href="#navigation-1063" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\quill <b class="caret"></b></a><div id="navigation-1063" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-quill-quillbasic.html">QuillBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-quill-quillfull.html">QuillFull</a></div></div>    </div>
+    <div class="col-md-9 api-content" role="main">
+        <h1>Abstract Class bizley\podium\models\db\UserActiveRecord</h1>
+<div class="top-nav">
+    <a href="index.html">All Classes</a>
+                | <a href="#methods">Methods</a>
+                    | <a href="#constants">Constants</a>
+    </div>
+
+<table class="summaryTable docClass table table-bordered">
+    <colgroup>
+        <col class="col-name" />
+        <col class="col-value" />
+    </colgroup>
+            <tr><th>Inheritance</th><td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a> &raquo;
+<a href="bizley-podium-db-activerecord.html">bizley\podium\db\ActiveRecord</a> &raquo;
+yii\db\ActiveRecord</td></tr>
+                <tr><th>Implements</th><td>yii\web\IdentityInterface</td></tr>
+                        <tr><th>Subclasses</th><td><a href="bizley-podium-models-user.html">bizley\podium\models\User</a>, <a href="bizley-podium-models-usersearch.html">bizley\podium\models\UserSearch</a></td></tr>
+                        <tr><th>Available since version</th><td>0.6</td></tr>
+            </table>
+
+<div class="class-description">
+    <p><strong>User AR.</strong></p>
+    
+    </div>
+
+<a id="properties"></a>
+
+<a id="methods"></a>
+
+<div class="summary doc-method">
+<h2>Public Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr id="behaviors()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#behaviors()-detail">behaviors()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="find()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#find()-detail">find()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByActivationToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByActivationToken()-detail">findByActivationToken()</a></td>
+        <td>Finds registered user by activation token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByEmail()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByEmail()-detail">findByEmail()</a></td>
+        <td>Finds active user by email.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByEmailToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByEmailToken()-detail">findByEmailToken()</a></td>
+        <td>Finds active user by email token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByKeyfield()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByKeyfield()-detail">findByKeyfield()</a></td>
+        <td>Finds user of given status by username or email.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByPasswordResetToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByPasswordResetToken()-detail">findByPasswordResetToken()</a></td>
+        <td>Finds user of given status by password reset token</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findByUsername()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findByUsername()-detail">findByUsername()</a></td>
+        <td>Finds active user by username.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findIdentity()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findIdentity()-detail">findIdentity()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="findIdentityByAccessToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#findIdentityByAccessToken()-detail">findIdentityByAccessToken()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="generateActivationToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#generateActivationToken()-detail">generateActivationToken()</a></td>
+        <td>Generates new activation token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="generateAuthKey()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#generateAuthKey()-detail">generateAuthKey()</a></td>
+        <td>Generates "remember me" authentication key.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="generateEmailToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#generateEmailToken()-detail">generateEmailToken()</a></td>
+        <td>Generates new email token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="generatePasswordResetToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#generatePasswordResetToken()-detail">generatePasswordResetToken()</a></td>
+        <td>Generates new password reset token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="getActivity()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getActivity()-detail">getActivity()</a></td>
+        <td>Activity relation.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="getAuthKey()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getAuthKey()-detail">getAuthKey()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr class="inherited" id="getDb()">
+        <td><a href="bizley-podium-db-activerecord.html#getDb()-detail">getDb()</a></td>
+        <td>Returns the database connection used by this AR class.</td>
+        <td><a href="bizley-podium-db-activerecord.html">bizley\podium\db\ActiveRecord</a></td>
+    </tr>
+            <tr id="getFriends()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getFriends()-detail">getFriends()</a></td>
+        <td>Friends relation.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="getId()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getId()-detail">getId()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="getMeta()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getMeta()-detail">getMeta()</a></td>
+        <td>Meta relation.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="getMods()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#getMods()-detail">getMods()</a></td>
+        <td>Moderated forum relation.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="isActivationTokenValid()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#isActivationTokenValid()-detail">isActivationTokenValid()</a></td>
+        <td>Finds out if activation token is valid.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="isEmailTokenValid()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#isEmailTokenValid()-detail">isEmailTokenValid()</a></td>
+        <td>Finds out if email token is valid.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="isPasswordResetTokenValid()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#isPasswordResetTokenValid()-detail">isPasswordResetTokenValid()</a></td>
+        <td>Finds out if password reset token is valid.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="isTokenValid()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#isTokenValid()-detail">isTokenValid()</a></td>
+        <td>Finds out if given token type is valid.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="passwordRequirements()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#passwordRequirements()-detail">passwordRequirements()</a></td>
+        <td>Finds out if unencrypted password fulfill requirements.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="removeActivationToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#removeActivationToken()-detail">removeActivationToken()</a></td>
+        <td>Removes activation token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="removeEmailToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#removeEmailToken()-detail">removeEmailToken()</a></td>
+        <td>Removes email token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="removePasswordResetToken()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#removePasswordResetToken()-detail">removePasswordResetToken()</a></td>
+        <td>Removes password reset token.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="setPassword()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#setPassword()-detail">setPassword()</a></td>
+        <td>Generates password hash from unencrypted password.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="tableName()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#tableName()-detail">tableName()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="validateAuthKey()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#validateAuthKey()-detail">validateAuthKey()</a></td>
+        <td></td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="validateCurrentPassword()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#validateCurrentPassword()-detail">validateCurrentPassword()</a></td>
+        <td>Validates current password.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="validatePassword()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#validatePassword()-detail">validatePassword()</a></td>
+        <td>Validates password.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+            <tr id="validateUsername()">
+        <td><a href="bizley-podium-models-db-useractiverecord.html#validateUsername()-detail">validateUsername()</a></td>
+        <td>Validates username.</td>
+        <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+    </tr>
+    </table>
+</div>
+
+<a id="events"></a>
+
+<a id="constants"></a>
+<div class="summary doc-const">
+    <h2>Constants</h2>
+
+    <p><a href="#" class="toggle">Hide inherited constants</a></p>
+
+    <table class="summary-table table table-striped table-bordered table-hover">
+    <colgroup>
+        <col class="col-const" />
+        <col class="col-value" />
+        <col class="col-description" />
+        <col class="col-defined" />
+    </colgroup>
+    <tr>
+        <th>Constant</th><th>Value</th><th>Description</th><th>Defined By</th>
+    </tr>
+            <tr id="STATUS_ACTIVE">
+          <td id="STATUS_ACTIVE-detail">STATUS_ACTIVE</td>
+          <td>10</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+        </tr>
+            <tr id="STATUS_BANNED">
+          <td id="STATUS_BANNED-detail">STATUS_BANNED</td>
+          <td>9</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+        </tr>
+            <tr id="STATUS_REGISTERED">
+          <td id="STATUS_REGISTERED-detail">STATUS_REGISTERED</td>
+          <td>1</td>
+          <td>Statuses.
+                        </td>
+          <td><a href="bizley-podium-models-db-useractiverecord.html">bizley\podium\models\db\UserActiveRecord</a></td>
+        </tr>
+        </table>
+</div>
+
+<h2>Method Details</h2>
+
+<div class="method-doc">
+
+    <div class="detail-header h3" id="behaviors()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#behaviors()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        behaviors()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#behaviors()-detail">behaviors</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="find()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#find()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        find()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#find()-detail">find</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByActivationToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByActivationToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByActivationToken()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds registered user by activation token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByActivationToken()-detail">findByActivationToken</a></strong> ( <span style="color: #0000BB">$token</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Activation token</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByEmail()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByEmail()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByEmail()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds active user by email.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByEmail()-detail">findByEmail</a></strong> ( <span style="color: #0000BB">$email</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$email</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByEmailToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByEmailToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByEmailToken()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds active user by email token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByEmailToken()-detail">findByEmailToken</a></strong> ( <span style="color: #0000BB">$token</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Activation token</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByKeyfield()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByKeyfield()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByKeyfield()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds user of given status by username or email.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByKeyfield()-detail">findByKeyfield</a></strong> ( <span style="color: #0000BB">$keyfield</span>, <span style="color: #0000BB">$status&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">self</span><span style="color: #007700">::</span><span style="color: #0000BB">STATUS_ACTIVE</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$keyfield</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Value to compare</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$status</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByPasswordResetToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByPasswordResetToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByPasswordResetToken()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds user of given status by password reset token</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByPasswordResetToken()-detail">findByPasswordResetToken</a></strong> ( <span style="color: #0000BB">$token</span>, <span style="color: #0000BB">$status&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">self</span><span style="color: #007700">::</span><span style="color: #0000BB">STATUS_ACTIVE</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Password reset token</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$status</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.null">null</a></td>
+                  <td class="param-desc-col"><p>User status or null</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findByUsername()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findByUsername()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findByUsername()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds active user by username.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">static|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findByUsername()-detail">findByUsername</a></strong> ( <span style="color: #0000BB">$username</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$username</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findIdentity()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findIdentity()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findIdentity()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findIdentity()-detail">findIdentity</a></strong> ( <span style="color: #0000BB">$id</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$id</span></td>
+                  <td class="param-type-col"></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="findIdentityByAccessToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#findIdentityByAccessToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        findIdentityByAccessToken()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#findIdentityByAccessToken()-detail">findIdentityByAccessToken</a></strong> ( <span style="color: #0000BB">$token</span>, <span style="color: #0000BB">$type&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$type</span></td>
+                  <td class="param-type-col"></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="generateActivationToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#generateActivationToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        generateActivationToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Generates new activation token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#generateActivationToken()-detail">generateActivationToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="generateAuthKey()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#generateAuthKey()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        generateAuthKey()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Generates "remember me" authentication key.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#generateAuthKey()-detail">generateAuthKey</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="generateEmailToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#generateEmailToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        generateEmailToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Generates new email token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#generateEmailToken()-detail">generateEmailToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="generatePasswordResetToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#generatePasswordResetToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        generatePasswordResetToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Generates new password reset token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#generatePasswordResetToken()-detail">generatePasswordResetToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getActivity()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getActivity()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getActivity()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Activity relation.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\db\ActiveQuery</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getActivity()-detail">getActivity</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getAuthKey()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getAuthKey()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getAuthKey()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getAuthKey()-detail">getAuthKey</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getFriends()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getFriends()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getFriends()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Friends relation.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\db\ActiveQuery</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getFriends()-detail">getFriends</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getId()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getId()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getId()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getId()-detail">getId</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getMeta()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getMeta()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getMeta()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Meta relation.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\db\ActiveQuery</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getMeta()-detail">getMeta</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getMods()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#getMods()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getMods()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.5)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Moderated forum relation.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\db\ActiveQuery</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#getMods()-detail">getMods</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="isActivationTokenValid()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#isActivationTokenValid()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        isActivationTokenValid()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds out if activation token is valid.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#isActivationTokenValid()-detail">isActivationTokenValid</a></strong> ( <span style="color: #0000BB">$token</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Activation token</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="isEmailTokenValid()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#isEmailTokenValid()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        isEmailTokenValid()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds out if email token is valid.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#isEmailTokenValid()-detail">isEmailTokenValid</a></strong> ( <span style="color: #0000BB">$token</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Activation token</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="isPasswordResetTokenValid()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#isPasswordResetTokenValid()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        isPasswordResetTokenValid()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds out if password reset token is valid.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#isPasswordResetTokenValid()-detail">isPasswordResetTokenValid</a></strong> ( <span style="color: #0000BB">$token</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Password reset token</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="isTokenValid()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#isTokenValid()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        isTokenValid()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds out if given token type is valid.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#isTokenValid()-detail">isTokenValid</a></strong> ( <span style="color: #0000BB">$token</span>, <span style="color: #0000BB">$expire</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$token</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Activation token</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$expire</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.integer">integer</a></td>
+                  <td class="param-desc-col"><p>Expire time</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="passwordRequirements()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#passwordRequirements()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        passwordRequirements()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Finds out if unencrypted password fulfill requirements.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#passwordRequirements()-detail">passwordRequirements</a></strong> ( <span style="color: #0000BB">$attribute</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$attribute</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="removeActivationToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#removeActivationToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        removeActivationToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Removes activation token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#removeActivationToken()-detail">removeActivationToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="removeEmailToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#removeEmailToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        removeEmailToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Removes email token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#removeEmailToken()-detail">removeEmailToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="removePasswordResetToken()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#removePasswordResetToken()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        removePasswordResetToken()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Removes password reset token.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#removePasswordResetToken()-detail">removePasswordResetToken</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="setPassword()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#setPassword()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        setPassword()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Generates password hash from unencrypted password.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#setPassword()-detail">setPassword</a></strong> ( <span style="color: #0000BB">$password</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$password</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="tableName()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#tableName()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        tableName()
+        <span class="detail-header-tag small">
+            public                        static            method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#tableName()-detail">tableName</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="validateAuthKey()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#validateAuthKey()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        validateAuthKey()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong></strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#validateAuthKey()-detail">validateAuthKey</a></strong> ( <span style="color: #0000BB">$authKey</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$authKey</span></td>
+                  <td class="param-type-col"></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="validateCurrentPassword()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#validateCurrentPassword()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        validateCurrentPassword()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Validates current password.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#validateCurrentPassword()-detail">validateCurrentPassword</a></strong> ( <span style="color: #0000BB">$attribute</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$attribute</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="validatePassword()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#validatePassword()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        validatePassword()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Validates password.</strong></p>
+
+        <p>In case of inherited user component password hash is compared to
+password hash stored in Podium::getInstance()-&gt;user-&gt;identity so this method should
+not be used with User instance other than currently logged in one.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-models-db-useractiverecord.html#validatePassword()-detail">validatePassword</a></strong> ( <span style="color: #0000BB">$password</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$password</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Password to validate</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"><p>If password provided is valid for current user</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="validateUsername()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-models-db-useractiverecord.html#validateUsername()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        validateUsername()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Validates username.</strong></p>
+
+        <p>Custom method is required because JS ES5 (and so do Yii 2) doesn't support regex unicode features.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-models-db-useractiverecord.html#validateUsername()-detail">validateUsername</a></strong> ( <span style="color: #0000BB">$attribute</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$attribute</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+</div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    /*<![CDATA[*/
+    $("a.toggle").on('click', function () {
+        var $this = $(this);
+        if ($this.hasClass('properties-hidden')) {
+            $this.text($this.text().replace(/Show/,'Hide'));
+            $this.parents(".summary").find(".inherited").show();
+            $this.removeClass('properties-hidden');
+        } else {
+            $this.text($this.text().replace(/Hide/,'Show'));
+            $this.parents(".summary").find(".inherited").hide();
+            $this.addClass('properties-hidden');
+        }
+
+        return false;
+    });
+    /*
+     $(".sourceCode a.show").toggle(function () {
+     $(this).text($(this).text().replace(/show/,'hide'));
+     $(this).parents(".sourceCode").find("div.code").show();
+     },function () {
+     $(this).text($(this).text().replace(/hide/,'show'));
+     $(this).parents(".sourceCode").find("div.code").hide();
+     });
+     $("a.sourceLink").click(function () {
+     $(this).attr('target','_blank');
+     });
+     */
+    /*]]>*/
+</script>
+
+
+</div>
+
+<footer class="footer">
+        <p class="pull-right"><small>Page generated on Fri, 24 Mar 2017 16:27:07 +0000</small></p>
+    Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a></footer>
+
+<script type="text/javascript">jQuery(document).ready(function () {
+    var shiftWindow = function () { scrollBy(0, -50) };
+    if (location.hash) setTimeout(shiftWindow, 1);
+    window.addEventListener("hashchange", shiftWindow);
+var element = document.createElement("script");
+element.src = "./jssearch.index.js";
+document.body.appendChild(element);
+
+var searchBox = $('#searchbox');
+
+// search when typing in search field
+searchBox.on("keyup", function(event) {
+    var query = $(this).val();
+
+    if (query == '' || event.which == 27) {
+        $('#search-resultbox').hide();
+        return;
+    } else if (event.which == 13) {
+        var selectedLink = $('#search-resultbox a.selected');
+        if (selectedLink.length != 0) {
+            document.location = selectedLink.attr('href');
+            return;
+        }
+    } else if (event.which == 38 || event.which == 40) {
+        $('#search-resultbox').show();
+
+        var selected = $('#search-resultbox a.selected');
+        if (selected.length == 0) {
+            $('#search-results').find('a').first().addClass('selected');
+        } else {
+            var next;
+            if (event.which == 40) {
+                next = selected.parent().next().find('a').first();
+            } else {
+                next = selected.parent().prev().find('a').first();
+            }
+            if (next.length != 0) {
+                var resultbox = $('#search-results');
+                var position = next.position();
+
+//              TODO scrolling is buggy and jumps around
+//                resultbox.scrollTop(Math.floor(position.top));
+//                console.log(position.top);
+
+                selected.removeClass('selected');
+                next.addClass('selected');
+            }
+        }
+
+        return;
+    }
+    $('#search-resultbox').show();
+    $('#search-results').html('<li><span class="no-results">No results</span></li>');
+
+    var result = jssearch.search(query);
+
+    if (result.length > 0) {
+        var i = 0;
+        var resHtml = '';
+
+        for (var key in result) {
+            if (i++ > 20) {
+                break;
+            }
+            resHtml = resHtml +
+            '<li><a href="' + result[key].file.u.substr(3) +'"><span class="title">' + result[key].file.t + '</span>' +
+            '<span class="description">' + result[key].file.d + '</span></a></li>';
+        }
+        $('#search-results').html(resHtml);
+    }
+});
+
+// hide the search results on ESC
+$(document).on("keyup", function(event) { if (event.which == 27) { $('#search-resultbox').hide(); } });
+// hide search results on click to document
+$(document).bind('click', function (e) { $('#search-resultbox').hide(); });
+// except the following:
+searchBox.bind('click', function(e) { e.stopPropagation(); });
+$('#search-resultbox').bind('click', function(e) { e.stopPropagation(); });
+
+});</script></body>
+</html>

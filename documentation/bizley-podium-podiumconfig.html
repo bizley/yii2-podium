@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="language" content="en" />
+        <link href="./assets/965c3c75/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/55e46a96/solarized_light.css" rel="stylesheet">
+<link href="./assets/4f59573/style.css" rel="stylesheet">
+<script src="./assets/54b1ac8f/jquery.js"></script>
+<script src="./assets/965c3c75/js/bootstrap.js"></script>
+<script src="./assets/929620f2/jssearch.js"></script>    <title>PodiumConfig, bizley\podium\PodiumConfig - Yii Framework 2.0 API Documentation</title>
+</head>
+<body>
+
+<div class="wrap">
+    <nav id="w50" class="navbar-inverse navbar-fixed-top navbar" role="navigation"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w50-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="./index.html">Yii Framework 2.0 API Documentation</a></div><div id="w50-collapse" class="collapse navbar-collapse"><ul id="w51" class="navbar-nav nav"><li><a href="./index.html">Class reference</a></li></ul><div class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input id="searchbox" type="text" class="form-control" placeholder="Search">
+  </div>
+</div>
+</div></nav>
+    <div id="search-resultbox" style="display: none;" class="modal-content">
+        <ul id="search-results">
+        </ul>
+    </div>
+
+    
+<div class="row">
+    <div class="col-md-3">
+                <div id="navigation" class="list-group"><a class="list-group-item active" href="#navigation-26" data-toggle="collapse" data-parent="#navigation">bizley\podium <b class="caret"></b></a><div id="navigation-26" class="submenu panel-collapse collapse in"><a class="list-group-item" href="./bizley-podium-podium.html">Podium</a>
+<a class="list-group-item" href="./bizley-podium-podiumcache.html">PodiumCache</a>
+<a class="list-group-item" href="./bizley-podium-podiumcomponent.html">PodiumComponent</a>
+<a class="list-group-item active" href="./bizley-podium-podiumconfig.html">PodiumConfig</a></div>
+<a class="list-group-item" href="#navigation-27" data-toggle="collapse" data-parent="#navigation">bizley\podium\actions <b class="caret"></b></a><div id="navigation-27" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-actions-adminaction.html">AdminAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-memberaction.html">MemberAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-messageaction.html">MessageAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-threadaction.html">ThreadAction</a></div>
+<a class="list-group-item" href="#navigation-28" data-toggle="collapse" data-parent="#navigation">bizley\podium\assets <b class="caret"></b></a><div id="navigation-28" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-assets-highlightasset.html">HighlightAsset</a>
+<a class="list-group-item" href="./bizley-podium-assets-podiumasset.html">PodiumAsset</a></div>
+<a class="list-group-item" href="#navigation-29" data-toggle="collapse" data-parent="#navigation">bizley\podium\console <b class="caret"></b></a><div id="navigation-29" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-console-queuecontroller.html">QueueController</a>
+<a class="list-group-item" href="./bizley-podium-console-usercontroller.html">UserController</a></div>
+<a class="list-group-item" href="#navigation-30" data-toggle="collapse" data-parent="#navigation">bizley\podium\controllers <b class="caret"></b></a><div id="navigation-30" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-controllers-accountcontroller.html">AccountController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-admincontroller.html">AdminController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-adminforumcontroller.html">AdminForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-basecontroller.html">BaseController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumcontroller.html">ForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumpostcontroller.html">ForumPostController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumthreadcontroller.html">ForumThreadController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-installcontroller.html">InstallController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-memberscontroller.html">MembersController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-messagescontroller.html">MessagesController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-profilecontroller.html">ProfileController</a></div>
+<a class="list-group-item" href="#navigation-31" data-toggle="collapse" data-parent="#navigation">bizley\podium\db <b class="caret"></b></a><div id="navigation-31" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-db-activerecord.html">ActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-db-query.html">Query</a>
+<a class="list-group-item" href="./bizley-podium-db-userquery.html">UserQuery</a></div>
+<a class="list-group-item" href="#navigation-32" data-toggle="collapse" data-parent="#navigation">bizley\podium\filters <b class="caret"></b></a><div id="navigation-32" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-filters-accesscontrol.html">AccessControl</a>
+<a class="list-group-item" href="./bizley-podium-filters-installrule.html">InstallRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-loginrequiredrule.html">LoginRequiredRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-permissiondeniedrule.html">PermissionDeniedRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-podiumrolerule.html">PodiumRoleRule</a></div>
+<a class="list-group-item" href="#navigation-33" data-toggle="collapse" data-parent="#navigation">bizley\podium\helpers <b class="caret"></b></a><div id="navigation-33" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-helpers-helper.html">Helper</a></div>
+<a class="list-group-item" href="#navigation-34" data-toggle="collapse" data-parent="#navigation">bizley\podium\log <b class="caret"></b></a><div id="navigation-34" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-log-dbtarget.html">DbTarget</a>
+<a class="list-group-item" href="./bizley-podium-log-log.html">Log</a></div>
+<a class="list-group-item" href="#navigation-35" data-toggle="collapse" data-parent="#navigation">bizley\podium\maintenance <b class="caret"></b></a><div id="navigation-35" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-maintenance-installation.html">Installation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-maintenance.html">Maintenance</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-schemaoperation.html">SchemaOperation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-update.html">Update</a></div>
+<a class="list-group-item" href="#navigation-36" data-toggle="collapse" data-parent="#navigation">bizley\podium\models <b class="caret"></b></a><div id="navigation-36" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-activity.html">Activity</a>
+<a class="list-group-item" href="./bizley-podium-models-category.html">Category</a>
+<a class="list-group-item" href="./bizley-podium-models-content.html">Content</a>
+<a class="list-group-item" href="./bizley-podium-models-email.html">Email</a>
+<a class="list-group-item" href="./bizley-podium-models-forum.html">Forum</a>
+<a class="list-group-item" href="./bizley-podium-models-forumsearch.html">ForumSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-logsearch.html">LogSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-message.html">Message</a>
+<a class="list-group-item" href="./bizley-podium-models-messagereceiver.html">MessageReceiver</a>
+<a class="list-group-item" href="./bizley-podium-models-messagesearch.html">MessageSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-meta.html">Meta</a>
+<a class="list-group-item" href="./bizley-podium-models-mod.html">Mod</a>
+<a class="list-group-item" href="./bizley-podium-models-poll.html">Poll</a>
+<a class="list-group-item" href="./bizley-podium-models-pollanswer.html">PollAnswer</a>
+<a class="list-group-item" href="./bizley-podium-models-post.html">Post</a>
+<a class="list-group-item" href="./bizley-podium-models-postthumb.html">PostThumb</a>
+<a class="list-group-item" href="./bizley-podium-models-subscription.html">Subscription</a>
+<a class="list-group-item" href="./bizley-podium-models-thread.html">Thread</a>
+<a class="list-group-item" href="./bizley-podium-models-threadview.html">ThreadView</a>
+<a class="list-group-item" href="./bizley-podium-models-user.html">User</a>
+<a class="list-group-item" href="./bizley-podium-models-usersearch.html">UserSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-vocabulary.html">Vocabulary</a></div>
+<a class="list-group-item" href="#navigation-37" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\db <b class="caret"></b></a><div id="navigation-37" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-db-activityactiverecord.html">ActivityActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-categoryactiverecord.html">CategoryActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-contentactiverecord.html">ContentActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-emailactiverecord.html">EmailActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-forumactiverecord.html">ForumActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messageactiverecord.html">MessageActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messagereceiveractiverecord.html">MessageReceiverActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-metaactiverecord.html">MetaActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-modactiverecord.html">ModActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollactiverecord.html">PollActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollansweractiverecord.html">PollAnswerActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postactiverecord.html">PostActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postthumbactiverecord.html">PostThumbActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-subscriptionactiverecord.html">SubscriptionActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadactiverecord.html">ThreadActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadviewactiverecord.html">ThreadViewActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-useractiverecord.html">UserActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-vocabularyactiverecord.html">VocabularyActiveRecord</a></div>
+<a class="list-group-item" href="#navigation-38" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\forms <b class="caret"></b></a><div id="navigation-38" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-forms-configform.html">ConfigForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-loginform.html">LoginForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-reactivateform.html">ReactivateForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-resetform.html">ResetForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-searchform.html">SearchForm</a></div>
+<a class="list-group-item" href="#navigation-39" data-toggle="collapse" data-parent="#navigation">bizley\podium\rbac <b class="caret"></b></a><div id="navigation-39" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-rbac-authorrule.html">AuthorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-moderatorrule.html">ModeratorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-rbac.html">Rbac</a></div>
+<a class="list-group-item" href="#navigation-40" data-toggle="collapse" data-parent="#navigation">bizley\podium\services <b class="caret"></b></a><div id="navigation-40" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-services-sorter.html">Sorter</a>
+<a class="list-group-item" href="./bizley-podium-services-threadverifier.html">ThreadVerifier</a></div>
+<a class="list-group-item" href="#navigation-41" data-toggle="collapse" data-parent="#navigation">bizley\podium\traits <b class="caret"></b></a><div id="navigation-41" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-traits-flashtrait.html">FlashTrait</a></div>
+<a class="list-group-item" href="#navigation-42" data-toggle="collapse" data-parent="#navigation">bizley\podium\web <b class="caret"></b></a><div id="navigation-42" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-web-user.html">User</a></div>
+<a class="list-group-item" href="#navigation-43" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets <b class="caret"></b></a><div id="navigation-43" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-alert.html">Alert</a>
+<a class="list-group-item" href="./bizley-podium-widgets-avatar.html">Avatar</a>
+<a class="list-group-item" href="./bizley-podium-widgets-latestposts.html">LatestPosts</a>
+<a class="list-group-item" href="./bizley-podium-widgets-modal.html">Modal</a>
+<a class="list-group-item" href="./bizley-podium-widgets-pagesizer.html">PageSizer</a>
+<a class="list-group-item" href="./bizley-podium-widgets-readers.html">Readers</a></div>
+<a class="list-group-item" href="#navigation-44" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror <b class="caret"></b></a><div id="navigation-44" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-codemirror.html">CodeMirror</a></div>
+<a class="list-group-item" href="#navigation-45" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror\assets <b class="caret"></b></a><div id="navigation-45" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorasset.html">CodeMirrorAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorbuttonsasset.html">CodeMirrorButtonsAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorconfigasset.html">CodeMirrorConfigAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorextraasset.html">CodeMirrorExtraAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorlibasset.html">CodeMirrorLibAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrormodesasset.html">CodeMirrorModesAsset</a></div>
+<a class="list-group-item" href="#navigation-46" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\editor <b class="caret"></b></a><div id="navigation-46" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-editor-editorbasic.html">EditorBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-editor-editorfull.html">EditorFull</a></div>
+<a class="list-group-item" href="#navigation-47" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\gridview <b class="caret"></b></a><div id="navigation-47" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-gridview-actioncolumn.html">ActionColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-datacolumn.html">DataColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-gridview.html">GridView</a></div>
+<a class="list-group-item" href="#navigation-48" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\poll <b class="caret"></b></a><div id="navigation-48" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-poll-poll.html">Poll</a></div>
+<a class="list-group-item" href="#navigation-49" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\quill <b class="caret"></b></a><div id="navigation-49" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-quill-quillbasic.html">QuillBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-quill-quillfull.html">QuillFull</a></div></div>    </div>
+    <div class="col-md-9 api-content" role="main">
+        <h1>Class bizley\podium\PodiumConfig</h1>
+<div class="top-nav">
+    <a href="index.html">All Classes</a>
+                | <a href="#methods">Methods</a>
+                    | <a href="#constants">Constants</a>
+    </div>
+
+<table class="summaryTable docClass table table-bordered">
+    <colgroup>
+        <col class="col-name" />
+        <col class="col-value" />
+    </colgroup>
+            <tr><th>Inheritance</th><td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a> &raquo;
+yii\base\Component</td></tr>
+                                        <tr><th>Available since version</th><td>0.5</td></tr>
+            </table>
+
+<div class="class-description">
+    <p><strong>Podium configuration component.</strong></p>
+    <p>Handles the module configuration.
+Every default configuration value is saved in database first time when
+administrator saves Podium settings.</p>
+
+    </div>
+
+<a id="properties"></a>
+
+<a id="methods"></a>
+
+<div class="summary doc-method">
+<h2>Public Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr id="all()">
+        <td><a href="bizley-podium-podiumconfig.html#all()-detail">all()</a></td>
+        <td>Alias for getAll().</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="get()">
+        <td><a href="bizley-podium-podiumconfig.html#get()-detail">get()</a></td>
+        <td>Returns configuration value of the given name.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getAll()">
+        <td><a href="bizley-podium-podiumconfig.html#getAll()-detail">getAll()</a></td>
+        <td>Returns configuration values.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getCache()">
+        <td><a href="bizley-podium-podiumconfig.html#getCache()-detail">getCache()</a></td>
+        <td>Returns Podium cache instance.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getCached()">
+        <td><a href="bizley-podium-podiumconfig.html#getCached()-detail">getCached()</a></td>
+        <td>Returns cached configuration values.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getDefaults()">
+        <td><a href="bizley-podium-podiumconfig.html#getDefaults()-detail">getDefaults()</a></td>
+        <td>Returns list of default configuration values.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getNotCached()">
+        <td><a href="bizley-podium-podiumconfig.html#getNotCached()-detail">getNotCached()</a></td>
+        <td>Returns not cached configuration values.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="getStored()">
+        <td><a href="bizley-podium-podiumconfig.html#getStored()-detail">getStored()</a></td>
+        <td>Returns stored configuration values.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="set()">
+        <td><a href="bizley-podium-podiumconfig.html#set()-detail">set()</a></td>
+        <td>Sets configuration value of the given name.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+            <tr id="tableName()">
+        <td><a href="bizley-podium-podiumconfig.html#tableName()-detail">tableName()</a></td>
+        <td>Returns configuration table name.</td>
+        <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+    </tr>
+    </table>
+</div>
+
+<a id="events"></a>
+
+<a id="constants"></a>
+<div class="summary doc-const">
+    <h2>Constants</h2>
+
+    <p><a href="#" class="toggle">Hide inherited constants</a></p>
+
+    <table class="summary-table table table-striped table-bordered table-hover">
+    <colgroup>
+        <col class="col-const" />
+        <col class="col-value" />
+        <col class="col-description" />
+        <col class="col-defined" />
+    </colgroup>
+    <tr>
+        <th>Constant</th><th>Value</th><th>Description</th><th>Defined By</th>
+    </tr>
+            <tr id="DEFAULT_FROM_EMAIL">
+          <td id="DEFAULT_FROM_EMAIL-detail">DEFAULT_FROM_EMAIL</td>
+          <td>'no-reply@change.me'</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="DEFAULT_FROM_NAME">
+          <td id="DEFAULT_FROM_NAME-detail">DEFAULT_FROM_NAME</td>
+          <td>'Podium'</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="FLAG_ALLOW_POLLS">
+          <td id="FLAG_ALLOW_POLLS-detail">FLAG_ALLOW_POLLS</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="FLAG_MEMBERS_VISIBLE">
+          <td id="FLAG_MEMBERS_VISIBLE-detail">FLAG_MEMBERS_VISIBLE</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="FLAG_MERGE_POSTS">
+          <td id="FLAG_MERGE_POSTS-detail">FLAG_MERGE_POSTS</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="FLAG_USE_CAPTCHA">
+          <td id="FLAG_USE_CAPTCHA-detail">FLAG_USE_CAPTCHA</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="FLAG_USE_WYSIWYG">
+          <td id="FLAG_USE_WYSIWYG-detail">FLAG_USE_WYSIWYG</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="HOT_MINIMUM">
+          <td id="HOT_MINIMUM-detail">HOT_MINIMUM</td>
+          <td>20</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="MAINTENANCE_MODE">
+          <td id="MAINTENANCE_MODE-detail">MAINTENANCE_MODE</td>
+          <td>0</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="MAX_SEND_ATTEMPTS">
+          <td id="MAX_SEND_ATTEMPTS-detail">MAX_SEND_ATTEMPTS</td>
+          <td>5</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="META_DESCRIPTION">
+          <td id="META_DESCRIPTION-detail">META_DESCRIPTION</td>
+          <td>'Podium - Yii 2 Forum Module'</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="META_KEYWORDS">
+          <td id="META_KEYWORDS-detail">META_KEYWORDS</td>
+          <td>'yii2, forum, podium'</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="PODIUM_NAME">
+          <td id="PODIUM_NAME-detail">PODIUM_NAME</td>
+          <td>'Podium'</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="REGISTRATION_OFF">
+          <td id="REGISTRATION_OFF-detail">REGISTRATION_OFF</td>
+          <td>0</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="SECONDS_ACTIVATION_TOKEN_EXPIRE">
+          <td id="SECONDS_ACTIVATION_TOKEN_EXPIRE-detail">SECONDS_ACTIVATION_TOKEN_EXPIRE</td>
+          <td>259200</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="SECONDS_EMAIL_TOKEN_EXPIRE">
+          <td id="SECONDS_EMAIL_TOKEN_EXPIRE-detail">SECONDS_EMAIL_TOKEN_EXPIRE</td>
+          <td>86400</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+            <tr id="SECONDS_PASSWORD_RESET_TOKEN_EXPIRE">
+          <td id="SECONDS_PASSWORD_RESET_TOKEN_EXPIRE-detail">SECONDS_PASSWORD_RESET_TOKEN_EXPIRE</td>
+          <td>86400</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-podiumconfig.html">bizley\podium\PodiumConfig</a></td>
+        </tr>
+        </table>
+</div>
+
+<h2>Method Details</h2>
+
+<div class="method-doc">
+
+    <div class="detail-header h3" id="all()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#all()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        all()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Alias for getAll().</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#all()-detail">all</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="get()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#get()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        get()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns configuration value of the given name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.null">null</a></span> <strong><a href="bizley-podium-podiumconfig.html#get()-detail">get</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Configuration key</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getAll()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getAll()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getAll()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns configuration values.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#getAll()-detail">getAll</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getCache()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getCache()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getCache()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.5)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns Podium cache instance.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\caching\Cache</span> <strong><a href="bizley-podium-podiumconfig.html#getCache()-detail">getCache</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getCached()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getCached()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getCached()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns cached configuration values.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#getCached()-detail">getCached</a></strong> ( )</td></tr>
+                                                            <tr>
+                  <th class="param-name-col">throws</th>
+                  <td class="param-type-col"><a href="http://www.php.net/class.exception">Exception</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                        </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getDefaults()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getDefaults()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getDefaults()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns list of default configuration values.</strong></p>
+
+        <p>These values are stored in cached configuration but saved only when
+administrator saves Podium settings.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#getDefaults()-detail">getDefaults</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getNotCached()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getNotCached()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getNotCached()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns not cached configuration values.</strong></p>
+
+        <p>If stored configuration is empty default values are returned.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#getNotCached()-detail">getNotCached</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getStored()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#getStored()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getStored()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns stored configuration values.</strong></p>
+
+        <p>These can be empty if configuration has not been modified.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.array">array</a></span> <strong><a href="bizley-podium-podiumconfig.html#getStored()-detail">getStored</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="set()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#set()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        set()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Sets configuration value of the given name.</strong></p>
+
+        <p>Every change automatically updates the cache.
+Set value to null to restore default one.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-podiumconfig.html#set()-detail">set</a></strong> ( <span style="color: #0000BB">$name</span>, <span style="color: #0000BB">$value</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Configuration key</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$value</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Configuration value</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="tableName()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-podiumconfig.html#tableName()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        tableName()
+        <span class="detail-header-tag small">
+            public                        static            method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns configuration table name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public static</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-podiumconfig.html#tableName()-detail">tableName</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+</div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    /*<![CDATA[*/
+    $("a.toggle").on('click', function () {
+        var $this = $(this);
+        if ($this.hasClass('properties-hidden')) {
+            $this.text($this.text().replace(/Show/,'Hide'));
+            $this.parents(".summary").find(".inherited").show();
+            $this.removeClass('properties-hidden');
+        } else {
+            $this.text($this.text().replace(/Hide/,'Show'));
+            $this.parents(".summary").find(".inherited").hide();
+            $this.addClass('properties-hidden');
+        }
+
+        return false;
+    });
+    /*
+     $(".sourceCode a.show").toggle(function () {
+     $(this).text($(this).text().replace(/show/,'hide'));
+     $(this).parents(".sourceCode").find("div.code").show();
+     },function () {
+     $(this).text($(this).text().replace(/hide/,'show'));
+     $(this).parents(".sourceCode").find("div.code").hide();
+     });
+     $("a.sourceLink").click(function () {
+     $(this).attr('target','_blank');
+     });
+     */
+    /*]]>*/
+</script>
+
+
+</div>
+
+<footer class="footer">
+        <p class="pull-right"><small>Page generated on Fri, 24 Mar 2017 16:27:06 +0000</small></p>
+    Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a></footer>
+
+<script type="text/javascript">jQuery(document).ready(function () {
+    var shiftWindow = function () { scrollBy(0, -50) };
+    if (location.hash) setTimeout(shiftWindow, 1);
+    window.addEventListener("hashchange", shiftWindow);
+var element = document.createElement("script");
+element.src = "./jssearch.index.js";
+document.body.appendChild(element);
+
+var searchBox = $('#searchbox');
+
+// search when typing in search field
+searchBox.on("keyup", function(event) {
+    var query = $(this).val();
+
+    if (query == '' || event.which == 27) {
+        $('#search-resultbox').hide();
+        return;
+    } else if (event.which == 13) {
+        var selectedLink = $('#search-resultbox a.selected');
+        if (selectedLink.length != 0) {
+            document.location = selectedLink.attr('href');
+            return;
+        }
+    } else if (event.which == 38 || event.which == 40) {
+        $('#search-resultbox').show();
+
+        var selected = $('#search-resultbox a.selected');
+        if (selected.length == 0) {
+            $('#search-results').find('a').first().addClass('selected');
+        } else {
+            var next;
+            if (event.which == 40) {
+                next = selected.parent().next().find('a').first();
+            } else {
+                next = selected.parent().prev().find('a').first();
+            }
+            if (next.length != 0) {
+                var resultbox = $('#search-results');
+                var position = next.position();
+
+//              TODO scrolling is buggy and jumps around
+//                resultbox.scrollTop(Math.floor(position.top));
+//                console.log(position.top);
+
+                selected.removeClass('selected');
+                next.addClass('selected');
+            }
+        }
+
+        return;
+    }
+    $('#search-resultbox').show();
+    $('#search-results').html('<li><span class="no-results">No results</span></li>');
+
+    var result = jssearch.search(query);
+
+    if (result.length > 0) {
+        var i = 0;
+        var resHtml = '';
+
+        for (var key in result) {
+            if (i++ > 20) {
+                break;
+            }
+            resHtml = resHtml +
+            '<li><a href="' + result[key].file.u.substr(3) +'"><span class="title">' + result[key].file.t + '</span>' +
+            '<span class="description">' + result[key].file.d + '</span></a></li>';
+        }
+        $('#search-results').html(resHtml);
+    }
+});
+
+// hide the search results on ESC
+$(document).on("keyup", function(event) { if (event.which == 27) { $('#search-resultbox').hide(); } });
+// hide search results on click to document
+$(document).bind('click', function (e) { $('#search-resultbox').hide(); });
+// except the following:
+searchBox.bind('click', function(e) { e.stopPropagation(); });
+$('#search-resultbox').bind('click', function(e) { e.stopPropagation(); });
+
+});</script></body>
+</html>

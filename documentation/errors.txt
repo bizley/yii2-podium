@@ -1,0 +1,825 @@
+Array
+(
+    [0] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/assets/HighlightAsset.php
+            [message] => Method $css has no parent to inherit from in bizley\podium\assets\HighlightAsset.
+        )
+
+    [1] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/assets/PodiumAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\assets\PodiumAsset.
+        )
+
+    [2] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/assets/PodiumAsset.php
+            [message] => Method $css has no parent to inherit from in bizley\podium\assets\PodiumAsset.
+        )
+
+    [3] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/assets/PodiumAsset.php
+            [message] => Method $depends has no parent to inherit from in bizley\podium\assets\PodiumAsset.
+        )
+
+    [4] => Array
+        (
+            [line] => 62
+            [file] => vendor/bizley/yii2-podium/src/console/QueueController.php
+            [message] => Method options has no parent to inherit from in bizley\podium\console\QueueController.
+        )
+
+    [5] => Array
+        (
+            [line] => 55
+            [file] => vendor/bizley/yii2-podium/src/controllers/AccountController.php
+            [message] => Method actions has no parent to inherit from in bizley\podium\controllers\AccountController.
+        )
+
+    [6] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [7] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [8] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [9] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [10] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [11] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [12] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [13] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [14] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [15] => Array
+        (
+            [line] => 42
+            [file] => vendor/bizley/yii2-podium/src/controllers/BaseController.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\controllers\BaseController.
+        )
+
+    [16] => Array
+        (
+            [line] => 34
+            [file] => vendor/bizley/yii2-podium/src/controllers/InstallController.php
+            [message] => Method beforeAction has no parent to inherit from in bizley\podium\controllers\InstallController.
+        )
+
+    [17] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/models/ForumSearch.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\ForumSearch.
+        )
+
+    [18] => Array
+        (
+            [line] => 20
+            [file] => vendor/bizley/yii2-podium/src/models/LogSearch.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\LogSearch.
+        )
+
+    [19] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/models/LogSearch.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\LogSearch.
+        )
+
+    [20] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/models/ThreadView.php
+            [message] => Undefined parameter documented: $params in search().
+        )
+
+    [21] => Array
+        (
+            [line] => 80
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [22] => Array
+        (
+            [line] => 112
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [23] => Array
+        (
+            [line] => 80
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [24] => Array
+        (
+            [line] => 112
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [25] => Array
+        (
+            [line] => 80
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [26] => Array
+        (
+            [line] => 112
+            [file] => vendor/bizley/yii2-podium/src/models/User.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\User.
+        )
+
+    [27] => Array
+        (
+            [line] => 41
+            [file] => vendor/bizley/yii2-podium/src/models/UserSearch.php
+            [message] => Method search has no parent to inherit from in bizley\podium\models\UserSearch.
+        )
+
+    [28] => Array
+        (
+            [line] => 32
+            [file] => vendor/bizley/yii2-podium/src/models/db/ActivityActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ActivityActiveRecord.
+        )
+
+    [29] => Array
+        (
+            [line] => 40
+            [file] => vendor/bizley/yii2-podium/src/models/db/ActivityActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\ActivityActiveRecord.
+        )
+
+    [30] => Array
+        (
+            [line] => 31
+            [file] => vendor/bizley/yii2-podium/src/models/db/CategoryActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\CategoryActiveRecord.
+        )
+
+    [31] => Array
+        (
+            [line] => 39
+            [file] => vendor/bizley/yii2-podium/src/models/db/CategoryActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\CategoryActiveRecord.
+        )
+
+    [32] => Array
+        (
+            [line] => 53
+            [file] => vendor/bizley/yii2-podium/src/models/db/CategoryActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\CategoryActiveRecord.
+        )
+
+    [33] => Array
+        (
+            [line] => 25
+            [file] => vendor/bizley/yii2-podium/src/models/db/ContentActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ContentActiveRecord.
+        )
+
+    [34] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/db/ContentActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\ContentActiveRecord.
+        )
+
+    [35] => Array
+        (
+            [line] => 36
+            [file] => vendor/bizley/yii2-podium/src/models/db/EmailActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\EmailActiveRecord.
+        )
+
+    [36] => Array
+        (
+            [line] => 44
+            [file] => vendor/bizley/yii2-podium/src/models/db/EmailActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\EmailActiveRecord.
+        )
+
+    [37] => Array
+        (
+            [line] => 52
+            [file] => vendor/bizley/yii2-podium/src/models/db/EmailActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\EmailActiveRecord.
+        )
+
+    [38] => Array
+        (
+            [line] => 36
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [39] => Array
+        (
+            [line] => 44
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [40] => Array
+        (
+            [line] => 58
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [41] => Array
+        (
+            [line] => 36
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [42] => Array
+        (
+            [line] => 44
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [43] => Array
+        (
+            [line] => 58
+            [file] => vendor/bizley/yii2-podium/src/models/db/ForumActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\ForumActiveRecord.
+        )
+
+    [44] => Array
+        (
+            [line] => 59
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [45] => Array
+        (
+            [line] => 67
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [46] => Array
+        (
+            [line] => 75
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [47] => Array
+        (
+            [line] => 89
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [48] => Array
+        (
+            [line] => 59
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [49] => Array
+        (
+            [line] => 67
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [50] => Array
+        (
+            [line] => 75
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [51] => Array
+        (
+            [line] => 89
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\MessageActiveRecord.
+        )
+
+    [52] => Array
+        (
+            [line] => 46
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageReceiverActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\MessageReceiverActiveRecord.
+        )
+
+    [53] => Array
+        (
+            [line] => 54
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageReceiverActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\MessageReceiverActiveRecord.
+        )
+
+    [54] => Array
+        (
+            [line] => 62
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageReceiverActiveRecord.php
+            [message] => Method scenarios has no parent to inherit from in bizley\podium\models\db\MessageReceiverActiveRecord.
+        )
+
+    [55] => Array
+        (
+            [line] => 73
+            [file] => vendor/bizley/yii2-podium/src/models/db/MessageReceiverActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\MessageReceiverActiveRecord.
+        )
+
+    [56] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [57] => Array
+        (
+            [line] => 41
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [58] => Array
+        (
+            [line] => 49
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [59] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [60] => Array
+        (
+            [line] => 41
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [61] => Array
+        (
+            [line] => 49
+            [file] => vendor/bizley/yii2-podium/src/models/db/MetaActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\MetaActiveRecord.
+        )
+
+    [62] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/models/db/ModActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ModActiveRecord.
+        )
+
+    [63] => Array
+        (
+            [line] => 51
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\PollActiveRecord.
+        )
+
+    [64] => Array
+        (
+            [line] => 59
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\PollActiveRecord.
+        )
+
+    [65] => Array
+        (
+            [line] => 67
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\PollActiveRecord.
+        )
+
+    [66] => Array
+        (
+            [line] => 102
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollActiveRecord.php
+            [message] => Method attributeLabels has no parent to inherit from in bizley\podium\models\db\PollActiveRecord.
+        )
+
+    [67] => Array
+        (
+            [line] => 24
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollAnswerActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\PollAnswerActiveRecord.
+        )
+
+    [68] => Array
+        (
+            [line] => 32
+            [file] => vendor/bizley/yii2-podium/src/models/db/PollAnswerActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\PollAnswerActiveRecord.
+        )
+
+    [69] => Array
+        (
+            [line] => 48
+            [file] => vendor/bizley/yii2-podium/src/models/db/PostActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\PostActiveRecord.
+        )
+
+    [70] => Array
+        (
+            [line] => 56
+            [file] => vendor/bizley/yii2-podium/src/models/db/PostActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\PostActiveRecord.
+        )
+
+    [71] => Array
+        (
+            [line] => 64
+            [file] => vendor/bizley/yii2-podium/src/models/db/PostActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\PostActiveRecord.
+        )
+
+    [72] => Array
+        (
+            [line] => 25
+            [file] => vendor/bizley/yii2-podium/src/models/db/PostThumbActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\PostThumbActiveRecord.
+        )
+
+    [73] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/db/PostThumbActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\PostThumbActiveRecord.
+        )
+
+    [74] => Array
+        (
+            [line] => 29
+            [file] => vendor/bizley/yii2-podium/src/models/db/SubscriptionActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\SubscriptionActiveRecord.
+        )
+
+    [75] => Array
+        (
+            [line] => 91
+            [file] => vendor/bizley/yii2-podium/src/models/db/ThreadActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ThreadActiveRecord.
+        )
+
+    [76] => Array
+        (
+            [line] => 99
+            [file] => vendor/bizley/yii2-podium/src/models/db/ThreadActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\ThreadActiveRecord.
+        )
+
+    [77] => Array
+        (
+            [line] => 113
+            [file] => vendor/bizley/yii2-podium/src/models/db/ThreadActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\ThreadActiveRecord.
+        )
+
+    [78] => Array
+        (
+            [line] => 24
+            [file] => vendor/bizley/yii2-podium/src/models/db/ThreadViewActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\ThreadViewActiveRecord.
+        )
+
+    [79] => Array
+        (
+            [line] => 59
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [80] => Array
+        (
+            [line] => 67
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method behaviors has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [81] => Array
+        (
+            [line] => 81
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method find has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [82] => Array
+        (
+            [line] => 181
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method findIdentity has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [83] => Array
+        (
+            [line] => 194
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method findIdentityByAccessToken has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [84] => Array
+        (
+            [line] => 234
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method getAuthKey has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [85] => Array
+        (
+            [line] => 242
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method getId has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [86] => Array
+        (
+            [line] => 379
+            [file] => vendor/bizley/yii2-podium/src/models/db/UserActiveRecord.php
+            [message] => Method validateAuthKey has no parent to inherit from in bizley\podium\models\db\UserActiveRecord.
+        )
+
+    [87] => Array
+        (
+            [line] => 37
+            [file] => vendor/bizley/yii2-podium/src/models/db/VocabularyActiveRecord.php
+            [message] => Method tableName has no parent to inherit from in bizley\podium\models\db\VocabularyActiveRecord.
+        )
+
+    [88] => Array
+        (
+            [line] => 45
+            [file] => vendor/bizley/yii2-podium/src/models/db/VocabularyActiveRecord.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\db\VocabularyActiveRecord.
+        )
+
+    [89] => Array
+        (
+            [line] => 36
+            [file] => vendor/bizley/yii2-podium/src/models/forms/ConfigForm.php
+            [message] => Method init has no parent to inherit from in bizley\podium\models\forms\ConfigForm.
+        )
+
+    [90] => Array
+        (
+            [line] => 37
+            [file] => vendor/bizley/yii2-podium/src/models/forms/LoginForm.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\forms\LoginForm.
+        )
+
+    [91] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/forms/ReactivateForm.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\forms\ReactivateForm.
+        )
+
+    [92] => Array
+        (
+            [line] => 33
+            [file] => vendor/bizley/yii2-podium/src/models/forms/ResetForm.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\forms\ResetForm.
+        )
+
+    [93] => Array
+        (
+            [line] => 87
+            [file] => vendor/bizley/yii2-podium/src/models/forms/SearchForm.php
+            [message] => Method rules has no parent to inherit from in bizley\podium\models\forms\SearchForm.
+        )
+
+    [94] => Array
+        (
+            [line] => 27
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/CodeMirror.php
+            [message] => Method run has no parent to inherit from in bizley\podium\widgets\codemirror\CodeMirror.
+        )
+
+    [95] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorAsset.php
+            [message] => Method $depends has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorAsset.
+        )
+
+    [96] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorButtonsAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorButtonsAsset.
+        )
+
+    [97] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorButtonsAsset.php
+            [message] => Method $js has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorButtonsAsset.
+        )
+
+    [98] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorConfigAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorConfigAsset.
+        )
+
+    [99] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorConfigAsset.php
+            [message] => Method $js has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorConfigAsset.
+        )
+
+    [100] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorConfigAsset.php
+            [message] => Method $css has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorConfigAsset.
+        )
+
+    [101] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorExtraAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorExtraAsset.
+        )
+
+    [102] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorExtraAsset.php
+            [message] => Method $js has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorExtraAsset.
+        )
+
+    [103] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorLibAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorLibAsset.
+        )
+
+    [104] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorLibAsset.php
+            [message] => Method $css has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorLibAsset.
+        )
+
+    [105] => Array
+        (
+            [line] => 28
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorLibAsset.php
+            [message] => Method $js has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorLibAsset.
+        )
+
+    [106] => Array
+        (
+            [line] => 18
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorModesAsset.php
+            [message] => Method $sourcePath has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorModesAsset.
+        )
+
+    [107] => Array
+        (
+            [line] => 23
+            [file] => vendor/bizley/yii2-podium/src/widgets/codemirror/assets/CodeMirrorModesAsset.php
+            [message] => Method $js has no parent to inherit from in bizley\podium\widgets\codemirror\assets\CodeMirrorModesAsset.
+        )
+
+    [108] => Array
+        (
+            [line] => 26
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorBasic.php
+            [message] => Method init has no parent to inherit from in bizley\podium\widgets\editor\EditorBasic.
+        )
+
+    [109] => Array
+        (
+            [line] => 48
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorBasic.php
+            [message] => Method run has no parent to inherit from in bizley\podium\widgets\editor\EditorBasic.
+        )
+
+    [110] => Array
+        (
+            [line] => 26
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorFull.php
+            [message] => Method init has no parent to inherit from in bizley\podium\widgets\editor\EditorFull.
+        )
+
+    [111] => Array
+        (
+            [line] => 49
+            [file] => vendor/bizley/yii2-podium/src/widgets/editor/EditorFull.php
+            [message] => Method run has no parent to inherit from in bizley\podium\widgets\editor\EditorFull.
+        )
+
+    [112] => Array
+        (
+            [line] => 43
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/ActionColumn.php
+            [message] => Method init has no parent to inherit from in bizley\podium\widgets\gridview\ActionColumn.
+        )
+
+    [113] => Array
+        (
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/ActionColumn.php
+            [message] => broken link to \bizley\podium\widgets\gridview\initDefaultButtons() in bizley\podium\widgets\gridview\ActionColumn
+        )
+
+    [114] => Array
+        (
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/ActionColumn.php
+            [message] => broken link to \bizley\podium\widgets\gridview\initDefaultButtons() in bizley\podium\widgets\gridview\ActionColumn
+        )
+
+    [115] => Array
+        (
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/ActionColumn.php
+            [message] => broken link to \bizley\podium\widgets\gridview\Closure in bizley\podium\widgets\gridview\ActionColumn
+        )
+
+    [116] => Array
+        (
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/ActionColumn.php
+            [message] => broken link to \bizley\podium\widgets\gridview\Column in bizley\podium\widgets\gridview\ActionColumn
+        )
+
+    [117] => Array
+        (
+            [line] => 24
+            [file] => vendor/bizley/yii2-podium/src/widgets/gridview/DataColumn.php
+            [message] => Method getHeaderCellLabel has no parent to inherit from in bizley\podium\widgets\gridview\DataColumn.
+        )
+
+)

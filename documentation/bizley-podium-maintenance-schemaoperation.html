@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="language" content="en" />
+        <link href="./assets/965c3c75/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/55e46a96/solarized_light.css" rel="stylesheet">
+<link href="./assets/4f59573/style.css" rel="stylesheet">
+<script src="./assets/54b1ac8f/jquery.js"></script>
+<script src="./assets/965c3c75/js/bootstrap.js"></script>
+<script src="./assets/929620f2/jssearch.js"></script>    <title>SchemaOperation, bizley\podium\maintenance\SchemaOperation - Yii Framework 2.0 API Documentation</title>
+</head>
+<body>
+
+<div class="wrap">
+    <nav id="w102" class="navbar-inverse navbar-fixed-top navbar" role="navigation"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w102-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="./index.html">Yii Framework 2.0 API Documentation</a></div><div id="w102-collapse" class="collapse navbar-collapse"><ul id="w103" class="navbar-nav nav"><li><a href="./index.html">Class reference</a></li></ul><div class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input id="searchbox" type="text" class="form-control" placeholder="Search">
+  </div>
+</div>
+</div></nav>
+    <div id="search-resultbox" style="display: none;" class="modal-content">
+        <ul id="search-results">
+        </ul>
+    </div>
+
+    
+<div class="row">
+    <div class="col-md-3">
+                <div id="navigation" class="list-group"><a class="list-group-item" href="#navigation-78" data-toggle="collapse" data-parent="#navigation">bizley\podium <b class="caret"></b></a><div id="navigation-78" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-podium.html">Podium</a>
+<a class="list-group-item" href="./bizley-podium-podiumcache.html">PodiumCache</a>
+<a class="list-group-item" href="./bizley-podium-podiumcomponent.html">PodiumComponent</a>
+<a class="list-group-item" href="./bizley-podium-podiumconfig.html">PodiumConfig</a></div>
+<a class="list-group-item" href="#navigation-79" data-toggle="collapse" data-parent="#navigation">bizley\podium\actions <b class="caret"></b></a><div id="navigation-79" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-actions-adminaction.html">AdminAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-memberaction.html">MemberAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-messageaction.html">MessageAction</a>
+<a class="list-group-item" href="./bizley-podium-actions-threadaction.html">ThreadAction</a></div>
+<a class="list-group-item" href="#navigation-80" data-toggle="collapse" data-parent="#navigation">bizley\podium\assets <b class="caret"></b></a><div id="navigation-80" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-assets-highlightasset.html">HighlightAsset</a>
+<a class="list-group-item" href="./bizley-podium-assets-podiumasset.html">PodiumAsset</a></div>
+<a class="list-group-item" href="#navigation-81" data-toggle="collapse" data-parent="#navigation">bizley\podium\console <b class="caret"></b></a><div id="navigation-81" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-console-queuecontroller.html">QueueController</a>
+<a class="list-group-item" href="./bizley-podium-console-usercontroller.html">UserController</a></div>
+<a class="list-group-item" href="#navigation-82" data-toggle="collapse" data-parent="#navigation">bizley\podium\controllers <b class="caret"></b></a><div id="navigation-82" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-controllers-accountcontroller.html">AccountController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-admincontroller.html">AdminController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-adminforumcontroller.html">AdminForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-basecontroller.html">BaseController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumcontroller.html">ForumController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumpostcontroller.html">ForumPostController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-forumthreadcontroller.html">ForumThreadController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-installcontroller.html">InstallController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-memberscontroller.html">MembersController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-messagescontroller.html">MessagesController</a>
+<a class="list-group-item" href="./bizley-podium-controllers-profilecontroller.html">ProfileController</a></div>
+<a class="list-group-item" href="#navigation-83" data-toggle="collapse" data-parent="#navigation">bizley\podium\db <b class="caret"></b></a><div id="navigation-83" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-db-activerecord.html">ActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-db-query.html">Query</a>
+<a class="list-group-item" href="./bizley-podium-db-userquery.html">UserQuery</a></div>
+<a class="list-group-item" href="#navigation-84" data-toggle="collapse" data-parent="#navigation">bizley\podium\filters <b class="caret"></b></a><div id="navigation-84" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-filters-accesscontrol.html">AccessControl</a>
+<a class="list-group-item" href="./bizley-podium-filters-installrule.html">InstallRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-loginrequiredrule.html">LoginRequiredRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-permissiondeniedrule.html">PermissionDeniedRule</a>
+<a class="list-group-item" href="./bizley-podium-filters-podiumrolerule.html">PodiumRoleRule</a></div>
+<a class="list-group-item" href="#navigation-85" data-toggle="collapse" data-parent="#navigation">bizley\podium\helpers <b class="caret"></b></a><div id="navigation-85" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-helpers-helper.html">Helper</a></div>
+<a class="list-group-item" href="#navigation-86" data-toggle="collapse" data-parent="#navigation">bizley\podium\log <b class="caret"></b></a><div id="navigation-86" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-log-dbtarget.html">DbTarget</a>
+<a class="list-group-item" href="./bizley-podium-log-log.html">Log</a></div>
+<a class="list-group-item active" href="#navigation-87" data-toggle="collapse" data-parent="#navigation">bizley\podium\maintenance <b class="caret"></b></a><div id="navigation-87" class="submenu panel-collapse collapse in"><a class="list-group-item" href="./bizley-podium-maintenance-installation.html">Installation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-maintenance.html">Maintenance</a>
+<a class="list-group-item active" href="./bizley-podium-maintenance-schemaoperation.html">SchemaOperation</a>
+<a class="list-group-item" href="./bizley-podium-maintenance-update.html">Update</a></div>
+<a class="list-group-item" href="#navigation-88" data-toggle="collapse" data-parent="#navigation">bizley\podium\models <b class="caret"></b></a><div id="navigation-88" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-activity.html">Activity</a>
+<a class="list-group-item" href="./bizley-podium-models-category.html">Category</a>
+<a class="list-group-item" href="./bizley-podium-models-content.html">Content</a>
+<a class="list-group-item" href="./bizley-podium-models-email.html">Email</a>
+<a class="list-group-item" href="./bizley-podium-models-forum.html">Forum</a>
+<a class="list-group-item" href="./bizley-podium-models-forumsearch.html">ForumSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-logsearch.html">LogSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-message.html">Message</a>
+<a class="list-group-item" href="./bizley-podium-models-messagereceiver.html">MessageReceiver</a>
+<a class="list-group-item" href="./bizley-podium-models-messagesearch.html">MessageSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-meta.html">Meta</a>
+<a class="list-group-item" href="./bizley-podium-models-mod.html">Mod</a>
+<a class="list-group-item" href="./bizley-podium-models-poll.html">Poll</a>
+<a class="list-group-item" href="./bizley-podium-models-pollanswer.html">PollAnswer</a>
+<a class="list-group-item" href="./bizley-podium-models-post.html">Post</a>
+<a class="list-group-item" href="./bizley-podium-models-postthumb.html">PostThumb</a>
+<a class="list-group-item" href="./bizley-podium-models-subscription.html">Subscription</a>
+<a class="list-group-item" href="./bizley-podium-models-thread.html">Thread</a>
+<a class="list-group-item" href="./bizley-podium-models-threadview.html">ThreadView</a>
+<a class="list-group-item" href="./bizley-podium-models-user.html">User</a>
+<a class="list-group-item" href="./bizley-podium-models-usersearch.html">UserSearch</a>
+<a class="list-group-item" href="./bizley-podium-models-vocabulary.html">Vocabulary</a></div>
+<a class="list-group-item" href="#navigation-89" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\db <b class="caret"></b></a><div id="navigation-89" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-db-activityactiverecord.html">ActivityActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-categoryactiverecord.html">CategoryActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-contentactiverecord.html">ContentActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-emailactiverecord.html">EmailActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-forumactiverecord.html">ForumActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messageactiverecord.html">MessageActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-messagereceiveractiverecord.html">MessageReceiverActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-metaactiverecord.html">MetaActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-modactiverecord.html">ModActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollactiverecord.html">PollActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-pollansweractiverecord.html">PollAnswerActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postactiverecord.html">PostActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-postthumbactiverecord.html">PostThumbActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-subscriptionactiverecord.html">SubscriptionActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadactiverecord.html">ThreadActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-threadviewactiverecord.html">ThreadViewActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-useractiverecord.html">UserActiveRecord</a>
+<a class="list-group-item" href="./bizley-podium-models-db-vocabularyactiverecord.html">VocabularyActiveRecord</a></div>
+<a class="list-group-item" href="#navigation-90" data-toggle="collapse" data-parent="#navigation">bizley\podium\models\forms <b class="caret"></b></a><div id="navigation-90" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-models-forms-configform.html">ConfigForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-loginform.html">LoginForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-reactivateform.html">ReactivateForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-resetform.html">ResetForm</a>
+<a class="list-group-item" href="./bizley-podium-models-forms-searchform.html">SearchForm</a></div>
+<a class="list-group-item" href="#navigation-91" data-toggle="collapse" data-parent="#navigation">bizley\podium\rbac <b class="caret"></b></a><div id="navigation-91" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-rbac-authorrule.html">AuthorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-moderatorrule.html">ModeratorRule</a>
+<a class="list-group-item" href="./bizley-podium-rbac-rbac.html">Rbac</a></div>
+<a class="list-group-item" href="#navigation-92" data-toggle="collapse" data-parent="#navigation">bizley\podium\services <b class="caret"></b></a><div id="navigation-92" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-services-sorter.html">Sorter</a>
+<a class="list-group-item" href="./bizley-podium-services-threadverifier.html">ThreadVerifier</a></div>
+<a class="list-group-item" href="#navigation-93" data-toggle="collapse" data-parent="#navigation">bizley\podium\traits <b class="caret"></b></a><div id="navigation-93" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-traits-flashtrait.html">FlashTrait</a></div>
+<a class="list-group-item" href="#navigation-94" data-toggle="collapse" data-parent="#navigation">bizley\podium\web <b class="caret"></b></a><div id="navigation-94" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-web-user.html">User</a></div>
+<a class="list-group-item" href="#navigation-95" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets <b class="caret"></b></a><div id="navigation-95" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-alert.html">Alert</a>
+<a class="list-group-item" href="./bizley-podium-widgets-avatar.html">Avatar</a>
+<a class="list-group-item" href="./bizley-podium-widgets-latestposts.html">LatestPosts</a>
+<a class="list-group-item" href="./bizley-podium-widgets-modal.html">Modal</a>
+<a class="list-group-item" href="./bizley-podium-widgets-pagesizer.html">PageSizer</a>
+<a class="list-group-item" href="./bizley-podium-widgets-readers.html">Readers</a></div>
+<a class="list-group-item" href="#navigation-96" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror <b class="caret"></b></a><div id="navigation-96" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-codemirror.html">CodeMirror</a></div>
+<a class="list-group-item" href="#navigation-97" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\codemirror\assets <b class="caret"></b></a><div id="navigation-97" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorasset.html">CodeMirrorAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorbuttonsasset.html">CodeMirrorButtonsAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorconfigasset.html">CodeMirrorConfigAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorextraasset.html">CodeMirrorExtraAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrorlibasset.html">CodeMirrorLibAsset</a>
+<a class="list-group-item" href="./bizley-podium-widgets-codemirror-assets-codemirrormodesasset.html">CodeMirrorModesAsset</a></div>
+<a class="list-group-item" href="#navigation-98" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\editor <b class="caret"></b></a><div id="navigation-98" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-editor-editorbasic.html">EditorBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-editor-editorfull.html">EditorFull</a></div>
+<a class="list-group-item" href="#navigation-99" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\gridview <b class="caret"></b></a><div id="navigation-99" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-gridview-actioncolumn.html">ActionColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-datacolumn.html">DataColumn</a>
+<a class="list-group-item" href="./bizley-podium-widgets-gridview-gridview.html">GridView</a></div>
+<a class="list-group-item" href="#navigation-100" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\poll <b class="caret"></b></a><div id="navigation-100" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-poll-poll.html">Poll</a></div>
+<a class="list-group-item" href="#navigation-101" data-toggle="collapse" data-parent="#navigation">bizley\podium\widgets\quill <b class="caret"></b></a><div id="navigation-101" class="submenu panel-collapse collapse"><a class="list-group-item" href="./bizley-podium-widgets-quill-quillbasic.html">QuillBasic</a>
+<a class="list-group-item" href="./bizley-podium-widgets-quill-quillfull.html">QuillFull</a></div></div>    </div>
+    <div class="col-md-9 api-content" role="main">
+        <h1>Class bizley\podium\maintenance\SchemaOperation</h1>
+<div class="top-nav">
+    <a href="index.html">All Classes</a>
+            | <a href="#properties">Properties</a>
+                | <a href="#methods">Methods</a>
+                    | <a href="#constants">Constants</a>
+    </div>
+
+<table class="summaryTable docClass table table-bordered">
+    <colgroup>
+        <col class="col-name" />
+        <col class="col-value" />
+    </colgroup>
+            <tr><th>Inheritance</th><td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a> &raquo;
+yii\base\Component</td></tr>
+                            <tr><th>Subclasses</th><td><a href="bizley-podium-maintenance-installation.html">bizley\podium\maintenance\Installation</a>, <a href="bizley-podium-maintenance-maintenance.html">bizley\podium\maintenance\Maintenance</a>, <a href="bizley-podium-maintenance-update.html">bizley\podium\maintenance\Update</a></td></tr>
+                        <tr><th>Available since version</th><td>0.6</td></tr>
+            </table>
+
+<div class="class-description">
+    <p><strong>Podium Maintenance module
+Maintenance requires database connection to be configured first.</strong></p>
+    
+    </div>
+
+<a id="properties"></a>
+
+<div class="summary doc-property">
+<h2>Public Properties</h2>
+
+<p><a href="#" class="toggle">Hide inherited properties</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-property" />
+    <col class="col-type" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Property</th><th>Type</th><th>Description</th><th>Defined By</th>
+</tr>
+                <tr id="$db">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#$db-detail">$db</a></td>
+        <td>\yii\db\Connection</td>
+        <td>Database connection.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="$tableOptions">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#$tableOptions-detail">$tableOptions</a></td>
+        <td><a href="http://www.php.net/language.types.string">string</a></td>
+        <td>Additional SQL fragment that will be appended to the generated SQL.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="$type">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#$type-detail">$type</a></td>
+        <td><a href="http://www.php.net/language.types.integer">integer</a></td>
+        <td>Returned status.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+    </table>
+</div>
+
+<div class="summary doc-property">
+<h2>Protected Properties</h2>
+
+<p><a href="#" class="toggle">Hide inherited properties</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-property" />
+    <col class="col-type" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Property</th><th>Type</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr id="$_prefix">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#$_prefix-detail">$_prefix</a></td>
+        <td><a href="http://www.php.net/language.types.string">string</a></td>
+        <td>Table name prefix.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="$_table">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#$_table-detail">$_table</a></td>
+        <td><a href="http://www.php.net/language.types.string">string</a></td>
+        <td>Current table name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+                </table>
+</div>
+
+<a id="methods"></a>
+
+<div class="summary doc-method">
+<h2>Public Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+                                            <tr id="getForeignName()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getForeignName()-detail">getForeignName()</a></td>
+        <td>Returns prefixed foreign key name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="getIndexName()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getIndexName()-detail">getIndexName()</a></td>
+        <td>Returns prefixed index name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="getModule()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getModule()-detail">getModule()</a></td>
+        <td>Returns Podium instance.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="getRawTable()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getRawTable()-detail">getRawTable()</a></td>
+        <td>Returns raw table name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="getTable()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getTable()-detail">getTable()</a></td>
+        <td>Returns table name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="getTableName()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#getTableName()-detail">getTableName()</a></td>
+        <td>Returns prefixed table name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="init()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#init()-detail">init()</a></td>
+        <td>Initialize component.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+                    <tr id="returnError()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#returnError()-detail">returnError()</a></td>
+        <td>Returns error message.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="returnSuccess()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#returnSuccess()-detail">returnSuccess()</a></td>
+        <td>Returns success message.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="returnWarning()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#returnWarning()-detail">returnWarning()</a></td>
+        <td>Returns success message.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="setTable()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#setTable()-detail">setTable()</a></td>
+        <td>Sets table name.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+    </table>
+</div>
+
+<div class="summary doc-method">
+<h2>Protected Methods</h2>
+
+<p><a href="#" class="toggle">Hide inherited methods</a></p>
+
+<table class="summary-table table table-striped table-bordered table-hover">
+<colgroup>
+    <col class="col-method" />
+    <col class="col-description" />
+    <col class="col-defined" />
+</colgroup>
+<tr>
+  <th>Method</th><th>Description</th><th>Defined By</th>
+</tr>
+        <tr id="addColumn()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#addColumn()-detail">addColumn()</a></td>
+        <td>Adds column to database table.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="addForeign()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#addForeign()-detail">addForeign()</a></td>
+        <td>Creates database table foreign key.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="addIndex()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#addIndex()-detail">addIndex()</a></td>
+        <td>Creates database table index.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="alterColumn()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#alterColumn()-detail">alterColumn()</a></td>
+        <td>Modifies database table column.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="createTable()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#createTable()-detail">createTable()</a></td>
+        <td>Creates database table.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="dropColumn()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#dropColumn()-detail">dropColumn()</a></td>
+        <td>Drops database table column.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="dropForeign()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#dropForeign()-detail">dropForeign()</a></td>
+        <td>Drops database table foreign key.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="dropIndex()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#dropIndex()-detail">dropIndex()</a></td>
+        <td>Drops database table index.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="dropTable()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#dropTable()-detail">dropTable()</a></td>
+        <td>Drops current database table if it exists.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+                                        <tr id="rename()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#rename()-detail">rename()</a></td>
+        <td>Renames database table.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+            <tr id="renameColumn()">
+        <td><a href="bizley-podium-maintenance-schemaoperation.html#renameColumn()-detail">renameColumn()</a></td>
+        <td>Renames database table column.</td>
+        <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+    </tr>
+                    </table>
+</div>
+
+<a id="events"></a>
+
+<a id="constants"></a>
+<div class="summary doc-const">
+    <h2>Constants</h2>
+
+    <p><a href="#" class="toggle">Hide inherited constants</a></p>
+
+    <table class="summary-table table table-striped table-bordered table-hover">
+    <colgroup>
+        <col class="col-const" />
+        <col class="col-value" />
+        <col class="col-description" />
+        <col class="col-defined" />
+    </colgroup>
+    <tr>
+        <th>Constant</th><th>Value</th><th>Description</th><th>Defined By</th>
+    </tr>
+            <tr id="TYPE_ERROR">
+          <td id="TYPE_ERROR-detail">TYPE_ERROR</td>
+          <td>2</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+        </tr>
+            <tr id="TYPE_SUCCESS">
+          <td id="TYPE_SUCCESS-detail">TYPE_SUCCESS</td>
+          <td>0</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+        </tr>
+            <tr id="TYPE_WARNING">
+          <td id="TYPE_WARNING-detail">TYPE_WARNING</td>
+          <td>1</td>
+          <td>
+                        </td>
+          <td><a href="bizley-podium-maintenance-schemaoperation.html">bizley\podium\maintenance\SchemaOperation</a></td>
+        </tr>
+        </table>
+</div>
+
+<h2>Property Details</h2>
+
+<div class="property-doc">
+
+    <div class="detail-header h3" id="$_prefix-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#$_prefix-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        $_prefix        <span class="detail-header-tag small">
+            protected                                                property
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p>Table name prefix.</p>
+
+            </div>
+
+    <div class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <a href="bizley-podium-maintenance-schemaoperation.html#$_prefix-detail">$_prefix</a> <span style="color: #0000BB"></span><span style="color: #007700">=&nbsp;</span><span style="color: #DD0000">'podium_'</span></div>
+
+
+    <div class="detail-header h3" id="$_table-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#$_table-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        $_table        <span class="detail-header-tag small">
+            protected                                                property
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p>Current table name.</p>
+
+            </div>
+
+    <div class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <a href="bizley-podium-maintenance-schemaoperation.html#$_table-detail">$_table</a> <span style="color: #0000BB"></span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span></div>
+
+
+    <div class="detail-header h3" id="$db-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#$db-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        $db        <span class="detail-header-tag small">
+            public                                                property
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p>Database connection.</p>
+
+            </div>
+
+    <div class="signature"><span class="signature-defs">public</span> <span class="signature-type">\yii\db\Connection</span> <a href="bizley-podium-maintenance-schemaoperation.html#$db-detail">$db</a> <span style="color: #0000BB"></span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span></div>
+
+
+    <div class="detail-header h3" id="$tableOptions-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#$tableOptions-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        $tableOptions        <span class="detail-header-tag small">
+            public                                                property
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p>Additional SQL fragment that will be appended to the generated SQL.</p>
+
+            </div>
+
+    <div class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <a href="bizley-podium-maintenance-schemaoperation.html#$tableOptions-detail">$tableOptions</a> <span style="color: #0000BB"></span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span></div>
+
+
+    <div class="detail-header h3" id="$type-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#$type-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        $type        <span class="detail-header-tag small">
+            public                                                property
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p>Returned status.</p>
+
+            </div>
+
+    <div class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.integer">integer</a></span> <a href="bizley-podium-maintenance-schemaoperation.html#$type-detail">$type</a> <span style="color: #0000BB"></span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">self</span><span style="color: #007700">::</span><span style="color: #0000BB">TYPE_ERROR</span></div>
+
+</div>
+<h2>Method Details</h2>
+
+<div class="method-doc">
+
+    <div class="detail-header h3" id="addColumn()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#addColumn()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        addColumn()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Adds column to database table.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#addColumn()-detail">addColumn</a></strong> ( <span style="color: #0000BB">$col</span>, <span style="color: #0000BB">$type</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$col</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column name</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$type</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column schema</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="addForeign()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#addForeign()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        addForeign()
+        <span class="detail-header-tag small">
+            protected                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Creates database table foreign key.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#addForeign()-detail">addForeign</a></strong> ( <span style="color: #0000BB">$key</span>, <span style="color: #0000BB">$ref</span>, <span style="color: #0000BB">$col</span>, <span style="color: #0000BB">$delete&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span>, <span style="color: #0000BB">$update&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$key</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.array">array</a></td>
+                  <td class="param-desc-col"><p>Key columns</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$ref</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Key reference table</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$col</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.array">array</a></td>
+                  <td class="param-desc-col"><p>Reference table columns</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$delete</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>ON DELETE action</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$update</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>ON UPDATE action</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="addIndex()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#addIndex()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        addIndex()
+        <span class="detail-header-tag small">
+            protected                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Creates database table index.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#addIndex()-detail">addIndex</a></strong> ( <span style="color: #0000BB">$name</span>, <span style="color: #0000BB">$cols</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Index name</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$cols</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.array">array</a></td>
+                  <td class="param-desc-col"><p>Columns</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="alterColumn()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#alterColumn()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        alterColumn()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Modifies database table column.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#alterColumn()-detail">alterColumn</a></strong> ( <span style="color: #0000BB">$col</span>, <span style="color: #0000BB">$type</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$col</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column name</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$type</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column schema</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message.</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="createTable()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#createTable()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        createTable()
+        <span class="detail-header-tag small">
+            protected                                    method
+                            (available since version 0.2)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Creates database table.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#createTable()-detail">createTable</a></strong> ( <span style="color: #0000BB">$schema</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$schema</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.array">array</a></td>
+                  <td class="param-desc-col"><p>Table schema</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="dropColumn()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#dropColumn()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        dropColumn()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Drops database table column.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#dropColumn()-detail">dropColumn</a></strong> ( <span style="color: #0000BB">$col</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$col</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column name</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="dropForeign()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#dropForeign()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        dropForeign()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Drops database table foreign key.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#dropForeign()-detail">dropForeign</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Key name</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="dropIndex()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#dropIndex()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        dropIndex()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Drops database table index.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#dropIndex()-detail">dropIndex</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Index name</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="dropTable()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#dropTable()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        dropTable()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Drops current database table if it exists.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.boolean">boolean</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#dropTable()-detail">dropTable</a></strong> ( )</td></tr>
+                                                <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a>|<a href="http://www.php.net/language.types.boolean">boolean</a></td>
+                  <td class="param-desc-col"><p>Result message or true if no table to drop.</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getForeignName()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getForeignName()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getForeignName()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns prefixed foreign key name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getForeignName()-detail">getForeignName</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getIndexName()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getIndexName()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getIndexName()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns prefixed index name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getIndexName()-detail">getIndexName</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getModule()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getModule()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getModule()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns Podium instance.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="bizley-podium-podium.html">bizley\podium\Podium</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getModule()-detail">getModule</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getRawTable()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getRawTable()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getRawTable()
+        <span class="detail-header-tag small">
+            public                                    method
+                            (available since version 0.6)
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns raw table name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getRawTable()-detail">getRawTable</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getTable()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getTable()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getTable()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns table name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getTable()-detail">getTable</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="getTableName()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#getTableName()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        getTableName()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns prefixed table name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#getTableName()-detail">getTableName</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="init()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#init()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        init()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Initialize component.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#init()-detail">init</a></strong> ( )</td></tr>
+            </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="rename()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#rename()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        rename()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Renames database table.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#rename()-detail">rename</a></strong> ( <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Table new name</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="renameColumn()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#renameColumn()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        renameColumn()
+        <span class="detail-header-tag small">
+            protected                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Renames database table column.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">protected</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#renameColumn()-detail">renameColumn</a></strong> ( <span style="color: #0000BB">$col</span>, <span style="color: #0000BB">$name</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$col</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column name</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$name</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Column new name</p>
+</td>
+                </tr>
+                                        <tr>
+                  <th class="param-name-col">return</th>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Result message</p>
+</td>
+                </tr>
+                                    </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="returnError()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#returnError()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        returnError()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns error message.</strong></p>
+
+        <p>Logs error.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#returnError()-detail">returnError</a></strong> ( <span style="color: #0000BB">$exception</span>, <span style="color: #0000BB">$method</span>, <span style="color: #0000BB">$message</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$exception</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Exception message</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$method</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Method name</p>
+</td>
+                </tr>
+                            <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$message</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"><p>Custom message</p>
+</td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="returnSuccess()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#returnSuccess()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        returnSuccess()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns success message.</strong></p>
+
+        <p>Sets type to success.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#returnSuccess()-detail">returnSuccess</a></strong> ( <span style="color: #0000BB">$message</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$message</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="returnWarning()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#returnWarning()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        returnWarning()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Returns success message.</strong></p>
+
+        <p>Sets type to warning.</p>
+
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type"><a href="http://www.php.net/language.types.string">string</a></span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#returnWarning()-detail">returnWarning</a></strong> ( <span style="color: #0000BB">$message</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$message</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+
+    <div class="detail-header h3" id="setTable()-detail">
+        <a href="#" class="tool-link" title="go to top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+        <a class="tool-link hash" href="bizley-podium-maintenance-schemaoperation.html#setTable()-detail" title="direct link to this method"><span class="glyphicon icon-hash"></span></a>
+        
+        setTable()
+        <span class="detail-header-tag small">
+            public                                    method
+                    </span>
+    </div>
+
+    
+    <div class="doc-description">
+        <p><strong>Sets table name.</strong></p>
+
+        
+            </div>
+
+    <table class="detail-table table table-striped table-bordered table-hover">
+        <tr><td colspan="3" class="signature"><span class="signature-defs">public</span> <span class="signature-type">void</span> <strong><a href="bizley-podium-maintenance-schemaoperation.html#setTable()-detail">setTable</a></strong> ( <span style="color: #0000BB">$value</span> )</td></tr>
+                                    <tr>
+                  <td class="param-name-col"><span style="color: #0000BB">$value</span></td>
+                  <td class="param-type-col"><a href="http://www.php.net/language.types.string">string</a></td>
+                  <td class="param-desc-col"></td>
+                </tr>
+                                                </table>
+
+<!--	-->
+</div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    /*<![CDATA[*/
+    $("a.toggle").on('click', function () {
+        var $this = $(this);
+        if ($this.hasClass('properties-hidden')) {
+            $this.text($this.text().replace(/Show/,'Hide'));
+            $this.parents(".summary").find(".inherited").show();
+            $this.removeClass('properties-hidden');
+        } else {
+            $this.text($this.text().replace(/Hide/,'Show'));
+            $this.parents(".summary").find(".inherited").hide();
+            $this.addClass('properties-hidden');
+        }
+
+        return false;
+    });
+    /*
+     $(".sourceCode a.show").toggle(function () {
+     $(this).text($(this).text().replace(/show/,'hide'));
+     $(this).parents(".sourceCode").find("div.code").show();
+     },function () {
+     $(this).text($(this).text().replace(/hide/,'show'));
+     $(this).parents(".sourceCode").find("div.code").hide();
+     });
+     $("a.sourceLink").click(function () {
+     $(this).attr('target','_blank');
+     });
+     */
+    /*]]>*/
+</script>
+
+
+</div>
+
+<footer class="footer">
+        <p class="pull-right"><small>Page generated on Fri, 24 Mar 2017 16:27:06 +0000</small></p>
+    Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a></footer>
+
+<script type="text/javascript">jQuery(document).ready(function () {
+    var shiftWindow = function () { scrollBy(0, -50) };
+    if (location.hash) setTimeout(shiftWindow, 1);
+    window.addEventListener("hashchange", shiftWindow);
+var element = document.createElement("script");
+element.src = "./jssearch.index.js";
+document.body.appendChild(element);
+
+var searchBox = $('#searchbox');
+
+// search when typing in search field
+searchBox.on("keyup", function(event) {
+    var query = $(this).val();
+
+    if (query == '' || event.which == 27) {
+        $('#search-resultbox').hide();
+        return;
+    } else if (event.which == 13) {
+        var selectedLink = $('#search-resultbox a.selected');
+        if (selectedLink.length != 0) {
+            document.location = selectedLink.attr('href');
+            return;
+        }
+    } else if (event.which == 38 || event.which == 40) {
+        $('#search-resultbox').show();
+
+        var selected = $('#search-resultbox a.selected');
+        if (selected.length == 0) {
+            $('#search-results').find('a').first().addClass('selected');
+        } else {
+            var next;
+            if (event.which == 40) {
+                next = selected.parent().next().find('a').first();
+            } else {
+                next = selected.parent().prev().find('a').first();
+            }
+            if (next.length != 0) {
+                var resultbox = $('#search-results');
+                var position = next.position();
+
+//              TODO scrolling is buggy and jumps around
+//                resultbox.scrollTop(Math.floor(position.top));
+//                console.log(position.top);
+
+                selected.removeClass('selected');
+                next.addClass('selected');
+            }
+        }
+
+        return;
+    }
+    $('#search-resultbox').show();
+    $('#search-results').html('<li><span class="no-results">No results</span></li>');
+
+    var result = jssearch.search(query);
+
+    if (result.length > 0) {
+        var i = 0;
+        var resHtml = '';
+
+        for (var key in result) {
+            if (i++ > 20) {
+                break;
+            }
+            resHtml = resHtml +
+            '<li><a href="' + result[key].file.u.substr(3) +'"><span class="title">' + result[key].file.t + '</span>' +
+            '<span class="description">' + result[key].file.d + '</span></a></li>';
+        }
+        $('#search-results').html(resHtml);
+    }
+});
+
+// hide the search results on ESC
+$(document).on("keyup", function(event) { if (event.which == 27) { $('#search-resultbox').hide(); } });
+// hide search results on click to document
+$(document).bind('click', function (e) { $('#search-resultbox').hide(); });
+// except the following:
+searchBox.bind('click', function(e) { e.stopPropagation(); });
+$('#search-resultbox').bind('click', function(e) { e.stopPropagation(); });
+
+});</script></body>
+</html>
