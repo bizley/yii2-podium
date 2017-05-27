@@ -3,7 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\db\Query;
-use bizley\podium\events\EventSender;
+use bizley\podium\events\EventService;
 use bizley\podium\log\Log;
 use bizley\podium\models\db\PostActiveRecord;
 use bizley\podium\Podium;
@@ -402,9 +402,9 @@ class Post extends PostActiveRecord
             $transaction->commit();
 
             if ($wholeThread) {
-            	EventSender::threadDeleted($this->thread);
+            	EventService::threadDeleted($this->thread);
             } else {
-            	EventSender::threadUpdated($this->thread);
+            	EventService::threadUpdated($this->thread);
             }
 
             PodiumCache::clearAfter('postDelete');
@@ -511,7 +511,7 @@ class Post extends PostActiveRecord
             }
             $transaction->commit();
 
-            EventSender::threadUpdated($thread);
+            EventService::threadUpdated($thread);
 
             PodiumCache::clearAfter('newPost');
             Log::info('Post added', $id, __METHOD__);

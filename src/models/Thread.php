@@ -2,7 +2,7 @@
 
 namespace bizley\podium\models;
 
-use bizley\podium\events\EventSender;
+use bizley\podium\events\EventService;
 use bizley\podium\log\Log;
 use bizley\podium\models\db\ThreadActiveRecord;
 use bizley\podium\Podium;
@@ -271,7 +271,7 @@ class Thread extends ThreadActiveRecord
             ]);
             $transaction->commit();
 
-            EventSender::threadDeleted($this);
+            EventService::threadDeleted($this);
 
             PodiumCache::clearAfter('threadDelete');
             Log::info('Thread deleted', $this->id, __METHOD__);
@@ -540,7 +540,7 @@ class Thread extends ThreadActiveRecord
 
             $transaction->commit();
 
-            EventSender::threadCreated($this);
+            EventService::threadCreated($this);
 
             PodiumCache::clearAfter('newThread');
             Log::info('Thread added', $this->id, __METHOD__);

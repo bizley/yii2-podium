@@ -5,12 +5,12 @@ namespace bizley\podium\events;
 use bizley\podium\Podium;
 
 /**
- * Creates and sends events
+ * Service for triggering events
  *
  * @author David Newcomb <david.newcomb@bigsoft.co.uk>
  * @since 0.8
  */
-class EventSender {
+class EventService {
 
 	public static function threadCreated($thread) {
 		self::threadEvent(PodiumEvent::THREAD_CREATED, $thread);
