@@ -70,10 +70,12 @@ class BaseController extends YiiController
         if ($maintenance !== false) {
             return $maintenance;
         }
-        $email = $this->emailCheck($warnings);
-        if ($email !== false) {
-            return $email;
-        }
+		if (!$this->module->skipEmailWarning) {
+			$email = $this->emailCheck($warnings);
+			if ($email !== false) {
+				return $email;
+			}
+		}
         $upgrade = $this->upgradeCheck($warnings);
         if ($upgrade !== false) {
             return $upgrade;
