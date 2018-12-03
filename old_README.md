@@ -1,5 +1,3 @@
-> This project is abandoned in favour of new Podium that will be split into [Podium API](https://github.com/bizley/yii2-podium-api) and [Podium client](https://github.com/bizley/yii2-podium-client). API is 99% ready and I'm starting to work on Client. Stay tuned ;)
-
 Podium
 ======
 
