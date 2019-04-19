@@ -3,6 +3,7 @@
 namespace bizley\podium\models;
 
 use bizley\podium\db\Query;
+use bizley\podium\events\EventService;
 use bizley\podium\log\Log;
 use bizley\podium\models\db\PostActiveRecord;
 use bizley\podium\Podium;
@@ -399,6 +400,13 @@ class Post extends PostActiveRecord
                 }
             }
             $transaction->commit();
+
+            if ($wholeThread) {
+            	EventService::threadDeleted($this->thread);
+            } else {
+            	EventService::threadUpdated($this->thread);
+            }
+
             PodiumCache::clearAfter('postDelete');
             Log::info('Post deleted', !empty($this->id) ? $this->id : '', __METHOD__);
             return true;
@@ -502,6 +510,9 @@ class Post extends PostActiveRecord
                 }
             }
             $transaction->commit();
+
+            EventService::threadUpdated($thread);
+
             PodiumCache::clearAfter('newPost');
             Log::info('Post added', $id, __METHOD__);
             return true;
