@@ -175,6 +175,12 @@ class Podium extends Module implements BootstrapInterface
     public $slugGenerator;
 
     /**
+     * @var bool Skip email warning.
+     * @since 0.8.1
+     */
+    public $skipEmailWarning;
+
+    /**
      * @inheritdoc
      */
     protected function defaultVersion()
